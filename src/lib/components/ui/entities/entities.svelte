@@ -50,9 +50,12 @@
 		// console.log($state.snapshot(entities));
 	});
 
-	let hoverrow = "";
+	let startrow = "";
 	function ondragstart(event: DragEvent, head: TableHeader) {
 		event.dataTransfer?.setData("text", head.field);
+	}
+	function ontouchstart(event: TouchEvent, head: TableHeader) {
+		startrow = head.field;
 	}
 	function ondragover(event: DragEvent) {
 		event.preventDefault();
@@ -68,6 +71,16 @@
 			settings.setvalue(page, "headers", $state.snapshot(headers));
 		}
 	}
+	function ontouchend(event: TouchEvent, head: TableHeader) {
+		const fromindex = headers.findIndex(h => h.field == startrow);
+		const toindex = headers.findIndex(h => h.field == head.field);
+		if(fromindex != toindex) {
+			headers.splice(toindex, 0, headers.splice(fromindex, 1)[0]);
+			settings.setvalue(page, "headers", $state.snapshot(headers));
+		}
+	}
+	// finish adding move logic for touch 
+	// https://www.horuskol.net/blog/2020-08-15/drag-and-drop-elements-on-touch-devices/
 </script>
 
 <Table.Root>
@@ -81,7 +94,7 @@
 			{#each headers as head}
 				<Table.Head class={head.headclass} role="cell"
 				draggable=true ondragstart={e=> ondragstart(e, head)} ondragover={ondragover} ondrop={e => ondrop(e, head)}
-
+				ontouchstart={e=> ontouchstart(e, head)} ontouchend={e => ontouchend(e, head)}
 				>{head.name}</Table.Head>
 			{/each}
 		</Table.Row>
