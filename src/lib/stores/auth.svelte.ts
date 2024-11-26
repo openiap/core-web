@@ -3,7 +3,6 @@ import { base } from "$app/paths";
 const { UserManager, WebStorageStateStore } = pkg;
 import { openiap } from "@openiap/jsapi";
 
-
 const settings = {
     authority: "https://app.openiap.io/oidc",
     client_id: "webapp",
@@ -12,7 +11,7 @@ const settings = {
     scope: "openid profile email",
     post_logout_redirect_uri: window.location.origin + base + "/",
     userStore: new WebStorageStateStore({ store: window.localStorage }),
-  };
+};
 
 class authState {
     isAuthenticated: boolean = $state(false);
