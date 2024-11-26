@@ -44,4 +44,4 @@
 {:else}
   <Button onclick={login}>Signin</Button>
 {/if}
-<a href="/user">Users</a>
+<a href="/user">Users</a> | <a href="/role">Roles</a>
