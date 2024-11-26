@@ -4,40 +4,20 @@
 </svelte:head>
 <script lang="ts">
   import { Button } from "$lib/components/ui/button/index.js";
-  
-  import pkg from "oidc-client";
   import { base } from "$app/paths";
   import { page } from "$app/stores";
   import { pushState } from "$app/navigation";
   import { auth } from "$lib/stores/auth.svelte";
-  import { openiap } from "@openiap/jsapi";
-  const { UserManager, WebStorageStateStore } = pkg;
 
   let name = $state("Svelte");
 
-  const settings = {
-    authority: "https://app.openiap.io/oidc",
-    client_id: "webapp",
-    redirect_uri: window.location.origin + base + "/",
-    response_type: "code",
-    scope: "openid profile email",
-    post_logout_redirect_uri: window.location.origin + base + "/",
-    userStore: new WebStorageStateStore({ store: window.localStorage }),
-  };
-  const userManager = new UserManager(settings);
   if ($page.url.search.includes("code=")) {
     console.log("Code", $page.url.searchParams.get("code"));
     try {
-      userManager.signinRedirectCallback().then(async function (user) {
+      auth.isLoaded = false;
+      auth.userManager.signinRedirectCallback().then(async function (user) {
         pushState(base + "/", {});
-        const result = await userManager.getUser();
-        if (result != null) {
-          auth.profile = result.profile;
-          auth.access_token = result.access_token;
-          name = result.profile.name as any;
-          auth.isAuthenticated = true;
-          auth.ensureClient();
-        }
+        await auth.loadUserAndClient();
       }).catch((error) => {
         console.debug(error);
       });
@@ -46,22 +26,12 @@
   }
 
   function login() {
-    userManager.signinRedirect();
+    auth.userManager.signinRedirect();
   }
   function logout() {
-    userManager.signoutRedirect();
+    auth.userManager.signoutRedirect();
   }
-  
-  const result = userManager.getUser().then((result) => {
-    if (result != null) {
-      auth.profile = result.profile;
-      auth.access_token = result.access_token;
-      name = result.profile.name as any;
-      auth.isAuthenticated = true;
-      auth.ensureClient();
-    }
-  });
-
+ 
 </script>
 
 <h1>Hello {name}!</h1>

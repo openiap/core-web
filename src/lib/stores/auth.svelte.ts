@@ -21,18 +21,20 @@ class authState {
     userManager = new UserManager(settings)
     isLoaded: boolean = $state(false);
     constructor() {
-        this.userManager.getUser().then(async (result) => {
-            if (result != null) {
-              auth.profile = result.profile;
-              auth.access_token = result.access_token;
-              auth.isAuthenticated = true;
-              console.log("Creating new client");
-              this.client = new openiap("wss://app.openiap.io/ws/v2", this.access_token);
-              await this.client.connect(true);
-            }
-            this.isLoaded = true;
-        });
-    }   
+        this.loadUserAndClient()
+    }
+    async loadUserAndClient() {
+        const result = await this.userManager.getUser();
+        if (result != null) {
+            auth.profile = result.profile;
+            auth.access_token = result.access_token;
+            auth.isAuthenticated = true;
+            console.log("Creating new client");
+            this.client = new openiap("wss://app.openiap.io/ws/v2", this.access_token);
+            await this.client.connect(true);
+        }
+        this.isLoaded = true;
+    }
     onLogin (callback: (user: pkg.Profile) => void) {
         let called = false;
         if(callback == null) return;
