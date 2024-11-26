@@ -79,6 +79,9 @@
 			settings.setvalue(page, "headers", $state.snapshot(headers));
 		}
 	}
+	function ontouchmove(event: TouchEvent) {
+		event.preventDefault();
+	}
 	// finish adding move logic for touch 
 	// https://www.horuskol.net/blog/2020-08-15/drag-and-drop-elements-on-touch-devices/
 </script>
@@ -94,7 +97,7 @@
 			{#each headers as head}
 				<Table.Head class={head.headclass} role="cell"
 				draggable=true ondragstart={e=> ondragstart(e, head)} ondragover={ondragover} ondrop={e => ondrop(e, head)}
-				ontouchstart={e=> ontouchstart(e, head)} ontouchend={e => ontouchend(e, head)}
+				ontouchstart={e=> ontouchstart(e, head)} ontouchend={e => ontouchend(e, head)} ontouchmove={ontouchmove}
 				>{head.name}</Table.Head>
 			{/each}
 		</Table.Row>
