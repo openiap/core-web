@@ -5,7 +5,8 @@
 <script lang="ts">
   import { Entities } from "$lib/components/ui/entities/index.js";
 
+  let defaultcolumnnames = ['name', 'status', 'method', 'amount'];
 </script>
-<Entities>
+<Entities defaultcolumnnames2={defaultcolumnnames}>
 
 </Entities>
