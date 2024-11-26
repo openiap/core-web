@@ -28,10 +28,10 @@ class authState {
         if (result != null) {
             auth.profile = result.profile;
             auth.access_token = result.access_token;
-            auth.isAuthenticated = true;
             console.log("Creating new client");
             this.client = new openiap("wss://app.openiap.io/ws/v2", this.access_token);
             await this.client.connect(true);
+            auth.isAuthenticated = true;
         }
         this.isLoaded = true;
     }

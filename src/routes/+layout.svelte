@@ -1,15 +1,50 @@
 <script lang="ts">
-	import Header from './Header.svelte';
-	import '../app.css';
-	
+	import Header from "./Header.svelte";
+	import "../app.css";
+	import { auth } from "$lib/stores/auth.svelte";
+
 	let { children } = $props();
+
+	import { Button } from "$lib/components/ui/button/index.js";
+	import { base } from "$app/paths";
+	import { page } from "$app/stores";
+	import { pushState } from "$app/navigation";
+
+	let name = $state("Svelte");
+
+	if ($page.url.search.includes("code=")) {
+		console.log("Code", $page.url.searchParams.get("code"));
+		try {
+			auth.isLoaded = false;
+			auth.userManager
+				.signinRedirectCallback()
+				.then(async function (user) {
+					pushState(base + "/", {});
+					await auth.loadUserAndClient();
+				})
+				.catch((error) => {
+					console.debug(error);
+				});
+		} catch (error) {}
+		//
+	}
+
+	
 </script>
 
 <div class="app">
 	<Header />
 
+	
+
 	<main>
-		{@render children()}
+		{#if auth.isAuthenticated == true}
+			<!-- <p>Logged in</p> -->
+			{@render children()}
+		{:else}
+		
+			<!-- <p>Not logged in</p> -->
+		{/if}
 	</main>
 
 	<footer>

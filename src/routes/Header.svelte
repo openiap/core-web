@@ -1,7 +1,16 @@
 <script lang="ts">
-	import { page } from '$app/stores';
-	import logo from '$lib/images/logo.png';
-	import github from '$lib/images/github.svg';
+	import { page } from "$app/stores";
+	import logo from "$lib/images/logo.png";
+	import github from "$lib/images/github.svg";
+	import { Button } from "$lib/components/ui/button/index.js";
+	import { auth } from "$lib/stores/auth.svelte";
+
+	function login() {
+		auth.userManager.signinRedirect();
+	}
+	function logout() {
+		auth.userManager.signoutRedirect();
+	}
 </script>
 
 <header>
@@ -33,6 +42,11 @@
 	</nav> -->
 
 	<div class="corner">
+		{#if auth.isAuthenticated == true}
+			<Button onclick={logout}>Signout</Button>
+		{:else}
+			<Button onclick={login}>Signin</Button>
+		{/if}
 		<a href="https://github.com/openiap">
 			<img src={github} alt="GitHub" />
 		</a>
@@ -63,7 +77,7 @@
 		height: 2em;
 		object-fit: contain;
 	}
-/* 
+	/* 
 	nav {
 		display: flex;
 		justify-content: center;

@@ -34,14 +34,14 @@
  
 </script>
 
-<h1>Hello {name}!</h1>
+<h1>Hello {name} & Allan!</h1>
 <p>
   Visit <a href="https://docs.openiap.io/">docs.openiap.io</a> to read the
   documentation
 </p>
-{#if auth.isAuthenticated == true}
+<!-- {#if auth.isAuthenticated == true}
   <Button onclick={logout}>Signout</Button>
 {:else}
   <Button onclick={login}>Signin</Button>
-{/if}
+{/if} -->
 <a href="/user">Users</a>
