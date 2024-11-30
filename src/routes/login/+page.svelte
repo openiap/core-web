@@ -44,7 +44,7 @@
       </Card.Content>
     </Card.Root>
   </div>
-  <div class="hidden md:block sm:flex-1 bg-white dark:bg-black">
+  <div class="hidden md:grid-span-1 md:block sm:flex-1 bg-white dark:bg-black">
 
   </div>
 </div>
