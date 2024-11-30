@@ -7,6 +7,7 @@
 
 	import { auth } from "$lib/stores/auth.svelte";
 	import { settings } from "$lib/stores/settings.svelte";
+    import { get } from "svelte/store";
 	export type sort = "asc" | "desc" | "";
 	export class TableHeader {
 		name: string = "";
@@ -22,12 +23,33 @@
 	let {
 		page = "entities",
 		defaultcolumnnames = ["name", "_type", "_created"],
+		query = { _type: "user" },
+		searchstring = "",
+		collectionname = "entities",
 		...rest
 	} = $props();
 	let entities: any[] = $state([]);
 	let headers: TableHeader[] = $state([]);
 	headers = settings.getvalue(page, "headers", []);
+	let multiSort = $state(false);
+	let errormessage = $state("");
+	searchstring = settings.getvalue(page, "searchstring", "");
+
+	async function GetData() {
+		let orderby = getOrderBy();
+		let query = createQuery();
+		// entities = [];
+		entities = await auth.client.Query<any>({
+			collectionname: collectionname,
+			query: query,
+			orderby: orderby,
+		});
+	}
 	auth.onLogin(async () => {
+		$effect(() => {
+			settings.setvalue(page, "searchstring", $state.snapshot(searchstring));
+			GetData();
+		});
 		if (headers.length == 0) {
 			for (let i = 0; i < defaultcolumnnames.length; i++) {
 				let header = new TableHeader();
@@ -56,13 +78,14 @@
 				headers.push(header);
 			}
 		}
-		entities = await auth.client.Query<any>({
-			collectionname: "users",
-			query: { _type: "user" },
-		});
-		// console.log($state.snapshot(entities));
+		await GetData();
 	});
 
+	
+  	/**
+	 * Ordering columns
+	 * ******************************************
+	 */
 	let startrow = "";
 	function ondragstart(event: DragEvent, head: TableHeader) {
 		event.dataTransfer?.setData("text", head.field);
@@ -76,7 +99,6 @@
 	function ondrop(event: DragEvent, head: TableHeader) {
 		event.preventDefault();
 		const fromfield = event.dataTransfer?.getData("text");
-		console.log("drop", fromfield, head.field);
 		const fromindex = headers.findIndex((h) => h.field == fromfield);
 		const toindex = headers.findIndex((h) => h.field == head.field);
 		if (fromindex != toindex) {
@@ -97,22 +119,28 @@
 	}
 	// finish adding move logic for touch
 	// https://www.horuskol.net/blog/2020-08-15/drag-and-drop-elements-on-touch-devices/
+  	/**
+	 * ******************************************
+	 * Ordering columns
+	 */
 
-
-	let multiSort = $state(false);
+	/**
+	 * Sorting data
+	 * ******************************************
+	 */
 	function sortby(field:string): sort {
 		var exists = headers.find((x) => x.field == field);
-		if (exists == null) return "";
+		if (exists == null) {
+			return "";
+		}
 		return exists.order;
 	}
 	function setSort(field:string, value:sort) {
 		if (Array.isArray(headers) == false) headers = [];
 		let column = headers.find((x) => x.field == field);
-		if (column == null) {
-			console.error("column not found", field);
-		} else {
-			console.log("setting sort", field, value);
-			column.order = value;
+		let index = headers.findIndex((x) => x.field == field);
+		if (column != null) {
+			headers[index] = { ...column, order: value };			
 		}
 	}
 
@@ -120,7 +148,6 @@
 		e.preventDefault();
 		e.stopPropagation();
 		const current = sortby(field);
-
 		if (!multiSort && current == "") {
 			for (let i = 0; i < headers.length; i++) {
 				const field = headers[i].field;
@@ -136,25 +163,102 @@
 		} else {
 			setSort(field, "");
 		}
-		// GetData();
+		GetData();
 	}
 	function getOrderBy() {
 		const orderby: { [key: string]: number } = {};
 		for (let i = 0; i < headers.length; i++) {
 			const sortKey = headers[i];
-			if (sortKey.order != null) {
+			if (sortKey.order != null && sortKey.order != "") {
 				orderby[sortKey.field] = sortKey.order == "desc" ? -1 : 1;
 			}
 		}
 		return orderby;
 	}
+	/**
+	 * ******************************************
+	 * Sorting data
+	 */
+
+
+	/**
+	 * Searching data
+	 * ******************************************
+	 */
+	function parseJson(txt: string, reviver:any, context:any) {
+    context = context || 20;
+    try {
+      return JSON.parse(txt, reviver);
+    } catch (e: any) {
+      if (typeof txt !== "string") {
+		// @ts-ignore
+        const isEmptyArray = Array.isArray(txt) && txt.length === 0;
+        const errorMessage =
+          "Cannot parse " + (isEmptyArray ? "an empty array" : String(txt));
+        errormessage = errorMessage;
+        throw new TypeError(errorMessage);
+      }
+      const syntaxErr = e.message.match(/^Unexpected token.*position\s+(\d+)/i);
+      const errIdx = syntaxErr
+        ? +syntaxErr[1]
+        : e.message.match(/^Unexpected end of JSON.*/i)
+          ? txt.length - 1
+          : null;
+      if (errIdx != null) {
+        const start = errIdx <= context ? 0 : errIdx - context;
+        const end =
+          errIdx + context >= txt.length ? txt.length : errIdx + context;
+        e.message += ` while parsing near "${
+          start === 0 ? "" : "..."
+        }${txt.slice(start, end)}${end === txt.length ? "" : "..."}"`;
+      } else {
+        e.message += ` while parsing "${txt.slice(0, context * 2)}"`;
+      }
+      throw e;
+    }
+  }
+  	function safeEval(jsStr:string) {
+    try {
+      return Function(`"use strict";return (` + jsStr + `)`)();
+    } catch (e: any) {
+      errormessage = e.message;
+      return null;
+    }
+  }
+  function createQuery() {
+    let q:any = { ...query };
+    if (searchstring == null || searchstring == "") {
+      return q;
+    }
+    if (searchstring.indexOf("{") == 0) {
+      if (searchstring.lastIndexOf("}") == searchstring.length - 1) {
+        try {
+          q = parseJson(searchstring, null, null);
+        } catch (e:any) {
+          try {
+            q = safeEval(searchstring);
+          } catch (error2:any) {
+            errormessage = e.message;
+            return null;
+          }
+        }
+      } else {
+        errormessage = "Incomplete query object";
+      }
+    } else {
+      // q["name"] = new RegExp([searchstring.substring(1)].join(""), "i")
+      q["name"] = { $regex: searchstring, $options: "i" };
+    }
+    return q;
+  }
+  	/**
+	 * ******************************************
+	 * Searching data
+	 */
+
 </script>
-{#if headers == null}
-<SuperDebug data={headers} theme="vscode" />
-{/if}
-{#if headers != null && headers.length > 0}
-order: {headers[0].order}
-{/if}
+<!-- error message-->
+<div class="text-red-500">{errormessage}</div>
 
 <Table.Root>
 	{#if entities.length === 0}

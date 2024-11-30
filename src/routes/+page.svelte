@@ -3,7 +3,6 @@
 	<meta name="description" content="Get performance data and generates index suggestions for better database performance" />
 </svelte:head>
 <script lang="ts">
-  import { Button } from "$lib/components/ui/button/index.js";
   import { base } from "$app/paths";
   import { page } from "$app/stores";
   import { pushState } from "$app/navigation";
@@ -25,12 +24,6 @@
     //
   }
 
-  function login() {
-    auth.userManager.signinRedirect();
-  }
-  function logout() {
-    auth.userManager.signoutRedirect();
-  }
  
 </script>
 
@@ -39,9 +32,3 @@
   Visit <a href="https://docs.openiap.io/">docs.openiap.io</a> to read the
   documentation
 </p>
-{#if auth.isAuthenticated == true}
-  <Button onclick={logout}>Signout</Button>
-{:else}
-  <Button onclick={login}>Signin</Button>
-{/if}
-<a href="/user">Users</a> | <a href="/role">Roles</a>
