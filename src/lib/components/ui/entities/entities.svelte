@@ -15,6 +15,7 @@
 		headclass: string = "";
 		cellclass: string = "";
 		order: sort = "";
+		orderindex: number = 0;
 		show: boolean = true;
 	}
 </script>
@@ -22,7 +23,7 @@
 <script lang="ts">
 	let {
 		page = "entities",
-		defaultcolumnnames = ["name", "_type", "_created"],
+		defaultcolumnnames = ["_id", "name", "_type", "_created"],
 		query = { _type: "user" },
 		searchstring = "",
 		collectionname = "entities",
@@ -31,9 +32,9 @@
 	let entities: any[] = $state([]);
 	let headers: TableHeader[] = $state([]);
 	headers = settings.getvalue(page, "headers", []);
-	let multiSort = $state(false);
+	let multiSort = $state(true);
+	let hide_empty_on_sort = $state(true);
 	let errormessage = $state("");
-	searchstring = settings.getvalue(page, "searchstring", "");
 
 	async function GetData() {
 		let orderby = getOrderBy();
@@ -69,6 +70,11 @@
 						break;
 					default:
 						header.name = header.field;
+				}
+				if (header.field == "_id") {
+					header.show = false;
+					header.order = "desc";
+					header.orderindex = 100;
 				}
 				if (i == 0) {
 					header.headclass = "w-[100px]";
@@ -150,11 +156,11 @@
 		e.preventDefault();
 		e.stopPropagation();
 		const current = sortby(field);
-		if (!multiSort && current == "") {
+		if (!multiSort) {
 			for (let i = 0; i < headers.length; i++) {
-				const field = headers[i].field;
-				if (field != field) {
-					setSort(field, "");
+				const _field = headers[i].field;
+				if (_field != field) {
+					setSort(_field, "");
 				}
 			}
 		}
@@ -169,8 +175,13 @@
 	}
 	function getOrderBy() {
 		const orderby: { [key: string]: number } = {};
-		for (let i = 0; i < headers.length; i++) {
-			const sortKey = headers[i];
+		let ordered = headers
+			.filter((x) => x.order != "")
+			.sort((a, b) => {
+				return a.orderindex - b.orderindex;
+			});
+		for (let i = 0; i < ordered.length; i++) {
+			const sortKey = ordered[i];
 			if (sortKey.order != null && sortKey.order != "") {
 				orderby[sortKey.field] = sortKey.order == "desc" ? -1 : 1;
 			}
@@ -233,6 +244,22 @@
 	}
 	function createQuery() {
 		let q: any = { ...query };
+
+		if (hide_empty_on_sort == true) {
+			let ordered = headers.filter(
+				(x) => x.order != "" && x.field != "_id",
+			);
+			if (ordered.length > 0) {
+				let ands: any = {};
+				for (let i = 0; i < ordered.length; i++) {
+					const field = ordered[i].field;
+					const or: any = {};
+					ands[field] = { $exists: true, $ne: null };
+				}
+				q = { $and: [ands, q] };
+			}
+		}
+
 		if (searchstring == null || searchstring == "") {
 			return q;
 		}
@@ -264,7 +291,7 @@
 
 <!-- error message-->
 <div class="text-red-500">{errormessage}</div>
-
+<!-- <SuperDebug data={headers} theme="vscode" /> -->
 <Table.Root>
 	{#if entities.length === 0}
 		<Table.Caption>No entities found.</Table.Caption>
@@ -274,24 +301,26 @@
 	<Table.Header>
 		<Table.Row>
 			{#each headers as head}
-				<Table.Head
-					class={head.headclass}
-					role="cell"
-					draggable="true"
-					onclick={(e) => toggleSort(e, head.field)}
-					ondragstart={(e) => ondragstart(e, head)}
-					{ondragover}
-					ondrop={(e) => ondrop(e, head)}
-					ontouchstart={(e) => ontouchstart(e, head)}
-					ontouchend={(e) => ontouchend(e, head)}
-					{ontouchmove}
-					>{head.name}
-					{#if sortby(head.field) == "asc"}
-						<ArrowUp class="ml-2 h-4 w-4" />
-					{:else if sortby(head.field) == "desc"}
-						<ArrowDown class="ml-2 h-4 w-4" />
-					{/if}
-				</Table.Head>
+				{#if head.show}
+					<Table.Head
+						class={head.headclass}
+						role="cell"
+						draggable="true"
+						onclick={(e) => toggleSort(e, head.field)}
+						ondragstart={(e) => ondragstart(e, head)}
+						{ondragover}
+						ondrop={(e) => ondrop(e, head)}
+						ontouchstart={(e) => ontouchstart(e, head)}
+						ontouchend={(e) => ontouchend(e, head)}
+						{ontouchmove}
+						>{head.name}
+						{#if sortby(head.field) == "asc"}
+							<ArrowUp class="ml-2 h-4 w-4" />
+						{:else if sortby(head.field) == "desc"}
+							<ArrowDown class="ml-2 h-4 w-4" />
+						{/if}
+					</Table.Head>
+				{/if}
 			{/each}
 		</Table.Row>
 	</Table.Header>
@@ -299,15 +328,17 @@
 		{#each entities as item}
 			<Table.Row>
 				{#each headers as head}
-					<Table.Cell class={head.cellclass}
-						>{item[head.field]}</Table.Cell
-					>
+					{#if head.show}
+						<Table.Cell class={head.cellclass}
+							>{item[head.field]}</Table.Cell
+						>
+					{/if}
 				{/each}
 			</Table.Row>
 		{/each}
 	</Table.Body>
 </Table.Root>
 
-{#if headers != null}
-	<SuperDebug data={headers} theme="vscode" />
+{#if headers != null && headers.length > 0}
+	<!-- <SuperDebug data={headers} theme="vscode" /> -->
 {/if}
