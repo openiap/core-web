@@ -4,7 +4,7 @@
 </svelte:head>
 <script lang="ts">
   import { Entities } from "$lib/components/ui/entities/index.js";
-  import { Button } from "$lib/components/ui/button/index.js";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { HotkeyInput } from "$lib/components/ui/hotkeyinput/index.js";
   import { Label } from "$lib/components/ui/label/index.js";
 
@@ -27,7 +27,7 @@
   <div class="flex gap-1.5">
     <HotkeyInput type="text" id="searchstring" placeholder="Searchstring or JSON query" bind:value={searchstring} 
     data-shortcut={"Control+f,Meta+f"} />
-    <HotkeyInput onclick={reset} data-shortcut={"Control+r,Meta+r"}>Reset</HotkeyInput>
+    <HotkeyButton onclick={reset} data-shortcut={"Control+r,Meta+r"}>Reset</HotkeyButton>
   </div>
 </div>
 <Entities defaultcolumnnames2={defaultcolumnnames} collectionname="users" {query} {searchstring}>
