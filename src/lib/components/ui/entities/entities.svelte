@@ -1,24 +1,57 @@
 <script lang="ts" module>
 	import * as Table from "$lib/components/ui/table/index.js";
+
+	import ArrowUp from "lucide-svelte/icons/arrow-up";
+	import ArrowDown from "lucide-svelte/icons/arrow-down";
+	import SuperDebug from "sveltekit-superforms";
+
 	import { auth } from "$lib/stores/auth.svelte";
 	import { settings } from "$lib/stores/settings.svelte";
-	class TableHeader {
+    import { get } from "svelte/store";
+	export type sort = "asc" | "desc" | "";
+	export class TableHeader {
 		name: string = "";
 		field: string = "";
 		headclass: string = "";
 		cellclass: string = "";
+		order: sort = "";
+		show: boolean = true;
 	}
 </script>
 
 <script lang="ts">
-	let { page = "entities", defaultcolumnnames = ['name', '_type','_created'], ...rest} = $props();
-	let entities:any[] = $state([]);
+	let {
+		page = "entities",
+		defaultcolumnnames = ["name", "_type", "_created"],
+		query = { _type: "user" },
+		searchstring = "",
+		collectionname = "entities",
+		...rest
+	} = $props();
+	let entities: any[] = $state([]);
 	let headers: TableHeader[] = $state([]);
-	// settings.setvalue(page, "headers", []);
 	headers = settings.getvalue(page, "headers", []);
+	let multiSort = $state(false);
+	let errormessage = $state("");
+	searchstring = settings.getvalue(page, "searchstring", "");
+
+	async function GetData() {
+		let orderby = getOrderBy();
+		let query = createQuery();
+		// entities = [];
+		entities = await auth.client.Query<any>({
+			collectionname: collectionname,
+			query: query,
+			orderby: orderby,
+		});
+	}
 	auth.onLogin(async () => {
-		if( headers.length == 0) {
-			for(let i = 0; i < defaultcolumnnames.length; i++) {
+		$effect(() => {
+			settings.setvalue(page, "searchstring", $state.snapshot(searchstring));
+			GetData();
+		});
+		if (headers.length == 0) {
+			for (let i = 0; i < defaultcolumnnames.length; i++) {
 				let header = new TableHeader();
 				header.field = defaultcolumnnames[i];
 				switch (header.field) {
@@ -34,7 +67,7 @@
 					default:
 						header.name = header.field;
 				}
-				if(i == 0) {
+				if (i == 0) {
 					header.headclass = "w-[100px]";
 					header.cellclass = "font-medium";
 				}
@@ -44,12 +77,15 @@
 				}
 				headers.push(header);
 			}
-			// settings.setvalue(page, "headers", $state.snapshot(headers));
 		}
-		entities = await auth.client.Query<any>({ collectionname: "users", query: {"_type": "user"} });
-		// console.log($state.snapshot(entities));
+		await GetData();
 	});
 
+	
+  	/**
+	 * Ordering columns
+	 * ******************************************
+	 */
 	let startrow = "";
 	function ondragstart(event: DragEvent, head: TableHeader) {
 		event.dataTransfer?.setData("text", head.field);
@@ -63,18 +99,17 @@
 	function ondrop(event: DragEvent, head: TableHeader) {
 		event.preventDefault();
 		const fromfield = event.dataTransfer?.getData("text");
-		console.log("drop", fromfield, head.field);
-		const fromindex = headers.findIndex(h => h.field == fromfield);
-		const toindex = headers.findIndex(h => h.field == head.field);
-		if(fromindex != toindex) {
+		const fromindex = headers.findIndex((h) => h.field == fromfield);
+		const toindex = headers.findIndex((h) => h.field == head.field);
+		if (fromindex != toindex) {
 			headers.splice(toindex, 0, headers.splice(fromindex, 1)[0]);
 			settings.setvalue(page, "headers", $state.snapshot(headers));
 		}
 	}
 	function ontouchend(event: TouchEvent, head: TableHeader) {
-		const fromindex = headers.findIndex(h => h.field == startrow);
-		const toindex = headers.findIndex(h => h.field == head.field);
-		if(fromindex != toindex) {
+		const fromindex = headers.findIndex((h) => h.field == startrow);
+		const toindex = headers.findIndex((h) => h.field == head.field);
+		if (fromindex != toindex) {
 			headers.splice(toindex, 0, headers.splice(fromindex, 1)[0]);
 			settings.setvalue(page, "headers", $state.snapshot(headers));
 		}
@@ -82,9 +117,148 @@
 	function ontouchmove(event: TouchEvent) {
 		event.preventDefault();
 	}
-	// finish adding move logic for touch 
+	// finish adding move logic for touch
 	// https://www.horuskol.net/blog/2020-08-15/drag-and-drop-elements-on-touch-devices/
+  	/**
+	 * ******************************************
+	 * Ordering columns
+	 */
+
+	/**
+	 * Sorting data
+	 * ******************************************
+	 */
+	function sortby(field:string): sort {
+		var exists = headers.find((x) => x.field == field);
+		if (exists == null) {
+			return "";
+		}
+		return exists.order;
+	}
+	function setSort(field:string, value:sort) {
+		if (Array.isArray(headers) == false) headers = [];
+		let column = headers.find((x) => x.field == field);
+		let index = headers.findIndex((x) => x.field == field);
+		if (column != null) {
+			headers[index] = { ...column, order: value };			
+		}
+	}
+
+	function toggleSort(e:any, field:string) {
+		e.preventDefault();
+		e.stopPropagation();
+		const current = sortby(field);
+		if (!multiSort && current == "") {
+			for (let i = 0; i < headers.length; i++) {
+				const field = headers[i].field;
+				if (field != field) {
+					setSort(field, "");
+				}
+			}
+		}
+		if (current == "") {
+			setSort(field, "asc");
+		} else if (current == "asc") {
+			setSort(field, "desc");
+		} else {
+			setSort(field, "");
+		}
+		GetData();
+	}
+	function getOrderBy() {
+		const orderby: { [key: string]: number } = {};
+		for (let i = 0; i < headers.length; i++) {
+			const sortKey = headers[i];
+			if (sortKey.order != null && sortKey.order != "") {
+				orderby[sortKey.field] = sortKey.order == "desc" ? -1 : 1;
+			}
+		}
+		return orderby;
+	}
+	/**
+	 * ******************************************
+	 * Sorting data
+	 */
+
+
+	/**
+	 * Searching data
+	 * ******************************************
+	 */
+	function parseJson(txt: string, reviver:any, context:any) {
+    context = context || 20;
+    try {
+      return JSON.parse(txt, reviver);
+    } catch (e: any) {
+      if (typeof txt !== "string") {
+		// @ts-ignore
+        const isEmptyArray = Array.isArray(txt) && txt.length === 0;
+        const errorMessage =
+          "Cannot parse " + (isEmptyArray ? "an empty array" : String(txt));
+        errormessage = errorMessage;
+        throw new TypeError(errorMessage);
+      }
+      const syntaxErr = e.message.match(/^Unexpected token.*position\s+(\d+)/i);
+      const errIdx = syntaxErr
+        ? +syntaxErr[1]
+        : e.message.match(/^Unexpected end of JSON.*/i)
+          ? txt.length - 1
+          : null;
+      if (errIdx != null) {
+        const start = errIdx <= context ? 0 : errIdx - context;
+        const end =
+          errIdx + context >= txt.length ? txt.length : errIdx + context;
+        e.message += ` while parsing near "${
+          start === 0 ? "" : "..."
+        }${txt.slice(start, end)}${end === txt.length ? "" : "..."}"`;
+      } else {
+        e.message += ` while parsing "${txt.slice(0, context * 2)}"`;
+      }
+      throw e;
+    }
+  }
+  	function safeEval(jsStr:string) {
+    try {
+      return Function(`"use strict";return (` + jsStr + `)`)();
+    } catch (e: any) {
+      errormessage = e.message;
+      return null;
+    }
+  }
+  function createQuery() {
+    let q:any = { ...query };
+    if (searchstring == null || searchstring == "") {
+      return q;
+    }
+    if (searchstring.indexOf("{") == 0) {
+      if (searchstring.lastIndexOf("}") == searchstring.length - 1) {
+        try {
+          q = parseJson(searchstring, null, null);
+        } catch (e:any) {
+          try {
+            q = safeEval(searchstring);
+          } catch (error2:any) {
+            errormessage = e.message;
+            return null;
+          }
+        }
+      } else {
+        errormessage = "Incomplete query object";
+      }
+    } else {
+      // q["name"] = new RegExp([searchstring.substring(1)].join(""), "i")
+      q["name"] = { $regex: searchstring, $options: "i" };
+    }
+    return q;
+  }
+  	/**
+	 * ******************************************
+	 * Searching data
+	 */
+
 </script>
+<!-- error message-->
+<div class="text-red-500">{errormessage}</div>
 
 <Table.Root>
 	{#if entities.length === 0}
@@ -95,21 +269,40 @@
 	<Table.Header>
 		<Table.Row>
 			{#each headers as head}
-				<Table.Head class={head.headclass} role="cell"
-				draggable=true ondragstart={e=> ondragstart(e, head)} ondragover={ondragover} ondrop={e => ondrop(e, head)}
-				ontouchstart={e=> ontouchstart(e, head)} ontouchend={e => ontouchend(e, head)} ontouchmove={ontouchmove}
-				>{head.name}</Table.Head>
+				<Table.Head
+					class={head.headclass}
+					role="cell"
+					draggable="true"
+					onclick={(e) => toggleSort(e, head.field)}
+					ondragstart={(e) => ondragstart(e, head)}
+					{ondragover}
+					ondrop={(e) => ondrop(e, head)}
+					ontouchstart={(e) => ontouchstart(e, head)}
+					ontouchend={(e) => ontouchend(e, head)}
+					{ontouchmove}
+					>{head.name}
+					{#if sortby(head.field) == "asc"}
+						<ArrowUp class="ml-2 h-4 w-4" />
+					{:else if sortby(head.field) == "desc"}
+						<ArrowDown class="ml-2 h-4 w-4" />
+					{/if}
+				</Table.Head>
 			{/each}
 		</Table.Row>
 	</Table.Header>
 	<Table.Body>
 		{#each entities as item}
-		<Table.Row>
-			{#each headers as head}
-				<Table.Cell  class={head.cellclass}>{item[head.field]}</Table.Cell>
-			{/each}	
-		</Table.Row>
+			<Table.Row>
+				{#each headers as head}
+					<Table.Cell class={head.cellclass}
+						>{item[head.field]}</Table.Cell
+					>
+				{/each}
+			</Table.Row>
 		{/each}
-
 	</Table.Body>
 </Table.Root>
+
+{#if headers != null}
+<SuperDebug data={headers} theme="vscode" />
+{/if}

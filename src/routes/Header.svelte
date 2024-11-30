@@ -1,10 +1,9 @@
 <script lang="ts">
-	import { page } from "$app/stores";
-	import logo from "$lib/images/logo.png";
-	import github from "$lib/images/github.svg";
-	import { Button } from "$lib/components/ui/button/index.js";
+	import { page } from '$app/stores';
+	import logo from '$lib/images/logo.png';
+	import github from '$lib/images/github.svg';
+	import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
 	import { auth } from "$lib/stores/auth.svelte";
-
 	function login() {
 		auth.userManager.signinRedirect();
 	}
@@ -19,9 +18,8 @@
 			<img src={logo} alt="Logo" />
 		</a>
 	</div>
-	OpenCore Index Advisor
 
-	<!-- <nav>
+	<nav>
 		<svg viewBox="0 0 2 3" aria-hidden="true">
 			<path d="M0,0 L1,2 C1.5,3 1.5,3 2,3 L2,0 Z" />
 		</svg>
@@ -29,27 +27,33 @@
 			<li aria-current={$page.url.pathname === '/' ? 'page' : undefined}>
 				<a href="/">Home</a>
 			</li>
-			<li aria-current={$page.url.pathname === '/about' ? 'page' : undefined}>
-				<a href="/about">About</a>
+			{#if auth.isAuthenticated == true}
+			<li aria-current={$page.url.pathname === '/user' ? 'page' : undefined}>
+				<a href="/user">Users</a>
 			</li>
-			<li aria-current={$page.url.pathname.startsWith('/sverdle') ? 'page' : undefined}>
-				<a href="/sverdle">Sverdle</a>
+			<li aria-current={$page.url.pathname.startsWith('/role') ? 'page' : undefined}>
+				<a href="/role">Roles</a>
 			</li>
+			{/if}
 		</ul>
 		<svg viewBox="0 0 2 3" aria-hidden="true">
 			<path d="M0,0 L0,3 C0.5,3 0.5,3 1,2 L2,0 Z" />
 		</svg>
-	</nav> -->
+	</nav>
 
-	<div class="corner">
-		{#if auth.isAuthenticated == true}
-			<Button onclick={logout}>Signout</Button>
-		{:else}
-			<Button onclick={login}>Signin</Button>
-		{/if}
-		<a href="https://github.com/openiap">
-			<img src={github} alt="GitHub" />
-		</a>
+	<div class="corner flex justify-end">
+		<div class="flex gap-1.5">
+			<a href="https://github.com/openiap">
+				<img src={github} alt="GitHub" />
+			</a>
+			{#if auth.isAuthenticated == true}
+			<HotkeyButton onclick={logout} data-shortcut={"Control+q,Meta+q"}>Signout</HotkeyButton>
+			{:else}
+			<HotkeyButton onclick={login}  data-shortcut={"Control+q,Meta+q"}>Signin</HotkeyButton>
+			{/if}
+	
+		</div>
+
 	</div>
 </header>
 
@@ -77,7 +81,6 @@
 		height: 2em;
 		object-fit: contain;
 	}
-	/* 
 	nav {
 		display: flex;
 		justify-content: center;
@@ -136,7 +139,7 @@
 		letter-spacing: 0.1em;
 		text-decoration: none;
 		transition: color 0.2s linear;
-	} */
+	} 
 
 	a:hover {
 		color: var(--color-theme-1);
