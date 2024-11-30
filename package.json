@@ -12,7 +12,8 @@
 	},
 	"dependencies": {
 		"@fontsource/fira-mono": "^5.1.0",
-		"oidc-client": "^1.11.5"
+		"oidc-client": "^1.11.5",
+		"sveltekit-superforms": "^2.20.1"
 	},
 	"devDependencies": {
 		"@openiap/jsapi": "github:openiap/jsapi#esm",

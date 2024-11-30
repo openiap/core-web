@@ -3,6 +3,7 @@
 
 	import ArrowUp from "lucide-svelte/icons/arrow-up";
 	import ArrowDown from "lucide-svelte/icons/arrow-down";
+	import SuperDebug from "sveltekit-superforms";
 
 	import { auth } from "$lib/stores/auth.svelte";
 	import { settings } from "$lib/stores/settings.svelte";
@@ -98,22 +99,19 @@
 	// https://www.horuskol.net/blog/2020-08-15/drag-and-drop-elements-on-touch-devices/
 
 
-
-
 	let multiSort = $state(false);
-	let Columns:TableHeader[] = $state([]);
-	function sortby(field:string) {
-		var exists = Columns.find((x) => x.field == field);
-		if (exists == null) return null;
+	function sortby(field:string): sort {
+		var exists = headers.find((x) => x.field == field);
+		if (exists == null) return "";
 		return exists.order;
 	}
 	function setSort(field:string, value:sort) {
-		if (Array.isArray(Columns) == false) Columns = [];
-		let column = Columns.find((x) => x.field == field);
+		if (Array.isArray(headers) == false) headers = [];
+		let column = headers.find((x) => x.field == field);
 		if (column == null) {
-			Columns.push({ field, order: value, show: false, name: field, headclass: "", cellclass: "" });
-			Columns = Columns;
+			console.error("column not found", field);
 		} else {
+			console.log("setting sort", field, value);
 			column.order = value;
 		}
 	}
@@ -123,15 +121,15 @@
 		e.stopPropagation();
 		const current = sortby(field);
 
-		if (!multiSort && current == null) {
-			for (let i = 0; i < Columns.length; i++) {
-				const field = Columns[i].field;
+		if (!multiSort && current == "") {
+			for (let i = 0; i < headers.length; i++) {
+				const field = headers[i].field;
 				if (field != field) {
 					setSort(field, "");
 				}
 			}
 		}
-		if (current == null) {
+		if (current == "") {
 			setSort(field, "asc");
 		} else if (current == "asc") {
 			setSort(field, "desc");
@@ -142,8 +140,8 @@
 	}
 	function getOrderBy() {
 		const orderby: { [key: string]: number } = {};
-		for (let i = 0; i < Columns.length; i++) {
-			const sortKey = Columns[i];
+		for (let i = 0; i < headers.length; i++) {
+			const sortKey = headers[i];
 			if (sortKey.order != null) {
 				orderby[sortKey.field] = sortKey.order == "desc" ? -1 : 1;
 			}
@@ -151,6 +149,12 @@
 		return orderby;
 	}
 </script>
+{#if headers == null}
+<SuperDebug data={headers} theme="vscode" />
+{/if}
+{#if headers != null && headers.length > 0}
+order: {headers[0].order}
+{/if}
 
 <Table.Root>
 	{#if entities.length === 0}
@@ -194,3 +198,7 @@
 		{/each}
 	</Table.Body>
 </Table.Root>
+
+{#if headers != null}
+<SuperDebug data={headers} theme="vscode" />
+{/if}
