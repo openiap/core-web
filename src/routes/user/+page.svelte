@@ -45,11 +45,9 @@
     <HotkeyButton onclick={reset}>Reset</HotkeyButton>
   </div>
 </div>
-hi
 <Entities {defaultcolumnnames} {collectionname} {query} {searchstring} {page} bind:selected_items={selected_items}>
   {#snippet action(item:any)}
     <Button onclick={() => deleteitem(item)}>Delete {item.name}</Button>
   {/snippet}
 </Entities>
-hi 
 <Button onclick={() => deleteitems()}>Delete {selected_items.length} items</Button>
