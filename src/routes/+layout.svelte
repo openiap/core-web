@@ -1,8 +1,8 @@
 <script lang="ts">
-	import Header from './Header.svelte';
-	import '../app.css';
+	import Header from "./Header.svelte";
+	import "../app.css";
 
-	import { auth } from '$lib/stores/auth.svelte';
+	import { auth } from "$lib/stores/auth.svelte";
 	let { children } = $props();
 
 	import { Button } from "$lib/components/ui/button/index.js";
@@ -10,55 +10,54 @@
 	import { page } from "$app/stores";
 	import { pushState } from "$app/navigation";
 
-	let name = $state("Svelte");
-
 	if ($page.url.search.includes("code=")) {
 		console.log("Code", $page.url.searchParams.get("code"));
-		try {
-			auth.isLoaded = false;
-			auth.userManager
-				.signinRedirectCallback()
-				.then(async function (user) {
-					pushState(base + "/", {});
-					await auth.loadUserAndClient();
-				})
-				.catch((error) => {
-					console.debug(error);
-				});
-		} catch (error) {}
-		//
+		// auth.loadUserAndClient().catch((error) => {
+		// 	auth.userManager
+		// 		.signinRedirectCallback()
+		// 		.then(async function (user) {
+		// 			pushState(base + "/", {});
+		// 			await auth.loadUserAndClient();
+		// 		})
+		// 		.catch((error) => {
+		// 			console.debug(error);
+		// 		});
+		// });
+		auth.userManager
+			.signinRedirectCallback()
+			.then(async function (user) {
+				pushState(base + "/", {});
+				await auth.loadUserAndClient();
+			})
+			.catch((error) => {
+				console.debug(error);
+			});
 	}
-
-	
 </script>
 
 {#if $page.url.pathname != base + "/login" && $page.url.pathname != base + "/loginscreen"}
-<div class="app">
-	<Header />
+	<div class="app">
+		<Header />
 
-	
+		<main>
+			{#if auth.isAuthenticated == true}
+				<!-- <p>Logged in</p> -->
+				{@render children()}
+			{:else}
+				<!-- <p>Not logged in</p> -->
+			{/if}
+		</main>
 
-	<main>
-		{#if auth.isAuthenticated == true}
-			<!-- <p>Logged in</p> -->
-			{@render children()}
-		{:else}
-		
-			<!-- <p>Not logged in</p> -->
-		{/if}
-	</main>
-
-	<footer>
-		<p>
-			<i><small>OpenCore © - OpenIAP ApS - 2024</small></i>
-			<!-- visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to learn about SvelteKit -->
-		</p>
-	</footer>
-</div>
+		<footer>
+			<p>
+				<i><small>OpenCore © - OpenIAP ApS - 2024</small></i>
+				<!-- visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to learn about SvelteKit -->
+			</p>
+		</footer>
+	</div>
 {:else}
 	{@render children()}
 {/if}
-
 
 <style>
 	/* .app {

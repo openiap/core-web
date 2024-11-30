@@ -1,5 +1,6 @@
 <script lang="ts" module>
 	import * as Table from "$lib/components/ui/table/index.js";
+	import { Checkbox } from "$lib/components/ui/checkbox/index.js";
 
 	import ArrowUp from "lucide-svelte/icons/arrow-up";
 	import ArrowDown from "lucide-svelte/icons/arrow-down";
@@ -21,12 +22,16 @@
 </script>
 
 <script lang="ts">
+	import Hotkeybutton from "../hotkeybutton/hotkeybutton.svelte";
+
 	let {
 		page = "entities",
 		defaultcolumnnames = ["_id", "name", "_type", "_created"],
 		query = { _type: "user" },
 		searchstring = "",
 		collectionname = "entities",
+		selected_items = $bindable([]),
+		action,
 		...rest
 	} = $props();
 	let entities: any[] = $state([]);
@@ -36,19 +41,20 @@
 	let hide_empty_on_sort = $state(true);
 	let errormessage = $state("");
 
+	let is_multi_selecting = $state(false);
+
 	async function GetData() {
-		console.log("getdata")
 		let orderby = getOrderBy();
 		let query = createQuery();
 		entities = await auth.client.Query<any>({
 			collectionname: collectionname,
 			query: query,
 			orderby: orderby,
+			top: 5,
 		});
 	}
-	
+
 	auth.onLogin(async () => {
-		
 		$effect(() => {
 			settings.setvalue(
 				page,
@@ -290,6 +296,31 @@
 	 * ******************************************
 	 * Searching data
 	 */
+
+	/**
+	 * Multi Select
+	 * ******************************************
+	 */
+	function ToogleAll() {
+		entities.map((x) => {
+			if (selected_items.indexOf(x._id) > -1) {
+				selected_items = selected_items.filter((y) => y != x._id);
+			} else {
+				selected_items = [...selected_items, x._id];
+			}
+		});
+	}
+	function ToggleSelect(x: any) {
+		if (selected_items.indexOf(x._id) > -1) {
+			selected_items = selected_items.filter((y) => y != x._id);
+		} else {
+			selected_items = [...selected_items, x._id];
+		}
+	}
+	/**
+	 * ******************************************
+	 * Multi Select
+	 */
 </script>
 
 <!-- error message-->
@@ -303,6 +334,14 @@
 	{/if}
 	<Table.Header>
 		<Table.Row>
+			{#if is_multi_selecting}
+				<Table.Head class="w-8" role="cell"
+					><Checkbox
+						checked={is_multi_selecting}
+						onclick={ToogleAll}
+					/></Table.Head
+				>
+			{/if}
 			{#each headers as head}
 				{#if head.show}
 					<Table.Head
@@ -325,11 +364,27 @@
 					</Table.Head>
 				{/if}
 			{/each}
+			{#if action && is_multi_selecting == false}
+				<Table.Head></Table.Head>
+			{/if}
 		</Table.Row>
 	</Table.Header>
 	<Table.Body>
 		{#each entities as item}
-			<Table.Row>
+			<Table.Row
+			onclick={() => {
+				if(is_multi_selecting) {
+					ToggleSelect(item);
+				}
+			}}
+			>
+				{#if is_multi_selecting}
+					<Table.Cell class="w-8"
+						><Checkbox
+							checked={selected_items.indexOf(item._id) > -1}
+						/></Table.Cell
+					>
+				{/if}
 				{#each headers as head}
 					{#if head.show}
 						<Table.Cell class={head.cellclass}
@@ -337,10 +392,23 @@
 						>
 					{/if}
 				{/each}
+				{#if action && is_multi_selecting == false}
+					<Table.Cell>{@render action(item)}</Table.Cell>
+				{/if}
 			</Table.Row>
 		{/each}
 	</Table.Body>
 </Table.Root>
+
+<Hotkeybutton
+	data-shortcut="Control+a,Meta+a"
+	onclick={() => {
+		is_multi_selecting = !is_multi_selecting;
+		selected_items = entities.map((x) => x._id);
+	}}
+	class="hidden"
+	hidden={true}
+/>
 
 {#if headers != null && headers.length > 0}
 	<!-- <SuperDebug data={headers} theme="vscode" /> -->

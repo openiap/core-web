@@ -1,36 +1,10 @@
 <script lang="ts">
-  import { base } from "$app/paths";
-  import { page } from "$app/stores";
-  import { pushState } from "$app/navigation";
   import { auth } from "$lib/stores/auth.svelte";
 
   let name = $state("Svelte");
-
-  let code = $page.url.search.includes("code=")
-    ? $page.url.searchParams.get("code")
-    : null;
-  // if (code != null && code != "") {
-
-  if ($page.url.search.includes("code=")) {
-    console.log("code found", code);
-
-    auth.loadUserAndClient().catch((error) => {
-      
-      auth.userManager
-      .signinRedirectCallback()
-      .then(async function (user) {
-        pushState(base + "/", {});
-        await auth.loadUserAndClient();
-      })
-      .catch((error) => {
-        console.debug(error);
-      });
-
-      
-    });
-
-    // auth.isLoaded = false;
-  }
+  auth.onLogin(() => {
+    name = auth.profile.name as any;
+  });
 </script>
 
 <svelte:head>

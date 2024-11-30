@@ -35,20 +35,24 @@ class authState {
         }
         this.isLoaded = true;
     }
+    loginCallbacks: any[]= [];
     onLogin(callback: (user: pkg.Profile) => void) {
-        let called = false;
-        if (callback == null) return;
-        console.log("onLogin: Checking if loaded", $state.snapshot(this.isLoaded));
-        if (this.isLoaded) {
+        if (callback == null) {
+            return;
+        }
+        if (this.isLoaded == true) {
             callback(this.profile);
             return;
         }
+        this.loginCallbacks.push(callback);
         $effect(() => {
-            console.log("onLogin: Checking if loaded", $state.snapshot(this.isLoaded));
-            if (this.isLoaded && called == false) {
-                called = true;
-                callback(this.profile);
+            if (this.isLoaded == true) {
+                for (let i = this.loginCallbacks.length - 1; i >= 0; i--) {
+                    this.loginCallbacks[i](this.profile);
+                    this.loginCallbacks.splice(i, 1);
+                }
             }
+
         });
     }
 }
