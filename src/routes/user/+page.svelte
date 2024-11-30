@@ -26,7 +26,7 @@
   <div class="flex gap-1.5">
     <HotkeyInput type="text" id="searchstring" placeholder="Searchstring or JSON query" bind:value={searchstring} 
     data-shortcut={"Control+f,Meta+f"} />
-    <Button onclick={reset}>Reset</Button>
+    <HotkeyInput onclick={reset} data-shortcut={"Control+r,Meta+r"}>Reset</HotkeyInput>
   </div>
 </div>
 <Entities defaultcolumnnames2={defaultcolumnnames} collectionname="users" {query} {searchstring}>
