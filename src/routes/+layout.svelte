@@ -2,8 +2,7 @@
 	import Header from './Header.svelte';
 	import '../app.css';
 
-	import { page } from "$app/stores";
-	import { base } from "$app/paths";
+	import { auth } from '$lib/stores/auth.svelte';
 	let { children } = $props();
 
 	import { Button } from "$lib/components/ui/button/index.js";

@@ -37,6 +37,7 @@
 	let errormessage = $state("");
 
 	async function GetData() {
+		console.log("getdata")
 		let orderby = getOrderBy();
 		let query = createQuery();
 		entities = await auth.client.Query<any>({
@@ -45,7 +46,9 @@
 			orderby: orderby,
 		});
 	}
+	
 	auth.onLogin(async () => {
+		
 		$effect(() => {
 			settings.setvalue(
 				page,

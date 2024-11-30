@@ -6,19 +6,30 @@
 
   let name = $state("Svelte");
 
+  let code = $page.url.search.includes("code=")
+    ? $page.url.searchParams.get("code")
+    : null;
+  // if (code != null && code != "") {
+
   if ($page.url.search.includes("code=")) {
-    try {
-      auth.isLoaded = false;
+    console.log("code found", code);
+
+    auth.loadUserAndClient().catch((error) => {
+      
       auth.userManager
-        .signinRedirectCallback()
-        .then(async function (user) {
-          pushState(base + "/", {});
-          await auth.loadUserAndClient();
-        })
-        .catch((error) => {
-          console.debug(error);
-        });
-    } catch (error) {}
+      .signinRedirectCallback()
+      .then(async function (user) {
+        pushState(base + "/", {});
+        await auth.loadUserAndClient();
+      })
+      .catch((error) => {
+        console.debug(error);
+      });
+
+      
+    });
+
+    // auth.isLoaded = false;
   }
 </script>
 

@@ -12,8 +12,8 @@
     content="Get performance data and generates index suggestions for better database performance"
   />
 </svelte:head>
-<div class="sm:grid sm:grid-cols-[min-content,1fr] min-h-screen">
-  <div class="md:p-20 lg:p-40">
+<div class="grid md:grid-cols-2 min-h-screen items-center justify-center">
+  <div class="md:p-20 lg:p-40 md:grid-span-1">
     <Card.Root class="mx-auto max-w-sm">
       <Card.Header>
         <Card.Title class="text-2xl">Login</Card.Title>
@@ -44,7 +44,7 @@
       </Card.Content>
     </Card.Root>
   </div>
-  <div class="hidden sm:block sm:flex-1 bg-white dark:bg-black">
+  <div class="hidden md:block sm:flex-1 bg-white dark:bg-black">
 
   </div>
 </div>
