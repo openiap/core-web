@@ -16,10 +16,8 @@
 
 	onMount(() => {
 		$effect(() => {
-			console.log("Ref", ref);
 			if(ref == null) return;
 			if(ref.dataset && ref.dataset.shortcut) {
-				console.log("Ref.dataset.shortcut", ref.dataset.shortcut);
 				install(ref, ref.dataset.shortcut)
 			}
 
@@ -43,11 +41,9 @@
 	onkeyup={e => { 
 		if(e.key == "Escape") {
 		  value = "";
-		  // @ts-ignore
-		  e.target.blur();
+		  (e.target as HTMLInputElement)?.blur();
 		} else if (e.key == "Enter") {
-		  // @ts-ignore
-		  e.target.blur();
+			(e.target as HTMLInputElement)?.blur();
 		}
 	  }}
 	{...restProps}

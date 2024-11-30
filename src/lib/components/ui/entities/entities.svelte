@@ -7,7 +7,7 @@
 
 	import { auth } from "$lib/stores/auth.svelte";
 	import { settings } from "$lib/stores/settings.svelte";
-    import { get } from "svelte/store";
+	import { get } from "svelte/store";
 	export type sort = "asc" | "desc" | "";
 	export class TableHeader {
 		name: string = "";
@@ -38,7 +38,6 @@
 	async function GetData() {
 		let orderby = getOrderBy();
 		let query = createQuery();
-		// entities = [];
 		entities = await auth.client.Query<any>({
 			collectionname: collectionname,
 			query: query,
@@ -47,7 +46,11 @@
 	}
 	auth.onLogin(async () => {
 		$effect(() => {
-			settings.setvalue(page, "searchstring", $state.snapshot(searchstring));
+			settings.setvalue(
+				page,
+				"searchstring",
+				$state.snapshot(searchstring),
+			);
 			GetData();
 		});
 		if (headers.length == 0) {
@@ -81,8 +84,7 @@
 		await GetData();
 	});
 
-	
-  	/**
+	/**
 	 * Ordering columns
 	 * ******************************************
 	 */
@@ -119,7 +121,7 @@
 	}
 	// finish adding move logic for touch
 	// https://www.horuskol.net/blog/2020-08-15/drag-and-drop-elements-on-touch-devices/
-  	/**
+	/**
 	 * ******************************************
 	 * Ordering columns
 	 */
@@ -128,23 +130,23 @@
 	 * Sorting data
 	 * ******************************************
 	 */
-	function sortby(field:string): sort {
+	function sortby(field: string): sort {
 		var exists = headers.find((x) => x.field == field);
 		if (exists == null) {
 			return "";
 		}
 		return exists.order;
 	}
-	function setSort(field:string, value:sort) {
+	function setSort(field: string, value: sort) {
 		if (Array.isArray(headers) == false) headers = [];
 		let column = headers.find((x) => x.field == field);
 		let index = headers.findIndex((x) => x.field == field);
 		if (column != null) {
-			headers[index] = { ...column, order: value };			
+			headers[index] = { ...column, order: value };
 		}
 	}
 
-	function toggleSort(e:any, field:string) {
+	function toggleSort(e: any, field: string) {
 		e.preventDefault();
 		e.stopPropagation();
 		const current = sortby(field);
@@ -180,83 +182,86 @@
 	 * Sorting data
 	 */
 
-
 	/**
 	 * Searching data
 	 * ******************************************
 	 */
-	function parseJson(txt: string, reviver:any, context:any) {
-    context = context || 20;
-    try {
-      return JSON.parse(txt, reviver);
-    } catch (e: any) {
-      if (typeof txt !== "string") {
-		// @ts-ignore
-        const isEmptyArray = Array.isArray(txt) && txt.length === 0;
-        const errorMessage =
-          "Cannot parse " + (isEmptyArray ? "an empty array" : String(txt));
-        errormessage = errorMessage;
-        throw new TypeError(errorMessage);
-      }
-      const syntaxErr = e.message.match(/^Unexpected token.*position\s+(\d+)/i);
-      const errIdx = syntaxErr
-        ? +syntaxErr[1]
-        : e.message.match(/^Unexpected end of JSON.*/i)
-          ? txt.length - 1
-          : null;
-      if (errIdx != null) {
-        const start = errIdx <= context ? 0 : errIdx - context;
-        const end =
-          errIdx + context >= txt.length ? txt.length : errIdx + context;
-        e.message += ` while parsing near "${
-          start === 0 ? "" : "..."
-        }${txt.slice(start, end)}${end === txt.length ? "" : "..."}"`;
-      } else {
-        e.message += ` while parsing "${txt.slice(0, context * 2)}"`;
-      }
-      throw e;
-    }
-  }
-  	function safeEval(jsStr:string) {
-    try {
-      return Function(`"use strict";return (` + jsStr + `)`)();
-    } catch (e: any) {
-      errormessage = e.message;
-      return null;
-    }
-  }
-  function createQuery() {
-    let q:any = { ...query };
-    if (searchstring == null || searchstring == "") {
-      return q;
-    }
-    if (searchstring.indexOf("{") == 0) {
-      if (searchstring.lastIndexOf("}") == searchstring.length - 1) {
-        try {
-          q = parseJson(searchstring, null, null);
-        } catch (e:any) {
-          try {
-            q = safeEval(searchstring);
-          } catch (error2:any) {
-            errormessage = e.message;
-            return null;
-          }
-        }
-      } else {
-        errormessage = "Incomplete query object";
-      }
-    } else {
-      // q["name"] = new RegExp([searchstring.substring(1)].join(""), "i")
-      q["name"] = { $regex: searchstring, $options: "i" };
-    }
-    return q;
-  }
-  	/**
+	function parseJson(txt: string, reviver: any, context: any) {
+		context = context || 20;
+		try {
+			return JSON.parse(txt, reviver);
+		} catch (e: any) {
+			if (typeof txt !== "string") {
+				const isEmptyArray =
+					Array.isArray(txt) && (txt as any).length === 0;
+				const errorMessage =
+					"Cannot parse " +
+					(isEmptyArray ? "an empty array" : String(txt));
+				errormessage = errorMessage;
+				throw new TypeError(errorMessage);
+			}
+			const syntaxErr = e.message.match(
+				/^Unexpected token.*position\s+(\d+)/i,
+			);
+			const errIdx = syntaxErr
+				? +syntaxErr[1]
+				: e.message.match(/^Unexpected end of JSON.*/i)
+					? txt.length - 1
+					: null;
+			if (errIdx != null) {
+				const start = errIdx <= context ? 0 : errIdx - context;
+				const end =
+					errIdx + context >= txt.length
+						? txt.length
+						: errIdx + context;
+				e.message += ` while parsing near "${
+					start === 0 ? "" : "..."
+				}${txt.slice(start, end)}${end === txt.length ? "" : "..."}"`;
+			} else {
+				e.message += ` while parsing "${txt.slice(0, context * 2)}"`;
+			}
+			throw e;
+		}
+	}
+	function safeEval(jsStr: string) {
+		try {
+			return Function(`"use strict";return (` + jsStr + `)`)();
+		} catch (e: any) {
+			errormessage = e.message;
+			return null;
+		}
+	}
+	function createQuery() {
+		let q: any = { ...query };
+		if (searchstring == null || searchstring == "") {
+			return q;
+		}
+		if (searchstring.indexOf("{") == 0) {
+			if (searchstring.lastIndexOf("}") == searchstring.length - 1) {
+				try {
+					q = parseJson(searchstring, null, null);
+				} catch (e: any) {
+					try {
+						q = safeEval(searchstring);
+					} catch (error2: any) {
+						errormessage = e.message;
+						return null;
+					}
+				}
+			} else {
+				errormessage = "Incomplete query object";
+			}
+		} else {
+			q["name"] = { $regex: searchstring, $options: "i" };
+		}
+		return q;
+	}
+	/**
 	 * ******************************************
 	 * Searching data
 	 */
-
 </script>
+
 <!-- error message-->
 <div class="text-red-500">{errormessage}</div>
 
@@ -304,5 +309,5 @@
 </Table.Root>
 
 {#if headers != null}
-<SuperDebug data={headers} theme="vscode" />
+	<SuperDebug data={headers} theme="vscode" />
 {/if}
