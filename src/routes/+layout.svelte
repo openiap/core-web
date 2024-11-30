@@ -14,6 +14,7 @@
 
 	<footer>
 		<p>
+			<i><small>OpenCore © - OpenIAP ApS - 2024</small></i>
 			<!-- visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to learn about SvelteKit -->
 		</p>
 	</footer>
@@ -26,13 +27,19 @@
 		min-height: 100vh;
 	} */
 
-	main {
+	/* main {
 		flex: 1;
 		display: flex;
 		flex-direction: column;
 		padding: 1rem;
 		width: 100%;
 		max-width: 64rem;
+		margin: 0 auto;
+		box-sizing: border-box;
+	} */
+	main {
+		padding: 1rem;
+		width: 100%;
 		margin: 0 auto;
 		box-sizing: border-box;
 	}

@@ -3,15 +3,20 @@
 	<meta name="description" content="Get performance data and generates index suggestions for better database performance" />
 </svelte:head>
 <script lang="ts">
+  import { Entities } from "$lib/components/ui/entities/index.js";
   import { Button } from "$lib/components/ui/button/index.js";
-  import { auth } from "$lib/stores/auth.svelte";
-  let users:any[] = $state([]);
-  auth.onLogin(async () => {
-      users = await auth.client.Query<any>({ collectionname: "users", query: {"_type": "user"} });
-      console.log($state.snapshot(users));
-  });
 
+  import { goto } from "$app/navigation";
+  import { base } from "$app/paths";
+  import { settings } from "$lib/stores/settings.svelte";
+
+  function reset() {
+    settings.clearall();
+    goto(base + `/`);
+  }
+
+  let defaultcolumnnames = ['name', 'status', 'method', 'amount'];
 </script>
-{#each users as user}
-  <p>{user.name}</p>
-{/each}
+<Button onclick={reset}>Reset</Button>
+<Entities defaultcolumnnames2={defaultcolumnnames}>
+</Entities>

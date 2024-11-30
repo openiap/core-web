@@ -3,6 +3,20 @@ class settingsState {
     isAuthenticated: boolean = $state(false);
     constructor() {
     }
+    clearall() {
+        for (const key in settingsCache) {
+            if (settingsCache.hasOwnProperty(key)) {
+                delete settingsCache[key];
+                localStorage && localStorage.removeItem(key);
+            }
+        }
+        var keys = Object.keys(localStorage);
+        for (var i = 0; i < keys.length; i++) {
+            if (keys[i].startsWith("sveltekit-")) {
+                localStorage.removeItem(keys[i]);
+            }
+        }
+    }
     clearvalue(page: string, key: string) {
         const fullKey = `${page}-${key}`;
         delete settingsCache[fullKey];
