@@ -13,17 +13,20 @@
     goto(base + `/`);
   }
 
-  let defaultcolumnnames = ['name', 'status', 'method', 'amount'];
+  let defaultcolumnnames = ['_id', 'name', 'email', 'lastseen', '_created'];
+  let collectionname = "users";
+  let page = "users";
   let query = { _type: "user" };
   let searchstring = $state("");
+  searchstring = settings.getvalue(page, "searchstring", "");
 </script>
 <div class="flex w-full max-w-sm flex-col gap-1.5">
   <Label for="email">Search</Label>
   <div class="flex gap-1.5">
     <HotkeyInput type="text" id="searchstring" placeholder="Searchstring or JSON query" bind:value={searchstring} 
     data-shortcut={"Control+f,Meta+f"} />
-    <HotkeyButton onclick={reset} data-shortcut={"Control+r,Meta+r"}>Reset</HotkeyButton>
+    <HotkeyButton onclick={reset}>Reset</HotkeyButton>
   </div>
 </div>
-<Entities defaultcolumnnames2={defaultcolumnnames} collectionname="users" {query} {searchstring}>
+<Entities defaultcolumnnames={defaultcolumnnames} {collectionname} {query} {searchstring} {page}>
 </Entities>

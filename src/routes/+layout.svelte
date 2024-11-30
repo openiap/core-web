@@ -1,8 +1,9 @@
 <script lang="ts">
-	import Header from "./Header.svelte";
-	import "../app.css";
-	import { auth } from "$lib/stores/auth.svelte";
+	import Header from './Header.svelte';
+	import '../app.css';
 
+	import { page } from "$app/stores";
+	import { base } from "$app/paths";
 	let { children } = $props();
 
 	import { Button } from "$lib/components/ui/button/index.js";
@@ -32,6 +33,7 @@
 	
 </script>
 
+{#if $page.url.pathname != base + "/login" && $page.url.pathname != base + "/loginscreen"}
 <div class="app">
 	<Header />
 
@@ -54,6 +56,10 @@
 		</p>
 	</footer>
 </div>
+{:else}
+	{@render children()}
+{/if}
+
 
 <style>
 	/* .app {

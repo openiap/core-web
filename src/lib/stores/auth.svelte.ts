@@ -35,16 +35,16 @@ class authState {
         }
         this.isLoaded = true;
     }
-    onLogin (callback: (user: pkg.Profile) => void) {
+    onLogin(callback: (user: pkg.Profile) => void) {
         let called = false;
-        if(callback == null) return;
-        if(this.isLoaded) {
+        if (callback == null) return;
+        if (this.isLoaded) {
             callback(this.profile);
             return;
         }
         $effect(() => {
             console.log("onLogin: Checking if loaded");
-            if(this.isLoaded && called == false) {
+            if (this.isLoaded && called == false) {
                 called = true;
                 callback(this.profile);
             }
