@@ -8,7 +8,6 @@
   import { HotkeyInput } from "$lib/components/ui/hotkeyinput/index.js";
   import { Label } from "$lib/components/ui/label/index.js";
 
-
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import { settings } from "$lib/stores/settings.svelte";
