@@ -22,40 +22,92 @@
 </script>
 
 <script lang="ts">
+	import { HotkeyButton } from "../hotkeybutton";
 	import Hotkeybutton from "../hotkeybutton/hotkeybutton.svelte";
 
 	let {
 		page = "entities",
 		defaultcolumnnames = ["_id", "name", "_type", "_created"],
 		query = { _type: "user" },
-		searchstring = "",
+		searchstring = $bindable(""),
 		collectionname = "entities",
 		selected_items = $bindable([]),
-		action,
+		caption = "",
+		delete_selected = (items: string[]) => {},
+		multi_select = true,
+		action = null,
 		...rest
 	} = $props();
+
+	selected_items = settings.getvalue(page, "selected_items", []);
+	searchstring = settings.getvalue(page, "searchstring", "");
+
+	let _searchstring = $state.snapshot(searchstring);
 	let entities: any[] = $state([]);
 	let headers: TableHeader[] = $state([]);
 	headers = settings.getvalue(page, "headers", []);
-	let multiSort = $state(true);
+	let multi_sort = $state(true);
 	let hide_empty_on_sort = $state(true);
 	let errormessage = $state("");
+	let page_index = $state(0);
+	page_index = settings.getvalue(page, "page_index", 0);
+	let total_count = $state(99999);
+	
 
-	let is_multi_selecting = $state(false);
+	$effect(() => {
+		console.log("effect", selected_items.length, $state.snapshot(page_index));
+		if (selected_items.length > 0) {
+			settings.setvalue(page, "selected_items", selected_items);
+		} else {
+			settings.clearvalue(page, "selected_items");
+		}
+		if(page_index > 0){
+			settings.setvalue(page, "page_index", page_index);
+		} else {
+			settings.clearvalue(page, "page_index");
+		}
+	});
 
 	async function GetData() {
 		let orderby = getOrderBy();
 		let query = createQuery();
+		let top = 5;
+		let skip = page_index * top;
 		entities = await auth.client.Query<any>({
 			collectionname: collectionname,
 			query: query,
 			orderby: orderby,
+			skip: skip,
 			top: 5,
 		});
+		if(entities.length > 0){
+			total_count = await auth.client.Count({collectionname, query});
+		}
+	}
+
+	function SetHeaders() {
+		for (let i = 0; i < headers.length; i++) {
+			let header = headers[i];
+			if (i == 0) {
+				header.headclass = "w-[100px]";
+				header.cellclass = "font-medium";
+			} else if (i == defaultcolumnnames.length - 1) {
+				header.headclass = "text-right";
+				header.cellclass = "text-right";
+			} else {
+				header.headclass = "";
+				header.cellclass = "";
+			}
+		}
 	}
 
 	auth.onLogin(async () => {
 		$effect(() => {
+			if(_searchstring != searchstring){
+				_searchstring = searchstring;
+				page_index = 0;
+				total_count = 99999;
+			}
 			settings.setvalue(
 				page,
 				"searchstring",
@@ -63,6 +115,7 @@
 			);
 			GetData();
 		});
+
 		if (headers.length == 0) {
 			for (let i = 0; i < defaultcolumnnames.length; i++) {
 				let header = new TableHeader();
@@ -96,6 +149,7 @@
 				headers.push(header);
 			}
 		}
+		SetHeaders();
 		await GetData();
 	});
 
@@ -165,7 +219,7 @@
 		e.preventDefault();
 		e.stopPropagation();
 		const current = sortby(field);
-		if (!multiSort) {
+		if (!multi_sort) {
 			for (let i = 0; i < headers.length; i++) {
 				const _field = headers[i].field;
 				if (_field != field) {
@@ -317,6 +371,9 @@
 			selected_items = [...selected_items, x._id];
 		}
 	}
+	let is_all_selected = $derived(
+		() => entities.length > 0 && entities.map((x) => x._id).every((x) => selected_items.indexOf(x) > -1),
+	);
 	/**
 	 * ******************************************
 	 * Multi Select
@@ -329,15 +386,31 @@
 <Table.Root>
 	{#if entities.length === 0}
 		<Table.Caption>No entities found.</Table.Caption>
+	{:else if caption != ""}
+		<Table.Caption>{caption}</Table.Caption>
 	{:else}
-		<Table.Caption>A list of your recent invoices.</Table.Caption>
+		<Table.Caption>
+			{#if entities.length == total_count }
+				showing {total_count} items
+			{:else}
+				showing item {page_index * 5 + 1}
+				{#if entities.length > 1}
+					 to {page_index * 5 + entities.length}
+				{/if}
+				of {total_count}
+			{/if}
+			{#if selected_items.length > 0}
+			with {selected_items.length} selected (<button onclick={() => selected_items = []}>clear</button>)
+			{/if}.
+	
+		</Table.Caption>
 	{/if}
 	<Table.Header>
 		<Table.Row>
-			{#if is_multi_selecting}
+			{#if multi_select}
 				<Table.Head class="w-8" role="cell"
 					><Checkbox
-						checked={is_multi_selecting}
+						checked={is_all_selected()}
 						onclick={ToogleAll}
 					/></Table.Head
 				>
@@ -364,21 +437,19 @@
 					</Table.Head>
 				{/if}
 			{/each}
-			{#if action && is_multi_selecting == false}
-				<Table.Head></Table.Head>
+			{#if action}
+				<Table.Head>Action</Table.Head>
 			{/if}
 		</Table.Row>
 	</Table.Header>
 	<Table.Body>
 		{#each entities as item}
 			<Table.Row
-			onclick={() => {
-				if(is_multi_selecting) {
+				onclick={() => {
 					ToggleSelect(item);
-				}
-			}}
+				}}
 			>
-				{#if is_multi_selecting}
+				{#if multi_select}
 					<Table.Cell class="w-8"
 						><Checkbox
 							checked={selected_items.indexOf(item._id) > -1}
@@ -392,7 +463,7 @@
 						>
 					{/if}
 				{/each}
-				{#if action && is_multi_selecting == false}
+				{#if action}
 					<Table.Cell>{@render action(item)}</Table.Cell>
 				{/if}
 			</Table.Row>
@@ -403,12 +474,49 @@
 <Hotkeybutton
 	data-shortcut="Control+a,Meta+a"
 	onclick={() => {
-		is_multi_selecting = !is_multi_selecting;
-		selected_items = entities.map((x) => x._id);
+		if (!is_all_selected()) {
+			entities.map((x) => {
+				if(selected_items.indexOf(x._id) == -1)	{
+					selected_items = [...selected_items, x._id];
+				}
+			});
+		} else {
+			entities.map((x) => {
+				if(selected_items.indexOf(x._id) >= -1)	{
+					selected_items = selected_items.filter((y) => y != x._id);
+				}
+			});
+
+		}
 	}}
 	class="hidden"
 	hidden={true}
 />
+<Hotkeybutton
+	data-shortcut="ArrowLeft"
+	onclick={() => {
+		page_index = page_index - 1;
+	}}
+	disabled={page_index <= 0}>Previous</Hotkeybutton
+>
+<Hotkeybutton
+	data-shortcut="ArrowRight"
+	onclick={() => {
+		page_index = page_index + 1;
+	}}
+	disabled={entities.length < 5 || page_index * 5 >= total_count}>
+	Next</Hotkeybutton
+>
+{#if selected_items.length > 0}
+	<HotkeyButton
+		onclick={() => delete_selected($state.snapshot(selected_items))}
+		data-shortcut="Delete"
+		size="sm"
+		variant="destructive"
+	>
+		Delete {selected_items.length} items</HotkeyButton
+	>
+{/if}
 
 {#if headers != null && headers.length > 0}
 	<!-- <SuperDebug data={headers} theme="vscode" /> -->

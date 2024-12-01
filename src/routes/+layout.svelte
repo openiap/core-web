@@ -28,7 +28,15 @@
 				console.debug(error);
 			});
 	}
+	let pagename = $derived(()=> $page.url.pathname.replace(base, "").replace("/", ""));
 </script>
+<svelte:head>
+  <title>OpenCore {pagename()}</title>
+  <meta
+    name="description"
+    content="Get performance data and generates index suggestions for better database performance"
+  />
+</svelte:head>
 
 {#if $page.url.pathname != base + "/login" && $page.url.pathname != base + "/loginscreen"}
 	<div class="app">

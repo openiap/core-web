@@ -3,12 +3,13 @@
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { HotkeyInput } from "$lib/components/ui/hotkeyinput/index.js";
   import { Label } from "$lib/components/ui/label/index.js";
+  import { X } from "lucide-svelte";
 
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import { settings } from "$lib/stores/settings.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
-  
+
   function reset() {
     settings.clearall();
     goto(base + `/`);
@@ -19,14 +20,13 @@
   let page = "users";
   let query = { _type: "user" };
   let searchstring = $state("");
-  searchstring = settings.getvalue(page, "searchstring", "");
-
   let selected_items = $state([]);
+
   function deleteitem(item: any) {
-    console. log("deleteitem", item);
+    console.log("deleteitem", item);
   }
-  function deleteitems() {
-    console. log("deleteitems", selected_items);
+  function deleteitems(ids: string[]) {
+    console.log("deleteitems", ids);
   }
 </script>
 
@@ -47,14 +47,9 @@
   {defaultcolumnnames}
   {collectionname}
   {query}
-  {searchstring}
+  bind:searchstring
   {page}
+  delete_selected={deleteitems}
   bind:selected_items
 >
-  {#snippet action(item: any)}
-    <Button onclick={() => deleteitem(item)}>Delete {item.name}</Button>
-  {/snippet}
 </Entities>
-<Button onclick={() => deleteitems()}
-  >Delete {selected_items.length} items</Button
->
