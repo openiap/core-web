@@ -31,7 +31,7 @@
           <div class="grid gap-4">
             <div class="grid gap-2">
               <Label for="email">Email</Label>
-              <Input id="username" type="text" placeholder="m@example.com" required autocomplete="username" />
+              <Input id="username" name="username" type="text" placeholder="m@example.com" required autocomplete="username" />
             </div>
             <div class="grid gap-2">
               <div class="flex items-center">
@@ -40,7 +40,7 @@
                   Forgot your password?
                 </a>
               </div>
-              <Input id="password" type="password" required autocomplete="current-password" />
+              <Input id="password" name="password" type="password" required autocomplete="current-password" />
             </div>
             <Button type="submit" class="w-full">Login</Button>
             {#each auth.config.loginproviders.filter((x:any) => x.provider != "local") as lp }
