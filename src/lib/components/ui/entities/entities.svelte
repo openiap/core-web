@@ -6,6 +6,7 @@
 	import ArrowDown from "lucide-svelte/icons/arrow-down";
 	import SuperDebug from "sveltekit-superforms";
 
+	import { onMount } from "svelte";
 	import { auth } from "$lib/stores/auth.svelte";
 	import { settings } from "$lib/stores/settings.svelte";
 	import { get } from "svelte/store";
@@ -23,7 +24,6 @@
 
 <script lang="ts">
 	import { HotkeyButton } from "../hotkeybutton";
-	import Hotkeybutton from "../hotkeybutton/hotkeybutton.svelte";
 
 	let {
 		page = "entities",
@@ -39,34 +39,20 @@
 		...rest
 	} = $props();
 
-	selected_items = settings.getvalue(page, "selected_items", []);
-	searchstring = settings.getvalue(page, "searchstring", "");
-
 	let _searchstring = $state.snapshot(searchstring);
+	let _collectionname = $state.snapshot(collectionname);
 	let entities: any[] = $state([]);
 	let headers: TableHeader[] = $state([]);
-	headers = settings.getvalue(page, "headers", []);
 	let multi_sort = $state(true);
 	let hide_empty_on_sort = $state(true);
 	let errormessage = $state("");
 	let page_index = $state(0);
-	page_index = settings.getvalue(page, "page_index", 0);
 	let total_count = $state(99999);
-	
 
-	$effect(() => {
-		console.log("effect", selected_items.length, $state.snapshot(page_index));
-		if (selected_items.length > 0) {
-			settings.setvalue(page, "selected_items", selected_items);
-		} else {
-			settings.clearvalue(page, "selected_items");
-		}
-		if(page_index > 0){
-			settings.setvalue(page, "page_index", page_index);
-		} else {
-			settings.clearvalue(page, "page_index");
-		}
-	});
+	selected_items = settings.getvalue(page, "selected_items", []);
+	searchstring = settings.getvalue(page, "searchstring", "");
+	headers = settings.getvalue(page, "headers", []);
+	page_index = settings.getvalue(page, "page_index", 0);
 
 	async function GetData() {
 		let orderby = getOrderBy();
@@ -80,32 +66,52 @@
 			skip: skip,
 			top: 5,
 		});
-		if(entities.length > 0){
-			total_count = await auth.client.Count({collectionname, query});
+		if (entities.length > 0) {
+			total_count = await auth.client.Count({ collectionname, query });
 		}
 	}
 
 	function SetHeaders() {
+		let foundfirst = false;
 		for (let i = 0; i < headers.length; i++) {
 			let header = headers[i];
-			if (i == 0) {
-				header.headclass = "w-[100px]";
-				header.cellclass = "font-medium";
-			} else if (i == defaultcolumnnames.length - 1) {
-				header.headclass = "text-right";
-				header.cellclass = "text-right";
-			} else {
+			if (foundfirst == false && header.show == true) {
+				foundfirst = true;
 				header.headclass = "";
-				header.cellclass = "";
+				header.cellclass = "font-medium";
+			// } else if (i == defaultcolumnnames.length - 1) {
+			// 	header.headclass = "w-[200px]";
+			// 	header.cellclass = "text-right";
+			} else {
+				header.headclass = "w-[100px]";
+				header.cellclass = "truncate overflow-ellipsis";
 			}
 		}
 	}
 
 	auth.onLogin(async () => {
 		$effect(() => {
-			if(_searchstring != searchstring){
+			// console.log("effect2", _searchstring, $state.snapshot(searchstring));
+			if (_searchstring != searchstring) {
 				_searchstring = searchstring;
+				console.log("searchstring changed", searchstring);
 				page_index = 0;
+				total_count = 99999;
+			}
+			if (_collectionname != collectionname) {
+				_collectionname = collectionname;
+				page_index = settings.getvalue(page, "page_index", 0);
+				console.log(
+					"collectionname changed",
+					collectionname,
+					"page",
+					page,
+					"page_index",
+					page_index,
+				);
+				_searchstring = settings.getvalue(page, "searchstring", "");
+				searchstring = settings.getvalue(page, "searchstring", "");
+				selected_items = settings.getvalue(page, "selected_items", []);
 				total_count = 99999;
 			}
 			settings.setvalue(
@@ -113,6 +119,17 @@
 				"searchstring",
 				$state.snapshot(searchstring),
 			);
+			if (selected_items.length > 0) {
+				settings.setvalue(page, "selected_items", selected_items);
+			} else {
+				settings.clearvalue(page, "selected_items");
+			}
+			if (page_index > 0) {
+				settings.setvalue(page, "page_index", page_index);
+			} else {
+				settings.clearvalue(page, "page_index");
+			}
+			SetHeaders();
 			GetData();
 		});
 
@@ -372,7 +389,11 @@
 		}
 	}
 	let is_all_selected = $derived(
-		() => entities.length > 0 && entities.map((x) => x._id).every((x) => selected_items.indexOf(x) > -1),
+		() =>
+			entities.length > 0 &&
+			entities
+				.map((x) => x._id)
+				.every((x) => selected_items.indexOf(x) > -1),
 	);
 	/**
 	 * ******************************************
@@ -390,19 +411,20 @@
 		<Table.Caption>{caption}</Table.Caption>
 	{:else}
 		<Table.Caption>
-			{#if entities.length == total_count }
+			{#if entities.length == total_count}
 				showing {total_count} items
 			{:else}
 				showing item {page_index * 5 + 1}
 				{#if entities.length > 1}
-					 to {page_index * 5 + entities.length}
+					to {page_index * 5 + entities.length}
 				{/if}
 				of {total_count}
 			{/if}
 			{#if selected_items.length > 0}
-			with {selected_items.length} selected (<button onclick={() => selected_items = []}>clear</button>)
+				with {selected_items.length} selected (<button
+					onclick={() => (selected_items = [])}>clear</button
+				>)
 			{/if}.
-	
 		</Table.Caption>
 	{/if}
 	<Table.Header>
@@ -471,41 +493,41 @@
 	</Table.Body>
 </Table.Root>
 
-<Hotkeybutton
+<HotkeyButton
 	data-shortcut="Control+a,Meta+a"
 	onclick={() => {
 		if (!is_all_selected()) {
 			entities.map((x) => {
-				if(selected_items.indexOf(x._id) == -1)	{
+				if (selected_items.indexOf(x._id) == -1) {
 					selected_items = [...selected_items, x._id];
 				}
 			});
 		} else {
 			entities.map((x) => {
-				if(selected_items.indexOf(x._id) >= -1)	{
+				if (selected_items.indexOf(x._id) >= -1) {
 					selected_items = selected_items.filter((y) => y != x._id);
 				}
 			});
-
 		}
 	}}
 	class="hidden"
 	hidden={true}
 />
-<Hotkeybutton
+<HotkeyButton
 	data-shortcut="ArrowLeft"
 	onclick={() => {
 		page_index = page_index - 1;
 	}}
-	disabled={page_index <= 0}>Previous</Hotkeybutton
+	disabled={page_index <= 0}>Previous</HotkeyButton
 >
-<Hotkeybutton
+<HotkeyButton
 	data-shortcut="ArrowRight"
 	onclick={() => {
 		page_index = page_index + 1;
 	}}
-	disabled={entities.length < 5 || page_index * 5 >= total_count}>
-	Next</Hotkeybutton
+	disabled={entities.length < 5 || page_index * 5 >= total_count}
+>
+	Next</HotkeyButton
 >
 {#if selected_items.length > 0}
 	<HotkeyButton
