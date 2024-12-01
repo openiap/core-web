@@ -51,12 +51,11 @@
 			{/if}
 		</main>
 
-		<footer>
+		<!-- <footer>
 			<p>
 				<i><small>OpenCore © - OpenIAP ApS - 2024</small></i>
-				<!-- visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to learn about SvelteKit -->
 			</p>
-		</footer>
+		</footer> -->
 	</div>
 {:else}
 	{@render children()}
@@ -85,14 +84,14 @@
 		margin: 0 auto;
 		box-sizing: border-box;
 	}
-
+/* 
 	footer {
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
 		padding: 12px;
-	}
+	} */
 
 	/* footer a {
 		font-weight: bold;

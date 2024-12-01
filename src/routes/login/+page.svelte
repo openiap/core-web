@@ -11,6 +11,7 @@
     window.location.href = auth.baseurl + url;
   }
 </script>
+
 <div class="grid md:grid-cols-2 min-h-screen items-center justify-center">
   <div class="md:p-20 lg:p-40 md:grid-span-1">
     <Card.Root class="mx-auto max-w-sm">

@@ -35,6 +35,9 @@
 			<li aria-current={$page.url.pathname.startsWith(base + '/role') ? 'page' : undefined}>
 				<a href="{base}/role">Roles</a>
 			</li>
+			<li aria-current={$page.url.pathname.startsWith(base + '/entities') ? 'page' : undefined}>
+				<a href="{base}/entities">Entities</a>
+			</li>
 			{/if}
 		</ul>
 		<svg viewBox="0 0 2 3" aria-hidden="true">
