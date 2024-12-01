@@ -3,7 +3,13 @@
 	import "../app.css";
 
 	import { auth } from "$lib/stores/auth.svelte";
-	let { children } = $props();
+	let { children, data } = $props();
+	
+	auth.config = data.config;
+	auth.origin = data.origin;
+	auth.baseurl = data.baseurl;
+	auth.wsurl = data.wsurl;
+	auth.clientinit()
 
 	import { Button } from "$lib/components/ui/button/index.js";
 	import { base } from "$app/paths";
@@ -11,25 +17,14 @@
 	import { pushState } from "$app/navigation";
 
 	if ($page.url.search.includes("code=")) {
-		console.log("Code", $page.url.searchParams.get("code"));
-		// auth.loadUserAndClient().catch((error) => {
-		// 	auth.userManager
-		// 		.signinRedirectCallback()
-		// 		.then(async function (user) {
-		// 			pushState(base + "/", {});
-		// 			await auth.loadUserAndClient();
-		// 		})
-		// 		.catch((error) => {
-		// 			console.debug(error);
-		// 		});
-		// });
+		console.debug("Code", $page.url.searchParams.get("code"));
 		auth.userManager
 			.signinRedirectCallback()
-			.then(async function (user) {
+			.then(async function (user:any) {
 				pushState(base + "/", {});
 				await auth.loadUserAndClient();
 			})
-			.catch((error) => {
+			.catch((error:any) => {
 				console.debug(error);
 			});
 	}

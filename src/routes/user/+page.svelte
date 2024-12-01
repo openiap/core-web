@@ -7,9 +7,8 @@
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import { settings } from "$lib/stores/settings.svelte";
-    import Button from "$lib/components/ui/button/button.svelte";
-    import { auth } from "$lib/stores/auth.svelte";
-
+  import Button from "$lib/components/ui/button/button.svelte";
+  
   function reset() {
     settings.clearall();
     goto(base + `/`);
@@ -22,13 +21,12 @@
   let searchstring = $state("");
   searchstring = settings.getvalue(page, "searchstring", "");
 
-
   let selected_items = $state([]);
-  function deleteitem(item:any) {
-    console.log("deleteitem", item);
+  function deleteitem(item: any) {
+    console. log("deleteitem", item);
   }
   function deleteitems() {
-    console.log("deleteitems", selected_items);
+    console. log("deleteitems", selected_items);
   }
 </script>
 
@@ -45,9 +43,18 @@
     <HotkeyButton onclick={reset}>Reset</HotkeyButton>
   </div>
 </div>
-<Entities {defaultcolumnnames} {collectionname} {query} {searchstring} {page} bind:selected_items={selected_items}>
-  {#snippet action(item:any)}
+<Entities
+  {defaultcolumnnames}
+  {collectionname}
+  {query}
+  {searchstring}
+  {page}
+  bind:selected_items
+>
+  {#snippet action(item: any)}
     <Button onclick={() => deleteitem(item)}>Delete {item.name}</Button>
   {/snippet}
 </Entities>
-<Button onclick={() => deleteitems()}>Delete {selected_items.length} items</Button>
+<Button onclick={() => deleteitems()}
+  >Delete {selected_items.length} items</Button
+>

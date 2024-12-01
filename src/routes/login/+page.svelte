@@ -3,6 +3,13 @@
 	import * as Card from "$lib/components/ui/card/index.js";
 	import { Input } from "$lib/components/ui/input/index.js";
 	import { Label } from "$lib/components/ui/label/index.js";
+
+  // import { goto } from "$app/navigation";
+  // import { base } from "$app/paths";
+  import { auth } from "$lib/stores/auth.svelte";
+  function goto(url: string) {
+    window.location.href = auth.baseurl + url;
+  }
 </script>
 
 <svelte:head>
@@ -20,26 +27,29 @@
         <Card.Description>Enter your email below to login to your account</Card.Description>
       </Card.Header>
       <Card.Content>
-        <div class="grid gap-4">
-          <div class="grid gap-2">
-            <Label for="email">Email</Label>
-            <Input id="email" type="email" placeholder="m@example.com" required />
-          </div>
-          <div class="grid gap-2">
-            <div class="flex items-center">
-              <Label for="password">Password</Label>
-              <a href="##" class="ml-auto inline-block text-sm underline">
-                Forgot your password?
-              </a>
+        <form method="post" action="{auth.baseurl}/local">
+          <div class="grid gap-4">
+            <div class="grid gap-2">
+              <Label for="email">Email</Label>
+              <Input id="username" type="text" placeholder="m@example.com" required autocomplete="username" />
             </div>
-            <Input id="password" type="password" required />
+            <div class="grid gap-2">
+              <div class="flex items-center">
+                <Label for="password">Password</Label>
+                <a href="##" class="ml-auto inline-block text-sm underline">
+                  Forgot your password?
+                </a>
+              </div>
+              <Input id="password" type="password" required autocomplete="current-password" />
+            </div>
+            <Button type="submit" class="w-full">Login</Button>
+            {#each auth.config.loginproviders.filter((x:any) => x.provider != "local") as lp }
+              <Button variant="outline" class="w-full" onclick={() => goto('/' + lp.id)}>{lp.name}</Button>
+            {/each}
           </div>
-          <Button type="submit" class="w-full">Login</Button>
-          <Button variant="outline" class="w-full">Login with Google</Button>
-        </div>
+        </form>
         <div class="mt-4 text-center text-sm">
-          Don't have an account?
-          <a href="##" class="underline"> Sign up </a>
+          If you don't have an account, one will be created based on your email address.
         </div>
       </Card.Content>
     </Card.Root>

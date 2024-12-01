@@ -3,6 +3,7 @@
 	import logo from '$lib/images/logo.png';
 	import github from '$lib/images/github.svg';
 	import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
+	import { base } from "$app/paths";
 	import { auth } from "$lib/stores/auth.svelte";
 	function login() {
 		auth.userManager.signinRedirect();
@@ -24,15 +25,15 @@
 			<path d="M0,0 L1,2 C1.5,3 1.5,3 2,3 L2,0 Z" />
 		</svg>
 		<ul>
-			<li aria-current={$page.url.pathname === '/' ? 'page' : undefined}>
-				<a href="/">Home</a>
+			<li aria-current={$page.url.pathname === base + '/' ? 'page' : undefined}>
+				<a href="{base}/">Home</a>
 			</li>
 			{#if auth.isAuthenticated == true}
-			<li aria-current={$page.url.pathname === '/user' ? 'page' : undefined}>
-				<a href="/user">Users</a>
+			<li aria-current={$page.url.pathname === base + '/user' ? 'page' : undefined}>
+				<a href="{base}/user">Users</a>
 			</li>
-			<li aria-current={$page.url.pathname.startsWith('/role') ? 'page' : undefined}>
-				<a href="/role">Roles</a>
+			<li aria-current={$page.url.pathname.startsWith(base + '/role') ? 'page' : undefined}>
+				<a href="{base}/role">Roles</a>
 			</li>
 			{/if}
 		</ul>
