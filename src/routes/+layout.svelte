@@ -12,6 +12,9 @@
 	auth.clientinit()
 
 	import { Button } from "$lib/components/ui/button/index.js";
+	import { ModeWatcher } from "mode-watcher";
+	
+
 	import { base } from "$app/paths";
 	import { page } from "$app/stores";
 	import { pushState } from "$app/navigation";
@@ -37,7 +40,7 @@
     content="Get performance data and generates index suggestions for better database performance"
   />
 </svelte:head>
-
+<ModeWatcher />
 {#if $page.url.pathname != base + "/login" && $page.url.pathname != base + "/loginscreen"}
 	<div class="app">
 		<Header />
@@ -95,11 +98,11 @@
 
 	/* footer a {
 		font-weight: bold;
-	} */
+	} 
 
 	@media (min-width: 480px) {
 		footer {
 			padding: 12px 0;
 		}
-	}
+	}*/
 </style>

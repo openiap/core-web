@@ -5,7 +5,7 @@ export async function load({url, fetch}) {
 	auth.baseurl = url.origin;
 	let configurl = "/config";
 	if (auth.origin.includes(":517") || auth.origin.includes(":417")) {
-		auth.baseurl = "https://app.openiap.io";
+		auth.baseurl = "https://demo.openiap.io";
 		configurl = auth.baseurl + "/config";
 	}
 	auth.wsurl = auth.baseurl.replace("https://", "wss://").replace("http://", "ws://") + "/ws/v2";

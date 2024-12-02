@@ -228,7 +228,12 @@
 		let column = headers.find((x) => x.field == field);
 		let index = headers.findIndex((x) => x.field == field);
 		if (column != null) {
-			headers[index] = { ...column, order: value };
+			if(value == ""){
+				column.orderindex = 0;
+			} else {
+				column.orderindex = headers.filter((x) => x.order != "").length + 1;
+			}
+			headers[index] = { ...column,  order: value };
 		}
 	}
 

@@ -14,6 +14,7 @@
 		"@fontsource/fira-mono": "^5.1.0",
 		"@github/hotkey": "^3.1.1",
 		"@sveltejs/adapter-node": "^5.2.9",
+		"mode-watcher": "^0.5.0",
 		"oidc-client": "^1.11.5",
 		"sveltekit-superforms": "^2.20.1"
 	},
