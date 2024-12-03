@@ -1,18 +1,12 @@
 <script lang="ts">
     import * as Dialog from "$lib/components/ui/dialog/index.js";
     import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
+    import { Search } from "lucide-svelte";
 </script>
 
 <Dialog.Root>
     <Dialog.Trigger>
-        <HotkeyButton
-            variant="ghost"
-            class="text-muted-foreground"
-            aria-label="Search"
-            data-shortcut={"Control+k,Meta+k,Shift+?"}
-        >
-            <!-- <Search /> -->
-        </HotkeyButton>
+            <Search />
     </Dialog.Trigger>
     <Dialog.Content>
         <Dialog.Header>
