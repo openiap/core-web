@@ -1,16 +1,17 @@
 <script lang="ts">
-	import { page } from "$app/stores";
-	import logo from "$lib/images/logo.png";
+	// import { page } from "$app/stores";
+	// import logo from "$lib/images/logo.png";
 	import Sun from "lucide-svelte/icons/sun";
 	import Moon from "lucide-svelte/icons/moon";
 	import { toggleMode } from "mode-watcher";
 	import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
-	import { base } from "$app/paths";
+	// import { base } from "$app/paths";
 	import { auth } from "$lib/stores/auth.svelte";
-	import { Github, HelpCircle } from "lucide-svelte";
+	import { Github } from "lucide-svelte";
 	import { Button } from "$lib/components/ui/button";
+	import Search from "$lib/search/search.svelte";
 
-	let props = $props();
+	// let props = $props();
 
 	function login() {
 		auth.userManager.signinRedirect();
@@ -38,6 +39,7 @@
 			>
 				<HelpCircle />
 			</Button> -->
+			<Search />
 			<a href="https://github.com/openiap">
 				<Button variant="outline">
 					<Github width="100%" />

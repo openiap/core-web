@@ -54,6 +54,7 @@
 	let errormessage = $state("");
 	let page_index = $state(0);
 	let total_count = $state(99999);
+	let showdebug = $state(false);
 
 	selected_items = settings.getvalue(page, "selected_items", []);
 	searchstring = settings.getvalue(page, "searchstring", "");
@@ -634,6 +635,13 @@
 	</Sheet.Root>
 {/if}
 
-{#if headers != null && headers.length > 0}
-	<!-- <SuperDebug data={headers} theme="vscode" /> -->
+{#if headers != null && headers.length > 0 && showdebug == true} 
+	<SuperDebug data={headers} theme="vscode" />
 {/if}
+
+<HotkeyButton
+  hidden
+  class="hidden"
+  data-shortcut={"Control+d,Meta+d"}
+  onclick={() => (showdebug = !showdebug)}>Toggle debug</HotkeyButton
+>
