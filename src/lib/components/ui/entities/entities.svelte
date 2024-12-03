@@ -1,11 +1,17 @@
 <script lang="ts" module>
 	import * as Table from "$lib/components/ui/table/index.js";
 	import { Checkbox } from "$lib/components/ui/checkbox/index.js";
+	import * as Sheet from "$lib/components/ui/sheet/index.js";
+	import { Input } from "$lib/components/ui/input/index.js";
+	import { Label } from "$lib/components/ui/label/index.js";
+	import { Switch } from "$lib/components/ui/switch/index.js";
+	import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
 
 	import ArrowUp from "lucide-svelte/icons/arrow-up";
 	import ArrowDown from "lucide-svelte/icons/arrow-down";
 	import SuperDebug from "sveltekit-superforms";
 
+	import { buttonVariants } from "$lib/components/ui/button/index.js";
 	import { onMount } from "svelte";
 	import { auth } from "$lib/stores/auth.svelte";
 	import { settings } from "$lib/stores/settings.svelte";
@@ -18,7 +24,7 @@
 		cellclass: string = "";
 		order: sort = "";
 		orderindex: number = 0;
-		show: boolean = true;
+		show: boolean = $state(true);
 	}
 </script>
 
@@ -67,72 +73,32 @@
 			top: 5,
 		});
 		if (entities.length > 0) {
+			let keys = [];
+			for(let i = 0; i < entities.length; i++) {
+				let entity = entities[i];
+				let subkeys = Object.keys(entity);
+				for(let j = 0; j < subkeys.length; j++) {
+					let key = subkeys[j];
+					if(keys.indexOf(key) == -1) {
+						keys.push(key);
+					}
+				}
+			}
+			for(let i = 0; i < keys.length; i++) {
+				let key = keys[i];
+				if(headers.find(x => x.field == key) == null) {
+					let header = new TableHeader();
+					header.field = key;
+					header.name = key;
+					header.show = false;
+					headers.push(header);
+				}
+			}
 			total_count = await auth.client.Count({ collectionname, query });
 		}
 	}
 
-	function SetHeaders() {
-		let foundfirst = false;
-		for (let i = 0; i < headers.length; i++) {
-			let header = headers[i];
-			if (foundfirst == false && header.show == true) {
-				foundfirst = true;
-				header.headclass = "";
-				header.cellclass = "font-medium";
-			// } else if (i == defaultcolumnnames.length - 1) {
-			// 	header.headclass = "w-[200px]";
-			// 	header.cellclass = "text-right";
-			} else {
-				header.headclass = "w-[100px]";
-				header.cellclass = "truncate overflow-ellipsis";
-			}
-		}
-	}
-
-	auth.onLogin(async () => {
-		$effect(() => {
-			// console.log("effect2", _searchstring, $state.snapshot(searchstring));
-			if (_searchstring != searchstring) {
-				_searchstring = searchstring;
-				console.log("searchstring changed", searchstring);
-				page_index = 0;
-				total_count = 99999;
-			}
-			if (_collectionname != collectionname) {
-				_collectionname = collectionname;
-				page_index = settings.getvalue(page, "page_index", 0);
-				console.log(
-					"collectionname changed",
-					collectionname,
-					"page",
-					page,
-					"page_index",
-					page_index,
-				);
-				_searchstring = settings.getvalue(page, "searchstring", "");
-				searchstring = settings.getvalue(page, "searchstring", "");
-				selected_items = settings.getvalue(page, "selected_items", []);
-				total_count = 99999;
-			}
-			settings.setvalue(
-				page,
-				"searchstring",
-				$state.snapshot(searchstring),
-			);
-			if (selected_items.length > 0) {
-				settings.setvalue(page, "selected_items", selected_items);
-			} else {
-				settings.clearvalue(page, "selected_items");
-			}
-			if (page_index > 0) {
-				settings.setvalue(page, "page_index", page_index);
-			} else {
-				settings.clearvalue(page, "page_index");
-			}
-			SetHeaders();
-			GetData();
-		});
-
+	function EnsureDefaultHeaders() {
 		if (headers.length == 0) {
 			for (let i = 0; i < defaultcolumnnames.length; i++) {
 				let header = new TableHeader();
@@ -144,8 +110,14 @@
 					case "type":
 						header.name = "Type";
 						break;
+					case "_type":
+						header.name = "Type";
+						break;
 					case "_created":
 						header.name = "Created";
+						break;
+					case "_modified":
+						header.name = "Modified";
 						break;
 					default:
 						header.name = header.field;
@@ -166,6 +138,69 @@
 				headers.push(header);
 			}
 		}
+	}
+	function SetHeaders() {
+		EnsureDefaultHeaders();
+		let foundfirst = false;
+		for (let i = 0; i < headers.length; i++) {
+			let header = headers[i];
+			if (foundfirst == false && header.show == true) {
+				foundfirst = true;
+				header.headclass = "";
+				header.cellclass = "font-medium";
+				// } else if (i == defaultcolumnnames.length - 1) {
+				// 	header.headclass = "w-[200px]";
+				// 	header.cellclass = "text-right";
+			} else {
+				header.headclass = "w-[100px]";
+				header.cellclass = "truncate overflow-ellipsis";
+			}
+		}
+	}
+	function SaveHeaders() {
+		let _headers = $state.snapshot(headers);
+		for(let i=0; i < _headers.length; i++) {
+			_headers[i].show = $state.snapshot(headers[i].show);
+		}
+		settings.setvalue(page, "headers", _headers);
+	}
+
+	auth.onLogin(async () => {
+		$effect(() => {
+			if (_searchstring != searchstring) {
+				_searchstring = searchstring;
+				page_index = 0;
+				total_count = 99999;
+			}
+			if (_collectionname != collectionname) {
+				_collectionname = collectionname;
+				page_index = settings.getvalue(page, "page_index", 0);
+				_searchstring = settings.getvalue(page, "searchstring", "");
+				searchstring = settings.getvalue(page, "searchstring", "");
+				selected_items = settings.getvalue(page, "selected_items", []);
+				headers = settings.getvalue(page, "headers", []);
+				total_count = 99999;
+			}
+			settings.setvalue(
+				page,
+				"searchstring",
+				$state.snapshot(searchstring),
+			);
+			SaveHeaders();
+			if (selected_items.length > 0) {
+				settings.setvalue(page, "selected_items", selected_items);
+			} else {
+				settings.clearvalue(page, "selected_items");
+			}
+			if (page_index > 0) {
+				settings.setvalue(page, "page_index", page_index);
+			} else {
+				settings.clearvalue(page, "page_index");
+			}
+			SetHeaders();
+			GetData();
+		});
+
 		SetHeaders();
 		await GetData();
 	});
@@ -191,7 +226,7 @@
 		const toindex = headers.findIndex((h) => h.field == head.field);
 		if (fromindex != toindex) {
 			headers.splice(toindex, 0, headers.splice(fromindex, 1)[0]);
-			settings.setvalue(page, "headers", $state.snapshot(headers));
+			SaveHeaders();
 		}
 	}
 	function ontouchend(event: TouchEvent, head: TableHeader) {
@@ -199,7 +234,7 @@
 		const toindex = headers.findIndex((h) => h.field == head.field);
 		if (fromindex != toindex) {
 			headers.splice(toindex, 0, headers.splice(fromindex, 1)[0]);
-			settings.setvalue(page, "headers", $state.snapshot(headers));
+			SaveHeaders();
 		}
 	}
 	function ontouchmove(event: TouchEvent) {
@@ -228,12 +263,13 @@
 		let column = headers.find((x) => x.field == field);
 		let index = headers.findIndex((x) => x.field == field);
 		if (column != null) {
-			if(value == ""){
+			if (value == "") {
 				column.orderindex = 0;
 			} else {
-				column.orderindex = headers.filter((x) => x.order != "").length + 1;
+				column.orderindex =
+					headers.filter((x) => x.order != "").length + 1;
 			}
-			headers[index] = { ...column,  order: value };
+			headers[index] = { ...column, order: value };
 		}
 	}
 
@@ -543,6 +579,59 @@
 	>
 		Delete {selected_items.length} items</HotkeyButton
 	>
+{/if}
+{#if headers != null && headers.length > 0}
+	<Sheet.Root>
+		<Sheet.Trigger>
+			<HotkeyButton
+			size="sm"
+		>
+		Select columns</HotkeyButton
+		>
+		</Sheet.Trigger>
+		<Sheet.Content>
+			<Sheet.Header>
+				<Sheet.Title>Select columns</Sheet.Title>
+				<Sheet.Description>
+				  Select what columns to show in the table.
+				</Sheet.Description>
+			  </Sheet.Header>
+			  <div class="grid gap-4 py-4">
+				<ScrollArea class="max-h-[70vh]">
+
+				{#each headers as head}
+				<div class=" flex items-center space-x-4 rounded-md border p-4">
+					<!-- <BellRing /> -->
+					<div class="flex-1 space-y-1">
+					  <p class="text-muted-foreground text-sm">
+						{head.field}
+					  </p>
+					</div>
+					<Switch bind:checked={head.show} onclick={()=> {
+						// SaveHeaders();
+					}}/>
+				  </div>
+
+				{/each}
+			</ScrollArea>
+
+<!-- 
+				<div class="grid grid-cols-4 items-center gap-4">
+				  <Label for="name" class="text-right">Name</Label>
+				  <Input id="name" value="Pedro Duarte" class="col-span-3" />
+				</div>
+				<div class="grid grid-cols-4 items-center gap-4">
+				  <Label for="username" class="text-right">Username</Label>
+				  <Input id="username" value="@peduarte" class="col-span-3" />
+				</div> -->
+			  </div>
+			  <Sheet.Footer>
+				<Sheet.Close class={buttonVariants({ variant: "outline" })}>
+				  Close
+				</Sheet.Close>
+			  </Sheet.Footer>
+		</Sheet.Content>
+	</Sheet.Root>
 {/if}
 
 {#if headers != null && headers.length > 0}

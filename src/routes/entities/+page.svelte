@@ -30,7 +30,6 @@
   auth.onLogin(() => {
     auth.client.ListCollections().then((res) => {
       collections = res;
-      console.log("collections", $state.snapshot(collections));
     });
   });
   function deleteitem(item: any) {
@@ -38,6 +37,13 @@
   }
   function deleteitems(ids: string[]) {
     console.log("deleteitems", ids);
+  }
+  function collectionvariant(name: string):any {
+    return name == collectionname ? "primary" : "secondary";
+  }
+  function selectcollection(name: string) {
+    collectionname = name;
+    settings.setvalue("entities", "collectionname", collectionname);
   }
 </script>
 
@@ -47,12 +53,13 @@
 collectionname: {collectionname}<br>
 <div class="flex min-h-screen items-start justify-center">
   <div id="div1" class="w-full max-w-[300px] flex-shrink-0 hidden sm:block">
-    <ScrollArea class="max-h-screen sm:max-h-[calc(100vh-8rem)] overflow-auto">
+    <!-- <ScrollArea class="max-h-screen sm:max-h-[calc(100vh-8rem)] overflow-auto"> -->
+      <ScrollArea class="max-h-[80vh]">
       <div class="p-4">
         <h4 class="mb-4 text-sm font-medium leading-none">Tags</h4>
         {#each collections as tag}
           <div class="text-sm">
-            {tag.name}
+            <Button variant={collectionvariant(tag.name)} onclick={(e)=> {selectcollection(tag.name)}} >{tag.name}</Button> 
           </div>
           <Separator class="my-2" />
         {/each}
@@ -102,10 +109,8 @@ collectionname: {collectionname}<br>
 	data-shortcut="ArrowUp"
 	onclick={() => {
     let index = collections.findIndex((x) => x.name == collectionname);
-    // console.log("index", index);
     if (index > 0) {
       collectionname = collections[index - 1].name;
-      // searchstring = settings.getvalue(page(), "searchstring", "");
       settings.setvalue("entities", "collectionname", collectionname);
     }		
 	}}
@@ -117,10 +122,8 @@ collectionname: {collectionname}<br>
 	data-shortcut="ArrowDown"
 	onclick={() => {
     let index = collections.findIndex((x) => x.name == collectionname);
-    // console.log("index", index);
     if (index < collections.length - 1) {
       collectionname = collections[index + 1].name;
-      // searchstring = settings.getvalue(page(), "searchstring", "");
       settings.setvalue("entities", "collectionname", collectionname);
     }
 	}}
