@@ -28,7 +28,7 @@
 		</a>
 	</div> -->
 
-	<div class="flex justify-end items-center justify-center">
+	<div class="flex items-center justify-center">
 		<div class="flex gap-1.5">
 			<!-- <Button
 				variant="outline"

@@ -78,7 +78,7 @@
 							</Breadcrumb.List>
 						</Breadcrumb.Root> -->
 					</div>
-					<Header openHelp={open} />
+					<Header />
 				</header>
 
 				<div class="flex flex-1 flex-col gap-4 p-4">
