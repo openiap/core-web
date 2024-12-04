@@ -28,6 +28,9 @@
   function deleteitems(ids: string[]) {
     console.log("deleteitems", ids);
   }
+  function single_item_click(item: any) {
+    goto(base + `/${page}/${item._id}`);
+  }
 </script>
 
 <div class="flex w-full max-w-sm flex-col gap-1.5">
@@ -50,6 +53,7 @@
   bind:searchstring
   {page}
   delete_selected={deleteitems}
+  single_item_click={single_item_click}
   bind:selected_items
 >
 </Entities>

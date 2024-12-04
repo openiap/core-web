@@ -40,6 +40,7 @@
 		selected_items = $bindable([]),
 		caption = "",
 		delete_selected = (items: string[]) => {},
+		single_item_click = (item: any) => {},
 		multi_select = true,
 		action = null,
 		...rest
@@ -473,7 +474,7 @@
 		<Table.Row>
 			{#if multi_select}
 				<Table.Head class="w-8" role="cell"
-					><Checkbox
+					><Checkbox aria-label="Select all"
 						checked={is_all_selected()}
 						onclick={ToogleAll}
 					/></Table.Head
@@ -512,10 +513,13 @@
 				onclick={() => {
 					ToggleSelect(item);
 				}}
+				ondblclick={() => {
+					single_item_click(item);
+				}}
 			>
 				{#if multi_select}
 					<Table.Cell class="w-8"
-						><Checkbox
+						><Checkbox aria-label="Select item"
 							checked={selected_items.indexOf(item._id) > -1}
 						/></Table.Cell
 					>
