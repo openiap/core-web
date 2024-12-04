@@ -3,7 +3,7 @@ import { auth } from "$lib/stores/auth.svelte";
 
 /** @type {import('./$types').RequestHandler} */
 export async function POST({ url, request }) {
-    console.log("POST", url);
+    console.log("POST", url.pathname);
 
     let options = await request.json();
 
