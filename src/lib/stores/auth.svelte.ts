@@ -38,6 +38,7 @@ class authState {
     client: openiap = {} as any;
     userManager: any;
     isLoaded: boolean = $state(false);
+    isConnected: boolean = $state(false);
     config: any = $state(null);
     baseurl = $state("");
     origin = $state("");
@@ -133,6 +134,7 @@ class authState {
         console.debug("Creating new client for", this.wsurl);
         this.client = new openiap(this.wsurl, this.access_token);
         await this.client.connect(true);
+        this.isConnected = true;
     }
     loginCallbacks: any[] = [];
     onLogin(callback: (user: pkg.Profile) => void) {

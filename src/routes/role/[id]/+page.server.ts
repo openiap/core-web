@@ -20,7 +20,7 @@ export const load: PageServerLoad = async (x:any) => {
   let data = x.data || {};
   let id = x.params.id;
   await auth.clientinit(x.url.origin, x.fetch, null);
-  console.debug("page.ts: am i connected now ?", auth.isLoaded, auth.isAuthenticated);
+  console.debug("connected:", auth.isConnected, "authenticated:", auth.isAuthenticated, "loaded:", auth.isLoaded, "role.page.server.ts");
   let item = await auth.client.FindOne<any>({ collectionname: "users",  query: { _id: id } });
   data.form = await superValidate(item, zod(_userSchema));
   return data;

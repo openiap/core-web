@@ -15,8 +15,7 @@ export const load: PageLoad = async ( x: any ) => {
 	} catch (err:any) {
 		// error(500, err.message);
 	}
-	console.debug("layout.ts: am i connected now ?", auth.isLoaded, auth.isAuthenticated);
-
+	console.debug("connected:", auth.isConnected, "authenticated:", auth.isAuthenticated, "loaded:", auth.isLoaded, "layout.ts");
     return data;
 
 };
