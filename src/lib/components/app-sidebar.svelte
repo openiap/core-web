@@ -90,10 +90,10 @@
 								{#snippet child({ props })}
 									<Sidebar.MenuButton {...props}>
 										{mainItem.title}{" "}
-										<Plus
+										<Plus aria-label="expand"
 											class="ml-auto group-data-[state=open]/collapsible:hidden"
 										/>
-										<Minus
+										<Minus aria-label="collapse"
 											class="ml-auto group-data-[state=closed]/collapsible:hidden"
 										/>
 									</Sidebar.MenuButton>

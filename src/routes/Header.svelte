@@ -41,11 +41,16 @@
 			</Button> -->
 			<Search />
 			<a href="https://github.com/openiap">
-				<Button variant="outline">
+				<Button variant="outline" aria-label="Visit us at Github">
 					<Github width="100%" />
 				</Button>
 			</a>
-			<HotkeyButton onclick={toggleMode} variant="outline" size="icon">
+			<HotkeyButton
+				onclick={toggleMode}
+				variant="outline"
+				size="icon"
+				aria-label="Toggle darkmode"
+			>
 				<Sun
 					class="rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
 				/>
@@ -56,12 +61,15 @@
 			</HotkeyButton>
 			{#if auth.isAuthenticated == true}
 				<HotkeyButton
+					aria-label="Signout"
 					onclick={logout}
 					data-shortcut={"Control+q,Meta+q"}>Signout</HotkeyButton
 				>
 			{:else}
-				<HotkeyButton onclick={login} data-shortcut={"Control+q,Meta+q"}
-					>Signin</HotkeyButton
+				<HotkeyButton
+					aria-label="Signin"
+					onclick={login}
+					data-shortcut={"Control+q,Meta+q"}>Signin</HotkeyButton
 				>
 			{/if}
 		</div>
