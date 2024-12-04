@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { auth } from "$lib/stores/auth.svelte.js";
 import { base } from "$app/paths";
 
+
 export const _userSchema = z.object({
   _id: z.string().min(2),
   name: z.string().min(2),
@@ -17,7 +18,6 @@ export const load: PageServerLoad = async (x: any) => {
   let data = x.data || {};
   let id = x.params.id;
   await auth.clientinit(x.url.origin, x.fetch, null);
-  console.debug("page.ts: am i connected now ?", auth.isLoaded, auth.isAuthenticated);
   let item = await auth.client.FindOne<any>({ collectionname: "users", query: { _id: id } });
   data.form = await superValidate(item, zod(_userSchema));
   return data;
@@ -40,6 +40,6 @@ export const actions: Actions = {
         form,
       };
     }
-    throw redirect(303, base + '/role');
+    throw redirect(303, base + `/user`);
   },
 };

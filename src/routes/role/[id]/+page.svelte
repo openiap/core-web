@@ -1,19 +1,25 @@
 <script lang="ts">
+  import { goto } from "$app/navigation";
+  import { base } from "$app/paths";
   import * as Form from "$lib/components/ui/form/index.js";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
-  import {
-    superForm,
-  } from "sveltekit-superforms";
-  const { data } = $props();
-  const form = superForm(data.form, {dataType: "json"});
-  const { form: formData, enhance, message } = form;
+  import { superForm } from "sveltekit-superforms";
 
+  const key = "role";
+  const { data } = $props();
+  const form = superForm(data.form, { dataType: "json" });
+  const { form: formData, enhance, message } = form;
 </script>
 
-  {#if message && $message != ""}
-    {$message}
-  {/if}
+{#if message && $message != ""}
+  {$message}
+{/if}
 
+<div>
+  Edit {key}
+</div>
+<HotkeyButton onclick={() => goto(base + `/${key}`)}>Back</HotkeyButton>
 <form method="POST" use:enhance>
   <Form.Field {form} name="name">
     <Form.Control>

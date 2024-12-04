@@ -4,17 +4,18 @@
   import Button from "$lib/components/ui/button/button.svelte";
   import { HotkeyInput } from "$lib/components/ui/hotkeyinput/index.js";
   import { Label } from "$lib/components/ui/label/index.js";
-  import { X } from "lucide-svelte";
+  import { Pencil, Trash2 } from "lucide-svelte";
 
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import { settings } from "$lib/stores/settings.svelte";
+  import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
 
   function reset() {
     settings.clearall();
     goto(base + `/`);
   }
-
+  const key = "role";
   let defaultcolumnnames = ["_id", "name", "rparole", "_created"];
   let collectionname = "users";
   let page = "roles";
@@ -32,6 +33,10 @@
   }
 </script>
 
+<h1>All {key}s</h1>
+<Hotkeybutton variant={"outline"} onclick={() => goto(base + `/${key}/new`)}
+  >Add {key}</Hotkeybutton
+>
 <div class="flex w-full max-w-sm flex-col gap-1.5">
   <Label for="email">Search</Label>
   <div class="flex gap-1.5">
@@ -52,17 +57,19 @@
   bind:searchstring
   {page}
   delete_selected={deleteitems}
-  single_item_click={single_item_click}
+  {single_item_click}
   bind:selected_items
 >
-  <!-- {#snippet action(item: any)}
-    <Button
-      onclick={() => deleteitem(item)}
-      size="icon"
-      variant="destructive"
-      disabled={selected_items.length > 0}
-    >
-      <X />
+  {#snippet action(item: any)}
+    <Button onclick={() => deleteitem(item)} size="icon" variant="destructive">
+      <Trash2 />
     </Button>
-  {/snippet} -->
+    <Button
+      onclick={() => goto(base + `/${key}/${item._id}`)}
+      size="icon"
+      variant="secondary"
+    >
+      <Pencil />
+    </Button>
+  {/snippet}
 </Entities>

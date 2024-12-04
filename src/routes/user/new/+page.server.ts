@@ -5,22 +5,31 @@ import { fail, redirect } from "@sveltejs/kit";
 import { z } from 'zod';
 import { auth } from "$lib/stores/auth.svelte.js";
 import { base } from "$app/paths";
-
 export const _userSchema = z.object({
-  _id: z.string().min(2),
+  id: z.number().int().positive().optional(),
   name: z.string().min(2),
   email: z.string().email(),
-}).passthrough();
+  username: z.string().min(2),
+  password: z.string().min(6),
+  disabled: z.boolean(),
+  dblocked: z.boolean(),
+  validated: z.boolean(),
+});
 export type UserSchema = typeof _userSchema;
 
-export const load: PageServerLoad = async (x: any) => {
-  let data = x.data || {};
-  let id = x.params.id;
-  await auth.clientinit(x.url.origin, x.fetch, null);
-  console.debug("page.ts: am i connected now ?", auth.isLoaded, auth.isAuthenticated);
-  let item = await auth.client.FindOne<any>({ collectionname: "users", query: { _id: id } });
-  data.form = await superValidate(item, zod(_userSchema));
-  return data;
+export const load: PageServerLoad = async () => {
+  const defaultValues = {
+    name: "John Doe",
+    username: "Johndoe",
+    email: "john@doe.com",
+    password: "123456",
+    disabled: false,
+    dblocked: false,
+    validated: false,
+  }
+  return {
+    form: await superValidate(defaultValues, zod(_userSchema)),
+  };
 };
 
 export const actions: Actions = {
@@ -33,13 +42,13 @@ export const actions: Actions = {
       });
     }
     try {
-      await auth.client.UpdateOne({ collectionname: "users", item: form.data });
+      await auth.client.InsertOne({ collectionname: "users", item: { ...form.data, _type: "user" } });
     } catch (err: any) {
       setError(form, 'name', err.message);
       return {
         form,
       };
     }
-    throw redirect(303, base + '/role');
+    throw redirect(303, base + '/user');
   },
 };

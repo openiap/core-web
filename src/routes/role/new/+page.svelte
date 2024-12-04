@@ -2,56 +2,30 @@
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import * as Form from "$lib/components/ui/form/index.js";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
   import { Input } from "$lib/components/ui/input/index.js";
-  import { auth } from "$lib/stores/auth.svelte";
-  // import { _userSchema, type UserSchema } from "./page.server";
-  import {
-    type SuperValidated,
-    type Infer,
-    superForm,
-    setError,
-  } from "sveltekit-superforms";
-  import { zodClient } from "sveltekit-superforms/adapters";
-  import { type FormPath } from 'sveltekit-superforms'
+  import { superForm } from "sveltekit-superforms";
 
+  const key = "role";
   const { data } = $props();
   let errormessage = $state("");
-  // const form = superForm(data.form, {
-  //   validators: zodClient(_userSchema),
-  //   onUpdate(e) {
-  //     if(!e.form.valid) return;
 
-  //     errormessage = "Go away";
-  //     e.cancel();
-  //     return;
-  //     console.log("valid", e.form.valid);
-  //     console.log("data", e.form.data);
-  //     auth.client.InsertOne({collectionname: "users", item: {...e.form.data, _type: "role"}}).
-  //     finally(() => {
-  //       goto(base + "/role");
-  //     }).catch((e) => {
-  //       console.error(e);
-  //     });
-  //     e.cancel();
-  //   },
-  //   dataType: "json",
-  //   SPA: true,
-  // });
-
-  // const { form: formData, enhance } = form;
   const form = superForm(data.form);
   const { form: formData, enhance, message } = form;
-
 </script>
 
 {#if errormessage && errormessage != ""}
   {errormessage}
 {/if}
-  
-  {#if message && $message != ""}
-    {$message}
-  {/if}
 
+{#if message && $message != ""}
+  {$message}
+{/if}
+
+<div>
+  Add {key}
+</div>
+<HotkeyButton onclick={() => goto(base + `/${key}`)}>Back</HotkeyButton>
 <form method="POST" use:enhance>
   <Form.Field {form} name="name">
     <Form.Control>
