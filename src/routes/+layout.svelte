@@ -5,11 +5,6 @@
 	import { auth } from "$lib/stores/auth.svelte";
 	let { children, data } = $props();
 
-	auth.config = data.config;
-	auth.origin = data.origin;
-	auth.baseurl = data.baseurl;
-	auth.wsurl = data.wsurl;
-	auth.clientinit();
 
 	import { Button } from "$lib/components/ui/button/index.js";
 	import { ModeWatcher } from "mode-watcher";
@@ -25,18 +20,18 @@
 
 	// import SidebarPage from "$lib/components/sidebar-page.svelte";
 
-	if ($page.url.search.includes("code=")) {
-		console.debug("Code", $page.url.searchParams.get("code"));
-		auth.userManager
-			.signinRedirectCallback()
-			.then(async function (user: any) {
-				pushState(base + "/", {});
-				await auth.loadUserAndClient();
-			})
-			.catch((error: any) => {
-				console.debug(error);
-			});
-	}
+	// if ($page.url.search.includes("code=")) {
+	// 	console.debug("Code", $page.url.searchParams.get("code"));
+	// 	auth.userManager
+	// 		.signinRedirectCallback()
+	// 		.then(async function (user: any) {
+	// 			pushState(base + "/", {});
+	// 			await auth.loadUserAndClient();
+	// 		})
+	// 		.catch((error: any) => {
+	// 			console.debug(error);
+	// 		});
+	// }
 	let pagename = $derived(() =>
 		$page.url.pathname.replace(base, "").replace("/", ""),
 	);
