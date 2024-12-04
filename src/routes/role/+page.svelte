@@ -28,7 +28,7 @@
     console.log("deleteitems", ids);
   }
   function single_item_click(item: any) {
-    goto(base + `/${page}/${item._id}`);
+    goto(base + `/role/${item._id}`);
   }
 </script>
 
