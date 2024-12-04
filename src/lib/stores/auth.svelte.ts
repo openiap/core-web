@@ -126,6 +126,8 @@ class authState {
             }
             auth.isAuthenticated = true;
         } else {
+            auth.profile = {} as any;
+            auth.access_token = "";
             console.debug("No user found");
         }
         this.isLoaded = true;

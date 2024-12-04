@@ -71,6 +71,14 @@
 		let skip = page_index * top;
 
 		console.log("GetData", collectionname, query, orderby, skip, top);
+		if(auth.isLoaded == false) {
+			console.log("GetData", "auth.isLoaded == false");
+			return;
+		}
+		if(auth.isAuthenticated == false) {
+			console.log("GetData", "auth.isAuthenticated == false");
+			return;
+		}
 
 		if(browser) {
 			const response = await fetch(base + '/api/entities', {
@@ -97,6 +105,8 @@
 				top: 5,
 			});
 		}
+
+		console.log("GetData", entities.length);
 
 		if (entities.length > 0) {
 			let keys = [];
