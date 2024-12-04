@@ -11,6 +11,7 @@
 	import ArrowDown from "lucide-svelte/icons/arrow-down";
 	import SuperDebug from "sveltekit-superforms";
 
+	import { base } from "$app/paths";
 	import { buttonVariants } from "$lib/components/ui/button/index.js";
 	import { onMount } from "svelte";
 	import { auth } from "$lib/stores/auth.svelte";
@@ -30,6 +31,7 @@
 
 <script lang="ts">
 	import { HotkeyButton } from "../hotkeybutton";
+    import { browser } from "$app/environment";
 
 	let {
 		page = "entities",
@@ -67,13 +69,35 @@
 		let query = createQuery();
 		let top = 5;
 		let skip = page_index * top;
-		entities = await auth.client.Query<any>({
-			collectionname: collectionname,
-			query: query,
-			orderby: orderby,
-			skip: skip,
-			top: 5,
-		});
+
+		console.log("GetData", collectionname, query, orderby, skip, top);
+
+		if(browser) {
+			const response = await fetch(base + '/api/entities', {
+				method: 'POST',
+				body: JSON.stringify({ 
+					collectionname: collectionname,
+					query: query,
+					orderby: orderby,
+					skip: skip,
+					top: 5,
+				}),
+				headers: {
+					'content-type': 'application/json'
+				}
+			});
+
+		entities = await response.json();
+		} else {
+			entities = await auth.client.Query<any>({
+				collectionname: collectionname,
+				query: query,
+				orderby: orderby,
+				skip: skip,
+				top: 5,
+			});
+		}
+
 		if (entities.length > 0) {
 			let keys = [];
 			for(let i = 0; i < entities.length; i++) {
@@ -96,7 +120,22 @@
 					headers.push(header);
 				}
 			}
-			total_count = await auth.client.Count({ collectionname, query });
+
+			if(browser) {
+				const response = await fetch(base + '/api/entities/count', {
+					method: 'POST',
+					body: JSON.stringify({ 
+						collectionname: collectionname,
+						query: query,
+					}),
+					headers: {
+						'content-type': 'application/json'
+					}
+				});
+				total_count = await response.json();
+			} else {
+				total_count = await auth.client.Count({ collectionname, query });
+			}
 		}
 	}
 

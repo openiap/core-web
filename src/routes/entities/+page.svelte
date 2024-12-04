@@ -13,6 +13,7 @@
   import { base } from "$app/paths";
   import { settings } from "$lib/stores/settings.svelte";
     import { auth } from "$lib/stores/auth.svelte";
+    import { browser } from "$app/environment";
 
   function reset() {
     settings.clearall();
@@ -27,10 +28,23 @@
   let searchstring = $state("");
   let selected_items = $state([]);
   let collections = $state([{name: 'entities', type: 'collection'},{name: 'users', type: 'collection'}]);
-  auth.onLogin(() => {
-    auth.client.ListCollections().then((res) => {
+  auth.onLogin(async () => {
+    console.log("fetch collections");
+    if(browser) {      
+			const response = await fetch(base + '/api/collections', {
+				method: 'GET',
+				headers: {
+					'content-type': 'application/json'
+				}
+			});
+      console.log("response", response);
+      collections = await response.json();
+
+    } else {
+      auth.client.ListCollections().then((res) => {
       collections = res;
     });
+    }
   });
   function deleteitem(item: any) {
     console.log("deleteitem", item);
