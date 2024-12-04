@@ -627,11 +627,7 @@
 {#if headers != null && headers.length > 0}
 	<Sheet.Root>
 		<Sheet.Trigger>
-			<HotkeyButton
-			size="sm"
-		>
-		Select columns</HotkeyButton
-		>
+			Select columns
 		</Sheet.Trigger>
 		<Sheet.Content>
 			<Sheet.Header>
