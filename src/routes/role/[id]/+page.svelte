@@ -1,0 +1,39 @@
+<script lang="ts">
+  import * as Form from "$lib/components/ui/form/index.js";
+  import { Input } from "$lib/components/ui/input/index.js";
+  import {
+    superForm,
+  } from "sveltekit-superforms";
+  const { data } = $props();
+  const form = superForm(data.form, {dataType: "json"});
+  const { form: formData, enhance, message } = form;
+
+</script>
+
+  {#if message && $message != ""}
+    {$message}
+  {/if}
+
+<form method="POST" use:enhance>
+  <Form.Field {form} name="name">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Name</Form.Label>
+        <Input {...props} bind:value={$formData.name} />
+      {/snippet}
+    </Form.Control>
+    <Form.Description>This is your public display name.</Form.Description>
+    <Form.FieldErrors />
+  </Form.Field>
+  <Form.Field {form} name="email">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Email</Form.Label>
+        <Input {...props} bind:value={$formData.email} />
+      {/snippet}
+    </Form.Control>
+    <Form.Description>This is your email.</Form.Description>
+    <Form.FieldErrors />
+  </Form.Field>
+  <Form.Button>Submit</Form.Button>
+</form>

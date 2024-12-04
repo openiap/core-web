@@ -1,36 +1,28 @@
-import { auth } from "$lib/stores/auth.svelte";
-/** @type {import('./$types').PageServerData} */
-export async function load({url, fetch}) {
-	auth.origin = url.origin;
-	auth.baseurl = url.origin;
-	let configurl = "/config";
-	if (auth.origin.includes(":517") || auth.origin.includes(":417")) {
-		auth.baseurl = "https://demo.openiap.io";
-		configurl = auth.baseurl + "/config";
-	}
-	auth.wsurl = auth.baseurl.replace("https://", "wss://").replace("http://", "ws://") + "/ws/v2";
+import { auth } from "$lib/stores/auth.svelte.js";
+import type { LayoutServerLoad } from "./$types.js";
+import { base } from "$app/paths";
+import { pushState } from "$app/navigation";
+import { error } from '@sveltejs/kit';
+export const load: LayoutServerLoad = async (x:any) => {
+	console.log("***************");
+	console.log("SERVER.LAYOUT.TS LOAD");
+    const { data, fetch, cookies, url } = x;
+	// console.log("cookies", cookies.getAll());
+
+	console.log("layout url", url.origin, auth.origin);
+	// console.debug("server.layout.ts: am i connected now ?", auth.isLoaded, auth.isAuthenticated);
+	await auth.clientinit(url.origin, fetch, cookies);
+	let code = url.searchParams.get("code");
 	try {
-		let f = await fetch(configurl);
-		if(f.status === 200) console.log("Loaded config from", configurl);
-		if(f.status !== 200) {
-			f = await fetch(auth.baseurl + "/config");
-			if(f.status === 200) console.log("Loaded config from", auth.baseurl + "/config");
+		if(code != null && code != "") {
+			const user = await auth.userManager.signinRedirectCallback();
+			pushState(base + "/", {});
 		}
-		if(f.status !== 200) {
-			f = await fetch("http://localhost:3000/config");
-			if(f.status === 200) console.log("Loaded config from", "http://localhost:3000/config");
-		}
-		if(f.status !== 200) {
-			throw new Error(`Failed to load config from ${configurl}`);
-		}
-		auth.config = await f.json();
-	} catch (error) {
-		console.error('Failed to load config', error);
+	} catch (err:any) {
+		// error(500, err.message);
 	}
-    return {
-      config: auth.config,
-	  origin: auth.origin,
-	  baseurl: auth.baseurl,
-	  wsurl: auth.wsurl
-    };
-  }
+	console.debug("server.layout.ts: am i connected now ?", auth.isLoaded, auth.isAuthenticated);
+	console.log("***************");
+    return data;
+
+};

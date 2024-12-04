@@ -14,10 +14,10 @@
 	// let props = $props();
 
 	function login() {
-		auth.userManager.signinRedirect();
+		auth.login();
 	}
 	function logout() {
-		auth.userManager.signoutRedirect();
+		auth.logout();
 	}
 </script>
 
@@ -33,7 +33,6 @@
 			<!-- <Button
 				variant="outline"
 				onclick={() => {
-					console.log("test");
 					props.openHelp = true;
 				}}
 			>

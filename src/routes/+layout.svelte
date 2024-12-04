@@ -1,41 +1,18 @@
 <script lang="ts">
 	import Header from "./Header.svelte";
 	import "../app.css";
-
 	import { auth } from "$lib/stores/auth.svelte";
 	let { children, data } = $props();
-
-
-	import { Button } from "$lib/components/ui/button/index.js";
 	import { ModeWatcher } from "mode-watcher";
-
 	import { base } from "$app/paths";
 	import { page } from "$app/stores";
-	import { pushState } from "$app/navigation";
-
 	import AppSidebar from "$lib/components/app-sidebar.svelte";
-	// import * as Breadcrumb from "$lib/components/ui/breadcrumb/index.js";
-	// import { Separator } from "$lib/components/ui/separator/index.js";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
+    import { browser } from "$app/environment";
 
-	// import SidebarPage from "$lib/components/sidebar-page.svelte";
-
-	// if ($page.url.search.includes("code=")) {
-	// 	console.debug("Code", $page.url.searchParams.get("code"));
-	// 	auth.userManager
-	// 		.signinRedirectCallback()
-	// 		.then(async function (user: any) {
-	// 			pushState(base + "/", {});
-	// 			await auth.loadUserAndClient();
-	// 		})
-	// 		.catch((error: any) => {
-	// 			console.debug(error);
-	// 		});
-	// }
 	let pagename = $derived(() =>
 		$page.url.pathname.replace(base, "").replace("/", ""),
 	);
-
 </script>
 
 <svelte:head>

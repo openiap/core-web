@@ -5,7 +5,7 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
-		"preview": "vite preview",
+		"preview": "vite build && vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"updateapi": "npm uninstall @openiap/jsapi && npm -D i openiap/jsapi#esm"
@@ -14,6 +14,7 @@
 		"@fontsource/fira-mono": "^5.1.0",
 		"@github/hotkey": "^3.1.1",
 		"@sveltejs/adapter-node": "^5.2.9",
+		"cookie-storage": "^6.1.0",
 		"mode-watcher": "^0.5.0",
 		"oidc-client": "^1.11.5"
 	},
@@ -36,6 +37,7 @@
 		"tailwindcss-animate": "^1.0.7",
 		"typescript": "^5.0.0",
 		"vite": "^5.0.3",
+		"ws": "^8.18.0",
 		"zod": "^3.23.8"
 	}
 }

@@ -4,6 +4,7 @@ class settingsState {
     constructor() {
     }
     clearall() {
+        if (typeof localStorage === 'undefined') return;
         for (const key in settingsCache) {
             if (settingsCache.hasOwnProperty(key)) {
                 delete settingsCache[key];
@@ -20,18 +21,19 @@ class settingsState {
     clearvalue(page: string, key: string) {
         const fullKey = `${page}-${key}`;
         delete settingsCache[fullKey];
-        localStorage && localStorage.removeItem(fullKey);
+        if (typeof localStorage !== 'undefined') localStorage.removeItem(fullKey);
     }
     setvalue<T>(page: string, key: string, value: T) {
         const fullKey = `${page}-${key}`;
         settingsCache[fullKey] = value;
-        localStorage && localStorage.setItem(fullKey, JSON.stringify(value));
+        if (typeof localStorage !== 'undefined') localStorage.setItem(fullKey, JSON.stringify(value));
     }
     getvalue<T>(page: string, key: string, defaultValue: T): T {
         const fullKey = `${page}-${key}`;
         if( settingsCache.hasOwnProperty(fullKey) ) {
             return JSON.parse(JSON.stringify(settingsCache[fullKey]));
         }
+        if (typeof localStorage === 'undefined') return JSON.parse(JSON.stringify(defaultValue));   
         let value = localStorage.getItem(fullKey);
         if (value != null) {
             try {

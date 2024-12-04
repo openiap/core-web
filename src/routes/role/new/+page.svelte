@@ -4,7 +4,7 @@
   import * as Form from "$lib/components/ui/form/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
   import { auth } from "$lib/stores/auth.svelte";
-  import { _userSchema, type UserSchema } from "./+page";
+  // import { _userSchema, type UserSchema } from "./page.server";
   import {
     type SuperValidated,
     type Infer,
@@ -16,34 +16,41 @@
 
   const { data } = $props();
   let errormessage = $state("");
-  const form = superForm(data.form, {
-    validators: zodClient(_userSchema),
-    onUpdate(e) {
-      if(!e.form.valid) return;
+  // const form = superForm(data.form, {
+  //   validators: zodClient(_userSchema),
+  //   onUpdate(e) {
+  //     if(!e.form.valid) return;
 
-      errormessage = "Go away";
-      e.cancel();
-      return;
-      console.log("valid", e.form.valid);
-      console.log("data", e.form.data);
-      auth.client.InsertOne({collectionname: "users", item: {...e.form.data, _type: "role"}}).
-      finally(() => {
-        goto(base + "/role");
-      }).catch((e) => {
-        console.error(e);
-      });
-      e.cancel();
-    },
-    dataType: "json",
-    SPA: true,
-  });
+  //     errormessage = "Go away";
+  //     e.cancel();
+  //     return;
+  //     console.log("valid", e.form.valid);
+  //     console.log("data", e.form.data);
+  //     auth.client.InsertOne({collectionname: "users", item: {...e.form.data, _type: "role"}}).
+  //     finally(() => {
+  //       goto(base + "/role");
+  //     }).catch((e) => {
+  //       console.error(e);
+  //     });
+  //     e.cancel();
+  //   },
+  //   dataType: "json",
+  //   SPA: true,
+  // });
 
-  const { form: formData, enhance } = form;
+  // const { form: formData, enhance } = form;
+  const form = superForm(data.form);
+  const { form: formData, enhance, message } = form;
+
 </script>
 
 {#if errormessage && errormessage != ""}
   {errormessage}
 {/if}
+  
+  {#if message && $message != ""}
+    {$message}
+  {/if}
 
 <form method="POST" use:enhance>
   <Form.Field {form} name="name">

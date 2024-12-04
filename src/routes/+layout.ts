@@ -4,16 +4,9 @@ import { base } from "$app/paths";
 import { pushState } from "$app/navigation";
 import { error } from '@sveltejs/kit';
 export const load: PageLoad = async ( x: any ) => {
-    const { data, params, route, url } = x;
-	auth.config = data.config;
-	auth.origin = data.origin;
-	auth.baseurl = data.baseurl;
-	auth.wsurl = data.wsurl;
-	auth.clientinit();
-
+    const { data, fetch, url } = x;
+	await auth.clientinit(url.origin, fetch, null);
 	let code = url.searchParams.get("code");
-    console.debug("Layout", x);
-
 	try {
 		if(code != null && code != "") {
 			const user = await auth.userManager.signinRedirectCallback();
@@ -22,7 +15,7 @@ export const load: PageLoad = async ( x: any ) => {
 	} catch (err:any) {
 		// error(500, err.message);
 	}
-	await auth.loadUserAndClient();
+	console.debug("layout.ts: am i connected now ?", auth.isLoaded, auth.isAuthenticated);
 
     return data;
 
