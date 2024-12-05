@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Entities } from "$lib/components/ui/entities/index.js";
+  import { Entities } from "$lib/entities/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import Button from "$lib/components/ui/button/button.svelte";
   import { HotkeyInput } from "$lib/components/ui/hotkeyinput/index.js";
@@ -8,6 +8,7 @@
 
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
+  import { auth } from "$lib/stores/auth.svelte.js";
   import { settings } from "$lib/stores/settings.svelte";
   import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
 
@@ -25,8 +26,17 @@
   let searchstring = $state("");
   let selected_items = $state([]);
   let entities = $state(data.entities);
-  function deleteitem(item: any) {
-    console.log("deleteitem", item);
+  async function deleteitem(item: any) {
+    const deletecount = await auth.client.DeleteOne({
+      id: item._id,
+      collectionname,
+      jwt: auth.access_token,
+    });
+    if (deletecount == 1) {
+      entities = entities.filter((entity: any) => entity._id != item._id);
+    } else {
+      console.log("deletecount", deletecount);
+    }
   }
   function deleteitems(ids: string[]) {
     console.log("deleteitems", ids);

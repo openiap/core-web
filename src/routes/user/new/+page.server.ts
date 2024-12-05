@@ -43,19 +43,7 @@ export const actions: Actions = {
     }
     try {
       let item = { ...form.data, _type: "user" };
-      // await auth.client.InsertOne({ collectionname: "users", item: { ...form.data, _type: "user" } });
-      const response = await event.fetch(base + '/api/entities/users', {
-        method: 'POST',
-        headers: {
-            'Authorization': 'Bearer ' + auth.access_token,
-            'content-type': 'application/json'
-        },
-        body: JSON.stringify(item)
-      });
-      if(response.status !== 200) {
-        console.log('Error saving data ' + response.status + " " + response.statusText);
-        throw new Error('Error saving data ' + response.status + " " + response.statusText);
-      }
+      await auth.client.InsertOne({ collectionname: "users", item: { ...form.data, _type: "user" }, jwt: auth.access_token });
     } catch (err: any) {
       setError(form, 'name', err.message);
       return {

@@ -5,9 +5,9 @@ import { pushState } from "$app/navigation";
 import { error } from '@sveltejs/kit';
 import { browser } from "$app/environment";
 export const load: LayoutLoad = async ( { data, fetch, url }: { data: any, fetch: any, url: URL } ) => {
-	await auth.clientinit(url.origin, fetch, null);
 	let redirect = false;
 	if(browser) {
+		await auth.clientinit(url.origin, fetch, null);
 		let code = url.searchParams.get("code");
 		if(code != null && code != "") {
 			try {
@@ -20,6 +20,6 @@ export const load: LayoutLoad = async ( { data, fetch, url }: { data: any, fetch
 			}
 		}
 	}
-	console.debug(auth.profile?.name, "connected:", auth.isConnected, "authenticated:", auth.isAuthenticated, "loaded:", auth.isLoaded, "layout.ts");
+	// console.debug("connected:", auth.isConnected, "authenticated:", auth.isAuthenticated, "loaded:", auth.isLoaded, "layout.ts");
     return {...data, redirect};
 };

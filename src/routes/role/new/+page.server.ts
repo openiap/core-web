@@ -33,7 +33,7 @@ export const actions: Actions = {
       });
     }
     try {
-      await auth.client.InsertOne({ collectionname: "users", item: { ...form.data, _type: "role" } });
+      await auth.client.InsertOne({ collectionname: "users", item: { ...form.data, _type: "role" }, jwt: auth.access_token });
     } catch (err: any) {
       setError(form, 'name', err.message);
       return {

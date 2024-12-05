@@ -2,8 +2,6 @@
 	import * as Table from "$lib/components/ui/table/index.js";
 	import { Checkbox } from "$lib/components/ui/checkbox/index.js";
 	import * as Sheet from "$lib/components/ui/sheet/index.js";
-	import { Input } from "$lib/components/ui/input/index.js";
-	import { Label } from "$lib/components/ui/label/index.js";
 	import { Switch } from "$lib/components/ui/switch/index.js";
 	import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
 
@@ -11,12 +9,9 @@
 	import ArrowDown from "lucide-svelte/icons/arrow-down";
 	import SuperDebug from "sveltekit-superforms";
 
-	import { base } from "$app/paths";
 	import { buttonVariants } from "$lib/components/ui/button/index.js";
-	import { onMount } from "svelte";
 	import { auth } from "$lib/stores/auth.svelte";
 	import { settings } from "$lib/stores/settings.svelte";
-	import { get } from "svelte/store";
 	export type sort = "asc" | "desc" | "";
 	export class TableHeader {
 		name: string = "";
@@ -30,9 +25,7 @@
 </script>
 
 <script lang="ts">
-	import { HotkeyButton } from "../hotkeybutton";
-	import { browser } from "$app/environment";
-
+	import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
 	let {
 		page = "entities",
 		defaultcolumnnames = ["_id", "name", "_type", "_created"],
@@ -65,39 +58,26 @@
 	page_index = settings.getvalue(page, "page_index", 0);
 
 	async function GetData() {
+		console.log("*** GetData");
 		let orderby = getOrderBy();
 		let query = createQuery();
 		let top = 5;
 		let skip = page_index * top;
 
-		console.log("GetData", collectionname, query, orderby, skip, top);
 		if (auth.isLoaded == false) {
-			console.log("GetData", "auth.isLoaded == false");
 			return;
 		}
 		if (auth.isAuthenticated == false) {
-			console.log("GetData", "auth.isAuthenticated == false");
 			return;
 		}
-		console.log("GetData", "fetching data from", base + "/api/query");
-
-		const response = await fetch(base + "/api/query", {
-			method: "POST",
-			body: JSON.stringify({
-				collectionname: collectionname,
-				query: query,
-				orderby: orderby,
-				skip: skip,
-				top: 5,
-			}),
-			headers: {
-				"content-type": "application/json",
-			},
+		entities = await auth.client.Query<any>({
+			collectionname: collectionname,
+			query: query,
+			orderby: orderby,
+			skip: skip,
+			top: 5,
+			jwt: auth.access_token,
 		});
-		entities = await response.json();
-
-		console.log("GetData", entities.length);
-
 		if (entities.length > 0) {
 			let keys = [];
 			for (let i = 0; i < entities.length; i++) {
@@ -120,18 +100,11 @@
 					headers.push(header);
 				}
 			}
-
-			const response = await fetch(base + "/api/count", {
-				method: "POST",
-				body: JSON.stringify({
-					collectionname: collectionname,
-					query: query,
-				}),
-				headers: {
-					"content-type": "application/json",
-				},
+			total_count = await auth.client.Count({
+				collectionname,
+				query,
+				jwt: auth.access_token,
 			});
-			total_count = await response.json();
 		}
 	}
 
@@ -203,42 +176,42 @@
 	}
 
 	// auth.onLogin(async () => {
-		$effect(() => {
-			if (_searchstring != searchstring) {
-				_searchstring = searchstring;
-				page_index = 0;
-				total_count = 99999;
-			}
-			if (_collectionname != collectionname) {
-				_collectionname = collectionname;
-				page_index = settings.getvalue(page, "page_index", 0);
-				_searchstring = settings.getvalue(page, "searchstring", "");
-				searchstring = settings.getvalue(page, "searchstring", "");
-				selected_items = settings.getvalue(page, "selected_items", []);
-				headers = settings.getvalue(page, "headers", []);
-				total_count = 99999;
-			}
-			settings.setvalue(
-				page,
-				"searchstring",
-				$state.snapshot(searchstring),
-			);
-			SaveHeaders();
-			if (selected_items.length > 0) {
-				settings.setvalue(page, "selected_items", selected_items);
-			} else {
-				settings.clearvalue(page, "selected_items");
-			}
-			if (page_index > 0) {
-				settings.setvalue(page, "page_index", page_index);
-			} else {
-				settings.clearvalue(page, "page_index");
-			}
-			SetHeaders();
-			GetData();
-		});
+	$effect(() => {
+		if (_searchstring != searchstring) {
+			_searchstring = searchstring;
+			page_index = 0;
+			total_count = 99999;
+		}
+		if (_collectionname != collectionname) {
+			_collectionname = collectionname;
+			page_index = settings.getvalue(page, "page_index", 0);
+			_searchstring = settings.getvalue(page, "searchstring", "");
+			searchstring = settings.getvalue(page, "searchstring", "");
+			selected_items = settings.getvalue(page, "selected_items", []);
+			headers = settings.getvalue(page, "headers", []);
+			total_count = 99999;
+		}
+		settings.setvalue(
+			page,
+			"searchstring",
+			$state.snapshot(searchstring),
+		);
+		SaveHeaders();
+		if (selected_items.length > 0) {
+			settings.setvalue(page, "selected_items", selected_items);
+		} else {
+			settings.clearvalue(page, "selected_items");
+		}
+		if (page_index > 0) {
+			settings.setvalue(page, "page_index", page_index);
+		} else {
+			settings.clearvalue(page, "page_index");
+		}
+		SetHeaders();
+		GetData();
+	});
 
-	// 	SetHeaders();
+	SetHeaders();
 	// 	await GetData();
 	// });
 

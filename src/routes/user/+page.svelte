@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Entities } from "$lib/components/ui/entities/index.js";
+  import { Entities } from "$lib/entities/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { HotkeyInput } from "$lib/components/ui/hotkeyinput/index.js";
   import { Label } from "$lib/components/ui/label/index.js";
@@ -8,10 +8,11 @@
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import { settings } from "$lib/stores/settings.svelte";
-  
+
   let { data } = $props();
   import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
-    import Button from "$lib/components/ui/button/button.svelte";
+  import Button from "$lib/components/ui/button/button.svelte";
+  import { auth } from "$lib/stores/auth.svelte.js";
 
   function reset() {
     settings.clearall();
@@ -27,19 +28,16 @@
   let entities = $state(data.entities);
 
   async function deleteitem(item: any) {
-    console.log("deleteitem", item);
-    const response = await fetch(base + "/api/entities/" + collectionname + "/" + item._id, {
-				method: "DELETE",
-				headers: {
-					"content-type": "application/json",
-				},
-			});
-      if(response.status !== 200) {
-        console.error("error", response);
-        return;
-      }
-			const result = await response.json();
-      console.log("result", result);
+    const deletecount = await auth.client.DeleteOne({
+      id: item._id,
+      collectionname,
+      jwt: auth.access_token,
+    });
+    if (deletecount == 1) {
+      entities = entities.filter((entity: any) => entity._id != item._id);
+    } else {
+      console.log("deletecount", deletecount);
+    }
   }
   function deleteitems(ids: string[]) {
     console.log("deleteitems", ids);
@@ -75,6 +73,7 @@
   delete_selected={deleteitems}
   {single_item_click}
   bind:selected_items
+  bind:entities
 >
   {#snippet action(item: any)}
     <Button onclick={() => deleteitem(item)} size="icon" variant="destructive">

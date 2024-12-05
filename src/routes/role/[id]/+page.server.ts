@@ -17,8 +17,8 @@ export const load: PageServerLoad = async (x: any) => {
   let data = x.data || {};
   let id = x.params.id;
   await auth.clientinit(x.url.origin, x.fetch, x.cookies);
-  console.debug(auth.profile?.name, "connected:", auth.isConnected, "authenticated:", auth.isAuthenticated, "loaded:", auth.isLoaded, "role.page.server.ts");
-  let item = await auth.client.FindOne<any>({ collectionname: "users",  query: { _id: id } });
+  // console.debug("connected:", auth.isConnected, "authenticated:", auth.isAuthenticated, "loaded:", auth.isLoaded, "role.page.server.ts");
+  let item = await auth.client.FindOne<any>({ collectionname: "users",  query: { _id: id }, jwt: auth.access_token});
   data.form = await superValidate(item, zod(_userSchema));
   return data;
 };
@@ -33,7 +33,7 @@ export const actions: Actions = {
       });
     }
     try {
-      await auth.client.UpdateOne({ collectionname: "users", item: form.data });
+      await auth.client.UpdateOne({ collectionname: "users", item: form.data, jwt: auth.access_token });
     } catch (err: any) {
       setError(form, 'name', err.message);
       return {

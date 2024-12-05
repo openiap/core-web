@@ -12,7 +12,7 @@ class authState {
     isAuthenticated: boolean = $state(false);
     profile: pkg.Profile = {} as any;
     access_token: string = "";
-    client: openiap = {} as any;
+    client: openiap | null = null;
     userManager: any;
     isLoaded: boolean = $state(false);
     isConnected: boolean = $state(false);
@@ -27,7 +27,7 @@ class authState {
         this.baseurl = origin;
         let configurl = "/config";
         if (this.origin.includes(":517") || this.origin.includes(":417")) {
-            this.baseurl = "https://home.openiap.io";
+            this.baseurl = "https://demo.openiap.io";
             configurl = this.baseurl + "/config";
         }
         this.wsurl = this.baseurl.replace("https://", "wss://").replace("http://", "ws://") + "/ws/v2";
@@ -81,44 +81,50 @@ class authState {
         if (result != null) {
             auth.profile = result.profile;
             auth.access_token = result.access_token;
-            // if (!browser) {
-            //     global.WebSocket = ws;
-            //     await this.connect();
-            // }
             auth.isAuthenticated = true;
         } else {
             auth.profile = {} as any;
             auth.access_token = "";
             console.debug("No user found");
         }
+        if (!browser) {
+            global.WebSocket = ws;
+        }
+        await this.connect();
         this.isLoaded = true;
     }
+    connectWaitingPromisses: any[] = [];
     async connect() {
-        console.debug("Creating new client for", this.wsurl);
-        this.client = new openiap(this.wsurl, this.access_token);
-        await this.client.connect(true);
-        this.isConnected = true;
-    }
-    loginCallbacks: any[] = [];
-    onLogin(callback: (user: pkg.Profile) => void) {
-        if (callback == null) {
+        if(this.client != null && this.client.connected) {
+            console.debug("Client already connected");
             return;
         }
-        if (this.isLoaded == true) {
-            callback(this.profile);
-            return;
+        if(this.client == null) {
+            console.debug("Creating new client for", this.wsurl);
+            this.client = new openiap(this.wsurl, this.access_token);
+            console.debug("Connecting client");
+            await this.client.connect(true);
+            this.isConnected = true;
+            this.connectWaitingPromisses.forEach((resolve: any) => {
+                console.debug("Resolving connect promise");
+                resolve();
+            });
+        } else {
+            console.debug("Waiting for client to connect");
+            await new Promise((resolve) => {
+                this.connectWaitingPromisses.push(resolve);
+            });
         }
-        this.loginCallbacks.push(callback);
-        // $effect(() => {
-        //     if (this.isLoaded == true) {
-        //         for (let i = this.loginCallbacks.length - 1; i >= 0; i--) {
-        //             this.loginCallbacks[i](this.profile);
-        //             this.loginCallbacks.splice(i, 1);
-        //         }
-        //     }
-
-        // });
     }
+    // async connect() {
+    //     // if(this.client != null && this.client.connected) {
+    //     //     return;
+    //     // }
+    //     console.debug("Creating new client for", this.wsurl);
+    //     this.client = new openiap(this.wsurl, this.access_token);
+    //     await this.client.connect(true);
+    //     this.isConnected = true;
+    // }
 }
 
 let defaultstate = new authState();
