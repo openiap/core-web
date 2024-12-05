@@ -79,9 +79,9 @@
 			console.log("GetData", "auth.isAuthenticated == false");
 			return;
 		}
-		console.log("GetData", "fetching data from", base + "/api/entities");
+		console.log("GetData", "fetching data from", base + "/api/query");
 
-		const response = await fetch(base + "/api/entities", {
+		const response = await fetch(base + "/api/query", {
 			method: "POST",
 			body: JSON.stringify({
 				collectionname: collectionname,
@@ -121,7 +121,7 @@
 				}
 			}
 
-			const response = await fetch(base + "/api/entities/count", {
+			const response = await fetch(base + "/api/count", {
 				method: "POST",
 				body: JSON.stringify({
 					collectionname: collectionname,

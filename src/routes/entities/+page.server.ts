@@ -7,7 +7,7 @@ export const load: PageServerLoad = async (x:any) => {
 	await auth.clientinit(url.origin, fetch, cookies);
 	console.debug(auth.profile?.name, "connected:", auth.isConnected, "authenticated:", auth.isAuthenticated, "loaded:", auth.isLoaded, "entities/page.server.ts");
 
-    const response = await fetch(base + "/api/entities", {
+    const response = await fetch(base + "/api/query", {
         method: "POST",
         body: JSON.stringify({
             collectionname: "entities",
