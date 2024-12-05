@@ -16,29 +16,6 @@
 
   const { data } = $props();
   let errormessage = $state("");
-  // const form = superForm(data.form, {
-  //   validators: zodClient(_userSchema),
-  //   onUpdate(e) {
-  //     if(!e.form.valid) return;
-
-  //     errormessage = "Go away";
-  //     e.cancel();
-  //     return;
-  //     console.log("valid", e.form.valid);
-  //     console.log("data", e.form.data);
-  //     auth.client.InsertOne({collectionname: "users", item: {...e.form.data, _type: "role"}}).
-  //     finally(() => {
-  //       goto(base + "/role");
-  //     }).catch((e) => {
-  //       console.error(e);
-  //     });
-  //     e.cancel();
-  //   },
-  //   dataType: "json",
-  //   SPA: true,
-  // });
-
-  // const { form: formData, enhance } = form;
   const form = superForm(data.form);
   const { form: formData, enhance, message } = form;
 

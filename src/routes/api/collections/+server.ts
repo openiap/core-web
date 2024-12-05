@@ -16,8 +16,8 @@ export async function GET({ url, cookies, fetch }) {
         console.log("GET", auth.profile?.name, url.pathname, response.status, response.statusText);
         const results = await response.json();
         return new Response(String(JSON.stringify(results)));
-    } catch (error:any) {
+    } catch (error: any) {
         console.error("POST", url.pathname, error);
-        return new Response(error.message, { status: 500 });  
+        return new Response(error.message, { status: 500 });
     }
 }

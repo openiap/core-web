@@ -12,39 +12,42 @@
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import { settings } from "$lib/stores/settings.svelte";
-    import { auth } from "$lib/stores/auth.svelte";
-    import { browser } from "$app/environment";
+  import { auth } from "$lib/stores/auth.svelte";
+  import { browser } from "$app/environment";
 
   function reset() {
     settings.clearall();
     goto(base + `/`);
   }
 
-  let defaultcolumnnames = ["_id", "name", "_type", "_createdby", "_modified", "_created"];
+  let defaultcolumnnames = [
+    "_id",
+    "name",
+    "_type",
+    "_createdby",
+    "_modified",
+    "_created",
+  ];
   let collectionname = $state("");
   collectionname = settings.getvalue("entities", "collectionname", "entities");
-  let page = $derived(()=> "entities-" + collectionname); 
-  let query = { };
+  let page = $derived(() => "entities-" + collectionname);
+  let query = {};
   let searchstring = $state("");
   let selected_items = $state([]);
-  let collections = $state([{name: 'entities', type: 'collection'},{name: 'users', type: 'collection'}]);
+  let collections = $state([
+    { name: "entities", type: "collection" },
+    { name: "users", type: "collection" },
+  ]);
   auth.onLogin(async () => {
     console.log("fetch collections");
-    if(browser) {      
-			const response = await fetch(base + '/api/collections', {
-				method: 'GET',
-				headers: {
-					'content-type': 'application/json'
-				}
-			});
-      console.log("response", response);
-      collections = await response.json();
-
-    } else {
-      auth.client.ListCollections().then((res) => {
-      collections = res;
+    const response = await fetch(base + "/api/collections", {
+      method: "GET",
+      headers: {
+        "content-type": "application/json",
+      },
     });
-    }
+    console.log("response", response);
+    collections = await response.json();
   });
   function deleteitem(item: any) {
     console.log("deleteitem", item);
@@ -52,7 +55,7 @@
   function deleteitems(ids: string[]) {
     console.log("deleteitems", ids);
   }
-  function collectionvariant(name: string):any {
+  function collectionvariant(name: string): any {
     return name == collectionname ? "primary" : "secondary";
   }
   function selectcollection(name: string) {
@@ -61,19 +64,21 @@
   }
 </script>
 
-<style>
-</style>
-
-collectionname: {collectionname}<br>
+collectionname: {collectionname}<br />
 <div class="flex min-h-screen items-start justify-center">
   <div id="div1" class="w-full max-w-[300px] flex-shrink-0 hidden sm:block">
     <!-- <ScrollArea class="max-h-screen sm:max-h-[calc(100vh-8rem)] overflow-auto"> -->
-      <ScrollArea class="max-h-[80vh]">
+    <ScrollArea class="max-h-[80vh]">
       <div class="p-4">
         <h4 class="mb-4 text-sm font-medium leading-none">Tags</h4>
         {#each collections as tag}
           <div class="text-sm">
-            <Button variant={collectionvariant(tag.name)} onclick={(e)=> {selectcollection(tag.name)}} >{tag.name}</Button> 
+            <Button
+              variant={collectionvariant(tag.name)}
+              onclick={(e) => {
+                selectcollection(tag.name);
+              }}>{tag.name}</Button
+            >
           </div>
           <Separator class="my-2" />
         {/each}
@@ -118,30 +123,32 @@ collectionname: {collectionname}<br>
   </div>
 </div>
 
-
 <HotkeyButton
-	data-shortcut="ArrowUp"
-	onclick={() => {
+  data-shortcut="ArrowUp"
+  onclick={() => {
     let index = collections.findIndex((x) => x.name == collectionname);
     if (index > 0) {
       collectionname = collections[index - 1].name;
       settings.setvalue("entities", "collectionname", collectionname);
-    }		
-	}}
+    }
+  }}
   hidden={true}
-  class="hidden"
-	>Previous</HotkeyButton
+  class="hidden">Previous</HotkeyButton
 >
 <HotkeyButton
-	data-shortcut="ArrowDown"
-	onclick={() => {
+  data-shortcut="ArrowDown"
+  onclick={() => {
     let index = collections.findIndex((x) => x.name == collectionname);
     if (index < collections.length - 1) {
       collectionname = collections[index + 1].name;
       settings.setvalue("entities", "collectionname", collectionname);
     }
-	}}
+  }}
   hidden={true}
   class="hidden"
-  >
-	Next</HotkeyButton>
+>
+  Next</HotkeyButton
+>
+
+<style>
+</style>

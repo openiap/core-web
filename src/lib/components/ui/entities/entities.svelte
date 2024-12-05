@@ -31,7 +31,7 @@
 
 <script lang="ts">
 	import { HotkeyButton } from "../hotkeybutton";
-    import { browser } from "$app/environment";
+	import { browser } from "$app/environment";
 
 	let {
 		page = "entities",
@@ -71,57 +71,47 @@
 		let skip = page_index * top;
 
 		console.log("GetData", collectionname, query, orderby, skip, top);
-		if(auth.isLoaded == false) {
+		if (auth.isLoaded == false) {
 			console.log("GetData", "auth.isLoaded == false");
 			return;
 		}
-		if(auth.isAuthenticated == false) {
+		if (auth.isAuthenticated == false) {
 			console.log("GetData", "auth.isAuthenticated == false");
 			return;
 		}
 
-		if(browser) {
-			const response = await fetch(base + '/api/entities', {
-				method: 'POST',
-				body: JSON.stringify({ 
-					collectionname: collectionname,
-					query: query,
-					orderby: orderby,
-					skip: skip,
-					top: 5,
-				}),
-				headers: {
-					'content-type': 'application/json'
-				}
-			});
-		entities = await response.json();
-		} else {
-			entities = await auth.client.Query<any>({
+		const response = await fetch(base + "/api/entities", {
+			method: "POST",
+			body: JSON.stringify({
 				collectionname: collectionname,
 				query: query,
 				orderby: orderby,
 				skip: skip,
 				top: 5,
-			});
-		}
+			}),
+			headers: {
+				"content-type": "application/json",
+			},
+		});
+		entities = await response.json();
 
 		console.log("GetData", entities.length);
 
 		if (entities.length > 0) {
 			let keys = [];
-			for(let i = 0; i < entities.length; i++) {
+			for (let i = 0; i < entities.length; i++) {
 				let entity = entities[i];
 				let subkeys = Object.keys(entity);
-				for(let j = 0; j < subkeys.length; j++) {
+				for (let j = 0; j < subkeys.length; j++) {
 					let key = subkeys[j];
-					if(keys.indexOf(key) == -1) {
+					if (keys.indexOf(key) == -1) {
 						keys.push(key);
 					}
 				}
 			}
-			for(let i = 0; i < keys.length; i++) {
+			for (let i = 0; i < keys.length; i++) {
 				let key = keys[i];
-				if(headers.find(x => x.field == key) == null) {
+				if (headers.find((x) => x.field == key) == null) {
 					let header = new TableHeader();
 					header.field = key;
 					header.name = key;
@@ -130,21 +120,17 @@
 				}
 			}
 
-			if(browser) {
-				const response = await fetch(base + '/api/entities/count', {
-					method: 'POST',
-					body: JSON.stringify({ 
-						collectionname: collectionname,
-						query: query,
-					}),
-					headers: {
-						'content-type': 'application/json'
-					}
-				});
-				total_count = await response.json();
-			} else {
-				total_count = await auth.client.Count({ collectionname, query });
-			}
+			const response = await fetch(base + "/api/entities/count", {
+				method: "POST",
+				body: JSON.stringify({
+					collectionname: collectionname,
+					query: query,
+				}),
+				headers: {
+					"content-type": "application/json",
+				},
+			});
+			total_count = await response.json();
 		}
 	}
 
@@ -209,7 +195,7 @@
 	}
 	function SaveHeaders() {
 		let _headers = $state.snapshot(headers);
-		for(let i=0; i < _headers.length; i++) {
+		for (let i = 0; i < _headers.length; i++) {
 			_headers[i].show = $state.snapshot(headers[i].show);
 		}
 		settings.setvalue(page, "headers", _headers);
@@ -522,7 +508,8 @@
 		<Table.Row>
 			{#if multi_select}
 				<Table.Head class="w-8" role="cell"
-					><Checkbox aria-label="Select all"
+					><Checkbox
+						aria-label="Select all"
 						checked={is_all_selected()}
 						onclick={ToogleAll}
 					/></Table.Head
@@ -567,7 +554,8 @@
 			>
 				{#if multi_select}
 					<Table.Cell class="w-8"
-						><Checkbox aria-label="Select item"
+						><Checkbox
+							aria-label="Select item"
 							checked={selected_items.indexOf(item._id) > -1}
 						/></Table.Cell
 					>
@@ -635,36 +623,37 @@
 {/if}
 {#if headers != null && headers.length > 0}
 	<Sheet.Root>
-		<Sheet.Trigger>
-			Select columns
-		</Sheet.Trigger>
+		<Sheet.Trigger>Select columns</Sheet.Trigger>
 		<Sheet.Content>
 			<Sheet.Header>
 				<Sheet.Title>Select columns</Sheet.Title>
 				<Sheet.Description>
-				  Select what columns to show in the table.
+					Select what columns to show in the table.
 				</Sheet.Description>
-			  </Sheet.Header>
-			  <div class="grid gap-4 py-4">
+			</Sheet.Header>
+			<div class="grid gap-4 py-4">
 				<ScrollArea class="max-h-[70vh]">
+					{#each headers as head}
+						<div
+							class=" flex items-center space-x-4 rounded-md border p-4"
+						>
+							<!-- <BellRing /> -->
+							<div class="flex-1 space-y-1">
+								<p class="text-muted-foreground text-sm">
+									{head.field}
+								</p>
+							</div>
+							<Switch
+								bind:checked={head.show}
+								onclick={() => {
+									// SaveHeaders();
+								}}
+							/>
+						</div>
+					{/each}
+				</ScrollArea>
 
-				{#each headers as head}
-				<div class=" flex items-center space-x-4 rounded-md border p-4">
-					<!-- <BellRing /> -->
-					<div class="flex-1 space-y-1">
-					  <p class="text-muted-foreground text-sm">
-						{head.field}
-					  </p>
-					</div>
-					<Switch bind:checked={head.show} onclick={()=> {
-						// SaveHeaders();
-					}}/>
-				  </div>
-
-				{/each}
-			</ScrollArea>
-
-<!-- 
+				<!-- 
 				<div class="grid grid-cols-4 items-center gap-4">
 				  <Label for="name" class="text-right">Name</Label>
 				  <Input id="name" value="Pedro Duarte" class="col-span-3" />
@@ -673,23 +662,23 @@
 				  <Label for="username" class="text-right">Username</Label>
 				  <Input id="username" value="@peduarte" class="col-span-3" />
 				</div> -->
-			  </div>
-			  <Sheet.Footer>
+			</div>
+			<Sheet.Footer>
 				<Sheet.Close class={buttonVariants({ variant: "outline" })}>
-				  Close
+					Close
 				</Sheet.Close>
-			  </Sheet.Footer>
+			</Sheet.Footer>
 		</Sheet.Content>
 	</Sheet.Root>
 {/if}
 
-{#if headers != null && headers.length > 0 && showdebug == true} 
+{#if headers != null && headers.length > 0 && showdebug == true}
 	<SuperDebug data={headers} theme="vscode" />
 {/if}
 
 <HotkeyButton
-  hidden
-  class="hidden"
-  data-shortcut={"Control+d,Meta+d"}
-  onclick={() => (showdebug = !showdebug)}>Toggle debug</HotkeyButton
+	hidden
+	class="hidden"
+	data-shortcut={"Control+d,Meta+d"}
+	onclick={() => (showdebug = !showdebug)}>Toggle debug</HotkeyButton
 >
