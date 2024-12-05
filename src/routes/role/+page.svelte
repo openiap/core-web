@@ -11,6 +11,8 @@
   import { settings } from "$lib/stores/settings.svelte";
   import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
 
+  let { data } = $props();
+
   function reset() {
     settings.clearall();
     goto(base + `/`);
@@ -22,6 +24,7 @@
   let query = { _type: "role" };
   let searchstring = $state("");
   let selected_items = $state([]);
+  let entities = $state(data.entities);
   function deleteitem(item: any) {
     console.log("deleteitem", item);
   }
@@ -59,6 +62,7 @@
   delete_selected={deleteitems}
   {single_item_click}
   bind:selected_items
+  bind:entities
 >
   {#snippet action(item: any)}
     <Button onclick={() => deleteitem(item)} size="icon" variant="destructive">

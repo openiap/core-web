@@ -55,7 +55,7 @@
 
 				<div class="flex flex-1 flex-col gap-4 p-4">
 					<main>
-						{#if auth.isAuthenticated == true}
+						{#if auth.isAuthenticated == true || auth.isAuthenticated == false}
 							<!-- <p>Logged in</p> -->
 							{@render children()}
 						{:else}

@@ -1,6 +1,5 @@
 <script lang="ts">
     import * as Dialog from "$lib/components/ui/dialog/index.js";
-    import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
     import { Search } from "lucide-svelte";
 </script>
 

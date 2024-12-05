@@ -1,22 +1,25 @@
 import { auth } from "$lib/stores/auth.svelte.js";
-import type { PageLoad } from "./$types.js";
+import type { LayoutLoad } from "./$types.js";
 import { base } from "$app/paths";
 import { pushState } from "$app/navigation";
 import { error } from '@sveltejs/kit';
-export const load: PageLoad = async ( x: any ) => {
-    const { data, fetch, url } = x;
+import { browser } from "$app/environment";
+export const load: LayoutLoad = async ( { data, fetch, url }: { data: any, fetch: any, url: URL } ) => {
 	await auth.clientinit(url.origin, fetch, null);
-	let code = url.searchParams.get("code");
-	try {
+	let redirect = false;
+	if(browser) {
+		let code = url.searchParams.get("code");
 		if(code != null && code != "") {
-			const user = await auth.userManager.signinRedirectCallback();
-			pushState(base + "/", {});
+			try {
+				const user = await auth.userManager.signinRedirectCallback();
+				// pushState(base + "/", {});
+				redirect = true;
+			} catch (error) {
+				redirect = true;
+				console.error("error", error);				
+			}
 		}
-	} catch (err:any) {
-		// error(500, err.message);
 	}
-	console.debug("layout.ts: am i connected now ?", auth.isLoaded, auth.isAuthenticated);
-
-    return data;
-
+	console.debug(auth.profile?.name, "connected:", auth.isConnected, "authenticated:", auth.isAuthenticated, "loaded:", auth.isLoaded, "layout.ts");
+    return {...data, redirect};
 };

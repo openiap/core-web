@@ -4,25 +4,15 @@ import { base } from "$app/paths";
 import { pushState } from "$app/navigation";
 import { error } from '@sveltejs/kit';
 export const load: LayoutServerLoad = async (x:any) => {
-	console.log("***************");
-	console.log("SERVER.LAYOUT.TS LOAD");
     const { data, fetch, cookies, url } = x;
-	// console.log("cookies", cookies.getAll());
-
-	console.log("layout url", url.origin, auth.origin);
-	// console.debug("server.layout.ts: am i connected now ?", auth.isLoaded, auth.isAuthenticated);
+	// console.log("layout url", url.origin, auth.origin);
 	await auth.clientinit(url.origin, fetch, cookies);
-	let code = url.searchParams.get("code");
-	try {
-		if(code != null && code != "") {
-			const user = await auth.userManager.signinRedirectCallback();
-			pushState(base + "/", {});
-		}
-	} catch (err:any) {
-		// error(500, err.message);
-	}
-	console.debug("server.layout.ts: am i connected now ?", auth.isLoaded, auth.isAuthenticated);
-	console.log("***************");
+	// let code = url.searchParams.get("code");
+	// if(code != null && code != "") {
+	// 	const user = await auth.userManager.signinRedirectCallback();
+	// 	pushState(base + "/", {});
+	// }
+	console.debug(auth.profile?.name, "connected:", auth.isConnected, "authenticated:", auth.isAuthenticated, "loaded:", auth.isLoaded, "layout.server.ts");
     return data;
 
 };
