@@ -26,8 +26,20 @@
   let selected_items = $state([]);
   let entities = $state(data.entities);
 
-  function deleteitem(item: any) {
+  async function deleteitem(item: any) {
     console.log("deleteitem", item);
+    const response = await fetch(base + "/api/entities/" + collectionname + "/" + item._id, {
+				method: "DELETE",
+				headers: {
+					"content-type": "application/json",
+				},
+			});
+      if(response.status !== 200) {
+        console.error("error", response);
+        return;
+      }
+			const result = await response.json();
+      console.log("result", result);
   }
   function deleteitems(ids: string[]) {
     console.log("deleteitems", ids);
