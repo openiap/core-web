@@ -33,7 +33,7 @@ export const load: PageServerLoad = async () => {
 };
 
 export const actions: Actions = {
-  default: async (event) => {
+  default: async (event:any) => {
     const form = await superValidate(event, zod(_userSchema));
 
     if (!form.valid) {
@@ -42,7 +42,20 @@ export const actions: Actions = {
       });
     }
     try {
-      await auth.client.InsertOne({ collectionname: "users", item: { ...form.data, _type: "user" } });
+      let item = { ...form.data, _type: "user" };
+      // await auth.client.InsertOne({ collectionname: "users", item: { ...form.data, _type: "user" } });
+      const response = await event.fetch(base + '/api/entities/users', {
+        method: 'POST',
+        headers: {
+            'Authorization': 'Bearer ' + auth.access_token,
+            'content-type': 'application/json'
+        },
+        body: JSON.stringify(item)
+      });
+      if(response.status !== 200) {
+        console.log('Error saving data ' + response.status + " " + response.statusText);
+        throw new Error('Error saving data ' + response.status + " " + response.statusText);
+      }
     } catch (err: any) {
       setError(form, 'name', err.message);
       return {
