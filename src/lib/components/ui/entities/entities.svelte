@@ -94,7 +94,6 @@
 					'content-type': 'application/json'
 				}
 			});
-
 		entities = await response.json();
 		} else {
 			entities = await auth.client.Query<any>({
