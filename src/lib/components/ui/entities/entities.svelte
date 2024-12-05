@@ -203,40 +203,40 @@
 	}
 
 	// auth.onLogin(async () => {
-	// 	$effect(() => {
-	// 		if (_searchstring != searchstring) {
-	// 			_searchstring = searchstring;
-	// 			page_index = 0;
-	// 			total_count = 99999;
-	// 		}
-	// 		if (_collectionname != collectionname) {
-	// 			_collectionname = collectionname;
-	// 			page_index = settings.getvalue(page, "page_index", 0);
-	// 			_searchstring = settings.getvalue(page, "searchstring", "");
-	// 			searchstring = settings.getvalue(page, "searchstring", "");
-	// 			selected_items = settings.getvalue(page, "selected_items", []);
-	// 			headers = settings.getvalue(page, "headers", []);
-	// 			total_count = 99999;
-	// 		}
-	// 		settings.setvalue(
-	// 			page,
-	// 			"searchstring",
-	// 			$state.snapshot(searchstring),
-	// 		);
-	// 		SaveHeaders();
-	// 		if (selected_items.length > 0) {
-	// 			settings.setvalue(page, "selected_items", selected_items);
-	// 		} else {
-	// 			settings.clearvalue(page, "selected_items");
-	// 		}
-	// 		if (page_index > 0) {
-	// 			settings.setvalue(page, "page_index", page_index);
-	// 		} else {
-	// 			settings.clearvalue(page, "page_index");
-	// 		}
-	// 		SetHeaders();
-	// 		GetData();
-	// 	});
+		$effect(() => {
+			if (_searchstring != searchstring) {
+				_searchstring = searchstring;
+				page_index = 0;
+				total_count = 99999;
+			}
+			if (_collectionname != collectionname) {
+				_collectionname = collectionname;
+				page_index = settings.getvalue(page, "page_index", 0);
+				_searchstring = settings.getvalue(page, "searchstring", "");
+				searchstring = settings.getvalue(page, "searchstring", "");
+				selected_items = settings.getvalue(page, "selected_items", []);
+				headers = settings.getvalue(page, "headers", []);
+				total_count = 99999;
+			}
+			settings.setvalue(
+				page,
+				"searchstring",
+				$state.snapshot(searchstring),
+			);
+			SaveHeaders();
+			if (selected_items.length > 0) {
+				settings.setvalue(page, "selected_items", selected_items);
+			} else {
+				settings.clearvalue(page, "selected_items");
+			}
+			if (page_index > 0) {
+				settings.setvalue(page, "page_index", page_index);
+			} else {
+				settings.clearvalue(page, "page_index");
+			}
+			SetHeaders();
+			GetData();
+		});
 
 	// 	SetHeaders();
 	// 	await GetData();
