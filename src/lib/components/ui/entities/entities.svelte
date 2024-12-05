@@ -37,6 +37,7 @@
 		page = "entities",
 		defaultcolumnnames = ["_id", "name", "_type", "_created"],
 		query = { _type: "user" },
+		entities = $bindable([]),
 		searchstring = $bindable(""),
 		collectionname = "entities",
 		selected_items = $bindable([]),
@@ -50,7 +51,6 @@
 
 	let _searchstring = $state.snapshot(searchstring);
 	let _collectionname = $state.snapshot(collectionname);
-	let entities: any[] = $state([]);
 	let headers: TableHeader[] = $state([]);
 	let multi_sort = $state(true);
 	let hide_empty_on_sort = $state(true);
@@ -79,6 +79,7 @@
 			console.log("GetData", "auth.isAuthenticated == false");
 			return;
 		}
+		console.log("GetData", "fetching data from", base + "/api/entities");
 
 		const response = await fetch(base + "/api/entities", {
 			method: "POST",
@@ -201,45 +202,45 @@
 		settings.setvalue(page, "headers", _headers);
 	}
 
-	auth.onLogin(async () => {
-		$effect(() => {
-			if (_searchstring != searchstring) {
-				_searchstring = searchstring;
-				page_index = 0;
-				total_count = 99999;
-			}
-			if (_collectionname != collectionname) {
-				_collectionname = collectionname;
-				page_index = settings.getvalue(page, "page_index", 0);
-				_searchstring = settings.getvalue(page, "searchstring", "");
-				searchstring = settings.getvalue(page, "searchstring", "");
-				selected_items = settings.getvalue(page, "selected_items", []);
-				headers = settings.getvalue(page, "headers", []);
-				total_count = 99999;
-			}
-			settings.setvalue(
-				page,
-				"searchstring",
-				$state.snapshot(searchstring),
-			);
-			SaveHeaders();
-			if (selected_items.length > 0) {
-				settings.setvalue(page, "selected_items", selected_items);
-			} else {
-				settings.clearvalue(page, "selected_items");
-			}
-			if (page_index > 0) {
-				settings.setvalue(page, "page_index", page_index);
-			} else {
-				settings.clearvalue(page, "page_index");
-			}
-			SetHeaders();
-			GetData();
-		});
+	// auth.onLogin(async () => {
+	// 	$effect(() => {
+	// 		if (_searchstring != searchstring) {
+	// 			_searchstring = searchstring;
+	// 			page_index = 0;
+	// 			total_count = 99999;
+	// 		}
+	// 		if (_collectionname != collectionname) {
+	// 			_collectionname = collectionname;
+	// 			page_index = settings.getvalue(page, "page_index", 0);
+	// 			_searchstring = settings.getvalue(page, "searchstring", "");
+	// 			searchstring = settings.getvalue(page, "searchstring", "");
+	// 			selected_items = settings.getvalue(page, "selected_items", []);
+	// 			headers = settings.getvalue(page, "headers", []);
+	// 			total_count = 99999;
+	// 		}
+	// 		settings.setvalue(
+	// 			page,
+	// 			"searchstring",
+	// 			$state.snapshot(searchstring),
+	// 		);
+	// 		SaveHeaders();
+	// 		if (selected_items.length > 0) {
+	// 			settings.setvalue(page, "selected_items", selected_items);
+	// 		} else {
+	// 			settings.clearvalue(page, "selected_items");
+	// 		}
+	// 		if (page_index > 0) {
+	// 			settings.setvalue(page, "page_index", page_index);
+	// 		} else {
+	// 			settings.clearvalue(page, "page_index");
+	// 		}
+	// 		SetHeaders();
+	// 		GetData();
+	// 	});
 
-		SetHeaders();
-		await GetData();
-	});
+	// 	SetHeaders();
+	// 	await GetData();
+	// });
 
 	/**
 	 * Ordering columns

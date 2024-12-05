@@ -8,7 +8,8 @@
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import { settings } from "$lib/stores/settings.svelte";
-  import Button from "$lib/components/ui/button/button.svelte";
+  
+  let { data } = $props();
 
   function reset() {
     settings.clearall();
@@ -21,6 +22,7 @@
   let query = { _type: "user" };
   let searchstring = $state("");
   let selected_items = $state([]);
+  let entities = $state(data.entities);
 
   function deleteitem(item: any) {
     console.log("deleteitem", item);
@@ -55,5 +57,6 @@
   delete_selected={deleteitems}
   single_item_click={single_item_click}
   bind:selected_items
+  bind:entities 
 >
 </Entities>

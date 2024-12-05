@@ -5,7 +5,8 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
-		"preview": "vite build && vite preview",
+		"build:watch": "vite build --watch",
+		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"updateapi": "npm uninstall @openiap/jsapi && npm -D i openiap/jsapi#esm"

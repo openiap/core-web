@@ -15,6 +15,8 @@
   import { auth } from "$lib/stores/auth.svelte";
   import { browser } from "$app/environment";
 
+  let { data } = $props();
+
   function reset() {
     settings.clearall();
     goto(base + `/`);
@@ -34,21 +36,8 @@
   let query = {};
   let searchstring = $state("");
   let selected_items = $state([]);
-  let collections = $state([
-    { name: "entities", type: "collection" },
-    { name: "users", type: "collection" },
-  ]);
-  auth.onLogin(async () => {
-    console.log("fetch collections");
-    const response = await fetch(base + "/api/collections", {
-      method: "GET",
-      headers: {
-        "content-type": "application/json",
-      },
-    });
-    console.log("response", response);
-    collections = await response.json();
-  });
+  let collections:any[] = $state(data.collections);
+  let entities = $state(data.entities);
   function deleteitem(item: any) {
     console.log("deleteitem", item);
   }
@@ -108,6 +97,7 @@ collectionname: {collectionname}<br />
       page={page()}
       delete_selected={deleteitems}
       bind:selected_items
+      bind:entities
     >
       <!-- {#snippet action(item: any)}
           <Button

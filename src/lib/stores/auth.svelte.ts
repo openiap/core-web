@@ -81,10 +81,10 @@ class authState {
         if (result != null) {
             auth.profile = result.profile;
             auth.access_token = result.access_token;
-            if (!browser) {
-                global.WebSocket = ws;
-                await this.connect();
-            }
+            // if (!browser) {
+            //     global.WebSocket = ws;
+            //     await this.connect();
+            // }
             auth.isAuthenticated = true;
         } else {
             auth.profile = {} as any;
