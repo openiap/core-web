@@ -5,10 +5,12 @@
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
   import { superForm } from "sveltekit-superforms";
+  import { zod } from "sveltekit-superforms/adapters";
+  import { userSchema } from "../schema.js";
 
   const key = "role";
   const { data } = $props();
-  const form = superForm(data.form, { dataType: "json" });
+  const form = superForm(data.form, { validators: zod(userSchema) });
   const { form: formData, enhance, message } = form;
 </script>
 
