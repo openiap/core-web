@@ -101,7 +101,11 @@ class authState {
         }
         if(this.client == null) {
             console.debug("Creating new client for", this.wsurl);
-            this.client = new openiap(this.wsurl, this.access_token);
+            if(browser) {
+                this.client = new openiap(this.wsurl, this.access_token);
+            } else {
+                this.client = new openiap(this.wsurl, "");
+            }
             console.debug("Connecting client");
             await this.client.connect(true);
             this.isConnected = true;
