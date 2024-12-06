@@ -12,7 +12,7 @@ class authState {
     isAuthenticated: boolean = $state(false);
     profile: pkg.Profile = {} as any;
     access_token: string = "";
-    client: openiap | null = null;
+    client: openiap = null as any;
     userManager: any;
     isLoaded: boolean = $state(false);
     isConnected: boolean = $state(false);
