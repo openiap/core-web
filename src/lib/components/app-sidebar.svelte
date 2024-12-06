@@ -26,6 +26,10 @@
 						title: "Entities",
 						url: `${base}/entities`,
 					},
+					{
+						title: "Mail History",
+						url: `${base}/mailhist`,
+					},
 				],
 			},
 			{

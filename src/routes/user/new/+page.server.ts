@@ -14,18 +14,24 @@ export const _userSchema = z.object({
   disabled: z.boolean(),
   dblocked: z.boolean(),
   validated: z.boolean(),
+  emailvalidated: z.boolean(),
+  formvalidated: z.boolean(),
+  federationids: z.array(z.string())
 });
 export type UserSchema = typeof _userSchema;
 
 export const load: PageServerLoad = async () => {
   const defaultValues = {
-    name: "John Doe",
-    username: "Johndoe",
-    email: "john@doe.com",
-    password: "123456",
-    disabled: false,
-    dblocked: false,
-    validated: false,
+    // name: "John Doe",
+    // username: "Johndoe",
+    // email: "john@doe.com",
+    // password: "123456",
+    // disabled: false,
+    // dblocked: false,
+    // validated: false,
+    // emailvalidated: false,
+    // formvalidated: false,
+    // federationids: [],
   }
   return {
     form: await superValidate(defaultValues, zod(_userSchema)),
@@ -33,7 +39,7 @@ export const load: PageServerLoad = async () => {
 };
 
 export const actions: Actions = {
-  default: async (event:any) => {
+  default: async (event: any) => {
     const form = await superValidate(event, zod(_userSchema));
 
     if (!form.valid) {

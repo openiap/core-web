@@ -6,6 +6,7 @@
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { base } from "$app/paths";
   import { goto } from "$app/navigation";
+  import Button from "$lib/components/ui/button/button.svelte";
 
   const key = "user";
   let showdebug = $state(false);
@@ -118,7 +119,7 @@
       {#snippet children({ props })}
         <Checkbox {...props} bind:checked={$formData.validated} />
         <div class="space-y-1 leading-none">
-          <Form.Label>Validated</Form.Label>
+          <Form.Label>validated</Form.Label>
           <Form.Description>
             Has user been email/form validated?
           </Form.Description>
@@ -126,6 +127,64 @@
       {/snippet}
     </Form.Control>
   </Form.Field>
+
+  <Form.Field
+    {form}
+    name="emailvalidated"
+    class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4"
+  >
+    <Form.Control>
+      {#snippet children({ props })}
+        <Checkbox {...props} bind:checked={$formData.emailvalidated} />
+        <div class="space-y-1 leading-none">
+          <Form.Label>emailvalidated</Form.Label>
+          <Form.Description>
+            Has user been email/form validated?
+          </Form.Description>
+        </div>
+      {/snippet}
+    </Form.Control>
+  </Form.Field>
+
+  <Form.Field
+    {form}
+    name="formvalidated"
+    class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4"
+  >
+    <Form.Control>
+      {#snippet children({ props })}
+        <Checkbox {...props} bind:checked={$formData.formvalidated} />
+        <div class="space-y-1 leading-none">
+          <Form.Label>formvalidated</Form.Label>
+          <Form.Description>
+            Has user been email/form validated?
+          </Form.Description>
+        </div>
+      {/snippet}
+    </Form.Control>
+  </Form.Field>
+
+  <Form.Field {form} name="email">
+    {#each $formData.federationids as item, index}
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Federation id {index + 1}</Form.Label>
+          <Input {...props} bind:value={$formData.federationids[index]} />
+        {/snippet}
+      </Form.Control>
+    {/each}
+    <Form.Description>This is your email.</Form.Description>
+    <Form.FieldErrors />
+  </Form.Field>
+  <div>
+    <Button
+      variant="outline"
+      onclick={() => {
+        let arr = $formData.federationids;
+        $formData.federationids = [...arr, ""];
+      }}>Add federation id</Button
+    >
+  </div>
 
   <Form.Button>Submit</Form.Button>
 </form>
