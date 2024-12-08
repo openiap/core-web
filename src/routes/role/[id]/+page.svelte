@@ -21,7 +21,10 @@
 <div>
   Edit {key}
 </div>
-<HotkeyButton onclick={() => goto(base + `/${key}`)}>Back</HotkeyButton>
+<Form.Button aria-label="submit">Submit</Form.Button>
+<HotkeyButton aria-label="back" onclick={() => goto(base + `/${key}`)}
+  >Back</HotkeyButton
+>
 <form method="POST" use:enhance>
   <Form.Field {form} name="name">
     <Form.Control>
@@ -43,5 +46,5 @@
     <Form.Description>This is your email.</Form.Description>
     <Form.FieldErrors />
   </Form.Field>
-  <Form.Button>Submit</Form.Button>
+  <Form.Button aria-label="submit">Submit</Form.Button>
 </form>

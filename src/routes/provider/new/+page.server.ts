@@ -5,45 +5,44 @@ import { fail, redirect } from "@sveltejs/kit";
 import { z } from 'zod';
 import { auth } from "$lib/stores/auth.svelte.js";
 import { base } from "$app/paths";
-
-
+const key = "provider"
 export const _userSchema = z.object({
-  _id: z.string().min(2),
+  id: z.number().int().positive().optional(),
   name: z.string().min(2),
-  email: z.string().email(),
-}).passthrough();
+  forceddomains: z.array(z.string().email()).optional(),
+});
 export type UserSchema = typeof _userSchema;
 
-export const load: PageServerLoad = async (x: any) => {
-  let data = x.data || {};
-  let id = x.params.id;
-  console.log("id", id);
-  await auth.clientinit(x.url.origin, x.fetch, x.cookies);
-  let item = await auth.client.FindOne<any>({ collectionname: "users", query: { _id: id }, jwt: auth.access_token });
-  console.log("item", item);
-  data.form = await superValidate(item, zod(_userSchema));
-  return data;
+export const load: PageServerLoad = async () => {
+  const defaultValues = {
+    name: "John Doe",
+    id: "123",
+    federationids: [],
+  }
+  return {
+    form: await superValidate(zod(_userSchema)),
+  };
 };
 
 export const actions: Actions = {
-  default: async (event:any) => {
+  default: async (event: any) => {
     const form = await superValidate(event, zod(_userSchema));
+
     if (!form.valid) {
       return fail(400, {
         form,
       });
     }
     try {
-      let item = { ...form.data, _type: "user" };
-      await auth.client.UpdateOne({ collectionname: "users", item: form.data, jwt: auth.access_token });
+      // let item = { ...form.data, _type: "user" };
+      const res = await auth.client.InsertOne({ collectionname: "config", item: { ...form.data, _type: "provider_test" }, jwt: auth.access_token });
+      console.log("InsertOne", res);
     } catch (err: any) {
       setError(form, 'name', err.message);
       return {
         form,
       };
     }
-    throw redirect(303, base + '/user');
+    throw redirect(303, base + `/${key}`);
   },
 };
-
-      

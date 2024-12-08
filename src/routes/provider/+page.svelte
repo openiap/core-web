@@ -18,11 +18,11 @@
     settings.clearall();
     goto(base + `/`);
   }
-  const key = "user";
-  let defaultcolumnnames = ["_id", "name", "username", "email", "lastseen", "_created"];
-  let collectionname = "users";
-  let page = "users";
-  let query = { _type: "user" };
+  const key = "provider";
+  let defaultcolumnnames = ["name", "provider", "_created", "_modified"];
+  let collectionname = "config";
+  let page = "providers";
+  let query = { _type: "provider_test" };
   let searchstring = $state("");
   let selected_items = $state([]);
   let entities = $state(data.entities);
@@ -43,7 +43,7 @@
     console.log("deleteitems", ids);
   }
   function single_item_click(item: any) {
-    goto(base + `/${key}/${item._id}`);
+    goto(base + `/user/${item._id}`);
   }
 </script>
 
@@ -63,7 +63,7 @@
       bind:value={searchstring}
       data-shortcut={"Control+f,Meta+f"}
     />
-    <HotkeyButton aria-label="reset" onclick={reset}>Reset</HotkeyButton>
+    <HotkeyButton aria-label="Reset" onclick={reset}>Reset</HotkeyButton>
   </div>
 </div>
 <Entities

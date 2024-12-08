@@ -6,14 +6,10 @@ import { fail, redirect } from "@sveltejs/kit";
 import { auth } from "$lib/stores/auth.svelte.js";
 import { base } from "$app/paths";
 import { newUserSchema } from "../schema.js";
-
+const key = "role"
 export const load: PageServerLoad = async () => {
-  const defaultValues = {
-    name: "John Doe",
-    email: "john@doe.com"
-  }
   return {
-    form: await superValidate(defaultValues, zod(newUserSchema)),
+    form: await superValidate(zod(newUserSchema)),
   };
 };
 
@@ -34,6 +30,6 @@ export const actions: Actions = {
         form,
       };
     }
-    throw redirect(303, base + '/role');
+    throw redirect(303, base + `/${key}`);
   },
 };

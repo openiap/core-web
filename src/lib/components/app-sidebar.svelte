@@ -7,7 +7,7 @@
 		versions: ["1.0.1", "1.1.0-alpha", "2.0.0-beta1"],
 		navMain: [
 			{
-				title: "Getting Started",
+				title: "Old Pages",
 				url: `${base}/`,
 				items: [
 					{
@@ -22,20 +22,34 @@
 						title: "Roles",
 						url: `${base}/role`,
 					},
+
 					{
 						title: "Entities",
 						url: `${base}/entities`,
+					},
+				],
+			},
+			{
+				title: "New Pages",
+				url: "#",
+				items: [
+					{
+						title: "Customers",
+						url: `${base}/customer`,
+					},
+					{
+						title: "Providers",
+						url: `${base}/provider`,
+					},
+					{
+						title: "Resources",
+						url: `${base}/resource`,
 					},
 					{
 						title: "Mail History",
 						url: `${base}/mailhist`,
 					},
 				],
-			},
-			{
-				title: "Other functions",
-				url: "#",
-				items: [{ title: "Installation", url: "#" }],
 			},
 		],
 	};
@@ -94,10 +108,12 @@
 								{#snippet child({ props })}
 									<Sidebar.MenuButton {...props}>
 										{mainItem.title}{" "}
-										<Plus aria-label="expand"
+										<Plus
+											aria-label="expand"
 											class="ml-auto group-data-[state=open]/collapsible:hidden"
 										/>
-										<Minus aria-label="collapse"
+										<Minus
+											aria-label="collapse"
 											class="ml-auto group-data-[state=closed]/collapsible:hidden"
 										/>
 									</Sidebar.MenuButton>

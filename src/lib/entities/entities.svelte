@@ -647,7 +647,7 @@
 {/if}
 
 {#if headers != null && headers.length > 0 && showdebug == true}
-	<SuperDebug data={headers} theme="vscode" />
+	<SuperDebug data={entities} theme="vscode" />
 {/if}
 
 <HotkeyButton

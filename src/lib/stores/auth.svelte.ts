@@ -27,7 +27,7 @@ class authState {
         this.baseurl = origin;
         let configurl = "/config";
         if (this.origin.includes(":517") || this.origin.includes(":417")) {
-            this.baseurl = "https://demo.openiap.io";
+            this.baseurl = "https://dev.openiap.io";
             configurl = this.baseurl + "/config";
         }
         this.wsurl = this.baseurl.replace("https://", "wss://").replace("http://", "ws://") + "/ws/v2";

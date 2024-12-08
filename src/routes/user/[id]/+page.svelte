@@ -20,9 +20,13 @@
 <div>
   Edit {key}
 </div>
-<HotkeyButton onclick={() => goto(base + `/${key}`)}>Back</HotkeyButton>
 
 <form method="POST" use:enhance>
+  <Form.Button aria-label="submit">Submit</Form.Button>
+  <HotkeyButton aria-label="back" onclick={() => goto(base + `/${key}`)}
+    >Back</HotkeyButton
+  >
+
   <Form.Field {form} name="name">
     <Form.Control>
       {#snippet children({ props })}
@@ -74,13 +78,15 @@
   >
     <Form.Control>
       {#snippet children({ props })}
-        <Checkbox {...props} bind:checked={$formData.disabled} />
-        <div class="space-y-1 leading-none">
-          <Form.Label>disabled</Form.Label>
-          <Form.Description>
-            If enabled, the user is disabled and cannot signin
-          </Form.Description>
-        </div>
+        {#if $formData.disabled != null}
+          <Checkbox {...props} bind:checked={$formData.disabled} />
+          <div class="space-y-1 leading-none">
+            <Form.Label>disabled</Form.Label>
+            <Form.Description>
+              If enabled, the user is disabled and cannot signin
+            </Form.Description>
+          </div>
+        {/if}
       {/snippet}
     </Form.Control>
   </Form.Field>
@@ -92,14 +98,16 @@
   >
     <Form.Control>
       {#snippet children({ props })}
-        <Checkbox {...props} bind:checked={$formData.dblocked} />
-        <div class="space-y-1 leading-none">
-          <Form.Label>dblocked</Form.Label>
-          <Form.Description>
-            If enabled, the user is can only login using web interface and
-            cannot add more data to the database
-          </Form.Description>
-        </div>
+        {#if $formData.disabled != null}
+          <Checkbox {...props} bind:checked={$formData.dblocked} />
+          <div class="space-y-1 leading-none">
+            <Form.Label>dblocked</Form.Label>
+            <Form.Description>
+              If enabled, the user is can only login using web interface and
+              cannot add more data to the database
+            </Form.Description>
+          </div>
+        {/if}
       {/snippet}
     </Form.Control>
   </Form.Field>
@@ -111,18 +119,20 @@
   >
     <Form.Control>
       {#snippet children({ props })}
-        <Checkbox {...props} bind:checked={$formData.validated} />
-        <div class="space-y-1 leading-none">
-          <Form.Label>Validated</Form.Label>
-          <Form.Description>
-            Has user been email/form validated?
-          </Form.Description>
-        </div>
+        {#if $formData.disabled != null}
+          <Checkbox {...props} bind:checked={$formData.validated} />
+          <div class="space-y-1 leading-none">
+            <Form.Label>Validated</Form.Label>
+            <Form.Description>
+              Has user been email/form validated?
+            </Form.Description>
+          </div>
+        {/if}
       {/snippet}
     </Form.Control>
   </Form.Field>
 
-  <Form.Button>Submit</Form.Button>
+  <Form.Button aria-label="submit">Submit</Form.Button>
 </form>
 
 {#if formData != null && showdebug == true}
@@ -132,6 +142,7 @@
 <HotkeyButton
   hidden
   class="hidden"
+  aria-label="Toggle debug"
   data-shortcut={"Control+d,Meta+d"}
   onclick={() => (showdebug = !showdebug)}>Toggle debug</HotkeyButton
 >

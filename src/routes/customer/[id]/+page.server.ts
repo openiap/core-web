@@ -5,12 +5,11 @@ import { fail, redirect } from "@sveltejs/kit";
 import { z } from 'zod';
 import { auth } from "$lib/stores/auth.svelte.js";
 import { base } from "$app/paths";
-
-
+const key = "customer"
 export const _userSchema = z.object({
   _id: z.string().min(2),
   name: z.string().min(2),
-  email: z.string().email(),
+  domains: z.string().email(),
 }).passthrough();
 export type UserSchema = typeof _userSchema;
 
@@ -26,7 +25,7 @@ export const load: PageServerLoad = async (x: any) => {
 };
 
 export const actions: Actions = {
-  default: async (event:any) => {
+  default: async (event: any) => {
     const form = await superValidate(event, zod(_userSchema));
     if (!form.valid) {
       return fail(400, {
@@ -42,8 +41,8 @@ export const actions: Actions = {
         form,
       };
     }
-    throw redirect(303, base + '/user');
+    throw redirect(303, base + `/${key}`);
   },
 };
 
-      
+

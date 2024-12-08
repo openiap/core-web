@@ -18,11 +18,18 @@
     settings.clearall();
     goto(base + `/`);
   }
-  const key = "user";
-  let defaultcolumnnames = ["_id", "name", "username", "email", "lastseen", "_created"];
+  const key = "customer";
+  let defaultcolumnnames = [
+    "_id",
+    "name",
+    "username",
+    "email",
+    "lastseen",
+    "_created",
+  ];
   let collectionname = "users";
   let page = "users";
-  let query = { _type: "user" };
+  let query = { _type: "customer" };
   let searchstring = $state("");
   let selected_items = $state([]);
   let entities = $state(data.entities);

@@ -16,22 +16,22 @@ export const _userSchema = z.object({
   validated: z.boolean(),
   emailvalidated: z.boolean(),
   formvalidated: z.boolean(),
-  federationids: z.array(z.string())
+  federationids: z.array(z.string().email()).optional(),
 });
 export type UserSchema = typeof _userSchema;
 
 export const load: PageServerLoad = async () => {
   const defaultValues = {
-    // name: "John Doe",
-    // username: "Johndoe",
-    // email: "john@doe.com",
-    // password: "123456",
-    // disabled: false,
-    // dblocked: false,
-    // validated: false,
-    // emailvalidated: false,
-    // formvalidated: false,
-    // federationids: [],
+    name: "John Doe",
+    username: "Johndoe",
+    email: "john@doe.com",
+    password: "123456",
+    disabled: false,
+    dblocked: false,
+    validated: false,
+    emailvalidated: false,
+    formvalidated: false,
+    federationids: [],
   }
   return {
     form: await superValidate(defaultValues, zod(_userSchema)),
@@ -48,9 +48,12 @@ export const actions: Actions = {
       });
     }
     try {
-      let item = { ...form.data, _type: "user" };
-      await auth.client.InsertOne({ collectionname: "users", item: { ...form.data, _type: "user" }, jwt: auth.access_token });
+      // let item = { ...form.data, _type: "user" };
+      console.log("auth.access_token", auth.access_token);
+      const res = await auth.client.InsertOne({ collectionname: "users", item: { ...form.data, _type: "user" }, jwt: auth.access_token });
+      console.log("InsertOne", res);
     } catch (err: any) {
+      console.log("err", err.message);
       setError(form, 'name', err.message);
       return {
         form,

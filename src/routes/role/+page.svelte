@@ -42,13 +42,15 @@
     console.log("deleteitems", ids);
   }
   function single_item_click(item: any) {
-    goto(base + `/role/${item._id}`);
+    goto(base + `/${key}/${item._id}`);
   }
 </script>
 
 <h1>All {key}s</h1>
-<Hotkeybutton variant={"outline"} onclick={() => goto(base + `/${key}/new`)}
-  >Add {key}</Hotkeybutton
+<Hotkeybutton
+  aria-label="add"
+  variant={"outline"}
+  onclick={() => goto(base + `/${key}/new`)}>Add {key}</Hotkeybutton
 >
 <div class="flex w-full max-w-sm flex-col gap-1.5">
   <Label for="email">Search</Label>
@@ -60,7 +62,7 @@
       bind:value={searchstring}
       data-shortcut={"Control+f,Meta+f"}
     />
-    <HotkeyButton onclick={reset}>Reset</HotkeyButton>
+    <HotkeyButton aria-label="reset" onclick={reset}>Reset</HotkeyButton>
   </div>
 </div>
 <Entities

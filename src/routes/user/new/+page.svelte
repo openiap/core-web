@@ -7,6 +7,7 @@
   import { base } from "$app/paths";
   import { goto } from "$app/navigation";
   import Button from "$lib/components/ui/button/button.svelte";
+  import { Trash2 } from "lucide-svelte";
 
   const key = "user";
   let showdebug = $state(false);
@@ -27,8 +28,10 @@
 <div>
   Add {key}
 </div>
-<HotkeyButton onclick={() => goto(base + `/${key}`)}>Back</HotkeyButton>
+
 <form method="POST" use:enhance>
+  <Form.Button>Submit</Form.Button>
+  <HotkeyButton onclick={() => goto(base + `/${key}`)}>Back</HotkeyButton>
   <Form.Field {form} name="name">
     <Form.Control>
       {#snippet children({ props })}
@@ -164,23 +167,38 @@
     </Form.Control>
   </Form.Field>
 
-  <Form.Field {form} name="email">
+  {#if $formData.federationids}
     {#each $formData.federationids as item, index}
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Federation id {index + 1}</Form.Label>
-          <Input {...props} bind:value={$formData.federationids[index]} />
-        {/snippet}
-      </Form.Control>
+      <div class="flex items-center">
+        <Form.Field {form} name="federationids">
+          <Form.Control>
+            {#snippet children({ props })}
+              <Form.Label>Federation id {index + 1}</Form.Label>
+              {#if $formData.federationids}
+                <Input {...props} bind:value={$formData.federationids[index]} />
+              {/if}
+            {/snippet}
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
+        <Button
+          variant="outline"
+          onclick={() => {
+            let arr = $formData.federationids;
+            if (arr) {
+              arr.splice(index, 1);
+            }
+            $formData.federationids = arr;
+          }}><Trash2 /></Button
+        >
+      </div>
     {/each}
-    <Form.Description>This is your email.</Form.Description>
-    <Form.FieldErrors />
-  </Form.Field>
+  {/if}
   <div>
     <Button
       variant="outline"
       onclick={() => {
-        let arr = $formData.federationids;
+        let arr = $formData.federationids || [];
         $formData.federationids = [...arr, ""];
       }}>Add federation id</Button
     >

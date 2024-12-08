@@ -18,11 +18,11 @@
     settings.clearall();
     goto(base + `/`);
   }
-  const key = "user";
-  let defaultcolumnnames = ["_id", "name", "username", "email", "lastseen", "_created"];
-  let collectionname = "users";
-  let page = "users";
-  let query = { _type: "user" };
+  const key = "resource";
+  let defaultcolumnnames = ["name", "_created", "_modified"];
+  let collectionname = "config";
+  let page = "resources";
+  let query = { _type: "resource" };
   let searchstring = $state("");
   let selected_items = $state([]);
   let entities = $state(data.entities);
@@ -48,11 +48,11 @@
 </script>
 
 <h1>All {key}s</h1>
-<Hotkeybutton
+<!-- <Hotkeybutton
   aria-label="add"
   variant={"outline"}
   onclick={() => goto(base + `/${key}/new`)}>Add {key}</Hotkeybutton
->
+> -->
 <div class="flex w-full max-w-sm flex-col gap-1.5">
   <Label for="email">Search</Label>
   <div class="flex gap-1.5">
@@ -63,7 +63,7 @@
       bind:value={searchstring}
       data-shortcut={"Control+f,Meta+f"}
     />
-    <HotkeyButton aria-label="reset" onclick={reset}>Reset</HotkeyButton>
+    <HotkeyButton aria-label="Reset" onclick={reset}>Reset</HotkeyButton>
   </div>
 </div>
 <Entities
@@ -86,13 +86,13 @@
     >
       <Trash2 />
     </Button>
-    <Button
+    <!-- <Button
       aria-label="edit"
       onclick={() => goto(base + `/${key}/${item._id}`)}
       size="icon"
       variant="secondary"
     >
       <Pencil />
-    </Button>
+    </Button> -->
   {/snippet}
 </Entities>
