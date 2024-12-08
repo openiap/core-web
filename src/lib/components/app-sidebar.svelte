@@ -34,6 +34,10 @@
 				url: "#",
 				items: [
 					{
+						title: "Audit logs",
+						url: `${base}/auditlog`,
+					},
+					{
 						title: "Customers",
 						url: `${base}/customer`,
 					},

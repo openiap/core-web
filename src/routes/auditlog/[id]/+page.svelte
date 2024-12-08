@@ -2,12 +2,13 @@
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import Button from "$lib/components/ui/button/button.svelte";
+  // import Checkbox from "$lib/components/ui/checkbox/checkbox.svelte";
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
   import { Trash2 } from "lucide-svelte";
   import SuperDebug, { superForm } from "sveltekit-superforms";
-  const key = "customer";
+  const key = "auditlog";
   let showdebug = $state(false);
   const { data } = $props();
   const form = superForm(data.form, { dataType: "json" });
@@ -38,33 +39,17 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  {#if $formData.domains}
-    {#each $formData.domains as item, index}
-      <div class="flex items-center">
-        <Form.Field {form} name="domains">
-          <Form.Control>
-            {#snippet children({ props })}
-              <Form.Label>Domain {index + 1}</Form.Label>
-              {#if $formData.domains}
-                <Input {...props} bind:value={$formData.domains[index]} />
-              {/if}
-            {/snippet}
-          </Form.Control>
-          <Form.FieldErrors />
-        </Form.Field>
-        <Button
-          variant="outline"
-          onclick={() => {
-            let arr = $formData.domains;
-            if (arr) {
-              arr.splice(index, 1);
-            }
-            $formData.domains = arr;
-          }}><Trash2 /></Button
-        >
-      </div>
-    {/each}
-  {/if}
+  <Form.Field {form} name="email">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Email</Form.Label>
+        <Input {...props} bind:value={$formData.email} />
+      {/snippet}
+    </Form.Control>
+    <Form.Description>This is the email.</Form.Description>
+    <Form.FieldErrors />
+  </Form.Field>
+
   <div>
     <Button
       variant="outline"

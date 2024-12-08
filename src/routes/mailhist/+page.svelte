@@ -10,7 +10,6 @@
   import { settings } from "$lib/stores/settings.svelte";
 
   let { data } = $props();
-  import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
 
@@ -48,11 +47,6 @@
 </script>
 
 <h1>All {key}s</h1>
-<Hotkeybutton
-  aria-label="add"
-  variant={"outline"}
-  onclick={() => goto(base + `/${key}/new`)}>Add {key}</Hotkeybutton
->
 <div class="flex w-full max-w-sm flex-col gap-1.5">
   <Label for="email">Search</Label>
   <div class="flex gap-1.5">

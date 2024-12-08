@@ -3,7 +3,7 @@
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { HotkeyInput } from "$lib/components/ui/hotkeyinput/index.js";
   import { Label } from "$lib/components/ui/label/index.js";
-  import { Pencil, Trash2 } from "lucide-svelte";
+  import { MapPinHouse, Pencil, Trash2 } from "lucide-svelte";
 
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
@@ -18,16 +18,20 @@
     settings.clearall();
     goto(base + `/`);
   }
-  const key = "customer";
+  const key = "auditlog";
   let defaultcolumnnames = [
+    "_id",
     "name",
-    "dbusage",
+    "_type",
+    "impostorname",
+    "clientagent",
+    "clientversion",
+    "remoteip",
     "_created",
-    "_modified",
   ];
-  let collectionname = "users";
-  let page = "users";
-  let query = { _type: "customer" };
+  let collectionname = "audit";
+  let page = "auditlog";
+  let query = {};
   let searchstring = $state("");
   let selected_items = $state([]);
   let entities = $state(data.entities);
@@ -53,11 +57,6 @@
 </script>
 
 <h1>All {key}s</h1>
-<Hotkeybutton
-  aria-label="add"
-  variant={"outline"}
-  onclick={() => goto(base + `/${key}/new`)}>Add {key}</Hotkeybutton
->
 <div class="flex w-full max-w-sm flex-col gap-1.5">
   <Label for="email">Search</Label>
   <div class="flex gap-1.5">
@@ -84,6 +83,7 @@
 >
   {#snippet action(item: any)}
     <Button
+      title="Delete"
       aria-label="delete"
       onclick={() => deleteitem(item)}
       size="icon"
@@ -92,6 +92,7 @@
       <Trash2 />
     </Button>
     <Button
+      title="Edit"
       aria-label="edit"
       onclick={() => goto(base + `/${key}/${item._id}`)}
       size="icon"
@@ -99,5 +100,13 @@
     >
       <Pencil />
     </Button>
+    <Button
+      title="View on map"
+      href={`https://www.iplocation.net/?query=${item.remoteip}`}
+      aria-label="view"
+      onclick={() => goto(base + `/${key}/${item._id}`)}
+      size="icon"
+      variant="secondary"><MapPinHouse /></Button
+    >
   {/snippet}
 </Entities>
