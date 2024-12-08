@@ -32,7 +32,6 @@ export const actions: Actions = {
       });
     }
     try {
-      let item = { ...form.data, _type: "user" };
       await auth.client.UpdateOne({ collectionname: "config", item: form.data, jwt: auth.access_token });
     } catch (err: any) {
       setError(form, 'name', err.message);

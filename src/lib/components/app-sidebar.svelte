@@ -38,6 +38,10 @@
 						url: `${base}/auditlog`,
 					},
 					{
+						title: "Credentials",
+						url: `${base}/credential`,
+					},
+					{
 						title: "Customers",
 						url: `${base}/customer`,
 					},

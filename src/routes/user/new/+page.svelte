@@ -8,12 +8,18 @@
   import { goto } from "$app/navigation";
   import Button from "$lib/components/ui/button/button.svelte";
   import { Trash2 } from "lucide-svelte";
+  import { newFormSchema } from "../schema.js";
+  import { zod } from "sveltekit-superforms/adapters";
 
   const key = "user";
   let showdebug = $state(false);
   const { data } = $props();
   let errormessage = $state("");
-  const form = superForm(data.form);
+  const form = superForm(data.form, {
+    dataType: "json",
+    validators: zod(newFormSchema),
+  });
+
   const { form: formData, enhance, message } = form;
 </script>
 
@@ -30,7 +36,7 @@
 </div>
 
 <form method="POST" use:enhance>
-  <Form.Button>Submit</Form.Button>
+  <Form.Button aria-label="submit">Submit</Form.Button>
   <HotkeyButton onclick={() => goto(base + `/${key}`)}>Back</HotkeyButton>
   <Form.Field {form} name="name">
     <Form.Control>
@@ -203,8 +209,7 @@
       }}>Add federation id</Button
     >
   </div>
-
-  <Form.Button>Submit</Form.Button>
+  <Form.Button aria-label="submit">Submit</Form.Button>
 </form>
 
 {#if formData != null && showdebug == true}

@@ -5,13 +5,12 @@ import { fail, redirect } from "@sveltejs/kit";
 import { auth } from "$lib/stores/auth.svelte.js";
 import { base } from "$app/paths";
 import { userSchema } from "../schema.js";
-
+const key = "role"
 export const load: PageServerLoad = async (x: any) => {
   let data = x.data || {};
   let id = x.params.id;
   await auth.clientinit(x.url.origin, x.fetch, x.cookies);
-  // console.debug("connected:", auth.isConnected, "authenticated:", auth.isAuthenticated, "loaded:", auth.isLoaded, "role.page.server.ts");
-  let item = await auth.client.FindOne<any>({ collectionname: "users",  query: { _id: id }, jwt: auth.access_token});
+  let item = await auth.client.FindOne<any>({ collectionname: "users", query: { _id: id }, jwt: auth.access_token });
   data.form = await superValidate(item, zod(userSchema));
   return data;
 };
@@ -33,6 +32,6 @@ export const actions: Actions = {
         form,
       };
     }
-    throw redirect(303, base + '/role');
+    throw redirect(303, base + `/${key}`);
   },
 };

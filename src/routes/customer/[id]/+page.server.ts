@@ -16,10 +16,8 @@ export type UserSchema = typeof _userSchema;
 export const load: PageServerLoad = async (x: any) => {
   let data = x.data || {};
   let id = x.params.id;
-  console.log("id", id);
   await auth.clientinit(x.url.origin, x.fetch, x.cookies);
   let item = await auth.client.FindOne<any>({ collectionname: "users", query: { _id: id }, jwt: auth.access_token });
-  console.log("item", item);
   data.form = await superValidate(item, zod(_userSchema));
   return data;
 };
@@ -33,7 +31,6 @@ export const actions: Actions = {
       });
     }
     try {
-      let item = { ...form.data, _type: "user" };
       await auth.client.UpdateOne({ collectionname: "users", item: form.data, jwt: auth.access_token });
     } catch (err: any) {
       setError(form, 'name', err.message);

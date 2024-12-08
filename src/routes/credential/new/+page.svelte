@@ -9,7 +9,7 @@
   import Button from "$lib/components/ui/button/button.svelte";
   import { Trash2 } from "lucide-svelte";
 
-  const key = "customer";
+  const key = "user";
   let showdebug = $state(false);
   const { data } = $props();
   let errormessage = $state("");
@@ -25,8 +25,6 @@
   {$message}
 {/if}
 
-<div>Under contruction</div>
-
 <div>
   Add {key}
 </div>
@@ -37,51 +35,35 @@
   <Form.Field {form} name="name">
     <Form.Control>
       {#snippet children({ props })}
-        <Form.Label>Company Name</Form.Label>
+        <Form.Label>Name</Form.Label>
         <Input {...props} bind:value={$formData.name} />
       {/snippet}
     </Form.Control>
-    <Form.Description>This is your company name.</Form.Description>
+    <Form.Description>This is your public display name.</Form.Description>
     <Form.FieldErrors />
   </Form.Field>
 
-  {#if $formData.domains}
-    {#each $formData.domains as item, index}
-      <div class="flex items-center">
-        <Form.Field {form} name="domains">
-          <Form.Control>
-            {#snippet children({ props })}
-              <Form.Label>Domain {index + 1}</Form.Label>
-              {#if $formData.domains}
-                <Input {...props} bind:value={$formData.domains[index]} />
-              {/if}
-            {/snippet}
-          </Form.Control>
-          <Form.FieldErrors />
-        </Form.Field>
-        <Button
-          variant="outline"
-          onclick={() => {
-            let arr = $formData.domains;
-            if (arr) {
-              arr.splice(index, 1);
-            }
-            $formData.domains = arr;
-          }}><Trash2 /></Button
-        >
-      </div>
-    {/each}
-  {/if}
-  <div>
-    <Button
-      variant="outline"
-      onclick={() => {
-        let arr = $formData.domains || [];
-        $formData.domains = [...arr, ""];
-      }}>Add domain</Button
-    >
-  </div>
+  <Form.Field {form} name="username">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Username</Form.Label>
+        <Input {...props} bind:value={$formData.username} />
+      {/snippet}
+    </Form.Control>
+    <Form.Description>This is your username.</Form.Description>
+    <Form.FieldErrors />
+  </Form.Field>
 
+  <Form.Field {form} name="password">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Password</Form.Label>
+        <Input {...props} bind:value={$formData.password} type="password" />
+      {/snippet}
+    </Form.Control>
+    <Form.Description>This is your password.</Form.Description>
+    <Form.FieldErrors />
+  </Form.Field>
   <Form.Button aria-label="submit">Submit</Form.Button>
 </form>
 

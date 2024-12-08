@@ -34,9 +34,7 @@ export const actions: Actions = {
       });
     }
     try {
-      // let item = { ...form.data, _type: "user" };
-      const res = await auth.client.InsertOne({ collectionname: "config", item: { ...form.data, _type: "resource" }, jwt: auth.access_token });
-      console.log("InsertOne", res);
+      await auth.client.InsertOne({ collectionname: "config", item: { ...form.data, _type: "resource" }, jwt: auth.access_token });
     } catch (err: any) {
       setError(form, 'name', err.message);
       return {

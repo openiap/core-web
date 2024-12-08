@@ -25,7 +25,7 @@
 </div>
 
 <form method="POST" use:enhance>
-  <Form.Button>Submit</Form.Button>
+  <Form.Button aria-label="submit">Submit</Form.Button>
   <HotkeyButton onclick={() => goto(base + `/${key}`)}>Back</HotkeyButton>
   <Form.Field {form} name="name">
     <Form.Control>

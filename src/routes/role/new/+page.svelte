@@ -4,14 +4,18 @@
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
   import { Input } from "$lib/components/ui/input/index.js";
-  import { superForm } from "sveltekit-superforms";
+  import SuperDebug, { superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newUserSchema } from "../schema.js";
 
   const key = "role";
+  let showdebug = $state(false);
   const { data } = $props();
   let errormessage = $state("");
-  const form = superForm(data.form, { validators: zod(newUserSchema) });
+  const form = superForm(data.form, {
+    dataType: "json",
+    validators: zod(newUserSchema),
+  });
   const { form: formData, enhance, message } = form;
 </script>
 
@@ -53,3 +57,15 @@
   </Form.Field>
   <Form.Button aria-label="submit">Submit</Form.Button>
 </form>
+
+{#if formData != null && showdebug == true}
+  <SuperDebug data={formData} theme="vscode" />
+{/if}
+
+<HotkeyButton
+  hidden
+  class="hidden"
+  aria-label="Toggle debug"
+  data-shortcut={"Control+d,Meta+d"}
+  onclick={() => (showdebug = !showdebug)}>Toggle debug</HotkeyButton
+>

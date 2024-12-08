@@ -55,10 +55,11 @@
 <div>
   Add {key}
 </div>
-<HotkeyButton aria-label="back" onclick={() => goto(base + `/${key}`)}
-  >Back</HotkeyButton
->
 <form method="POST" use:enhance>
+  <Form.Button aria-label="submit">Submit</Form.Button>
+  <HotkeyButton aria-label="back" onclick={() => goto(base + `/${key}`)}
+    >Back</HotkeyButton
+  >
   <Form.Field {form} name="target">
     <Form.Control>
       {#snippet children({ props })}

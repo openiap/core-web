@@ -5,19 +5,20 @@ import { fail, redirect } from "@sveltejs/kit";
 import { z } from 'zod';
 import { auth } from "$lib/stores/auth.svelte.js";
 import { base } from "$app/paths";
-const key = "provider"
+const key = "credential"
 export const _userSchema = z.object({
   _id: z.string().min(2),
   name: z.string().min(2),
   email: z.string().email(),
+  password: z.string().min(6),
 }).passthrough();
 export type UserSchema = typeof _userSchema;
 
 export const load: PageServerLoad = async (x: any) => {
   let data = x.data || {};
   let id = x.params.id;
-  await auth.clientinit(x.url.origin, x.fetch, null);
-  let item = await auth.client.FindOne<any>({ collectionname: "users", query: { _id: id }, jwt: auth.access_token });
+  await auth.clientinit(x.url.origin, x.fetch, x.cookies);
+  let item = await auth.client.FindOne<any>({ collectionname: "openrpa", query: { _id: id }, jwt: auth.access_token });
   data.form = await superValidate(item, zod(_userSchema));
   return data;
 };
@@ -31,8 +32,9 @@ export const actions: Actions = {
       });
     }
     try {
-      await auth.client.UpdateOne({ collectionname: "users", item: form.data, jwt: auth.access_token });
+      await auth.client.UpdateOne({ collectionname: "openrpa", item: form.data, jwt: auth.access_token });
     } catch (err: any) {
+      console.error(err);
       setError(form, 'name', err.message);
       return {
         form,
