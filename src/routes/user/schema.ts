@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 export const newFormSchema = z.object({
-  id: z.number().int().positive().optional(),
   name: z.string().min(2),
   email: z.string().email().optional(),
   username: z.string().min(2),
@@ -16,7 +15,6 @@ export const newFormSchema = z.object({
 export type NewFormSchema = typeof newFormSchema;
 
 export const editFormSchema = z.object({
-  id: z.number().int().positive().optional(),
   name: z.string().min(2),
   email: z.string().email().optional(),
   username: z.string().min(2),

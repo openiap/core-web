@@ -7,10 +7,16 @@
   import { Input } from "$lib/components/ui/input/index.js";
   import { Trash2 } from "lucide-svelte";
   import SuperDebug, { superForm } from "sveltekit-superforms";
+  import { newFormSchema } from "../schema.js";
+  import { zod } from "sveltekit-superforms/adapters";
+
   const key = "customer";
   let showdebug = $state(false);
   const { data } = $props();
-  const form = superForm(data.form, { dataType: "json" });
+  const form = superForm(data.form, {
+    dataType: "json",
+    validators: zod(newFormSchema),
+  });
   const { form: formData, enhance, message } = form;
 </script>
 

@@ -8,12 +8,18 @@
   import { goto } from "$app/navigation";
   import Button from "$lib/components/ui/button/button.svelte";
   import { Trash2 } from "lucide-svelte";
-
+  import { newFormSchema } from "../schema.js";
+  import { zod } from "sveltekit-superforms/adapters";
+  
   const key = "customer";
   let showdebug = $state(false);
   const { data } = $props();
   let errormessage = $state("");
-  const form = superForm(data.form);
+  const form = superForm(data.form, {
+    dataType: "json",
+    validators: zod(newFormSchema),
+  });
+
   const { form: formData, enhance, message } = form;
 </script>
 
