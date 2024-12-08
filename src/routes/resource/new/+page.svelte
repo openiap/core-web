@@ -9,37 +9,18 @@
   import Button from "$lib/components/ui/button/button.svelte";
   import { Trash2 } from "lucide-svelte";
   import * as Select from "$lib/components/ui/select/index.js";
+  import { newFormSchema } from "../schema.js";
+  import { zod } from "sveltekit-superforms/adapters";
 
   const key = "provider";
   let showdebug = $state(false);
   const { data } = $props();
   let errormessage = $state("");
-  const form = superForm(data.form);
+  const form = superForm(data.form, {
+    dataType: "json",
+    validators: zod(newFormSchema),
+  });
   const { form: formData, enhance, message } = form;
-
-  // const handleSelectChange = (v, title) => {
-  //   if (v && typeof v === "object" && "value" in v) {
-  //     const event = v as {
-  //       value: string;
-  //     };
-  //     formData.update((data) => ({ ...data, [title]: event.value }));
-  //     if (title === "target") {
-  //       if (event.value === "customer") {
-  //         formData.update((data) => ({
-  //           ...data,
-  //           customerassign: "singlevariant",
-  //         }));
-  //         formData.update((data) => ({
-  //           ...data,
-  //           userassign: "",
-  //         }));
-  //       } else if (event.value === "user") {
-  //         formData.update((data) => ({ ...data, userassign: "singlevariant" }));
-  //         formData.update((data) => ({ ...data, customerassign: "" }));
-  //       }
-  //     }
-  //   }
-  // };
 </script>
 
 {#if errormessage && errormessage != ""}
@@ -97,17 +78,6 @@
       {/snippet}
     </Form.Control>
     <Form.Description>This is your public display name.</Form.Description>
-    <Form.FieldErrors />
-  </Form.Field>
-
-  <Form.Field {form} name="id">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Id</Form.Label>
-        <Input {...props} bind:value={$formData.id} />
-      {/snippet}
-    </Form.Control>
-    <Form.Description>This is your id.</Form.Description>
     <Form.FieldErrors />
   </Form.Field>
 

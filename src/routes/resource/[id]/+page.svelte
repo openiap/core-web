@@ -6,10 +6,16 @@
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
   import SuperDebug, { superForm } from "sveltekit-superforms";
+  import { editFormSchema } from "../schema.js";
+  import { zod } from "sveltekit-superforms/adapters";
+
   const key = "resource";
   let showdebug = $state(false);
   const { data } = $props();
-  const form = superForm(data.form, { dataType: "json" });
+  const form = superForm(data.form, {
+    dataType: "json",
+    validators: zod(editFormSchema),
+  });
   const { form: formData, enhance, message } = form;
 </script>
 
