@@ -17,18 +17,15 @@
     settings.clearall();
     goto(base + `/`);
   }
-  const key = "Mail History";
+  const key = "hdrobot";
   let defaultcolumnnames = [
-    "_id",
     "name",
-    "username",
-    "email",
-    "lastseen",
     "_created",
+    "_modified",
   ];
-  let collectionname = "mailhist";
-  let page = "mailhist";
-  let query = {};
+  let collectionname = "openrpa";
+  let page = "hdrobot";
+  let query = { _type: "unattendedclient" };
   let searchstring = $state("");
   let selected_items = $state([]);
   let entities = $state(data.entities);

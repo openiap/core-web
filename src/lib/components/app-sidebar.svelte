@@ -42,6 +42,10 @@
 						url: `${base}/customer`,
 					},
 					{
+						title: "HD Robots",
+						url: `${base}/hdrobot`,
+					},
+					{
 						title: "Providers",
 						url: `${base}/provider`,
 					},

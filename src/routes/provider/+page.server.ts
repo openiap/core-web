@@ -6,7 +6,7 @@ export const load: PageServerLoad = async (x: any) => {
     // console.debug("connected:", auth.isConnected, "authenticated:", auth.isAuthenticated, "loaded:", auth.isLoaded, "user/page.server.ts");
     const entities = await auth.client.Query({
         collectionname: "config",
-        query: { _type: "provider_test" },
+        query: { _type: "provider" },
         orderby: "",
         skip: 0,
         top: 5,

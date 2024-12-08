@@ -10,7 +10,6 @@
   import { settings } from "$lib/stores/settings.svelte";
 
   let { data } = $props();
-  import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
 

@@ -35,7 +35,7 @@ export const actions: Actions = {
     }
     try {
       // let item = { ...form.data, _type: "user" };
-      const res = await auth.client.InsertOne({ collectionname: "config", item: { ...form.data, _type: "provider_test" }, jwt: auth.access_token });
+      const res = await auth.client.InsertOne({ collectionname: "config", item: { ...form.data, _type: "provider" }, jwt: auth.access_token });
       console.log("InsertOne", res);
     } catch (err: any) {
       setError(form, 'name', err.message);

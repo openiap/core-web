@@ -22,7 +22,7 @@
   let defaultcolumnnames = ["name", "provider", "_created", "_modified"];
   let collectionname = "config";
   let page = "providers";
-  let query = { _type: "provider_test" };
+  let query = { _type: "provider" };
   let searchstring = $state("");
   let selected_items = $state([]);
   let entities = $state(data.entities);
