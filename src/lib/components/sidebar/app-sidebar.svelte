@@ -66,6 +66,10 @@
 						title: "Clients",
 						url: `${base}/client`,
 					},
+					{
+						title: "Files",
+						url: `${base}/files`,
+					},
 					
 					{
 						title: "Providers",
