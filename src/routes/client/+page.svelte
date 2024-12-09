@@ -18,7 +18,7 @@
     goto(base + `/`);
   }
   const key = "client";
-  let defaultcolumnnames = ["name", "username", "_created", "_modified"];
+  let defaultcolumnnames = ["name", "username", "clientagent", "clientversion", "created"];
   let collectionname = "";
   let page = "credential";
   let query = { _type: "credential" };
@@ -78,16 +78,8 @@
 >
   {#snippet action(item: any)}
     <Button
-      aria-label="delete"
-      onclick={() => deleteitem(item)}
-      size="icon"
-      variant="destructive"
-    >
-      <Trash2 />
-    </Button>
-    <Button
       aria-label="edit"
-      onclick={() => goto(base + `/${key}/${item._id}`)}
+      onclick={() => goto(base + `/user/${item.user?._id}`)}
       size="icon"
       variant="secondary"
     >
