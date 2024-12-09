@@ -13,18 +13,16 @@
   import Button from "$lib/components/ui/button/button.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
 
+
   function reset() {
     settings.clearall();
     goto(base + `/`);
   }
   const key = "files";
   let defaultcolumnnames = [
-    "name",
-    "path",
-    "_type",
-    "_createdby",
-    "_created",
-    "size",
+    "filename",
+    "metadata.name",
+    "length",
   ];
   let collectionname = "fs.files";
   let page = "files";

@@ -22,14 +22,16 @@ class authState {
     wsurl = $state("");
     constructor() {
     }
-    async getConfig(origin: string, fetch: any) {
+    async getConfig(domain: string, origin: string, fetch: any) {
         this.origin = origin;
         this.baseurl = origin;
         let configurl = "/config";
-        if (this.origin.includes(":517") || this.origin.includes(":417")) {
-            this.baseurl = "https://dev.openiap.io";
-            configurl = this.baseurl + "/config";
-        }
+        // if (this.origin.includes(":517") || this.origin.includes(":417")) {
+        //     this.baseurl = "https://dev.openiap.io";
+        //     configurl = this.baseurl + "/config";
+        // }
+        this.baseurl = "https://" + domain;
+        configurl = this.baseurl + "/config";
         this.wsurl = this.baseurl.replace("https://", "wss://").replace("http://", "ws://") + "/ws/v2";
         try {
             let f = await fetch(configurl);
@@ -50,9 +52,9 @@ class authState {
             console.error('Failed to load config', error);
         }
     }
-    async clientinit(origin: string, fetch: any, cookies: any) {
+    async clientinit(domain: string, origin: string, fetch: any, cookies: any) {
         // if (browser) {
-        if (this.config == null) await this.getConfig(origin, fetch);
+        if (this.config == null) await this.getConfig(domain, origin, fetch);
         const settings = {
             authority: this.baseurl + "/oidc",
             client_id: "webapp",

@@ -16,13 +16,13 @@ export class SvelteStorage {
             provider = "cookie";
         }
         let item = (this.cookies ? this.cookies.get(urlencodedkey) : this.storage.getItem(key));
-        if (item == null) console.log("getItem", provider, key, item?.substring(0, 30));
+        // if (item == null) console.log("getItem", provider, key, item?.substring(0, 30));
         return item;
     }
     setItem(key: string, value: any) {
         let provider = "cookiestorage";
         if (this.cookies == null) provider = "cookie";
-        console.log("setItem", provider, key, value?.substring(0, 30));
+        // console.log("setItem", provider, key, value?.substring(0, 30));
         let urlencodedkey = encodeURIComponent(key);
         this.cookies ? this.cookies.set(urlencodedkey, value) : this.storage.setItem(key, value);
     }
@@ -30,7 +30,7 @@ export class SvelteStorage {
         let urlencodedkey = encodeURIComponent(key);
         let provider = "cookiestorage";
         if (this.cookies == null) provider = "cookie";
-        console.log("removeItem", provider, key);
+        // console.log("removeItem", provider, key);
         this.cookies ? this.cookies.delete(urlencodedkey) : this.storage.removeItem(key);
     }
 }

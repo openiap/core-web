@@ -113,25 +113,6 @@
 			for (let i = 0; i < defaultcolumnnames.length; i++) {
 				let header = new TableHeader();
 				header.field = defaultcolumnnames[i];
-				switch (header.field) {
-					case "name":
-						header.name = "Name";
-						break;
-					case "type":
-						header.name = "Type";
-						break;
-					case "_type":
-						header.name = "Type";
-						break;
-					case "_created":
-						header.name = "Created";
-						break;
-					case "_modified":
-						header.name = "Modified";
-						break;
-					default:
-						header.name = header.field;
-				}
 				if (header.field == "_id") {
 					header.show = false;
 					header.order = "desc";
@@ -174,6 +155,57 @@
 		}
 		settings.setvalue(page, "headers", _headers);
 	}
+	function RenderItemData(item: any, field: string) {
+		let value = item[field];
+		if (field.indexOf(".")) {
+			let parts = field.split(".");
+			let obj = item;
+			for (let i = 0; i < parts.length; i++) {
+				obj = obj[parts[i]];
+				if (obj == null) {
+					break;
+				}
+			}
+			value = obj;
+		}
+		if (value == null) {
+			return "";
+		}
+		if (typeof value == "object") {
+			if (value instanceof Date) {
+				return value.toLocaleString();
+			}
+			return JSON.stringify(value);
+		}
+		return value;
+	}
+	function RenderHeaderName(header: TableHeader) {
+		if (header == null) {
+			return "ERROR!!!";
+		}
+		let value = header.field;
+		if(header.field.indexOf(".") > -1) {
+			value = header.field.split(".").pop() as any;
+		}
+		switch (value) {
+			case "name":
+				return "Name";
+			case "type":
+				return "Type";
+			case "_type":
+				return "Type";
+			case "_created":
+				return "Created";
+			case "_modified":
+				return "Modified";
+			default:
+				if(header.name != null && header.name != "") {
+					return header.name;
+				}
+				return header.field;
+				
+		}
+	}
 
 	// auth.onLogin(async () => {
 	$effect(() => {
@@ -191,11 +223,7 @@
 			headers = settings.getvalue(page, "headers", []);
 			total_count = 99999;
 		}
-		settings.setvalue(
-			page,
-			"searchstring",
-			$state.snapshot(searchstring),
-		);
+		settings.setvalue(page, "searchstring", $state.snapshot(searchstring));
 		SaveHeaders();
 		if (selected_items.length > 0) {
 			settings.setvalue(page, "selected_items", selected_items);
@@ -502,7 +530,8 @@
 						ontouchstart={(e) => ontouchstart(e, head)}
 						ontouchend={(e) => ontouchend(e, head)}
 						{ontouchmove}
-						>{head.name}
+						>
+						{RenderHeaderName(head)}
 						{#if sortby(head.field) == "asc"}
 							<ArrowUp class="ml-2 h-4 w-4" />
 						{:else if sortby(head.field) == "desc"}
@@ -537,7 +566,7 @@
 				{#each headers as head}
 					{#if head.show}
 						<Table.Cell class={head.cellclass}
-							>{item[head.field]}</Table.Cell
+							>{RenderItemData(item, head.field)}</Table.Cell
 						>
 					{/if}
 				{/each}
@@ -614,7 +643,7 @@
 							<!-- <BellRing /> -->
 							<div class="flex-1 space-y-1">
 								<p class="text-muted-foreground text-sm">
-									{head.field}
+									{RenderHeaderName(head)}
 								</p>
 							</div>
 							<Switch
