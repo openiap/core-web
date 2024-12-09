@@ -15,17 +15,16 @@
 						url: `${base}/`,
 					},
 					{
-						title: "Users",
-						url: `${base}/user`,
+						title: "Entities",
+						url: `${base}/entities`,
 					},
 					{
 						title: "Roles",
 						url: `${base}/role`,
 					},
-
 					{
-						title: "Entities",
-						url: `${base}/entities`,
+						title: "Users",
+						url: `${base}/user`,
 					},
 				],
 			},
@@ -46,9 +45,28 @@
 						url: `${base}/customer`,
 					},
 					{
+						title: "Form Resources",
+						url: `${base}/formresource`,
+					},
+					{
 						title: "HD Robots",
 						url: `${base}/hdrobot`,
 					},
+					{
+						title: "Mail History",
+						url: `${base}/mailhist`,
+					},
+				],
+			},
+			{
+				title: "Incomplete Pages",
+				url: "#",
+				items: [
+					{
+						title: "Clients",
+						url: `${base}/client`,
+					},
+					
 					{
 						title: "Providers",
 						url: `${base}/provider`,
@@ -56,10 +74,6 @@
 					{
 						title: "Resources",
 						url: `${base}/resource`,
-					},
-					{
-						title: "Mail History",
-						url: `${base}/mailhist`,
 					},
 				],
 			},
