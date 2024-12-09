@@ -2,7 +2,6 @@ import type { PageServerLoad, Actions } from "./$types.js";
 import { superValidate, setError } from "sveltekit-superforms";
 import { zod } from "sveltekit-superforms/adapters";
 import { fail, redirect } from "@sveltejs/kit";
-import { z } from 'zod';
 import { auth } from "$lib/stores/auth.svelte.js";
 import { base } from "$app/paths";
 import { editFormSchema } from "../schema.js";

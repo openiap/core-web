@@ -5,7 +5,9 @@ import { fail, redirect } from "@sveltejs/kit";
 import { auth } from "$lib/stores/auth.svelte.js";
 import { base } from "$app/paths";
 import { editFormSchema } from "../schema.js";
+
 const key = "customer"
+
 export const load: PageServerLoad = async ({ fetch, url, cookies, locals, params }) => {
   let data:any = {};
   let id = params.id;

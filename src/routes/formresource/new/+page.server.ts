@@ -5,8 +5,11 @@ import { fail, redirect } from "@sveltejs/kit";
 import { auth } from "$lib/stores/auth.svelte.js";
 import { base } from "$app/paths";
 import { newFormSchema } from "../schema.js";
+
 const key = "formresource";
-export const load: PageServerLoad = async () => {
+
+export const load: PageServerLoad = async ({ fetch, url, cookies, locals }) => {
+  await auth.clientinit((locals as any).domain, url.origin, fetch, cookies);
   const defaultValues = {
     name: "entities",
     collection: "entities",

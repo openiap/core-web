@@ -4,13 +4,14 @@ import { zod } from "sveltekit-superforms/adapters";
 import { fail, redirect } from "@sveltejs/kit";
 import { auth } from "$lib/stores/auth.svelte.js";
 import { base } from "$app/paths";
-const key = "provider"
 import { editFormSchema } from "../schema.js";
 
-export const load: PageServerLoad = async (x: any) => {
-  let data = x.data || {};
-  let id = x.params.id;
-  await auth.clientinit(x.url.origin, x.fetch, null);
+const key = "provider"
+
+export const load: PageServerLoad = async ({ fetch, url, cookies, locals, params }) => {
+  let data: any = {};
+  let id = params.id;
+  await auth.clientinit((locals as any).domain, url.origin, fetch, cookies);
   let item = await auth.client.FindOne<any>({ collectionname: "users", query: { _id: id }, jwt: auth.access_token });
   data.form = await superValidate(item, zod(editFormSchema));
   return data;

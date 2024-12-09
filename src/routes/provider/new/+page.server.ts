@@ -5,10 +5,12 @@ import { fail, redirect } from "@sveltejs/kit";
 import { z } from 'zod';
 import { auth } from "$lib/stores/auth.svelte.js";
 import { base } from "$app/paths";
-const key = "provider"
 import { newFormSchema } from "../schema.js";
 
-export const load: PageServerLoad = async () => {
+const key = "provider"
+
+export const load: PageServerLoad = async ({ fetch, url, cookies, locals }) => {
+  await auth.clientinit((locals as any).domain, url.origin, fetch, cookies);
   const defaultValues = {
     name: "John Doe",
     id: "123",

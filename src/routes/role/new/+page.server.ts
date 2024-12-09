@@ -1,4 +1,3 @@
-// export const ssr = false;
 import type { PageServerLoad, Actions } from "./$types.js";
 import { superValidate, setError } from "sveltekit-superforms";
 import { zod } from "sveltekit-superforms/adapters";
@@ -6,8 +5,11 @@ import { fail, redirect } from "@sveltejs/kit";
 import { auth } from "$lib/stores/auth.svelte.js";
 import { base } from "$app/paths";
 import { newUserSchema } from "../schema.js";
+
 const key = "role"
-export const load: PageServerLoad = async () => {
+
+export const load: PageServerLoad = async ({ fetch, url, cookies, locals }) => {
+  await auth.clientinit((locals as any).domain, url.origin, fetch, cookies);
   return {
     form: await superValidate(zod(newUserSchema)),
   };
