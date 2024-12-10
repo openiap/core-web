@@ -4,7 +4,7 @@
 </script>
 
 <Dialog.Root>
-    <Dialog.Trigger>
+    <Dialog.Trigger aria-label="Search">
             <Search />
     </Dialog.Trigger>
     <Dialog.Content>
