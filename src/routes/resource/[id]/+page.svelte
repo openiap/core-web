@@ -8,6 +8,7 @@
   import SuperDebug, { superForm } from "sveltekit-superforms";
   import { editFormSchema } from "../schema.js";
   import { zod } from "sveltekit-superforms/adapters";
+  import { Acl } from "$lib/acl/index.js";
 
   const key = "resource";
   let showdebug = $state(false);
@@ -32,6 +33,8 @@
   <HotkeyButton aria-label="back" onclick={() => goto(base + `/${key}`)}
     >Back</HotkeyButton
   >
+
+  <Acl bind:value={$formData} />
 
   <Form.Field {form} name="name">
     <Form.Control>

@@ -9,6 +9,7 @@
   import { zod } from "sveltekit-superforms/adapters";
   import Switch from "$lib/components/ui/switch/switch.svelte";
   import * as Table from "$lib/components/ui/table/index.js";
+    import { Acl } from "$lib/acl/index.js";
 
   const key = "mailhistory";
   let showdebug = $state(false);
@@ -33,6 +34,8 @@
   <HotkeyButton aria-label="back" onclick={() => goto(base + `/${key}`)}
     >Back</HotkeyButton
   >
+
+  <Acl bind:value={$formData} />
 
   <Form.Field {form} name="name">
     <Form.Control>

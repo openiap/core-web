@@ -8,7 +8,8 @@
   import { newFormSchema } from "../schema.js";
   import { zod } from "sveltekit-superforms/adapters";
   import { ObjectInput } from "$lib/objectinput/index.js";
-    import { CollectionSelector } from "$lib/collectionselector/index.js";
+  import { CollectionSelector } from "$lib/collectionselector/index.js";
+  import { Acl } from "$lib/acl/index.js";
   const key = "formresource";
   let showdebug = $state(false);
   const { data } = $props();
@@ -32,6 +33,8 @@
   <HotkeyButton aria-label="back" onclick={() => goto(base + `/${key}`)}
     >Back</HotkeyButton
   >
+
+  <Acl bind:value={$formData} />
 
   <Form.Field {form} name="collection">
     <Form.Control>

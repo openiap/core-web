@@ -7,6 +7,7 @@
   import SuperDebug, { superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { userSchema } from "../schema.js";
+  import { Acl } from "$lib/acl";
 
   const key = "role";
   let showdebug = $state(false);
@@ -30,6 +31,9 @@
   <HotkeyButton aria-label="back" onclick={() => goto(base + `/${key}`)}
     >Back</HotkeyButton
   >
+
+  <Acl bind:value={$formData} />
+
   <Form.Field {form} name="name">
     <Form.Control>
       {#snippet children({ props })}

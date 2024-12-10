@@ -9,6 +9,7 @@
   import SuperDebug, { superForm } from "sveltekit-superforms";
   import { newFormSchema } from "../schema.js";
   import { zod } from "sveltekit-superforms/adapters";
+    import { Acl } from "$lib/acl/index.js";
 
   const key = "customer";
   let showdebug = $state(false);
@@ -33,6 +34,9 @@
 <form method="POST" use:enhance>
   <Form.Button aria-label="submit">Submit</Form.Button>
   <HotkeyButton onclick={() => goto(base + `/${key}`)}>Back</HotkeyButton>
+
+  <Acl bind:value={$formData} />
+
   <Form.Field {form} name="name">
     <Form.Control>
       {#snippet children({ props })}
