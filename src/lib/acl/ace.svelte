@@ -13,37 +13,36 @@
 
     let { value = $bindable(null) } = $props();
 
-    const IsBitSet = $derived(
-        (bit:number) => {
-            return (value.rights & bit) === bit;
-        }
-    );
-    function isBitSet(bit:number) {
+    const IsBitSet = $derived((bit: number) => {
+        return (value.rights & bit) === bit;
+    });
+    function isBitSet(bit: number) {
         return (value.rights & bit) === bit;
     }
-    function toogleBit(bit:number) {
+    function toogleBit(bit: number) {
         if (bit == 65535 && value.rights < 65535) return 65535;
         if (bit == 65535) return 0;
         return value.rights ^ bit;
     }
 </script>
-<!-- align all horizantanily   -->
- <div class="flex flex-row border-2">
-    <SelectEntity bind:value={value._id} />
-    {#each items as item}
 
-    <button type="button" class="items-top flex space-x-2"
-    onclick={() => value.rights = toogleBit(item.value)}>
-        <Checkbox id="terms1" checked={isBitSet(item.value)} 
-        />
-        <div class="grid gap-1.5 leading-none">
-          <Label
-            for="terms1"
-            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-          {item.label}
-          </Label>
+<div class="flex flex-row border-2">
+    <SelectEntity bind:value={value._id} />
+
+    {#each items as item}
+        <!-- svelte-ignore a11y_click_events_have_key_events -->
+        <div role="button" tabindex="0"
+            class="items-top flex space-x-2"
+            onclick={() => (value.rights = toogleBit(item.value))} 
+        >
+            <Checkbox checked={IsBitSet(item.value)} aria-label={item.label} class="ml-2 w-6 h-6 md:w-4 md:h-4" />
+            <div class="grid gap-1.5 leading-none">
+                <Label
+                    class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                    {item.label}
+                </Label>
+            </div>
         </div>
-      </button>
     {/each}
- </div>
+</div>
