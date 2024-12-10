@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { SelectEntity } from "$lib/selectentity/index.js";
+    import { EntitySelector } from "$lib/entityselector/index.js";
     import { Checkbox } from "$lib/components/ui/checkbox/index.js";
     import { Label } from "$lib/components/ui/label/index.js";
 
@@ -26,8 +26,9 @@
     }
 </script>
 
-<div class="flex flex-row border-2">
-    <SelectEntity bind:value={value._id} />
+<div class="flex flex-row">
+    <!-- <EntitySelector bind:value={value._id} collectionname="users" /> -->
+     {value.name}
 
     {#each items as item}
         <!-- svelte-ignore a11y_click_events_have_key_events -->

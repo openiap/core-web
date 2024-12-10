@@ -8,7 +8,7 @@
   import { newFormSchema } from "../schema.js";
   import { zod } from "sveltekit-superforms/adapters";
   import { ObjectInput } from "$lib/objectinput/index.js";
-    import { SelectCollection } from "$lib/selectcollection/index.js";
+  import { CollectionSelector } from "$lib/collectionselector/index.js";
   const key = "formresource";
   let showdebug = $state(false);
   const { data } = $props();
@@ -37,7 +37,7 @@
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Collection</Form.Label>
-        <SelectCollection {...props} bind:value={$formData.collection} />
+        <CollectionSelector {...props} bind:value={$formData.collection} />
       {/snippet}
     </Form.Control>
     <Form.Description>This is the name of the collection.</Form.Description>

@@ -5,7 +5,7 @@
   import SuperDebug, { superForm } from "sveltekit-superforms";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { ObjectInput } from "$lib/objectinput/index.js";
-  import { SelectCollection } from "$lib/selectcollection/index.js";
+  import { CollectionSelector } from "$lib/collectionselector/index.js";
   
   import { base } from "$app/paths";
   import { goto } from "$app/navigation";
@@ -46,7 +46,7 @@
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>collection</Form.Label>
-        <SelectCollection {...props} bind:value={$formData.collection} />
+        <CollectionSelector {...props} bind:value={$formData.collection} />
       {/snippet}
     </Form.Control>
     <Form.Description>This is the name of the collection.</Form.Description>
