@@ -1,10 +1,8 @@
 import { auth } from "$lib/stores/auth.svelte.js";
 import { base } from "$app/paths";
 import type { PageServerLoad } from "./$types.js";
-export const load: PageServerLoad = async (x:any) => {
-    const { data, fetch, cookies, url } = x;
-	await auth.clientinit(url.origin, fetch, cookies);
-	// console.debug("connected:", auth.isConnected, "authenticated:", auth.isAuthenticated, "loaded:", auth.isLoaded, "entities/page.server.ts");
+export const load: PageServerLoad = async ({ fetch, url, cookies, locals, params }) => {
+    await auth.clientinit((locals as any).domain, url.origin, fetch, cookies );
     const entities = await auth.client.Query({
         collectionname: "entities",
         query: {},
@@ -15,6 +13,6 @@ export const load: PageServerLoad = async (x:any) => {
     });
     const collections = await auth.client.ListCollections({jwt: auth.access_token});
     
-    return { ...data, entities, collections };
+    return { entities, collections };
 
 };

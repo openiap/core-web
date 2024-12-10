@@ -3,6 +3,5 @@ import { auth } from "$lib/stores/auth.svelte.js";
 
 export const load: PageServerLoad = async ( { fetch, url, cookies, locals } ) => {
 	await auth.clientinit((locals as any).domain, url.origin, fetch, cookies );
-    // console.debug("connected:", auth.isConnected, "authenticated:", auth.isAuthenticated, "loaded:", auth.isLoaded, "page.server.ts");
     return { name: (auth.profile && auth.profile.name != "" ? auth.profile.name : "Svelte") };
 }

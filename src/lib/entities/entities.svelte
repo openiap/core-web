@@ -58,7 +58,6 @@
 	page_index = settings.getvalue(page, "page_index", 0);
 
 	async function GetData() {
-		console.log("*** GetData");
 		let orderby = getOrderBy();
 		let query = createQuery();
 		let top = 5;

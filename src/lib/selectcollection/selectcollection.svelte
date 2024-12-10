@@ -13,7 +13,6 @@
     }
     $effect(() => {
         getData();
-        console.log("value", value);
     });
 </script>
 

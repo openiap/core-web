@@ -98,7 +98,7 @@ class authState {
     connectWaitingPromisses: any[] = [];
     async connect() {
         if(this.client != null && this.client.connected) {
-            console.debug("Client already connected");
+            // console.debug("Client already connected");
             return;
         }
         if(this.client == null) {
@@ -122,15 +122,6 @@ class authState {
             });
         }
     }
-    // async connect() {
-    //     // if(this.client != null && this.client.connected) {
-    //     //     return;
-    //     // }
-    //     console.debug("Creating new client for", this.wsurl);
-    //     this.client = new openiap(this.wsurl, this.access_token);
-    //     await this.client.connect(true);
-    //     this.isConnected = true;
-    // }
 }
 
 let defaultstate = new authState();
