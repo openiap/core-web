@@ -54,7 +54,7 @@
 					},
 					{
 						title: "Mail History",
-						url: `${base}/mailhist`,
+						url: `${base}/mailhistory`,
 					},
 				],
 			},

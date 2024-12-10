@@ -3,7 +3,7 @@
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { HotkeyInput } from "$lib/components/ui/hotkeyinput/index.js";
   import { Label } from "$lib/components/ui/label/index.js";
-  import { Pencil, Trash2 } from "lucide-svelte";
+  import { Pencil, Eye } from "lucide-svelte";
 
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
@@ -17,7 +17,8 @@
     settings.clearall();
     goto(base + `/`);
   }
-  const key = "Mail History";
+  const title = "Mail History";
+  const key = "mailhistory";
   let defaultcolumnnames = [
     "_id",
     "name",
@@ -27,7 +28,7 @@
     "_created",
   ];
   let collectionname = "mailhist";
-  let page = "mailhist";
+  let page = "mailhistory";
   let query = {};
   let searchstring = $state("");
   let selected_items = $state([]);
@@ -53,7 +54,7 @@
   }
 </script>
 
-<h1>All {key}s</h1>
+<h1>All {title}s</h1>
 <div class="flex w-full max-w-sm flex-col gap-1.5">
   <Label for="email">Search</Label>
   <div class="flex gap-1.5">
@@ -80,16 +81,18 @@
 >
   {#snippet action(item: any)}
     <Button
-      aria-label="delete"
-      onclick={() => deleteitem(item)}
+      aria-label="view"
+      onclick={() => goto(base + `/${key}/${item._id}`)}
       size="icon"
-      variant="destructive"
+      variant="secondary"
+      title="view"
     >
-      <Trash2 />
+      <Eye />
     </Button>
     <Button
+      title="edit"
       aria-label="edit"
-      onclick={() => goto(base + `/${key}/${item._id}`)}
+      onclick={() => goto(base + `/user/${item._createdbyid}`)}
       size="icon"
       variant="secondary"
     >

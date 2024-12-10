@@ -77,7 +77,7 @@
         <Input {...props} bind:value={$formData.name} />
       {/snippet}
     </Form.Control>
-    <Form.Description>This is your public display name.</Form.Description>
+    <Form.Description>This is the name.</Form.Description>
     <Form.FieldErrors />
   </Form.Field>
 
