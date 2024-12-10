@@ -3,6 +3,7 @@
   import { pushState } from "$app/navigation";
   import { base } from "$app/paths";
   import { onMount } from "svelte";
+  import SuperDebug from "sveltekit-superforms";
   let { data } = $props();
   if (data.redirect == true && browser) {
     setTimeout(() => {
@@ -12,6 +13,7 @@
 </script>
 
 <h1>Hello {data.name}!</h1>
+
 <p>
   Visit <a href="https://docs.openiap.io/">docs.openiap.io</a> to read the documentation
 </p>

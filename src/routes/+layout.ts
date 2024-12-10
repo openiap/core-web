@@ -5,7 +5,6 @@ import { pushState } from "$app/navigation";
 import { error } from '@sveltejs/kit';
 import { browser } from "$app/environment";
 export const load: LayoutLoad = async ({ data, fetch, url }) => {
-	console.log("layout.ts.load", (data as any).domain);
 	let redirect = false;
 	if(browser) {
 		await auth.clientinit((data as any).domain, url.origin, fetch, null);
@@ -21,6 +20,5 @@ export const load: LayoutLoad = async ({ data, fetch, url }) => {
 			}
 		}
 	}
-	// console.debug("connected:", auth.isConnected, "authenticated:", auth.isAuthenticated, "loaded:", auth.isLoaded, "layout.ts");
     return {...data, redirect};
 };
