@@ -65,8 +65,8 @@
 collectionname: {collectionname}<br />
 <div class="flex min-h-screen items-start justify-center">
   <div id="div1" class="w-full max-w-[300px] flex-shrink-0 hidden sm:block">
-    <!-- <ScrollArea class="max-h-screen sm:max-h-[calc(100vh-8rem)] overflow-auto"> -->
-    <ScrollArea class="max-h-[80vh]">
+    <ScrollArea class="max-h-screen sm:max-h-[calc(100vh-8rem)] overflow-auto">
+    <!-- <ScrollArea class="max-h-[80vh]"> -->
       <div class="p-4">
         <h4 class="mb-4 text-sm font-medium leading-none">Tags</h4>
         {#each collections as tag}
