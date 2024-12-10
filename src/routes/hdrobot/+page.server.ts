@@ -11,5 +11,4 @@ export const load: PageServerLoad = async ({ fetch, url, cookies, locals, params
         jwt: auth.access_token,
     })
     return { entities };
-
 };
