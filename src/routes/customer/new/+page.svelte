@@ -1,7 +1,6 @@
 <script lang="ts">
   import * as Form from "$lib/components/ui/form/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
-  import { Checkbox } from "$lib/components/ui/checkbox/index.js";
   import SuperDebug, { superForm } from "sveltekit-superforms";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { base } from "$app/paths";
