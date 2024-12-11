@@ -2,7 +2,8 @@ import { type CookieOptions } from "./cookie-options";
 import { formatCookie } from "./format-cookie";
 import { parseCookies } from "./parse-cookies";
 import { type Storage } from "./storage.js";
-
+const CHUNK_SIZE = 3800; // Leave some space for key names and cookie overhead
+const CHUNK_PATTERN = '__chunk_';
 export class CookieStorage implements Storage {
   private _defaultOptions: CookieOptions;
 
@@ -31,34 +32,95 @@ export class CookieStorage implements Storage {
     keys.forEach((key) => this.removeItem(key));
   }
 
-  public getItem(key: string): string | null {
-    const parsed = parseCookies(this._getCookie());
-    return Object.prototype.hasOwnProperty.call(parsed, key)
-      ? parsed[key]
-      : null;
+
+  private _getChunkKey(key: string, index: number): string {
+    return `${key}${CHUNK_PATTERN}${index}`;
   }
 
-  public key(index: number): string | null {
+  private _isChunkKey(key: string): boolean {
+    console.log(key.includes(CHUNK_PATTERN));
+    return key.includes(CHUNK_PATTERN);
+  }
+
+  private _getBaseKey(chunkKey: string): string {
+    return chunkKey.split(CHUNK_PATTERN)[0];
+  }
+
+  private _getAllChunks(key: string): string {
     const parsed = parseCookies(this._getCookie());
-    const sortedKeys = Object.keys(parsed).sort();
-    return index < sortedKeys.length ? sortedKeys[index] : null;
+    let result = '';
+    let index = 0;
+    
+    while (true) {
+      const chunkKey = this._getChunkKey(key, index);
+      if (!Object.prototype.hasOwnProperty.call(parsed, chunkKey)) break;
+      result += parsed[chunkKey];
+      index++;
+    }
+    
+    return result;
+  }
+
+  public getItem(key: string): string | null {
+    const parsed = parseCookies(this._getCookie());
+    if (Object.prototype.hasOwnProperty.call(parsed, key)) {
+      return parsed[key];
+    }
+    
+    // Check for chunked data
+    const firstChunk = parsed[this._getChunkKey(key, 0)];
+    return firstChunk ? this._getAllChunks(key) : null;
+}
+
+public key(index: number): string | null {
+    const parsed = parseCookies(this._getCookie());
+    const keys = Object.keys(parsed)
+      .filter(key => !this._isChunkKey(key))
+      .sort();
+    return index < keys.length ? keys[index] : null;
   }
 
   public removeItem(key: string, cookieOptions?: CookieOptions): void {
-    const data = "";
     const options = {
-      ...this._defaultOptions,
-      ...cookieOptions,
-      ...{ expires: new Date(0) },
-    };
-    const formatted = formatCookie(key, data, options);
-    this._setCookie(formatted);
+        ...this._defaultOptions,
+        ...cookieOptions,
+        ...{ expires: new Date(0) },
+      };
+  
+      // Remove main key
+      const formatted = formatCookie(key, "", options);
+      this._setCookie(formatted);
+  
+      // Remove all chunks
+      let index = 0;
+      while (true) {
+        const chunkKey = this._getChunkKey(key, index);
+        if (!this.getItem(chunkKey)) break;
+        const formatted = formatCookie(chunkKey, "", options);
+        this._setCookie(formatted);
+        index++;
+      }
   }
 
   public setItem(key: string, data: string, options?: CookieOptions): void {
     const opts = { ...this._defaultOptions, ...options };
-    const formatted = formatCookie(key, data, opts);
-    this._setCookie(formatted);
+    
+    if (data.length <= CHUNK_SIZE) {
+      const formatted = formatCookie(key, data, opts);
+      this._setCookie(formatted);
+      return;
+    }
+
+    // Remove any existing chunks first
+    this.removeItem(key, opts);
+    
+    // Split data into chunks
+    for (let i = 0; i < data.length; i += CHUNK_SIZE) {
+      const chunk = data.substr(i, CHUNK_SIZE);
+      const chunkKey = this._getChunkKey(key, Math.floor(i / CHUNK_SIZE));
+      const formatted = formatCookie(chunkKey, chunk, opts);
+      this._setCookie(formatted);
+    }
   }
 
   private _getCookie(): string {
