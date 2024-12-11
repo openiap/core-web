@@ -24,12 +24,14 @@
     });
 </script>
 
-<Accordion.Root type="single">
+<Accordion.Root type="single" class="my-2">
     <Accordion.Item value="item-1">
         <Accordion.Trigger>Access Control List</Accordion.Trigger>
         <Accordion.Content>
             {#each value._acl as ace, i}
-                <div class="flex flex-row">
+                <div
+                    class="flex flex-row justify-between my-2 border p-2 rounded-lg"
+                >
                     <Ace bind:value={value._acl[i]} />
                     <Button
                         onclick={() => {
@@ -39,15 +41,17 @@
                     >
                 </div>
             {/each}
-            <EntitySelector bind:value={newid} collectionname="users"
-            ></EntitySelector>
-            <Button
-                onclick={() => {
-                    addace(newid);
-                }}
-            >
-                Add
-            </Button>
+            <div class="flex space-x-2">
+                <EntitySelector bind:value={newid} collectionname="users"
+                ></EntitySelector>
+                <Button
+                    onclick={() => {
+                        addace(newid);
+                    }}
+                >
+                    Add
+                </Button>
+            </div>
         </Accordion.Content>
     </Accordion.Item>
 </Accordion.Root>

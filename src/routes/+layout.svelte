@@ -6,7 +6,7 @@
 	import { ModeWatcher } from "mode-watcher";
 	import { base } from "$app/paths";
 	import { page } from "$app/stores";
-	import AppSidebar from "$lib/components/sidebar/app-sidebar.svelte";
+	import AppSidebar from "$lib/sidebar/app-sidebar.svelte";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
     import { browser } from "$app/environment";
 

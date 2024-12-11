@@ -2,7 +2,6 @@
 	import { page } from "$app/stores";
 	import { base } from "$app/paths";
 
-	// sample data
 	const data = {
 		versions: ["1.0.1", "1.1.0-alpha", "2.0.0-beta1"],
 		navMain: [
@@ -63,6 +62,14 @@
 				url: "#",
 				items: [
 					{
+						title: "Agents",
+						url: `${base}/agent`,
+					},
+					{
+						title: "Work Items",
+						url: `${base}/workitem`,
+					},
+					{
 						title: "Clients",
 						url: `${base}/client`,
 					},
@@ -84,17 +91,11 @@
 		],
 	};
 
-	const data2 = {
-		"Getting Started": ["user", "entities"],
-		Other: [],
-	};
 </script>
 
 <script lang="ts">
-	// import SearchForm from "$lib/components/search-form.svelte";
 	import * as Collapsible from "$lib/components/ui/collapsible/index.js";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
-	// import GalleryVerticalEnd from "lucide-svelte/icons/gallery-vertical-end";
 	import Minus from "lucide-svelte/icons/minus";
 	import Plus from "lucide-svelte/icons/plus";
 	import type { ComponentProps } from "svelte";
@@ -106,28 +107,6 @@
 </script>
 
 <Sidebar.Root bind:ref {...restProps}>
-	<!-- <Sidebar.Header>
-		<Sidebar.Menu>
-			<Sidebar.MenuItem>
-				<Sidebar.MenuButton size="lg">
-					{#snippet child({ props })}
-						<a href="##" {...props}>
-							<div
-								class="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg"
-							>
-								<GalleryVerticalEnd class="size-4" />
-							</div>
-							<div class="flex flex-col gap-0.5 leading-none">
-								<span class="font-semibold">Documentation</span>
-								<span class="">v1.0.0</span>
-							</div>
-						</a>
-					{/snippet}
-				</Sidebar.MenuButton>
-			</Sidebar.MenuItem>
-		</Sidebar.Menu>
-		<SearchForm />
-	</Sidebar.Header> -->
 	<Sidebar.Content>
 		<Sidebar.Group>
 			<Sidebar.Menu>

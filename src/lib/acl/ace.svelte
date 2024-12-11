@@ -26,24 +26,34 @@
     }
 </script>
 
-<div class="flex flex-row">
+<div class="flex flex-row items-center p-2 justify-between w-full">
     <!-- <EntitySelector bind:value={value._id} collectionname="users" /> -->
-     {value.name}
+    <div>
+        {value.name}
+    </div>
 
-    {#each items as item}
-        <!-- svelte-ignore a11y_click_events_have_key_events -->
-        <div role="button" tabindex="0"
-            class="items-top flex space-x-2"
-            onclick={() => (value.rights = toogleBit(item.value))} 
-        >
-            <Checkbox checked={IsBitSet(item.value)} aria-label={item.label} class="ml-2 w-6 h-6 md:w-4 md:h-4" />
-            <div class="grid gap-1.5 leading-none">
-                <Label
-                    class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                    {item.label}
-                </Label>
+    <div class="flex">
+        {#each items as item}
+            <!-- svelte-ignore a11y_click_events_have_key_events -->
+            <div
+                role="button"
+                tabindex="0"
+                class="flex space-x-2"
+                onclick={() => (value.rights = toogleBit(item.value))}
+            >
+                <Checkbox
+                    checked={IsBitSet(item.value)}
+                    aria-label={item.label}
+                    class="ml-2 w-6 h-6 md:w-4 md:h-4"
+                />
+                <div class="grid gap-1.5 leading-none">
+                    <Label
+                        class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                        {item.label}
+                    </Label>
+                </div>
             </div>
-        </div>
-    {/each}
+        {/each}
+    </div>
 </div>
