@@ -7,7 +7,8 @@
 
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
-  import { settings } from "$lib/stores/settings.svelte";
+  import { settingsState } from "$lib/stores/settings.svelte";
+  const settings = new settingsState();
 
   let { data } = $props();
   import Button from "$lib/components/ui/button/button.svelte";
@@ -35,11 +36,10 @@
     if (deletecount == 1) {
       entities = entities.filter((entity: any) => entity._id != item._id);
     } else {
-      console.log("deletecount", deletecount);
+      console.error(Error("deletecount is " + deletecount));
     }
   }
   function deleteitems(ids: string[]) {
-    console.log("deleteitems", ids);
   }
   function single_item_click(item: any) {
     goto(base + `/${key}/${item._id}`);

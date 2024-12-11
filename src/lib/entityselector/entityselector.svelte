@@ -40,12 +40,10 @@
             top: 8,
             jwt: auth.access_token,
         });
-        console.log("entities", entities.length);
     }
     let open = $state(false);
     function closeAndRefocusTrigger() {
 		open = false;
-
 		// tick().then(() => document.getElementById(triggerId)?.focus());
 	}
 </script>

@@ -35,14 +35,14 @@ class authState {
         this.wsurl = this.baseurl.replace("https://", "wss://").replace("http://", "ws://") + "/ws/v2";
         try {
             let f = await fetch(configurl);
-            if (f.status === 200) console.log("Loaded config from", configurl);
+            if (f.status === 200) console. log("Loaded config from", configurl);
             if (f.status !== 200) {
                 f = await fetch(this.baseurl + "/config");
-                if (f.status === 200) console.log("Loaded config from", this.baseurl + "/config");
+                if (f.status === 200) console. log("Loaded config from", this.baseurl + "/config");
             }
             if (f.status !== 200) {
                 f = await fetch("http://localhost:3000/config");
-                if (f.status === 200) console.log("Loaded config from", "http://localhost:3000/config");
+                if (f.status === 200) console. log("Loaded config from", "http://localhost:3000/config");
             }
             if (f.status !== 200) {
                 throw new Error(`Failed to load config from ${configurl}`);
@@ -87,7 +87,6 @@ class authState {
         } else {
             auth.profile = {} as any;
             auth.access_token = "";
-            console.debug("No user found");
         }
         if (!browser) {
             global.WebSocket = ws;
@@ -98,25 +97,21 @@ class authState {
     connectWaitingPromisses: any[] = [];
     async connect() {
         if(this.client != null && this.client.connected) {
-            // console.debug("Client already connected");
             return;
         }
         if(this.client == null) {
-            console.debug("Creating new client for", this.wsurl);
+            console. debug("Creating new client for", this.wsurl);
             if(browser) {
                 this.client = new openiap(this.wsurl, this.access_token);
             } else {
                 this.client = new openiap(this.wsurl, "");
             }
-            console.debug("Connecting client");
             await this.client.connect(true);
             this.isConnected = true;
             this.connectWaitingPromisses.forEach((resolve: any) => {
-                console.debug("Resolving connect promise");
                 resolve();
             });
         } else {
-            console.debug("Waiting for client to connect");
             await new Promise((resolve) => {
                 this.connectWaitingPromisses.push(resolve);
             });

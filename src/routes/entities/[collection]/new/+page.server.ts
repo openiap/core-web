@@ -6,14 +6,20 @@ import { auth } from "$lib/stores/auth.svelte.js";
 import { base } from "$app/paths";
 import { newFormSchema } from "../schema.js";
 
-const key = "formresource";
-
+const key = "user"
 export const load: PageServerLoad = async ({ fetch, url, cookies, locals }) => {
-  await auth.clientinit((locals as any).domain, url.origin, fetch, cookies);
+  await auth.clientinit((locals as any).domain, url.origin, fetch, cookies );
   const defaultValues = {
-    name: "entities",
-    collection: "entities",
-    aggregates: []
+    name: "John Doe",
+    username: "Johndoe",
+    email: "john@doe.com",
+    password: "123456",
+    disabled: false,
+    dblocked: false,
+    validated: false,
+    emailvalidated: false,
+    formvalidated: false,
+    federationids: [],
   }
   return {
     form: await superValidate(defaultValues, zod(newFormSchema)),
@@ -23,15 +29,15 @@ export const load: PageServerLoad = async ({ fetch, url, cookies, locals }) => {
 export const actions: Actions = {
   default: async (event: any) => {
     const form = await superValidate(event, zod(newFormSchema));
+
     if (!form.valid) {
       return fail(400, {
         form,
       });
     }
     try {
-      await auth.client.InsertOne({ collectionname: "forms", item: { ...form.data, _type: "resource" }, jwt: auth.access_token });
+      await auth.client.InsertOne({ collectionname: "users", item: { ...form.data, _type: "user" }, jwt: auth.access_token });
     } catch (err: any) {
-      console.error(err);
       setError(form, 'name', err.message);
       return {
         form,

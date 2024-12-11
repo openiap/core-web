@@ -4,6 +4,8 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
+		"dev:debug": "vite dev -d",
+		"build:dev": "vite build -m dev",
 		"build": "vite build",
 		"build:watch": "vite build --watch",
 		"preview": "vite preview",
@@ -15,7 +17,6 @@
 		"@fontsource/fira-mono": "^5.1.0",
 		"@github/hotkey": "^3.1.1",
 		"@sveltejs/adapter-node": "^5.2.9",
-		"cookie-storage": "^6.1.0",
 		"mode-watcher": "^0.5.0",
 		"oidc-client": "^1.11.5"
 	},

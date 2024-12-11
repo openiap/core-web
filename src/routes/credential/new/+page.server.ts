@@ -31,7 +31,7 @@ export const actions: Actions = {
     try {
       await auth.client.InsertOne({ collectionname: "openrpa", item: { ...form.data, _type: "credential" }, jwt: auth.access_token });
     } catch (err: any) {
-      console.log("err", err.message);
+      console.error(err);
       setError(form, 'name', err.message);
       return {
         form,

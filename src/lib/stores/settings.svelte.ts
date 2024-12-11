@@ -1,51 +1,43 @@
-const settingsCache: { [key: string]: any } = {};
-class settingsState {
-    isAuthenticated: boolean = $state(false);
-    constructor() {
+import { SvelteStorage } from "./SvelteStorage";
+
+export class settingsState {
+    storage: SvelteStorage;
+    constructor(cookies: any = null) {
+        this.storage = new SvelteStorage(cookies);        
     }
     clearall() {
-        if (typeof localStorage === 'undefined') return;
-        for (const key in settingsCache) {
-            if (settingsCache.hasOwnProperty(key)) {
-                delete settingsCache[key];
-                localStorage && localStorage.removeItem(key);
-            }
-        }
-        var keys = Object.keys(localStorage);
-        for (var i = 0; i < keys.length; i++) {
-            if (keys[i].startsWith("sveltekit-")) {
-                localStorage.removeItem(keys[i]);
-            }
-        }
+        this.storage.clear();
     }
     clearvalue(page: string, key: string) {
         const fullKey = `${page}-${key}`;
-        delete settingsCache[fullKey];
-        if (typeof localStorage !== 'undefined') localStorage.removeItem(fullKey);
+        this.storage.removeItem(fullKey);"headers"
     }
     setvalue<T>(page: string, key: string, value: T) {
         const fullKey = `${page}-${key}`;
-        settingsCache[fullKey] = value;
-        if (typeof localStorage !== 'undefined') localStorage.setItem(fullKey, JSON.stringify(value));
+        let json = JSON.stringify(value);
+        console.log("setvalue: ", fullKey, json);
+        this.storage.setItem(fullKey, json);
     }
     getvalue<T>(page: string, key: string, defaultValue: T): T {
         const fullKey = `${page}-${key}`;
-        if( settingsCache.hasOwnProperty(fullKey) ) {
-            return JSON.parse(JSON.stringify(settingsCache[fullKey]));
-        }
-        if (typeof localStorage === 'undefined') return JSON.parse(JSON.stringify(defaultValue));   
-        let value = localStorage.getItem(fullKey);
-        if (value != null) {
+        let json = this.storage.getItem(fullKey, "");
+        let value = defaultValue;
+        if (json != "") {
             try {
-                settingsCache[fullKey] = JSON.parse(value);
-                return JSON.parse(JSON.stringify(settingsCache[fullKey]));
+                console.log("getvalue: ", fullKey, json);
+                value = JSON.parse(JSON.stringify(JSON.parse(json)));
             } catch (error) {
-                return JSON.parse(JSON.stringify(defaultValue));
+                console. error("getvalue: ", fullKey, error);
+                value = JSON.parse(JSON.stringify(defaultValue));
             }
         } else {
-            return JSON.parse(JSON.stringify(defaultValue));
+            value = JSON.parse(JSON.stringify(defaultValue));
         }
+        if(json == null) {
+            // console. debug("getvalue: ", fullKey, value);
+            return value;
+        }
+        // console. debug("getvalue: ", fullKey, JSON.stringify(value).substring(0, 70));
+        return value;
     }
 }
-let defaultsettings = new settingsState();
-export const settings = $state(defaultsettings);
