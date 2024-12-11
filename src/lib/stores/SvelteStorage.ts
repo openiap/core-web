@@ -28,12 +28,12 @@ export class SvelteStorage {
         let provider = "cookiestorage";
         if (this.cookies == null) provider = "cookie";
         let urlencodedkey = encodeURIComponent(key);
-        this.cookies ? this.cookies.set(urlencodedkey, value) : this.storage.setItem(key, value);
+        this.cookies ? this.cookies.set(urlencodedkey, value) : this.storage.setItem(key, value, {path: "/"});
     }
     removeItem(key: string): void {
         let urlencodedkey = encodeURIComponent(key);
         let provider = "cookiestorage";
         if (this.cookies == null) provider = "cookie";
-        this.cookies ? this.cookies.delete(urlencodedkey) : this.storage.removeItem(key);
+        this.cookies ? this.cookies.delete(urlencodedkey) : this.storage.removeItem(key, {path: "/"});
     }
 }
