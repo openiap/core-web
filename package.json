@@ -13,15 +13,11 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"updateapi": "npm uninstall @openiap/jsapi && npm -D i openiap/jsapi#esm"
 	},
-	"dependencies": {
+	"devDependencies": {
 		"@fontsource/fira-mono": "^5.1.0",
 		"@github/hotkey": "^3.1.1",
-		"@sveltejs/adapter-node": "^5.2.9",
-		"mode-watcher": "^0.5.0",
-		"oidc-client": "^1.11.5"
-	},
-	"devDependencies": {
 		"@openiap/jsapi": "github:openiap/jsapi#esm",
+		"@sveltejs/adapter-node": "^5.2.9",
 		"@sveltejs/kit": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^4.0.0",
 		"autoprefixer": "^10.4.20",
@@ -29,6 +25,7 @@
 		"clsx": "^2.1.1",
 		"formsnap": "^2.0.0-next.1",
 		"lucide-svelte": "^0.460.1",
+		"mode-watcher": "^0.5.0",
 		"oidc-client": "^1.11.5",
 		"svelte": "^5.0.0",
 		"svelte-check": "^4.0.0",
