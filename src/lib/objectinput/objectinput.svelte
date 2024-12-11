@@ -7,6 +7,7 @@
     let errormessage = $state("");
 
     $effect(() => {
+        errormessage = ""
         const testjson = JSON.stringify(value, null, 2);
         if (testjson !== json) {
             // External changes detected
@@ -25,7 +26,7 @@
     });
 </script>
 
+<Textarea bind:value={intermediateJson} {...restProps}></Textarea>
 {#if errormessage}
     <div class="text-red-500">{errormessage}</div>
 {/if}
-<Textarea bind:value={intermediateJson} {...restProps}></Textarea>

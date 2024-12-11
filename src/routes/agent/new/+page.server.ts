@@ -5,10 +5,17 @@ import { fail, redirect } from "@sveltejs/kit";
 import { auth } from "$lib/stores/auth.svelte.js";
 import { base } from "$app/paths";
 import { newFormSchema } from "../schema.js";
+import { randomname } from "./helper.js";
 
 const key = "agent"
 export const load: PageServerLoad = async ({ fetch, url, cookies, locals }) => {
   await auth.clientinit((locals as any).domain, url.origin, fetch, cookies);
+
+  let item = await auth.client.FindOne<any>({ collectionname: "config", query: { name: "Agent Instance", _type: "resource" }, jwt: auth.access_token });
+
+  // const name = randomname();
+
+
   const defaultValues = {
     name: "",
     slug: "",
@@ -23,6 +30,7 @@ export const load: PageServerLoad = async ({ fetch, url, cookies, locals }) => {
   }
   return {
     form: await superValidate(zod(newFormSchema)),
+    agentInstance: item
   };
 };
 
