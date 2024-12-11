@@ -21,16 +21,18 @@ class entitiesdata {
 
 	settings: settingsState = null as any;
 
+	getHeaders() {
+		return $state.snapshot(data.headers);
+	}
+
     async GetData(collectionname:string, searchstring:string, query: any) {
 		let orderby = this.getOrderBy();
 		let usequery = this.createQuery(searchstring, query);
 		let top = 5;
 		let skip = this.page_index * top;
 
-		if (auth.isLoaded == false) {
-			return [];
-		}
-		if (auth.isAuthenticated == false) {
+		if (auth.isConnected == false) {
+			console.log("auth.isConnected == false");
 			return [];
 		}
 		console.debug("GetData: ", collectionname, usequery, orderby, skip, top);
@@ -42,6 +44,7 @@ class entitiesdata {
 			top: 5,
 			jwt: auth.access_token,
 		});
+		console.debug("GetData: ", entities.length);
 		if (entities.length > 0) {
 			let keys = [];
 			for (let i = 0; i < entities.length; i++) {
@@ -89,8 +92,7 @@ class entitiesdata {
 		this.settings.setvalue(page, "headers", _headers);
 
 		let test: any[] = this.settings.getvalue(page, "headers", []);
-		console.log("SaveHeadersTEST2", page, test, test.length, test.map((x) => x.field) );
-
+		// console.log("SaveHeadersTEST2", page, test, test.length, test.map((x) => x.field) );
 	}
 	private getOrderBy() {
 		const orderby: { [key: string]: number } = {};

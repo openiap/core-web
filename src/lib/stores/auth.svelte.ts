@@ -14,7 +14,6 @@ class authState {
     access_token: string = "";
     client: openiap = null as any;
     userManager: any;
-    isLoaded: boolean = $state(false);
     isConnected: boolean = $state(false);
     config: any = $state(null);
     baseurl = $state("");
@@ -52,12 +51,12 @@ class authState {
             console.error('Failed to load config', error);
         }
     }
-    async clientinit(domain: string, origin: string, fetch: any, cookies: any) {
+    async clientinit(domain: string, origin: string, fetch: any, cookies: any, client_id: string = "webapp") {
         // if (browser) {
         if (this.config == null) await this.getConfig(domain, origin, fetch);
         const settings = {
             authority: this.baseurl + "/oidc",
-            client_id: "webapp",
+            client_id: client_id,
             redirect_uri: origin + base + "/",
             response_type: "code",
             scope: "openid profile email",
@@ -79,6 +78,7 @@ class authState {
         await this.userManager.signoutRedirect();
     }
     async loadUserAndClient() {
+        this.isAuthenticated = false;
         const result = await this.userManager.getUser();
         if (result != null) {
             auth.profile = result.profile;
@@ -92,7 +92,6 @@ class authState {
             global.WebSocket = ws;
         }
         await this.connect();
-        this.isLoaded = true;
     }
     connectWaitingPromisses: any[] = [];
     async connect() {
