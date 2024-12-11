@@ -5,7 +5,7 @@
   let { data } = $props();
   if (data.redirect == true && browser) {
     setTimeout(() => {
-      pushState(base + "/", {});
+      window.location.href = base + "/";
     }, 500);
   }
 </script>
