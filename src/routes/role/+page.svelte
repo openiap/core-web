@@ -9,22 +9,15 @@
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import { auth } from "$lib/stores/auth.svelte.js";
-  import { settingsState } from "$lib/stores/settings.svelte";
-  const settings = new settingsState();
   import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
 
   let { data } = $props();
 
-  function reset() {
-    settings.clearall();
-    goto(base + `/`);
-  }
   const key = "role";
-  let defaultcolumnnames = ["_id", "name", "rparole", "_created"];
   let collectionname = "users";
-  let page = "roles";
+  let page = "role";
   let query = { _type: "role" };
-  let searchstring = $state("");
+  let searchstring = $state(data.searchstring);
   let selected_items = $state([]);
   let entities = $state(data.entities);
   async function deleteitem(item: any) {
@@ -62,11 +55,9 @@
       bind:value={searchstring}
       data-shortcut={"Control+f,Meta+f"}
     />
-    <HotkeyButton aria-label="reset" onclick={reset}>Reset</HotkeyButton>
   </div>
 </div>
 <Entities
-  {defaultcolumnnames}
   {collectionname}
   {query}
   bind:searchstring

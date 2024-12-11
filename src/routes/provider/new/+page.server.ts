@@ -10,7 +10,6 @@ import { newFormSchema } from "../schema.js";
 const key = "provider"
 
 export const load: PageServerLoad = async ({ fetch, url, cookies, locals }) => {
-  await auth.clientinit((locals as any).domain, url.origin, fetch, cookies);
   const defaultValues = {
     name: "John Doe",
     id: "123",

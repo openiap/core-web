@@ -11,7 +11,6 @@ const key = "mailhistory"
 export const load: PageServerLoad = async ({ fetch, url, cookies, locals, params }) => {
   let data: any = {};
   let id = params.id;
-  await auth.clientinit((locals as any).domain, url.origin, fetch, cookies);
   let item = await auth.client.FindOne<any>({ collectionname: "mailhist", query: { _id: id }, jwt: auth.access_token });
   data.form = await superValidate(item, zod(editFormSchema));
   return data;

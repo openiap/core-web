@@ -29,7 +29,11 @@ export class CookieStorage implements Storage {
   public clear(): void {
     const parsed = parseCookies(this._getCookie());
     const keys = Object.keys(parsed);
-    keys.forEach((key) => this.removeItem(key));
+    // keys.forEach((key) => this.removeItem(key));
+    keys.forEach((key) => {
+      console.log("remove", key);
+      this.removeItem(key);
+    });
   }
 
 
@@ -38,7 +42,6 @@ export class CookieStorage implements Storage {
   }
 
   private _isChunkKey(key: string): boolean {
-    console.log(key.includes(CHUNK_PATTERN));
     return key.includes(CHUNK_PATTERN);
   }
 
@@ -105,6 +108,10 @@ public key(index: number): string | null {
   public setItem(key: string, data: string, options?: CookieOptions): void {
     const opts = { ...this._defaultOptions, ...options };
     
+    if(data == '""') {
+      this.removeItem(key, opts);
+      return;
+    }
     if (data.length <= CHUNK_SIZE) {
       const formatted = formatCookie(key, data, opts);
       this._setCookie(formatted);

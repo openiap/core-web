@@ -7,10 +7,14 @@
 	import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
 	// import { base } from "$app/paths";
 	import { auth } from "$lib/stores/auth.svelte";
-	import { Github } from "lucide-svelte";
+	import { Github, Trash2 } from "lucide-svelte";	
 	import { Button } from "$lib/components/ui/button";
 	import Search from "$lib/search/search.svelte";
 
+	import { goto } from "$app/navigation";
+	import { base } from "$app/paths";
+	import { settingsState } from "$lib/stores/settings.svelte";
+	const settings = new settingsState();
 	// let props = $props();
 
 	function login() {
@@ -18,6 +22,10 @@
 	}
 	function logout() {
 		auth.logout();
+	}
+	function reset() {
+		settings.clearall();
+		goto(base + `/`);
 	}
 </script>
 
@@ -44,6 +52,9 @@
 					<Github width="100%" />
 				</Button>
 			</a>
+			<Button variant="outline" aria-label="Clear cookies" onclick={reset}>
+				<Trash2 />
+			</Button>
 			<HotkeyButton
 				onclick={toggleMode}
 				variant="outline"

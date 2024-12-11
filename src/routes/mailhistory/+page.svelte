@@ -7,31 +7,17 @@
 
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
-  import { settingsState } from "$lib/stores/settings.svelte";
-  const settings = new settingsState();
 
   let { data } = $props();
   import Button from "$lib/components/ui/button/button.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
 
-  function reset() {
-    settings.clearall();
-    goto(base + `/`);
-  }
   const title = "Mail History";
   const key = "mailhistory";
-  let defaultcolumnnames = [
-    "_id",
-    "name",
-    "username",
-    "email",
-    "lastseen",
-    "_created",
-  ];
   let collectionname = "mailhist";
   let page = "mailhistory";
   let query = {};
-  let searchstring = $state("");
+  let searchstring = $state(data.searchstring);
   let selected_items = $state([]);
   let entities = $state(data.entities);
 
@@ -65,11 +51,9 @@
       bind:value={searchstring}
       data-shortcut={"Control+f,Meta+f"}
     />
-    <HotkeyButton aria-label="reset" onclick={reset}>Reset</HotkeyButton>
   </div>
 </div>
 <Entities
-  {defaultcolumnnames}
   {collectionname}
   {query}
   bind:searchstring

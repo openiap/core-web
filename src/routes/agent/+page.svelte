@@ -15,8 +15,6 @@
 
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
-  import { settingsState } from "$lib/stores/settings.svelte";
-  const settings = new settingsState();
 
   let { data } = $props();
   import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
@@ -24,23 +22,11 @@
   import { auth } from "$lib/stores/auth.svelte.js";
   import * as RadioGroup from "$lib/components/ui/radio-group/index.js";
 
-  function reset() {
-    settings.clearall();
-    goto(base + `/`);
-  }
   const key = "agent";
-  let defaultcolumnnames = [
-    "name",
-    "image",
-    "os",
-    "stripeprice",
-    "_createdby",
-    "status",
-  ];
   let collectionname = "agents";
   let page = "agent";
   let query = { _type: "agent" };
-  let searchstring = $state("");
+  let searchstring = $state(data.searchstring);
   let selected_items = $state([]);
   let entities = $state(data.entities);
 
@@ -53,11 +39,10 @@
     if (deletecount == 1) {
       entities = entities.filter((entity: any) => entity._id != item._id);
     } else {
-      console.log("deletecount", deletecount);
+      console.error(Error("deletecount is " + deletecount));
     }
   }
   function deleteitems(ids: string[]) {
-    console.log("deleteitems", ids);
   }
   function single_item_click(item: any) {
     goto(base + `/${key}/${item._id}`);
@@ -111,11 +96,9 @@
       bind:value={searchstring}
       data-shortcut={"Control+f,Meta+f"}
     />
-    <HotkeyButton aria-label="reset" onclick={reset}>Reset</HotkeyButton>
   </div>
 </div>
 <Entities
-  {defaultcolumnnames}
   {collectionname}
   {query}
   bind:searchstring

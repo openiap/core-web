@@ -9,7 +9,6 @@ import { newUserSchema } from "../schema.js";
 const key = "role"
 
 export const load: PageServerLoad = async ({ fetch, url, cookies, locals }) => {
-  await auth.clientinit((locals as any).domain, url.origin, fetch, cookies);
   return {
     form: await superValidate(zod(newUserSchema)),
   };

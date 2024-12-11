@@ -8,8 +8,6 @@
   import { HotkeyInput } from "$lib/components/ui/hotkeyinput/index.js";
   import { Label } from "$lib/components/ui/label/index.js";
 
-  import { goto } from "$app/navigation";
-  import { base } from "$app/paths";
   import { settingsState } from "$lib/stores/settings.svelte";
   const settings = new settingsState();
 
@@ -17,19 +15,7 @@
 
   let { data } = $props();
 
-  function reset() {
-    settings.clearall();
-    goto(base + `/`);
-  }
 
-  let defaultcolumnnames = [
-    "_id",
-    "name",
-    "_type",
-    "_createdby",
-    "_modified",
-    "_created",
-  ];
   let collectionname = $state("");
   collectionname = data.collectionname;
   let page = $derived(() => "entities-" + collectionname);
@@ -93,11 +79,9 @@ collectionname: {collectionname}<br />
           bind:value={searchstring}
           data-shortcut={"Control+f,Meta+f"}
         />
-        <HotkeyButton onclick={reset}>Reset</HotkeyButton>
       </div>
     </div>
     <Entities
-      {defaultcolumnnames}
       {collectionname}
       {query}
       bind:searchstring

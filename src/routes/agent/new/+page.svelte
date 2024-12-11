@@ -16,8 +16,6 @@
   import Button from "$lib/components/ui/button/button.svelte";
   import Entityselector from "$lib/entityselector/entityselector.svelte";
 
-  console.log("auth.config", auth.config);
-
   const key = "agent";
   let showdebug = $state(false);
   const { data } = $props();
@@ -63,7 +61,6 @@
     $formData.webserver = false;
     sizewarningtitle = "";
     sizewarning = "";
-    console.log($formData.image);
     var image = images.find((x: any) => x.image == $formData.image);
     $formData.port = image.port;
 
@@ -147,8 +144,6 @@
   function PlanUpdated() {
     sizewarningtitle = "";
     sizewarning = "";
-    console.log($state.snapshot($formData));
-    // debugger;
     if (resource == null || products == null || products.length < 2) return; // no products, don't care
     var product = products.find(
       (x: any) => x.stripeprice == $formData.stripeprice,

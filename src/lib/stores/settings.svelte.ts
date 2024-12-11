@@ -15,7 +15,6 @@ export class settingsState {
     setvalue<T>(page: string, key: string, value: T) {
         const fullKey = `${page}-${key}`;
         let json = JSON.stringify(value);
-        console.log("setvalue: ", fullKey, json);
         this.storage.setItem(fullKey, json);
     }
     getvalue<T>(page: string, key: string, defaultValue: T): T {
@@ -24,20 +23,17 @@ export class settingsState {
         let value = defaultValue;
         if (json != "") {
             try {
-                console.log("getvalue: ", fullKey, json);
                 value = JSON.parse(JSON.stringify(JSON.parse(json)));
             } catch (error) {
-                console. error("getvalue: ", fullKey, error);
+                console.error("getvalue: ", fullKey, error);
                 value = JSON.parse(JSON.stringify(defaultValue));
             }
         } else {
             value = JSON.parse(JSON.stringify(defaultValue));
         }
         if(json == null) {
-            // console. debug("getvalue: ", fullKey, value);
             return value;
         }
-        // console. debug("getvalue: ", fullKey, JSON.stringify(value).substring(0, 70));
         return value;
     }
 }

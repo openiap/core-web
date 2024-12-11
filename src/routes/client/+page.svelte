@@ -7,19 +7,12 @@
 
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
-  import { settingsState } from "$lib/stores/settings.svelte";
-  const settings = new settingsState();
 
   let { data } = $props();
   import Button from "$lib/components/ui/button/button.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
 
-  function reset() {
-    settings.clearall();
-    goto(base + `/`);
-  }
   const key = "client";
-  let defaultcolumnnames = ["name", "username", "clientagent", "clientversion", "created"];
   let collectionname = "";
   let page = "credential";
   let query = { _type: "credential" };
@@ -62,11 +55,9 @@
       bind:value={searchstring}
       data-shortcut={"Control+f,Meta+f"}
     />
-    <HotkeyButton aria-label="reset" onclick={reset}>Reset</HotkeyButton>
   </div>
 </div>
 <Entities
-  {defaultcolumnnames}
   {collectionname}
   {query}
   bind:searchstring

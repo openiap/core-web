@@ -3,20 +3,20 @@ import { auth } from "$lib/stores/auth.svelte";
 import { X } from "lucide-svelte";
 export type sort = "asc" | "desc" | "";
 export class TableHeader {
-    name: string = "";
-    field: string = "";
-    headclass: string = "";
-    cellclass: string = "";
-    order: sort = "";
-    orderindex: number = 0;
-    show: boolean = $state(true);
+	name: string = "";
+	field: string = "";
+	headclass: string = "";
+	cellclass: string = "";
+	order: sort = "";
+	orderindex: number = 0;
+	show: boolean = true;
 }
 
 class entitiesdata {
-    headers: TableHeader[] = $state([]);
-    errormessage = $state("");
-    hide_empty_on_sort = $state(true);
-    page_index = $state(0);
+	headers: TableHeader[] = $state([]);
+	errormessage = $state("");
+	hide_empty_on_sort = $state(true);
+	page_index = $state(0);
 	total_count = $state(99999);
 
 	settings: settingsState = null as any;
@@ -25,17 +25,16 @@ class entitiesdata {
 		return $state.snapshot(data.headers);
 	}
 
-    async GetData(collectionname:string, searchstring:string, query: any) {
+	async GetData(page: string, collectionname: string, searchstring: string, query: any) {
+		this.EnsureDefaultHeaders(page);
 		let orderby = this.getOrderBy();
 		let usequery = this.createQuery(searchstring, query);
 		let top = 5;
 		let skip = this.page_index * top;
 
 		if (auth.isConnected == false) {
-			console.log("auth.isConnected == false");
 			return [];
 		}
-		console.debug("GetData: ", collectionname, usequery, orderby, skip, top);
 		const entities = await auth.client.Query<any>({
 			collectionname: collectionname,
 			query: usequery,
@@ -44,7 +43,6 @@ class entitiesdata {
 			top: 5,
 			jwt: auth.access_token,
 		});
-		console.debug("GetData: ", entities.length);
 		if (entities.length > 0) {
 			let keys = [];
 			for (let i = 0; i < entities.length; i++) {
@@ -73,26 +71,43 @@ class entitiesdata {
 				jwt: auth.access_token,
 			});
 		}
-        return entities;
+		return entities;
 	}
-    loadsettings(page: string, cookies:any) {
+	loadsettings(page: string, cookies: any) {
 		this.settings = new settingsState(cookies);
-        data.headers = this.settings.getvalue(page, "headers", []);
-		// console.log("loadsettings", page, data.headers.length, data.headers.map((x) => x.field) );
-        data.page_index = this.settings.getvalue(page, "page_index", 0);
-        data.page_index = this.settings.getvalue(page, "page_index", 0);
-    }
+		data.headers = this.settings.getvalue(page, "headers", []);
+		data.page_index = this.settings.getvalue(page, "page_index", 0);
+		data.page_index = this.settings.getvalue(page, "page_index", 0);
+	}
 	SaveHeaders(page: string) {
-		// console.log("SaveHeaders", page, data.headers.length, data.headers.map((x) => x.field) );
-		let _headers = $state.snapshot(data.headers);
-		for (let i = 0; i < _headers.length; i++) {
-			_headers[i].show = $state.snapshot(data.headers[i].show);
+		// let _headers = $state.snapshot(data.headers);
+		// for (let i = 0; i < _headers.length; i++) {
+		// 	_headers[i].show = $state.snapshot(data.headers[i].show);
+		// }
+		// this.settings.setvalue(page, "headers", _headers);
+	}
+	EnsureDefaultHeaders(page: string) {
+		if (data.headers.length == 0) {
+			const defaultcolumnnames = this.defaultcolumnnames(page);
+			for (let i = 0; i < defaultcolumnnames.length; i++) {
+				let header = new TableHeader();
+				header.field = defaultcolumnnames[i];
+				if (header.field == "_id") {
+					header.show = false;
+					header.order = "desc";
+					header.orderindex = 100;
+				}
+				if (i == 0) {
+					header.headclass = "w-[100px]";
+					header.cellclass = "font-medium";
+				}
+				if (i == defaultcolumnnames.length - 1) {
+					header.headclass = "text-right";
+					header.cellclass = "text-right";
+				}
+				data.headers.push(header);
+			}
 		}
-		// console.log("SaveHeadersTEST1", page, _headers, _headers.length, _headers.map((x) => x.field) );
-		this.settings.setvalue(page, "headers", _headers);
-
-		let test: any[] = this.settings.getvalue(page, "headers", []);
-		// console.log("SaveHeadersTEST2", page, test, test.length, test.map((x) => x.field) );
 	}
 	private getOrderBy() {
 		const orderby: { [key: string]: number } = {};
@@ -109,7 +124,7 @@ class entitiesdata {
 		}
 		return orderby;
 	}
-    private parseJson(txt: string, reviver: any, context: any) {
+	private parseJson(txt: string, reviver: any, context: any) {
 		context = context || 20;
 		try {
 			return JSON.parse(txt, reviver);
@@ -137,9 +152,8 @@ class entitiesdata {
 					errIdx + context >= txt.length
 						? txt.length
 						: errIdx + context;
-				e.message += ` while parsing near "${
-					start === 0 ? "" : "..."
-				}${txt.slice(start, end)}${end === txt.length ? "" : "..."}"`;
+				e.message += ` while parsing near "${start === 0 ? "" : "..."
+					}${txt.slice(start, end)}${end === txt.length ? "" : "..."}"`;
 			} else {
 				e.message += ` while parsing "${txt.slice(0, context * 2)}"`;
 			}
@@ -155,7 +169,7 @@ class entitiesdata {
 		}
 	}
 
-    private createQuery(searchstring:string, query: any) {
+	private createQuery(searchstring: string, query: any) {
 		let q: any = { ...query };
 
 		if (this.hide_empty_on_sort == true) {
@@ -195,6 +209,50 @@ class entitiesdata {
 			q["name"] = { $regex: searchstring, $options: "i" };
 		}
 		return q;
+	}
+
+	defaultcolumnnames(page: string) {
+		switch (page) {
+			case "user":
+				return ["_id", "name", "username", "email", "lastseen", "_created"];
+			case "role":
+				return ["_id", "name", "rparole", "_created"];
+			case "workitem":
+				return ["_id", "name", "wiq", "_created"];
+			case "resource":
+				return ["name", "_created", "_modified"];
+			case "provider":
+				return ["name", "provider", "_created", "_modified"];
+			case "mailhistory":
+				return [
+					"_id",
+					"name",
+					"username",
+					"email",
+					"lastseen",
+					"_created",
+				];
+			case "hdrobot":
+				return ["name", "_created", "_modified"];
+			case "formresource":
+				return ["name", "collection", "_createdby", "_created", "_modified"];
+			case "files":
+				return ["filename", "metadata.name", "length" ];
+			case "customer":
+				return ["name", "dbusage", "_created", "_modified"];
+			case "credential":
+				return ["name", "username", "_created", "_modified"];
+			case "client":
+				return ["name", "username", "clientagent", "clientversion", "created"];
+			case "auditlog":
+				return ["_id", "name", "_type", "impostorname", "clientagent", "clientversion", "remoteip", "_created"];
+			case "agent":
+				return ["name","image", "os", "stripeprice", "_createdby", "status" ];
+			// case "entities":
+			// 	return ["_id", "name", "_type", "_createdby", "_modified", "_created" ];
+			default:
+				return ["_id", "name", "_type", "_createdby", "_created"];
+		}
 	}
 }
 

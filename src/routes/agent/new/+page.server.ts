@@ -9,7 +9,6 @@ import { randomname } from "./helper.js";
 
 const key = "agent"
 export const load: PageServerLoad = async ({ fetch, url, cookies, locals }) => {
-  await auth.clientinit((locals as any).domain, url.origin, fetch, cookies);
 
   let item = await auth.client.FindOne<any>({ collectionname: "config", query: { name: "Agent Instance", _type: "resource" }, jwt: auth.access_token });
 

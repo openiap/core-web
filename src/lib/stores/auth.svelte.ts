@@ -34,14 +34,14 @@ class authState {
         this.wsurl = this.baseurl.replace("https://", "wss://").replace("http://", "ws://") + "/ws/v2";
         try {
             let f = await fetch(configurl);
-            if (f.status === 200) console. log("Loaded config from", configurl);
+            if (f.status === 200) console.debug("Loaded config from", configurl);
             if (f.status !== 200) {
                 f = await fetch(this.baseurl + "/config");
-                if (f.status === 200) console. log("Loaded config from", this.baseurl + "/config");
+                if (f.status === 200) console.debug("Loaded config from", this.baseurl + "/config");
             }
             if (f.status !== 200) {
                 f = await fetch("http://localhost:3000/config");
-                if (f.status === 200) console. log("Loaded config from", "http://localhost:3000/config");
+                if (f.status === 200) console.debug("Loaded config from", "http://localhost:3000/config");
             }
             if (f.status !== 200) {
                 throw new Error(`Failed to load config from ${configurl}`);
@@ -51,8 +51,7 @@ class authState {
             console.error('Failed to load config', error);
         }
     }
-    async clientinit(domain: string, origin: string, fetch: any, cookies: any, client_id: string = "webapp") {
-        // if (browser) {
+    async clientinit(domain: string, client_id: string, origin: string, fetch: any, cookies: any) {
         if (this.config == null) await this.getConfig(domain, origin, fetch);
         const settings = {
             authority: this.baseurl + "/oidc",
@@ -65,9 +64,7 @@ class authState {
             userStore: new WebStorageStateStore({ store: new SvelteStorage(cookies) }),
         };
         this.userManager = new UserManager(settings) as any;
-
         await this.loadUserAndClient();
-        // }
     }
     async login() {
         if (this.userManager == null) throw new Error("UserManager not initialized");
@@ -99,7 +96,7 @@ class authState {
             return;
         }
         if(this.client == null) {
-            console. debug("Creating new client for", this.wsurl);
+            console.debug("Creating new client for", this.wsurl);
             if(browser) {
                 this.client = new openiap(this.wsurl, this.access_token);
             } else {
