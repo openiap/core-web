@@ -10,19 +10,16 @@
 	import SuperDebug from "sveltekit-superforms";
 
 	import { buttonVariants } from "$lib/components/ui/button/index.js";
-	import { settingsState } from "$lib/stores/settings.svelte";
 	import { type sort, TableHeader } from "./data.svelte.js";
 </script>
 
 <script lang="ts">
-	const settings = new settingsState();
 	import { data } from "./data.svelte.js";
 
 	import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
-	import { auth } from "$lib/stores/auth.svelte.js";
 	let {
 		page = "entities",
-		query = { _type: "user" },
+		query = { },
 		entities = $bindable([]),
 		searchstring = $bindable(""),
 		collectionname = "entities",
@@ -35,22 +32,22 @@
 		...rest
 	} = $props();
 
-	let _searchstring = $state.snapshot(
-		settings.getvalue(page, "searchstring", ""),
-	);
+
+	// data.loadsettings(page, null);
+	let settings = $state(data.settings);
+	let _searchstring = $state.snapshot(settings.searchstring);
 	let _collectionname = $state.snapshot(collectionname);
 	let multi_sort = $state(true);
 	let showdebug = $state(false);
 
-	selected_items = settings.getvalue(page, "selected_items", []);
-	searchstring = settings.getvalue(page, "searchstring", "");
-	data.loadsettings(page, null);
+	selected_items = settings.selected_items;
+	searchstring = settings.searchstring
 
 	function SetHeaders() {
 		data.EnsureDefaultHeaders(page);
 		let foundfirst = false;
-		for (let i = 0; i < data.headers.length; i++) {
-			let header = data.headers[i];
+		for (let i = 0; i < settings.tableheaders.length; i++) {
+			let header = settings.tableheaders[i];
 			if (foundfirst == false && header.show == true) {
 				foundfirst = true;
 				header.headclass = "";
@@ -113,11 +110,9 @@
 	}
 
 	$effect(() => {
-		console.log("$effect", _searchstring, searchstring);
 		if (_searchstring != searchstring) {
-			console.log("searchstring", _searchstring, searchstring);
 			_searchstring = searchstring;
-			data.page_index = 0;
+			settings.page_index = 0;
 			data.total_count = 99999;
 			data.GetData(page, collectionname, searchstring, query).then(
 				(data: any[]) => {
@@ -125,12 +120,11 @@
 				},
 			);
 		} else if (_collectionname != collectionname) {
-			console.log("collectionname", _collectionname, collectionname);
 			_collectionname = collectionname;
-			_searchstring = settings.getvalue(page, "searchstring", "");
-			searchstring = settings.getvalue(page, "searchstring", "");
-			selected_items = settings.getvalue(page, "selected_items", []);
-			data.loadsettings(page, null);
+			_searchstring = settings.searchstring;
+			searchstring = settings.searchstring;
+			selected_items = settings.selected_items;
+			// data.loadsettings(page, null);
 			data.total_count = 99999;
 			data.GetData(page, collectionname, searchstring, query).then(
 				(data: any[]) => {
@@ -138,22 +132,15 @@
 				},
 			);
 		}
-		settings.setvalue(page, "searchstring", $state.snapshot(searchstring));
+		settings.searchstring = $state.snapshot(searchstring);
 		// data.SaveHeaders(page);
-		if (selected_items.length > 0) {
-			settings.setvalue(page, "selected_items", selected_items);
-		} else {
-			settings.clearvalue(page, "selected_items");
-		}
-		if (data.page_index > 0) {
-			settings.setvalue(page, "page_index", data.page_index);
-		} else {
-			settings.clearvalue(page, "page_index");
-		}
+		settings.selected_items = selected_items;
+		// settings.page_index = settings.page_index
 		SetHeaders();
 		// data.GetData(collectionname, searchstring, query).then((data:any[]) => {
 		// 	entities = data;
 		// });
+		data.SaveHeaders(page);
 	});
 
 	SetHeaders();
@@ -175,25 +162,25 @@
 	function ondrop(event: DragEvent, head: TableHeader) {
 		event.preventDefault();
 		const fromfield = event.dataTransfer?.getData("text");
-		const fromindex = data.headers.findIndex((h) => h.field == fromfield);
-		const toindex = data.headers.findIndex((h) => h.field == head.field);
+		const fromindex = settings.tableheaders.findIndex((h) => h.field == fromfield);
+		const toindex = settings.tableheaders.findIndex((h) => h.field == head.field);
 		if (fromindex != toindex) {
-			data.headers.splice(
+			settings.tableheaders.splice(
 				toindex,
 				0,
-				data.headers.splice(fromindex, 1)[0],
+				settings.tableheaders.splice(fromindex, 1)[0],
 			);
 			data.SaveHeaders(page);
 		}
 	}
 	function ontouchend(event: TouchEvent, head: TableHeader) {
-		const fromindex = data.headers.findIndex((h) => h.field == startrow);
-		const toindex = data.headers.findIndex((h) => h.field == head.field);
+		const fromindex = settings.tableheaders.findIndex((h) => h.field == startrow);
+		const toindex = settings.tableheaders.findIndex((h) => h.field == head.field);
 		if (fromindex != toindex) {
-			data.headers.splice(
+			settings.tableheaders.splice(
 				toindex,
 				0,
-				data.headers.splice(fromindex, 1)[0],
+				settings.tableheaders.splice(fromindex, 1)[0],
 			);
 			data.SaveHeaders(page);
 		}
@@ -213,25 +200,24 @@
 	 * ******************************************
 	 */
 	function sortby(field: string): sort {
-		var exists = data.headers.find((x) => x.field == field);
+		var exists = settings.tableheaders.find((x) => x.field == field);
 		if (exists == null) {
 			return "";
 		}
 		return exists.order;
 	}
 	function setSort(field: string, value: sort) {
-		if (Array.isArray(data.headers) == false) data.headers = [];
-		let column = data.headers.find((x) => x.field == field);
-		let index = data.headers.findIndex((x) => x.field == field);
+		if (Array.isArray(settings.tableheaders) == false) settings.tableheaders = [];
+		let column = settings.tableheaders.find((x) => x.field == field);
+		let index = settings.tableheaders.findIndex((x) => x.field == field);
 		if (column != null) {
 			if (value == "") {
 				column.orderindex = 0;
 			} else {
 				column.orderindex =
-					data.headers.filter((x) => x.order != "").length + 1;
+					settings.tableheaders.filter((x) => x.order != "").length + 1;
 			}
-			console.log("setSort", field, value, column.show);
-			data.headers[index] = { ...column, order: value };
+			settings.tableheaders[index] = { ...column, order: value };
 			// data.SaveHeaders(page);
 		}
 	}
@@ -241,8 +227,8 @@
 		e.stopPropagation();
 		const current = sortby(field);
 		if (!multi_sort) {
-			for (let i = 0; i < data.headers.length; i++) {
-				const _field = data.headers[i].field;
+			for (let i = 0; i < settings.tableheaders.length; i++) {
+				const _field = settings.tableheaders[i].field;
 				if (_field != field) {
 					setSort(_field, "");
 				}
@@ -322,12 +308,13 @@
 		<Table.Caption>{caption}</Table.Caption>
 	{:else}
 		<Table.Caption>
+			page {settings.page_index + 1}
 			{#if entities.length == data.total_count}
 				showing {data.total_count} items
 			{:else}
-				showing item {data.page_index * 5 + 1}
+				showing item {settings.page_index * 5 + 1}
 				{#if entities.length > 1}
-					to {data.page_index * 5 + entities.length}
+					to {settings.page_index * 5 + entities.length}
 				{/if}
 				of {data.total_count}
 			{/if}
@@ -349,7 +336,7 @@
 					/></Table.Head
 				>
 			{/if}
-			{#each data.headers as head}
+			{#each settings.tableheaders as head}
 				{#if head.show}
 					<Table.Head
 						class={head.headclass}
@@ -395,7 +382,7 @@
 						/></Table.Cell
 					>
 				{/if}
-				{#each data.headers as head}
+				{#each settings.tableheaders as head}
 					{#if head.show}
 						<Table.Cell class={head.cellclass}
 							>{RenderItemData(item, head.field)}</Table.Cell
@@ -433,26 +420,26 @@
 <HotkeyButton
 	data-shortcut="ArrowLeft"
 	onclick={() => {
-		data.page_index = data.page_index - 1;
+		settings.page_index = settings.page_index - 1;
 		data.GetData(page, collectionname, searchstring, query).then(
 			(data: any[]) => {
 				entities = data;
 			},
 		);
 	}}
-	disabled={data.page_index <= 0}>Previous</HotkeyButton
+	disabled={settings.page_index <= 0}>Previous</HotkeyButton
 >
 <HotkeyButton
 	data-shortcut="ArrowRight"
 	onclick={() => {
-		data.page_index = data.page_index + 1;
+		settings.page_index = settings.page_index + 1;
 		data.GetData(page, collectionname, searchstring, query).then(
 			(data: any[]) => {
 				entities = data;
 			},
 		);
 	}}
-	disabled={entities.length < 5 || data.page_index * 5 >= data.total_count}
+	disabled={entities.length < 5 || settings.page_index * 5 >= data.total_count}
 >
 	Next</HotkeyButton
 >
@@ -466,7 +453,7 @@
 		Delete {selected_items.length} items</HotkeyButton
 	>
 {/if}
-{#if data.headers != null && data.headers.length > 0}
+{#if settings.tableheaders != null && settings.tableheaders.length > 0}
 	<Sheet.Root>
 		<Sheet.Trigger>Select columns</Sheet.Trigger>
 		<Sheet.Content>
@@ -478,7 +465,7 @@
 			</Sheet.Header>
 			<div class="grid gap-4 py-4">
 				<ScrollArea class="max-h-[70vh]">
-					{#each data.headers as head}
+					{#each settings.tableheaders as head}
 						<div
 							class=" flex items-center space-x-4 rounded-md border p-4"
 						>
@@ -517,7 +504,7 @@
 	</Sheet.Root>
 {/if}
 
-{#if data.headers != null && data.headers.length > 0 && showdebug == true}
+{#if settings.tableheaders != null && settings.tableheaders.length > 0 && showdebug == true}
 	<SuperDebug data={entities} theme="vscode" />
 {/if}
 

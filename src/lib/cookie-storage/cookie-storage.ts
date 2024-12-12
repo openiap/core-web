@@ -31,7 +31,6 @@ export class CookieStorage implements Storage {
     const keys = Object.keys(parsed);
     // keys.forEach((key) => this.removeItem(key));
     keys.forEach((key) => {
-      console.log("remove", key);
       this.removeItem(key);
     });
   }

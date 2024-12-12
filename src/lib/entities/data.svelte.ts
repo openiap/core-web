@@ -1,36 +1,44 @@
-import { settingsState } from "$lib/stores/settings.svelte";
+import { usersettings, pagesettings, type pageSettings } from "$lib/stores/usersettings.svelte.js";
 import { auth } from "$lib/stores/auth.svelte";
 import { X } from "lucide-svelte";
 export type sort = "asc" | "desc" | "";
-export class TableHeader {
-	name: string = "";
-	field: string = "";
-	headclass: string = "";
-	cellclass: string = "";
+
+export type TTableHeader = {
+	name: string;
+	field: string;
+	headclass: string ;
+	cellclass: string;
+	order: sort;
+	orderindex: number;
+	show: boolean;
+}
+
+export class TableHeader implements TTableHeader {
+	name = "";
+	field = "";
+	headclass = "";
+	cellclass = "";
 	order: sort = "";
-	orderindex: number = 0;
-	show: boolean = true;
+	orderindex = 0;
+	show = true;
 }
 
 class entitiesdata {
-	headers: TableHeader[] = $state([]);
-	errormessage = $state("");
-	hide_empty_on_sort = $state(true);
-	page_index = $state(0);
-	total_count = $state(99999);
-
-	settings: settingsState = null as any;
-
+	settings: pageSettings = null as any;
+	hide_empty_on_sort = true;
+	total_count = 0;
+	errormessage = "";
 	getHeaders() {
-		return $state.snapshot(data.headers);
+		return this.settings.tableheaders;
 	}
 
 	async GetData(page: string, collectionname: string, searchstring: string, query: any) {
+		// this.loadsettings(page, null);
 		this.EnsureDefaultHeaders(page);
 		let orderby = this.getOrderBy();
 		let usequery = this.createQuery(searchstring, query);
 		let top = 5;
-		let skip = this.page_index * top;
+		let skip = this.settings.page_index * top;
 
 		if (auth.isConnected == false) {
 			return [];
@@ -57,12 +65,12 @@ class entitiesdata {
 			}
 			for (let i = 0; i < keys.length; i++) {
 				let key = keys[i];
-				if (data.headers.find((x) => x.field == key) == null) {
+				if (this.settings.tableheaders.find((x) => x.field == key) == null) {
 					let header = new TableHeader();
 					header.field = key;
 					header.name = key;
 					header.show = false;
-					data.headers.push(header);
+					this.settings.tableheaders.push(header);
 				}
 			}
 			this.total_count = await auth.client.Count({
@@ -74,20 +82,20 @@ class entitiesdata {
 		return entities;
 	}
 	loadsettings(page: string, cookies: any) {
-		this.settings = new settingsState(cookies);
-		data.headers = this.settings.getvalue(page, "headers", []);
-		data.page_index = this.settings.getvalue(page, "page_index", 0);
-		data.page_index = this.settings.getvalue(page, "page_index", 0);
+		this.settings = usersettings.getpagesettings(page);
+		// this.settings.tableheaders = this.settings.tableheaders;
+		// this.settings.page_index = this.settings.page_index;
 	}
 	SaveHeaders(page: string) {
-		// let _headers = $state.snapshot(data.headers);
+		// let _headers = $state.snapshot(this.settings.tableheaders);
 		// for (let i = 0; i < _headers.length; i++) {
-		// 	_headers[i].show = $state.snapshot(data.headers[i].show);
+		// 	_headers[i].show = $state.snapshot(this.settings.tableheaders[i].show);
 		// }
 		// this.settings.setvalue(page, "headers", _headers);
+		usersettings.persist();
 	}
 	EnsureDefaultHeaders(page: string) {
-		if (data.headers.length == 0) {
+		if (this.settings.tableheaders.length == 0) {
 			const defaultcolumnnames = this.defaultcolumnnames(page);
 			for (let i = 0; i < defaultcolumnnames.length; i++) {
 				let header = new TableHeader();
@@ -105,13 +113,13 @@ class entitiesdata {
 					header.headclass = "text-right";
 					header.cellclass = "text-right";
 				}
-				data.headers.push(header);
+				this.settings.tableheaders.push(header);
 			}
 		}
 	}
 	private getOrderBy() {
 		const orderby: { [key: string]: number } = {};
-		let ordered = data.headers
+		let ordered = this.settings.tableheaders
 			.filter((x) => x.order != "")
 			.sort((a, b) => {
 				return a.orderindex - b.orderindex;
@@ -173,7 +181,7 @@ class entitiesdata {
 		let q: any = { ...query };
 
 		if (this.hide_empty_on_sort == true) {
-			let ordered = data.headers.filter(
+			let ordered = this.settings.tableheaders.filter(
 				(x) => x.order != "" && x.field != "_id",
 			);
 			if (ordered.length > 0) {
