@@ -5,7 +5,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     const { url, cookies } = event;
     await auth.clientinit(domain, client_id, url.origin, fetch, cookies );
     event.locals = event.locals || {};
-    console. debug("hooks.server.ts: ", "conn", auth.isConnected, "auth", auth.isAuthenticated, auth.profile?.name);
+    console. debug("hooks.server.ts:", "conn", auth.isConnected, "auth", auth.isAuthenticated, auth.profile?.name);
     // @ts-ignore
     event.locals.domain = domain;
     // @ts-ignore
