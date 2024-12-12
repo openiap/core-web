@@ -66,8 +66,8 @@
 						url: `${base}/agent`,
 					},
 					{
-						title: "Work Items",
-						url: `${base}/workitem`,
+						title: "Config",
+						url: `${base}/configuration`,
 					},
 					{
 						title: "Clients",
