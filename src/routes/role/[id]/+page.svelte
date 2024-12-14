@@ -4,20 +4,45 @@
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
-  import SuperDebug, { superForm } from "sveltekit-superforms";
+  import SuperDebug, { superForm, defaults } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { userSchema } from "../schema.js";
+  import { auth } from "$lib/stores/auth.svelte.js";
   import { Acl } from "$lib/acl";
 
   const key = "role";
   let showdebug = $state(false);
+  let loading = $state(false);
+  let errormessage = $state("");
   const { data } = $props();
-  const form = superForm(data.form, {
+  const form = superForm(defaults(zod(userSchema)), {
     dataType: "json",
     validators: zod(userSchema),
+    SPA: true,
+    onUpdate: async ({ form, cancel  }) => {
+      if (form.valid) {
+        loading = true;
+        try {
+          await auth.client.UpdateOne({ collectionname: "users", item: { ...form.data, _type: "role" }, jwt: auth.access_token });
+          goto(base + `/${key}`);          
+       } catch (error:any) {
+          errormessage = error.message;
+          cancel();
+        } finally {
+          loading = false;
+        }
+      }
+    },
   });
-  const { form: formData, enhance, message } = form;
+
+  const { form: formData, enhance, message, validateForm } = form;
+  formData.set(data.item);
+  validateForm({ update: true });
 </script>
+
+{#if errormessage && errormessage != ""}
+  {errormessage}
+{/if}
 
 {#if message && $message != ""}
   {$message}

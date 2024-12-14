@@ -4,17 +4,35 @@
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
   import { Input } from "$lib/components/ui/input/index.js";
-  import SuperDebug, { superForm } from "sveltekit-superforms";
+  import SuperDebug, { superForm, defaults } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newUserSchema } from "../schema.js";
+  import { auth } from "$lib/stores/auth.svelte.js";
 
   const key = "role";
   let showdebug = $state(false);
   const { data } = $props();
   let errormessage = $state("");
-  const form = superForm(data.form, {
+  let loading = $state(false);
+
+  const form = superForm(defaults(zod(newUserSchema)), {
     dataType: "json",
     validators: zod(newUserSchema),
+    SPA: true,
+    onUpdate: async ({ form, cancel  }) => {
+      if (form.valid) {
+        loading = true;
+        try {
+          await auth.client.InsertOne({ collectionname: "users", item: { ...form.data, _type: "role" }, jwt: auth.access_token });
+          goto(base + `/${key}`);          
+       } catch (error:any) {
+          errormessage = error.message;
+          cancel();
+        } finally {
+          loading = false;
+        }
+      }
+    },
   });
   const { form: formData, enhance, message } = form;
 </script>
@@ -31,15 +49,15 @@
   Add {key}
 </div>
 <form method="POST" use:enhance>
-  <Form.Button aria-label="submit">Submit</Form.Button>
-  <HotkeyButton aria-label="back" onclick={() => goto(base + `/${key}`)}
+  <Form.Button aria-label="submit" disabled={loading} >Submit</Form.Button>
+  <HotkeyButton aria-label="back" disabled={loading} onclick={() => goto(base + `/${key}`)}
     >Back</HotkeyButton
   >
   <Form.Field {form} name="name">
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Name</Form.Label>
-        <Input {...props} bind:value={$formData.name} />
+        <Input disabled={loading} {...props} bind:value={$formData.name} />
       {/snippet}
     </Form.Control>
     <Form.Description>This is the name.</Form.Description>
@@ -49,13 +67,13 @@
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Email</Form.Label>
-        <Input {...props} bind:value={$formData.email} />
+        <Input disabled={loading} {...props} bind:value={$formData.email} />
       {/snippet}
     </Form.Control>
     <Form.Description>This is your email.</Form.Description>
     <Form.FieldErrors />
   </Form.Field>
-  <Form.Button aria-label="submit">Submit</Form.Button>
+  <Form.Button aria-label="submit" disabled={loading}>Submit</Form.Button>
 </form>
 
 {#if formData != null && showdebug == true}
