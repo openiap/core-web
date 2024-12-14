@@ -49,8 +49,6 @@
 
 	selected_items = data.settings.selected_items;
 	// searchstring = data.settings.searchstring
-	SetHeaders();
-	ParseEntities();
 
 	async function GetData() {
 		const _entities = await data.GetData(
@@ -61,17 +59,6 @@
 		);
 		entities = _entities;
 
-		if (entities.length > 0) {
-			ParseEntities();
-			let usequery = data.createQuery(searchstring, query);
-			total_count = await auth.client.Count({
-				collectionname,
-				query: usequery,
-				jwt: auth.access_token,
-			});
-		}
-	}
-	function ParseEntities() {
 		if (entities.length > 0) {
 			let keys = [];
 			for (let i = 0; i < entities.length; i++) {
@@ -94,6 +81,12 @@
 					tableheaders.push(header);
 				}
 			}
+			let usequery = data.createQuery(searchstring, query);
+			total_count = await auth.client.Count({
+				collectionname,
+				query: usequery,
+				jwt: auth.access_token,
+			});
 		}
 	}
 	function EnsureDefaultHeaders(page: string) {
@@ -228,6 +221,8 @@
 		SetHeaders();
 		// data.SaveHeaders(tableheaders);
 	});
+
+	SetHeaders();
 
 	/**
 	 * Ordering columns
@@ -401,11 +396,7 @@
 			{/if}
 			{#if selected_items.length > 0}
 				with {selected_items.length} selected (<button
-					onclick={() => {
-						selected_items = [];
-						data.settings.selected_items = selected_items;
-						data.persist();
-						}}>clear</button
+					onclick={() => (selected_items = [])}>clear</button
 				>)
 			{/if}.
 		</Table.Caption>
@@ -539,9 +530,7 @@
 	>
 {/if}
 {#if tableheaders != null && tableheaders.length > 0}
-	<Sheet.Root onOpenChange={()=> {
-		data.SaveHeaders(tableheaders);
-	}}>
+	<Sheet.Root>
 		<Sheet.Trigger>Select columns</Sheet.Trigger>
 		<Sheet.Content>
 			<Sheet.Header>

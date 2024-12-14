@@ -20,7 +20,7 @@ export class TableHeader implements TTableHeader {
 	cellclass = "";
 	order: sort = "";
 	orderindex = 0;
-	show = $state(true);
+	show = true;
 }
 
 class entitiesdata {
