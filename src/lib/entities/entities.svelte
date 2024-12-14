@@ -396,7 +396,11 @@
 			{/if}
 			{#if selected_items.length > 0}
 				with {selected_items.length} selected (<button
-					onclick={() => (selected_items = [])}>clear</button
+					onclick={() => {
+						selected_items = [];
+						data.settings.selected_items = selected_items;
+						data.persist();
+						}}>clear</button
 				>)
 			{/if}.
 		</Table.Caption>

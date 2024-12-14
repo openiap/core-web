@@ -37,7 +37,6 @@ class entitiesdata {
 		if (auth.isConnected == false) {
 			return [];
 		}
-		console.log("GetData", collectionname, orderby);
 		const entities = await auth.client.Query<any>({
 			collectionname: collectionname,
 			query: usequery,
@@ -46,6 +45,7 @@ class entitiesdata {
 			top: 5,
 			jwt: auth.access_token,
 		});
+		console.log("GetData", collectionname, "order:", orderby, "result", entities.length);
 		return entities;
 	}
 	persist() {
