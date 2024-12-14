@@ -8,11 +8,7 @@
   import { HotkeyInput } from "$lib/components/ui/hotkeyinput/index.js";
   import { Label } from "$lib/components/ui/label/index.js";
 
-  import { settingsState } from "$lib/stores/settings.svelte";
-  const settings = new settingsState();
-
   import { auth } from "$lib/stores/auth.svelte";
-
   let { data } = $props();
 
 
@@ -43,7 +39,6 @@
   }
   function selectcollection(name: string) {
     collectionname = name;
-    settings.setvalue("entities", "collectionname", collectionname);
   }
 </script>
 
@@ -110,8 +105,7 @@ collectionname: {collectionname}<br />
   onclick={() => {
     let index = collections.findIndex((x) => x.name == collectionname);
     if (index > 0) {
-      collectionname = collections[index - 1].name;
-      settings.setvalue("entities", "collectionname", collectionname);
+      selectcollection(collections[index - 1].name);
     }
   }}
   hidden={true}
@@ -122,8 +116,7 @@ collectionname: {collectionname}<br />
   onclick={() => {
     let index = collections.findIndex((x) => x.name == collectionname);
     if (index < collections.length - 1) {
-      collectionname = collections[index + 1].name;
-      settings.setvalue("entities", "collectionname", collectionname);
+      selectcollection(collections[index + 1].name);
     }
   }}
   hidden={true}

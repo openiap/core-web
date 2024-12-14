@@ -20,7 +20,6 @@ export const load: PageServerLoad = async ({ fetch, url, cookies, locals, params
 
 export const actions: Actions = {
   default: async (event: any) => {
-    console.log("actions");
     const form = await superValidate(event, zod(editFormSchema));
     if (!form.valid) {
       return fail(400, {
@@ -28,9 +27,7 @@ export const actions: Actions = {
       });
     }
     try {
-      console.log("form.data", form.data);
       const cleanData = cleanMatchingKeys(form.data);
-      console.log("cleanData", cleanData);
       // await auth.client.UpdateOne({ collectionname: "config", item: cleanData, jwt: auth.access_token });
     } catch (err: any) {
       console.error("configuration: ", err);

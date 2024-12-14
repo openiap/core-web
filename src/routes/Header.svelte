@@ -13,8 +13,8 @@
 
 	import { goto } from "$app/navigation";
 	import { base } from "$app/paths";
-	import { settingsState } from "$lib/stores/settings.svelte";
-	const settings = new settingsState();
+	import { usersettings } from "$lib/stores/usersettings.svelte.js";
+
 	// let props = $props();
 
 	function login() {
@@ -24,7 +24,7 @@
 		auth.logout();
 	}
 	function reset() {
-		settings.clearall();
+		usersettings.reset();
 		goto(base + `/`);
 	}
 </script>

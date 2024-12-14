@@ -6,7 +6,7 @@ export type sort = "asc" | "desc" | "";
 export type TTableHeader = {
 	name: string;
 	field: string;
-	headclass: string ;
+	headclass: string;
 	cellclass: string;
 	order: sort;
 	orderindex: number;
@@ -37,7 +37,6 @@ class entitiesdata {
 		if (auth.isConnected == false) {
 			return [];
 		}
-		console.log("GetData", collectionname, usequery, orderby, skip);
 		const entities = await auth.client.Query<any>({
 			collectionname: collectionname,
 			query: usequery,
@@ -46,8 +45,10 @@ class entitiesdata {
 			top: 5,
 			jwt: auth.access_token,
 		});
-		console.log("GetData", entities.length);
 		return entities;
+	}
+	persist() {
+		usersettings.persist();
 	}
 	loadsettings(page: string, cookies: any) {
 		this.settings = usersettings.getpagesettings(page);
@@ -194,7 +195,7 @@ class entitiesdata {
 			case "formresource":
 				return ["name", "collection", "_createdby", "_created", "_modified"];
 			case "files":
-				return ["filename", "metadata.name", "length" ];
+				return ["filename", "metadata.name", "length"];
 			case "customer":
 				return ["name", "dbusage", "_created", "_modified"];
 			case "credential":
@@ -204,7 +205,7 @@ class entitiesdata {
 			case "auditlog":
 				return ["_id", "name", "_type", "impostorname", "clientagent", "clientversion", "remoteip", "_created"];
 			case "agent":
-				return ["name","image", "os", "stripeprice", "_createdby", "status" ];
+				return ["name", "image", "os", "stripeprice", "_createdby", "status"];
 			// case "entities":
 			// 	return ["_id", "name", "_type", "_createdby", "_modified", "_created" ];
 			default:

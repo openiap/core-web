@@ -10,17 +10,22 @@
 	import SuperDebug from "sveltekit-superforms";
 
 	import { buttonVariants } from "$lib/components/ui/button/index.js";
-	import { type sort, TableHeader, type TTableHeader } from "./data.svelte.js";
+	import {
+		type sort,
+		TableHeader,
+		type TTableHeader,
+	} from "./data.svelte.js";
 </script>
 
 <script lang="ts">
 	import { data } from "./data.svelte.js";
+	import { usersettings } from "$lib/stores/usersettings.svelte.js";
 
 	import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
-    import { auth } from "$lib/stores/auth.svelte.js";
+	import { auth } from "$lib/stores/auth.svelte.js";
 	let {
 		page = "entities",
-		query = { },
+		query = {},
 		entities = $bindable([]),
 		searchstring = $bindable(""),
 		collectionname = "entities",
@@ -34,7 +39,6 @@
 	} = $props();
 
 	data.loadsettings(page, null);
-	console.log("searchstring:", $state.snapshot(searchstring), "data.settings.searchstring:", data.settings.searchstring);
 	let _searchstring = $state.snapshot(data.settings.searchstring);
 	let _collectionname = $state.snapshot(collectionname);
 	let multi_sort = $state(false);
@@ -42,15 +46,19 @@
 	let page_index = $state(data.settings.page_index);
 	let total_count = $state(9999);
 	let tableheaders = $state([]) as TTableHeader[];
-	console.log("page_index:", data.settings.page_index);
 
 	selected_items = data.settings.selected_items;
 	// searchstring = data.settings.searchstring
 
 	async function GetData() {
-		const _entities = await data.GetData(page, collectionname, searchstring, query, tableheaders);
+		const _entities = await data.GetData(
+			page,
+			collectionname,
+			searchstring,
+			query,
+			tableheaders,
+		);
 		entities = _entities;
-		console.log("data:", _entities.length);
 
 		if (entities.length > 0) {
 			let keys = [];
@@ -81,10 +89,8 @@
 				jwt: auth.access_token,
 			});
 		}
-
 	}
 	function EnsureDefaultHeaders(page: string) {
-		
 		if (tableheaders.length == 0) {
 			const defaultcolumnnames = data.defaultcolumnnames(page);
 			for (let i = 0; i < defaultcolumnnames.length; i++) {
@@ -175,19 +181,23 @@
 
 	$effect(() => {
 		if (_searchstring != searchstring) {
-			console.log("searchstring changed from ", _searchstring, "to", searchstring);
 			_searchstring = searchstring;
 			data.settings.searchstring = searchstring;
 			data.settings.page_index = 0;
 			page_index = 0;
 			total_count = 99999;
+			data.persist();
 			GetData();
 		} else if (_collectionname != collectionname) {
+			usersettings.entities_collectionname = collectionname;
+			data.settings.page_index = page_index;
+			data.persist();
+			data.loadsettings(page, null);
 			_collectionname = collectionname;
 			_searchstring = data.settings.searchstring;
 			searchstring = data.settings.searchstring;
 			selected_items = data.settings.selected_items;
-			// data.loadsettings(page, null);
+			page_index = data.settings.page_index;
 			total_count = 99999;
 			GetData();
 		}
@@ -195,12 +205,7 @@
 		// data.SaveHeaders(page);
 		data.settings.selected_items = selected_items;
 		data.settings.page_index = page_index;
-		console.log("page_index:", data.settings.page_index);
 		SetHeaders();
-		// data.GetData(collectionname, searchstring, query).then((data:any[]) => {
-		// console.log("data:", data.length);
-		// 	entities = data;
-		// });
 		data.SaveHeaders(page);
 	});
 

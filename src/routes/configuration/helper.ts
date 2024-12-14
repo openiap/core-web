@@ -407,7 +407,6 @@ function cleanMatchingKeys(config: { [key: string]: any }) {
 
 // Usage example
 // const cleanedConfig = cleanMatchingKeys(configuration, settings);
-// console.log(cleanedConfig);
 
 
 export { settings, defaultSettings, cleanMatchingKeys }
