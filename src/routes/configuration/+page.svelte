@@ -59,7 +59,7 @@
   >
 
   {#each settings as setting}
-    <!-- {#if setting.type === "boolean"}
+    {#if setting.type === "boolean"}
       <div
         class={`${screen !== "all" ? (screen === "unset" && $formData[setting.name] !== setting.default && "hidden") || (screen === "set" && $formData[setting.name] === setting.default && "hidden") : "block"}`}
       >
@@ -137,7 +137,7 @@
           </Form.Control>
         </Form.Field>
       </div>
-    {/if} -->
+    {/if}
     {#if setting.type === "string[]"}
       <div
         class={`${screen !== "all" ? (screen === "unset" && $formData[setting.name] !== setting.default && "hidden") || (screen === "set" && $formData[setting.name] === setting.default && "hidden") : "block"}`}

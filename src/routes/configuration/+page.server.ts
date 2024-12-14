@@ -28,7 +28,8 @@ export const actions: Actions = {
     }
     try {
       const cleanData = cleanMatchingKeys(form.data);
-      // await auth.client.UpdateOne({ collectionname: "config", item: cleanData, jwt: auth.access_token });
+      console.log("cleanData", cleanData)
+      await auth.client.UpdateOne({ collectionname: "config", item: cleanData, jwt: auth.access_token });
     } catch (err: any) {
       console.error("configuration: ", err);
       setError(form, 'name', err.message);
