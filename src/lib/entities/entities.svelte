@@ -91,20 +91,22 @@
 	}
 	function EnsureDefaultHeaders(page: string) {
 		if (tableheaders.length == 0) {
-			for ( let i = 0; i < data.settings.headers.length; i++) {
-				let org = data.settings.headers[i];
-				let header = new TableHeader();
-				header.show = true;
-				header.field = org.field;
-				header.order = org.order;
-				header.orderindex = org.orderindex;
-				tableheaders.push(header);
+			if(data.settings.headers != null && data.settings.headers.length > 0) {
+				for ( let i = 0; i < data.settings.headers.length; i++) {
+					let org = data.settings.headers[i];
+					let header = new TableHeader();
+					header.show = true;
+					header.field = org.field;
+					header.order = org.order;
+					header.orderindex = org.orderindex;
+					tableheaders.push(header);
+				}
+				return;
 			}
 
 
 			const defaultcolumnnames = data.defaultcolumnnames(page);
 			for (let i = 0; i < defaultcolumnnames.length; i++) {
-				if(tableheaders.find((x) => x.field == defaultcolumnnames[i]) != null) continue;
 				let header = new TableHeader();
 				header.field = defaultcolumnnames[i];
 				if (header.field == "_id") {
