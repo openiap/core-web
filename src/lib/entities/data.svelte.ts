@@ -1,7 +1,7 @@
-import { usersettings, pagesettings, type pageSettings } from "$lib/stores/usersettings.svelte.js";
+import { usersettings, pagesettings, type pageSettings, type SettingsTableHeader } from "$lib/stores/usersettings.svelte.js";
 import { auth } from "$lib/stores/auth.svelte";
 import { X } from "lucide-svelte";
-export type sort = "asc" | "desc" | "";
+import { type sort } from "$lib/stores/usersettings.svelte";
 
 export type TTableHeader = {
 	name: string;
@@ -27,16 +27,17 @@ class entitiesdata {
 	settings: pageSettings = null as any;
 	hide_empty_on_sort = true;
 	errormessage = "";
-	async GetData(page: string, collectionname: string, searchstring: string, query: any, tableheaders: TTableHeader[] = []) {
+	async GetData(page: string, collectionname: string, searchstring: string, query: any) {
 		// this.loadsettings(page, null);
-		let orderby = this.getOrderBy(tableheaders);
-		let usequery = this.createQuery(searchstring, query);
+		let orderby = this.getOrderBy();
+		let usequery = this.createQuery(this.settings.searchstring, query);
 		let top = 5;
 		let skip = this.settings.page_index * top;
 
 		if (auth.isConnected == false) {
 			return [];
 		}
+		console.log("GetData", collectionname, orderby);
 		const entities = await auth.client.Query<any>({
 			collectionname: collectionname,
 			query: usequery,
@@ -52,20 +53,24 @@ class entitiesdata {
 	}
 	loadsettings(page: string, cookies: any) {
 		this.settings = usersettings.getpagesettings(page);
-		// this.settings.tableheaders = this.settings.tableheaders;
-		// this.settings.page_index = this.settings.page_index;
 	}
-	SaveHeaders(page: string) {
-		// let _headers = $state.snapshot(this.settings.tableheaders);
-		// for (let i = 0; i < _headers.length; i++) {
-		// 	_headers[i].show = $state.snapshot(this.settings.tableheaders[i].show);
-		// }
-		// this.settings.setvalue(page, "headers", _headers);
+	SaveHeaders(tableheaders: TTableHeader[]) {
+		let result: SettingsTableHeader[] = [];
+		for (let i = 0; i < tableheaders.length; i++) {
+			if (tableheaders[i].show == false) continue;
+			const head = {
+				field: $state.snapshot(tableheaders[i].field),
+				order: $state.snapshot(tableheaders[i].order),
+				orderindex: $state.snapshot(tableheaders[i].orderindex)
+			}
+			result.push(head);
+		}
+		this.settings.headers = result;
 		usersettings.persist();
 	}
-	private getOrderBy(tableheaders: TTableHeader[]) {
+	private getOrderBy() {
 		const orderby: { [key: string]: number } = {};
-		let ordered = tableheaders
+		let ordered = this.settings.headers
 			.filter((x) => x.order != "")
 			.sort((a, b) => {
 				return a.orderindex - b.orderindex;
@@ -81,6 +86,24 @@ class entitiesdata {
 			return "";
 		}
 		return orderby;
+
+		// const orderby: { [key: string]: number } = {};
+		// let ordered = tableheaders
+		// 	.filter((x) => x.order != "")
+		// 	.sort((a, b) => {
+		// 		return a.orderindex - b.orderindex;
+		// 	});
+		// for (let i = 0; i < ordered.length; i++) {
+		// 	const sortKey = ordered[i];
+		// 	if (sortKey.order != null && sortKey.order != "") {
+		// 		orderby[sortKey.field] = sortKey.order == "desc" ? -1 : 1;
+		// 	}
+		// }
+		// if (Object.keys(orderby).length == 0) {
+		// 	// orderby["_id"] = -1;
+		// 	return "";
+		// }
+		// return orderby;
 	}
 	private parseJson(txt: string, reviver: any, context: any) {
 		context = context || 20;

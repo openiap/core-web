@@ -11,10 +11,10 @@
 
 	import { buttonVariants } from "$lib/components/ui/button/index.js";
 	import {
-		type sort,
 		TableHeader,
 		type TTableHeader,
 	} from "./data.svelte.js";
+	import { type sort } from "$lib/stores/usersettings.svelte";
 </script>
 
 <script lang="ts">
@@ -56,7 +56,6 @@
 			collectionname,
 			searchstring,
 			query,
-			tableheaders,
 		);
 		entities = _entities;
 
@@ -92,8 +91,20 @@
 	}
 	function EnsureDefaultHeaders(page: string) {
 		if (tableheaders.length == 0) {
+			for ( let i = 0; i < data.settings.headers.length; i++) {
+				let org = data.settings.headers[i];
+				let header = new TableHeader();
+				header.show = true;
+				header.field = org.field;
+				header.order = org.order;
+				header.orderindex = org.orderindex;
+				tableheaders.push(header);
+			}
+
+
 			const defaultcolumnnames = data.defaultcolumnnames(page);
 			for (let i = 0; i < defaultcolumnnames.length; i++) {
+				if(tableheaders.find((x) => x.field == defaultcolumnnames[i]) != null) continue;
 				let header = new TableHeader();
 				header.field = defaultcolumnnames[i];
 				if (header.field == "_id") {
@@ -206,7 +217,7 @@
 		data.settings.selected_items = selected_items;
 		data.settings.page_index = page_index;
 		SetHeaders();
-		data.SaveHeaders(page);
+		// data.SaveHeaders(tableheaders);
 	});
 
 	SetHeaders();
@@ -236,7 +247,7 @@
 				0,
 				tableheaders.splice(fromindex, 1)[0],
 			);
-			data.SaveHeaders(page);
+			data.SaveHeaders(tableheaders);
 		}
 	}
 	function ontouchend(event: TouchEvent, head: TableHeader) {
@@ -248,7 +259,7 @@
 				0,
 				tableheaders.splice(fromindex, 1)[0],
 			);
-			data.SaveHeaders(page);
+			data.SaveHeaders(tableheaders);
 		}
 	}
 	function ontouchmove(event: TouchEvent) {
@@ -284,7 +295,7 @@
 					tableheaders.filter((x) => x.order != "").length + 1;
 			}
 			tableheaders[index] = { ...column, order: value };
-			// data.SaveHeaders(page);
+			data.SaveHeaders(tableheaders);
 		}
 	}
 
@@ -307,6 +318,7 @@
 		} else {
 			setSort(field, "");
 		}
+		data.SaveHeaders(tableheaders);
 		GetData();
 	}
 
@@ -337,7 +349,7 @@
 				selected_items = [...selected_items, x._id];
 			}
 		});
-		data.SaveHeaders(page);
+		data.SaveHeaders(tableheaders);
 	}
 	function ToggleSelect(x: any) {
 		if (selected_items.indexOf(x._id) > -1) {
@@ -345,7 +357,7 @@
 		} else {
 			selected_items = [...selected_items, x._id];
 		}
-		data.SaveHeaders(page);
+		data.SaveHeaders(tableheaders);
 	}
 	let is_all_selected = $derived(
 		() =>
@@ -466,12 +478,16 @@
 			entities.map((x) => {
 				if (selected_items.indexOf(x._id) == -1) {
 					selected_items = [...selected_items, x._id];
+					data.settings.selected_items = selected_items;
+					data.persist();
 				}
 			});
 		} else {
 			entities.map((x) => {
 				if (selected_items.indexOf(x._id) >= -1) {
 					selected_items = selected_items.filter((y) => y != x._id);
+					data.settings.selected_items = selected_items;
+					data.persist();
 				}
 			});
 		}
@@ -483,6 +499,8 @@
 	data-shortcut="ArrowLeft"
 	onclick={() => {
 		page_index = page_index - 1;
+		data.settings.page_index = page_index;
+		data.persist();
 		GetData();
 	}}
 	disabled={page_index <= 0}>Previous</HotkeyButton
@@ -491,6 +509,8 @@
 	data-shortcut="ArrowRight"
 	onclick={() => {
 		page_index = page_index + 1;
+		data.settings.page_index = page_index;
+		data.persist();
 		GetData();
 	}}
 	disabled={entities.length < 5 || page_index * 5 >= total_count}
