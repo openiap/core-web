@@ -26,16 +26,10 @@ export class TableHeader implements TTableHeader {
 class entitiesdata {
 	settings: pageSettings = null as any;
 	hide_empty_on_sort = true;
-	total_count = 0;
 	errormessage = "";
-	getHeaders() {
-		return this.settings.tableheaders;
-	}
-
-	async GetData(page: string, collectionname: string, searchstring: string, query: any) {
+	async GetData(page: string, collectionname: string, searchstring: string, query: any, tableheaders: TTableHeader[] = []) {
 		// this.loadsettings(page, null);
-		this.EnsureDefaultHeaders(page);
-		let orderby = this.getOrderBy();
+		let orderby = this.getOrderBy(tableheaders);
 		let usequery = this.createQuery(searchstring, query);
 		let top = 5;
 		let skip = this.settings.page_index * top;
@@ -43,6 +37,7 @@ class entitiesdata {
 		if (auth.isConnected == false) {
 			return [];
 		}
+		console.log("GetData", collectionname, usequery, orderby, skip);
 		const entities = await auth.client.Query<any>({
 			collectionname: collectionname,
 			query: usequery,
@@ -51,34 +46,7 @@ class entitiesdata {
 			top: 5,
 			jwt: auth.access_token,
 		});
-		if (entities.length > 0) {
-			let keys = [];
-			for (let i = 0; i < entities.length; i++) {
-				let entity = entities[i];
-				let subkeys = Object.keys(entity);
-				for (let j = 0; j < subkeys.length; j++) {
-					let key = subkeys[j];
-					if (keys.indexOf(key) == -1) {
-						keys.push(key);
-					}
-				}
-			}
-			for (let i = 0; i < keys.length; i++) {
-				let key = keys[i];
-				if (this.settings.tableheaders.find((x) => x.field == key) == null) {
-					let header = new TableHeader();
-					header.field = key;
-					header.name = key;
-					header.show = false;
-					this.settings.tableheaders.push(header);
-				}
-			}
-			this.total_count = await auth.client.Count({
-				collectionname,
-				query: usequery,
-				jwt: auth.access_token,
-			});
-		}
+		console.log("GetData", entities.length);
 		return entities;
 	}
 	loadsettings(page: string, cookies: any) {
@@ -94,32 +62,9 @@ class entitiesdata {
 		// this.settings.setvalue(page, "headers", _headers);
 		usersettings.persist();
 	}
-	EnsureDefaultHeaders(page: string) {
-		if (this.settings.tableheaders.length == 0) {
-			const defaultcolumnnames = this.defaultcolumnnames(page);
-			for (let i = 0; i < defaultcolumnnames.length; i++) {
-				let header = new TableHeader();
-				header.field = defaultcolumnnames[i];
-				if (header.field == "_id") {
-					header.show = false;
-					header.order = "desc";
-					header.orderindex = 100;
-				}
-				if (i == 0) {
-					header.headclass = "w-[100px]";
-					header.cellclass = "font-medium";
-				}
-				if (i == defaultcolumnnames.length - 1) {
-					header.headclass = "text-right";
-					header.cellclass = "text-right";
-				}
-				this.settings.tableheaders.push(header);
-			}
-		}
-	}
-	private getOrderBy() {
+	private getOrderBy(tableheaders: TTableHeader[]) {
 		const orderby: { [key: string]: number } = {};
-		let ordered = this.settings.tableheaders
+		let ordered = tableheaders
 			.filter((x) => x.order != "")
 			.sort((a, b) => {
 				return a.orderindex - b.orderindex;
@@ -129,6 +74,10 @@ class entitiesdata {
 			if (sortKey.order != null && sortKey.order != "") {
 				orderby[sortKey.field] = sortKey.order == "desc" ? -1 : 1;
 			}
+		}
+		if (Object.keys(orderby).length == 0) {
+			// orderby["_id"] = -1;
+			return "";
 		}
 		return orderby;
 	}
@@ -177,23 +126,23 @@ class entitiesdata {
 		}
 	}
 
-	private createQuery(searchstring: string, query: any) {
+	createQuery(searchstring: string, query: any) {
 		let q: any = { ...query };
 
-		if (this.hide_empty_on_sort == true) {
-			let ordered = this.settings.tableheaders.filter(
-				(x) => x.order != "" && x.field != "_id",
-			);
-			if (ordered.length > 0) {
-				let ands: any = {};
-				for (let i = 0; i < ordered.length; i++) {
-					const field = ordered[i].field;
-					const or: any = {};
-					ands[field] = { $exists: true, $ne: null };
-				}
-				q = { $and: [ands, q] };
-			}
-		}
+		// if (this.hide_empty_on_sort == true) {
+		// 	let ordered = this.settings.tableheaders.filter(
+		// 		(x) => x.order != "" && x.field != "_id",
+		// 	);
+		// 	if (ordered.length > 0) {
+		// 		let ands: any = {};
+		// 		for (let i = 0; i < ordered.length; i++) {
+		// 			const field = ordered[i].field;
+		// 			const or: any = {};
+		// 			ands[field] = { $exists: true, $ne: null };
+		// 		}
+		// 		q = { $and: [ands, q] };
+		// 	}
+		// }
 
 		if (searchstring == null || searchstring == "") {
 			return q;

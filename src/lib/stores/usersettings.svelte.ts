@@ -6,7 +6,6 @@ import { auth } from "./auth.svelte";
 export type pageSettings = {
     page: string;
     searchstring: string;
-    tableheaders: TTableHeader[];
     selected_items: string[];
     page_index: number;
 }
@@ -23,12 +22,14 @@ export class pagesettings implements pageSettings {
     tableheaders: TTableHeader[];
     selected_items: string[];
     page_index: number;
+    total_count: number;
     constructor(page: string) {
         this.page = page;
         this.searchstring = "";
         this.tableheaders = [];
         this.selected_items = [];
         this.page_index = 0;
+        this.total_count = 999999;
     }
 }
 class _usersettings implements userSettings {
@@ -36,13 +37,12 @@ class _usersettings implements userSettings {
     _type: string;
     userid: string;
     name: string;
-    pagesettings: pageSettings[];
+    pagesettings: pageSettings[] = $state([]);
     constructor() {
         this._id = "";
         this._type = "usersettings";
         this.userid = "";
         this.name = "Unknown";
-        this.pagesettings = [];
     }
     getpagesettings(page: string) {
         let settings = this.pagesettings.find(x => x.page == page);
@@ -101,21 +101,27 @@ class _usersettings implements userSettings {
             let page = {
                 page: org.page,
                 searchstring: org.searchstring,
-                tableheaders: org.tableheaders,
                 selected_items: org.selected_items,
-                page_index: org.page_index
+                page_index: org.page_index,
+                // total_count: org.total_count
+                // tableheaders: org.tableheaders,
                 // page_index: $state.snapshot(org.page_index)
             };
             item.pagesettings.push(page);
         }
         // @ts-ignore
         delete item.persisttimer;
-        if(this._id == null || this._id == "") {
-            let result = await auth.client.InsertOrUpdateOne<userSettings>({collectionname: "users", item, uniqeness: "userid,_type", jwt: auth.access_token });
-            this._id = result._id;
-        } else {
-            await auth.client.UpdateOne<userSettings>({collectionname: "users", item, jwt: auth.access_token});
-        }
+        // if(this._id == null || this._id == "") {
+        //     let result = await auth.client.InsertOne<userSettings>({collectionname: "users", item, jwt: auth.access_token});
+        //     let result = await auth.client.InsertOrUpdateOne<userSettings>({collectionname: "users", item, uniqeness: "userid,_type", jwt: auth.access_token });
+        //     this._id = result._id;
+        // } else {
+        //     await auth.client.UpdateOne<userSettings>({collectionname: "users", item, jwt: auth.access_token});
+        // }
+        // let result = await auth.client.InsertOrUpdateOne<userSettings>({collectionname: "users", item, uniqeness: "userid,_type", jwt: auth.access_token });
+        // console.log("Persisted user settings", result);
+        // this._id = result._id;
+        // console.log("Persisted user settings");
     }
 }
 

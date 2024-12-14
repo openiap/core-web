@@ -10,13 +10,14 @@
 	import SuperDebug from "sveltekit-superforms";
 
 	import { buttonVariants } from "$lib/components/ui/button/index.js";
-	import { type sort, TableHeader } from "./data.svelte.js";
+	import { type sort, TableHeader, type TTableHeader } from "./data.svelte.js";
 </script>
 
 <script lang="ts">
 	import { data } from "./data.svelte.js";
 
 	import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
+    import { auth } from "$lib/stores/auth.svelte.js";
 	let {
 		page = "entities",
 		query = { },
@@ -32,22 +33,85 @@
 		...rest
 	} = $props();
 
-
-	// data.loadsettings(page, null);
-	let settings = $state(data.settings);
-	let _searchstring = $state.snapshot(settings.searchstring);
+	data.loadsettings(page, null);
+	console.log("searchstring:", $state.snapshot(searchstring), "data.settings.searchstring:", data.settings.searchstring);
+	let _searchstring = $state.snapshot(data.settings.searchstring);
 	let _collectionname = $state.snapshot(collectionname);
-	let multi_sort = $state(true);
+	let multi_sort = $state(false);
 	let showdebug = $state(false);
+	let page_index = $state(data.settings.page_index);
+	let total_count = $state(9999);
+	let tableheaders = $state([]) as TTableHeader[];
+	console.log("page_index:", data.settings.page_index);
 
-	selected_items = settings.selected_items;
-	searchstring = settings.searchstring
+	selected_items = data.settings.selected_items;
+	// searchstring = data.settings.searchstring
 
+	async function GetData() {
+		const _entities = await data.GetData(page, collectionname, searchstring, query, tableheaders);
+		entities = _entities;
+		console.log("data:", _entities.length);
+
+		if (entities.length > 0) {
+			let keys = [];
+			for (let i = 0; i < entities.length; i++) {
+				let entity = entities[i];
+				let subkeys = Object.keys(entity);
+				for (let j = 0; j < subkeys.length; j++) {
+					let key = subkeys[j];
+					if (keys.indexOf(key) == -1) {
+						keys.push(key);
+					}
+				}
+			}
+			for (let i = 0; i < keys.length; i++) {
+				let key = keys[i];
+				if (tableheaders.find((x) => x.field == key) == null) {
+					let header = new TableHeader();
+					header.field = key;
+					header.name = key;
+					header.show = false;
+					tableheaders.push(header);
+				}
+			}
+			let usequery = data.createQuery(searchstring, query);
+			total_count = await auth.client.Count({
+				collectionname,
+				query: usequery,
+				jwt: auth.access_token,
+			});
+		}
+
+	}
+	function EnsureDefaultHeaders(page: string) {
+		
+		if (tableheaders.length == 0) {
+			const defaultcolumnnames = data.defaultcolumnnames(page);
+			for (let i = 0; i < defaultcolumnnames.length; i++) {
+				let header = new TableHeader();
+				header.field = defaultcolumnnames[i];
+				if (header.field == "_id") {
+					header.show = false;
+					header.order = "";
+					header.orderindex = 100;
+				}
+				if (i == 0) {
+					header.headclass = "w-[100px]";
+					header.cellclass = "font-medium";
+				}
+				if (i == defaultcolumnnames.length - 1) {
+					header.headclass = "text-right";
+					header.cellclass = "text-right";
+				}
+				tableheaders.push(header);
+			}
+		}
+	}
 	function SetHeaders() {
-		data.EnsureDefaultHeaders(page);
+		EnsureDefaultHeaders(page);
 		let foundfirst = false;
-		for (let i = 0; i < settings.tableheaders.length; i++) {
-			let header = settings.tableheaders[i];
+		for (let i = 0; i < tableheaders.length; i++) {
+			let header = tableheaders[i];
 			if (foundfirst == false && header.show == true) {
 				foundfirst = true;
 				header.headclass = "";
@@ -111,33 +175,30 @@
 
 	$effect(() => {
 		if (_searchstring != searchstring) {
+			console.log("searchstring changed from ", _searchstring, "to", searchstring);
 			_searchstring = searchstring;
-			settings.page_index = 0;
-			data.total_count = 99999;
-			data.GetData(page, collectionname, searchstring, query).then(
-				(data: any[]) => {
-					entities = data;
-				},
-			);
+			data.settings.searchstring = searchstring;
+			data.settings.page_index = 0;
+			page_index = 0;
+			total_count = 99999;
+			GetData();
 		} else if (_collectionname != collectionname) {
 			_collectionname = collectionname;
-			_searchstring = settings.searchstring;
-			searchstring = settings.searchstring;
-			selected_items = settings.selected_items;
+			_searchstring = data.settings.searchstring;
+			searchstring = data.settings.searchstring;
+			selected_items = data.settings.selected_items;
 			// data.loadsettings(page, null);
-			data.total_count = 99999;
-			data.GetData(page, collectionname, searchstring, query).then(
-				(data: any[]) => {
-					entities = data;
-				},
-			);
+			total_count = 99999;
+			GetData();
 		}
-		settings.searchstring = $state.snapshot(searchstring);
+		data.settings.searchstring = $state.snapshot(searchstring);
 		// data.SaveHeaders(page);
-		settings.selected_items = selected_items;
-		// settings.page_index = settings.page_index
+		data.settings.selected_items = selected_items;
+		data.settings.page_index = page_index;
+		console.log("page_index:", data.settings.page_index);
 		SetHeaders();
 		// data.GetData(collectionname, searchstring, query).then((data:any[]) => {
+		// console.log("data:", data.length);
 		// 	entities = data;
 		// });
 		data.SaveHeaders(page);
@@ -162,25 +223,25 @@
 	function ondrop(event: DragEvent, head: TableHeader) {
 		event.preventDefault();
 		const fromfield = event.dataTransfer?.getData("text");
-		const fromindex = settings.tableheaders.findIndex((h) => h.field == fromfield);
-		const toindex = settings.tableheaders.findIndex((h) => h.field == head.field);
+		const fromindex = tableheaders.findIndex((h) => h.field == fromfield);
+		const toindex = tableheaders.findIndex((h) => h.field == head.field);
 		if (fromindex != toindex) {
-			settings.tableheaders.splice(
+			tableheaders.splice(
 				toindex,
 				0,
-				settings.tableheaders.splice(fromindex, 1)[0],
+				tableheaders.splice(fromindex, 1)[0],
 			);
 			data.SaveHeaders(page);
 		}
 	}
 	function ontouchend(event: TouchEvent, head: TableHeader) {
-		const fromindex = settings.tableheaders.findIndex((h) => h.field == startrow);
-		const toindex = settings.tableheaders.findIndex((h) => h.field == head.field);
+		const fromindex = tableheaders.findIndex((h) => h.field == startrow);
+		const toindex = tableheaders.findIndex((h) => h.field == head.field);
 		if (fromindex != toindex) {
-			settings.tableheaders.splice(
+			tableheaders.splice(
 				toindex,
 				0,
-				settings.tableheaders.splice(fromindex, 1)[0],
+				tableheaders.splice(fromindex, 1)[0],
 			);
 			data.SaveHeaders(page);
 		}
@@ -200,24 +261,24 @@
 	 * ******************************************
 	 */
 	function sortby(field: string): sort {
-		var exists = settings.tableheaders.find((x) => x.field == field);
+		var exists = tableheaders.find((x) => x.field == field);
 		if (exists == null) {
 			return "";
 		}
 		return exists.order;
 	}
 	function setSort(field: string, value: sort) {
-		if (Array.isArray(settings.tableheaders) == false) settings.tableheaders = [];
-		let column = settings.tableheaders.find((x) => x.field == field);
-		let index = settings.tableheaders.findIndex((x) => x.field == field);
+		if (Array.isArray(tableheaders) == false) tableheaders = [];
+		let column = tableheaders.find((x) => x.field == field);
+		let index = tableheaders.findIndex((x) => x.field == field);
 		if (column != null) {
 			if (value == "") {
 				column.orderindex = 0;
 			} else {
 				column.orderindex =
-					settings.tableheaders.filter((x) => x.order != "").length + 1;
+					tableheaders.filter((x) => x.order != "").length + 1;
 			}
-			settings.tableheaders[index] = { ...column, order: value };
+			tableheaders[index] = { ...column, order: value };
 			// data.SaveHeaders(page);
 		}
 	}
@@ -227,8 +288,8 @@
 		e.stopPropagation();
 		const current = sortby(field);
 		if (!multi_sort) {
-			for (let i = 0; i < settings.tableheaders.length; i++) {
-				const _field = settings.tableheaders[i].field;
+			for (let i = 0; i < tableheaders.length; i++) {
+				const _field = tableheaders[i].field;
 				if (_field != field) {
 					setSort(_field, "");
 				}
@@ -241,11 +302,7 @@
 		} else {
 			setSort(field, "");
 		}
-		data.GetData(page, collectionname, searchstring, query).then(
-			(data: any[]) => {
-				entities = data;
-			},
-		);
+		GetData();
 	}
 
 	/**
@@ -308,15 +365,15 @@
 		<Table.Caption>{caption}</Table.Caption>
 	{:else}
 		<Table.Caption>
-			page {settings.page_index + 1}
-			{#if entities.length == data.total_count}
-				showing {data.total_count} items
+			page {page_index + 1}
+			{#if entities.length == total_count}
+				showing {total_count} items
 			{:else}
-				showing item {settings.page_index * 5 + 1}
+				showing item {page_index * 5 + 1}
 				{#if entities.length > 1}
-					to {settings.page_index * 5 + entities.length}
+					to {page_index * 5 + entities.length}
 				{/if}
-				of {data.total_count}
+				of {total_count}
 			{/if}
 			{#if selected_items.length > 0}
 				with {selected_items.length} selected (<button
@@ -336,7 +393,7 @@
 					/></Table.Head
 				>
 			{/if}
-			{#each settings.tableheaders as head}
+			{#each tableheaders as head}
 				{#if head.show}
 					<Table.Head
 						class={head.headclass}
@@ -382,7 +439,7 @@
 						/></Table.Cell
 					>
 				{/if}
-				{#each settings.tableheaders as head}
+				{#each tableheaders as head}
 					{#if head.show}
 						<Table.Cell class={head.cellclass}
 							>{RenderItemData(item, head.field)}</Table.Cell
@@ -420,26 +477,18 @@
 <HotkeyButton
 	data-shortcut="ArrowLeft"
 	onclick={() => {
-		settings.page_index = settings.page_index - 1;
-		data.GetData(page, collectionname, searchstring, query).then(
-			(data: any[]) => {
-				entities = data;
-			},
-		);
+		page_index = page_index - 1;
+		GetData();
 	}}
-	disabled={settings.page_index <= 0}>Previous</HotkeyButton
+	disabled={page_index <= 0}>Previous</HotkeyButton
 >
 <HotkeyButton
 	data-shortcut="ArrowRight"
 	onclick={() => {
-		settings.page_index = settings.page_index + 1;
-		data.GetData(page, collectionname, searchstring, query).then(
-			(data: any[]) => {
-				entities = data;
-			},
-		);
+		page_index = page_index + 1;
+		GetData();
 	}}
-	disabled={entities.length < 5 || settings.page_index * 5 >= data.total_count}
+	disabled={entities.length < 5 || page_index * 5 >= total_count}
 >
 	Next</HotkeyButton
 >
@@ -453,7 +502,7 @@
 		Delete {selected_items.length} items</HotkeyButton
 	>
 {/if}
-{#if settings.tableheaders != null && settings.tableheaders.length > 0}
+{#if tableheaders != null && tableheaders.length > 0}
 	<Sheet.Root>
 		<Sheet.Trigger>Select columns</Sheet.Trigger>
 		<Sheet.Content>
@@ -465,7 +514,7 @@
 			</Sheet.Header>
 			<div class="grid gap-4 py-4">
 				<ScrollArea class="max-h-[70vh]">
-					{#each settings.tableheaders as head}
+					{#each tableheaders as head}
 						<div
 							class=" flex items-center space-x-4 rounded-md border p-4"
 						>
@@ -504,7 +553,7 @@
 	</Sheet.Root>
 {/if}
 
-{#if settings.tableheaders != null && settings.tableheaders.length > 0 && showdebug == true}
+{#if tableheaders != null && tableheaders.length > 0 && showdebug == true}
 	<SuperDebug data={entities} theme="vscode" />
 {/if}
 
