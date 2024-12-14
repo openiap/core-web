@@ -27,8 +27,10 @@ class entitiesdata {
 	settings: pageSettings = null as any;
 	hide_empty_on_sort = true;
 	errormessage = "";
-	async GetData(page: string, collectionname: string, searchstring: string, query: any) {
-		// this.loadsettings(page, null);
+	async GetData(page: string, collectionname: string, query: any) {
+		data.loadsettings(page);
+		console.log("page", page);
+		console.log("GetData", page, "searchstring:", this.settings.searchstring);
 		let orderby = this.getOrderBy();
 		let usequery = this.createQuery(this.settings.searchstring, query);
 		let top = 5;
@@ -51,7 +53,7 @@ class entitiesdata {
 	persist() {
 		usersettings.persist();
 	}
-	loadsettings(page: string, cookies: any) {
+	loadsettings(page: string) {
 		this.settings = usersettings.getpagesettings(page);
 	}
 	SaveHeaders(tableheaders: TTableHeader[]) {

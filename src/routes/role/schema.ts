@@ -11,3 +11,4 @@ export const newUserSchema = z.object({
 });
 export type NewUserSchema = typeof newUserSchema;
 
+export let page = "role";

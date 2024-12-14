@@ -1,3 +1,8 @@
+<script lang="ts" module>
+  export let page = "formresource";
+  export let collectionname = "forms";
+  export let query = { _type: "resource" };
+</script>
 <script lang="ts">
   import { Entities } from "$lib/entities/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
@@ -12,10 +17,6 @@
   import { auth } from "$lib/stores/auth.svelte.js";
 
   const title = "Form Resources";
-  const key = "formresource";
-  let collectionname = "forms";
-  let page = "formresource";
-  let query = { _type: "resource" };
   let searchstring = $state(data.searchstring);
   let selected_items = $state([]);
   let entities = $state(data.entities);
@@ -35,7 +36,7 @@
   function deleteitems(ids: string[]) {
   }
   function single_item_click(item: any) {
-    goto(base + `/${key}/${item._id}`);
+    goto(base + `/${page}/${item._id}`);
   }
 </script>
 
@@ -43,7 +44,7 @@
 <Button
   aria-label="add"
   variant={"outline"}
-  onclick={() => goto(base + `/${key}/new`)}>Add {key}</Button
+  onclick={() => goto(base + `/${page}/new`)}>Add {page}</Button
 >
 <div class="flex w-full max-w-sm flex-col gap-1.5">
   <Label for="email">Search</Label>
@@ -78,7 +79,7 @@
     </Button>
     <Button
       aria-label="edit"
-      onclick={() => goto(base + `/${key}/${item._id}`)}
+      onclick={() => goto(base + `/${page}/${item._id}`)}
       size="icon"
       variant="secondary"
     >

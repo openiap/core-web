@@ -1,11 +1,10 @@
 import type { PageServerLoad } from "./$types.js";
 import { data } from "$lib/entities/data.svelte.js";
+import { page, collectionname, query } from "./+page.svelte";
 
-export const load: PageServerLoad = async ({ fetch, url, cookies, locals, params }) => {
-    const page = "hdrobot";
-    const collectionname = "openrpa";
-    data.loadsettings(page, cookies);
+export const load: PageServerLoad = async () => {
+    data.loadsettings(page);
     let searchstring = data.settings.searchstring;
-    const entities = await data.GetData(page, collectionname, searchstring, {_type: "unattendedclient"});
+    const entities = await data.GetData(page, collectionname, query);
     return { entities, searchstring };
 };

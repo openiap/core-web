@@ -1,3 +1,8 @@
+<script lang="ts" module>
+  export let page = "mailhistory";
+  export let collectionname = "mailhist";
+  export let query = { };
+</script>
 <script lang="ts">
   import { Entities } from "$lib/entities/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
@@ -13,10 +18,7 @@
   import { auth } from "$lib/stores/auth.svelte.js";
 
   const title = "Mail History";
-  const key = "mailhistory";
   let collectionname = "mailhist";
-  let page = "mailhistory";
-  let query = {};
   let searchstring = $state(data.searchstring);
   let selected_items = $state([]);
   let entities = $state(data.entities);
@@ -36,7 +38,7 @@
   function deleteitems(ids: string[]) {
   }
   function single_item_click(item: any) {
-    goto(base + `/${key}/${item._id}`);
+    goto(base + `/${page}/${item._id}`);
   }
 </script>
 
@@ -66,7 +68,7 @@
   {#snippet action(item: any)}
     <Button
       aria-label="view"
-      onclick={() => goto(base + `/${key}/${item._id}`)}
+      onclick={() => goto(base + `/${page}/${item._id}`)}
       size="icon"
       variant="secondary"
       title="view"

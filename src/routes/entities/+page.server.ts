@@ -6,9 +6,9 @@ import { usersettings } from "$lib/stores/usersettings.svelte.js";
 export const load: PageServerLoad = async ({ fetch, url, cookies, locals, params }) => {
     let collectionname = usersettings.entities_collectionname;
     let page = "entities-" + collectionname;
-	data.loadsettings(page, cookies);
+	data.loadsettings(page);
     let searchstring = data.settings.searchstring;
-    const entities = await data.GetData(page, collectionname, searchstring, {});
+    const entities = await data.GetData(page, collectionname, {});
     const collections = await auth.client.ListCollections({jwt: auth.access_token});
     return { entities, collections, collectionname, searchstring };
 

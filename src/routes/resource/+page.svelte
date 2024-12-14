@@ -1,3 +1,8 @@
+<script lang="ts" module>
+  export let page = "resource";
+  export let collectionname = "config";
+  export let query = { _type: "resource" };
+</script>
 <script lang="ts">
   import { Entities } from "$lib/entities/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
@@ -13,10 +18,6 @@
   import Button from "$lib/components/ui/button/button.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
 
-  const key = "resource";
-  let collectionname = "config";
-  let page = "resources";
-  let query = { _type: "resource" };
   let searchstring = $state(data.searchstring);
   let selected_items = $state([]);
   let entities = $state(data.entities);
@@ -36,11 +37,11 @@
   function deleteitems(ids: string[]) {
   }
   function single_item_click(item: any) {
-    goto(base + `/${key}/${item._id}`);
+    goto(base + `/${page}/${item._id}`);
   }
 </script>
 
-<h1>All {key}s</h1>
+<h1>All {page}s</h1>
 <!-- <Hotkeybutton
   aria-label="add"
   variant={"outline"}

@@ -38,7 +38,7 @@
 		...rest
 	} = $props();
 
-	data.loadsettings(page, null);
+	data.loadsettings(page);
 	let _searchstring = $state.snapshot(data.settings.searchstring);
 	let _collectionname = $state.snapshot(collectionname);
 	let multi_sort = $state(false);
@@ -54,7 +54,6 @@
 		const _entities = await data.GetData(
 			page,
 			collectionname,
-			searchstring,
 			query,
 		);
 		entities = _entities;
@@ -205,7 +204,7 @@
 			usersettings.entities_collectionname = collectionname;
 			data.settings.page_index = page_index;
 			data.persist();
-			data.loadsettings(page, null);
+			data.loadsettings(page);
 			_collectionname = collectionname;
 			_searchstring = data.settings.searchstring;
 			searchstring = data.settings.searchstring;

@@ -1,3 +1,8 @@
+<script lang="ts" module>
+  export let page = "agent";
+  export let collectionname = "agents";
+  export let query = { _type: "agent" };
+</script>
 <script lang="ts">
   import { Entities } from "$lib/entities/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
@@ -22,10 +27,6 @@
   import { auth } from "$lib/stores/auth.svelte.js";
   import * as RadioGroup from "$lib/components/ui/radio-group/index.js";
 
-  const key = "agent";
-  let collectionname = "agents";
-  let page = "agent";
-  let query = { _type: "agent" };
   let searchstring = $state(data.searchstring);
   let selected_items = $state([]);
   let entities = $state(data.entities);
@@ -45,16 +46,16 @@
   function deleteitems(ids: string[]) {
   }
   function single_item_click(item: any) {
-    goto(base + `/${key}/${item._id}`);
+    goto(base + `/${page}/${item._id}`);
   }
 </script>
 
-<h1>All {key}s</h1>
+<h1>All {page}s</h1>
 <Hotkeybutton
   aria-label="add"
   title="add"
   variant={"outline"}
-  onclick={() => goto(base + `/${key}/new`)}>Add {key}</Hotkeybutton
+  onclick={() => goto(base + `/${page}/new`)}>Add {page}</Hotkeybutton
 >
 <Hotkeybutton aria-label="package" title="package" variant={"outline"}
   >Package</Hotkeybutton
