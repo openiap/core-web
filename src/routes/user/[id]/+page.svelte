@@ -6,19 +6,44 @@
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
   import { Acl } from "$lib/acl";
+  import { auth } from "$lib/stores/auth.svelte.js";
 
-  import SuperDebug, { superForm } from "sveltekit-superforms";
+  import SuperDebug, { superForm, defaults } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../schema.js";
 
   const key = "user";
+  let loading = $state(false);
+  let errormessage = $state("");
   let showdebug = $state(false);
   const { data } = $props();
-  const form = superForm(data.form, {
+  const form = superForm(defaults(zod(editFormSchema)), {
     dataType: "json",
-    validators: zod(editFormSchema)
+    validators: zod(editFormSchema),
+    SPA: true,
+    onUpdate: async ({ form, cancel }) => {
+      if (form.valid) {
+        loading = true;
+        try {
+          await auth.client.UpdateOne({
+            collectionname: "users",
+            item: { ...form.data, _type: "user" },
+            jwt: auth.access_token,
+          });
+          goto(base + `/${key}`);
+        } catch (error: any) {
+          errormessage = error.message;
+          cancel();
+        } finally {
+          loading = false;
+        }
+      }
+    },
   });
-  const { form: formData, enhance, message } = form;
+
+  const { form: formData, enhance, message, validateForm } = form;
+  formData.set(data.item);
+  validateForm({ update: true });
 </script>
 
 {#if message && $message != ""}
@@ -30,9 +55,11 @@
 </div>
 
 <form method="POST" use:enhance>
-  <Form.Button aria-label="submit">Submit</Form.Button>
-  <HotkeyButton aria-label="back" onclick={() => goto(base + `/${key}`)}
-    >Back</HotkeyButton
+  <Form.Button disabled={loading} aria-label="submit">Submit</Form.Button>
+  <HotkeyButton
+    disabled={loading}
+    aria-label="back"
+    onclick={() => goto(base + `/${key}`)}>Back</HotkeyButton
   >
 
   <Acl bind:value={$formData} />
@@ -41,7 +68,7 @@
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Name</Form.Label>
-        <Input {...props} bind:value={$formData.name} />
+        <Input disabled={loading} {...props} bind:value={$formData.name} />
       {/snippet}
     </Form.Control>
     <Form.Description>This is your public display name.</Form.Description>
@@ -52,7 +79,7 @@
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Username</Form.Label>
-        <Input {...props} bind:value={$formData.username} />
+        <Input disabled={loading} {...props} bind:value={$formData.username} />
       {/snippet}
     </Form.Control>
     <Form.Description>This is your username.</Form.Description>
@@ -63,7 +90,12 @@
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Password</Form.Label>
-        <Input {...props} bind:value={$formData.password} type="password" />
+        <Input
+          disabled={loading}
+          {...props}
+          bind:value={$formData.password}
+          type="password"
+        />
       {/snippet}
     </Form.Control>
     <Form.Description>This is your password.</Form.Description>
@@ -74,7 +106,12 @@
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Email</Form.Label>
-        <Input {...props} bind:value={$formData.email} type="email" />
+        <Input
+          disabled={loading}
+          {...props}
+          bind:value={$formData.email}
+          type="email"
+        />
       {/snippet}
     </Form.Control>
     <Form.Description>This is your email.</Form.Description>
@@ -89,7 +126,11 @@
     <Form.Control>
       {#snippet children({ props })}
         {#if $formData.disabled != null}
-          <Checkbox {...props} bind:checked={$formData.disabled} />
+          <Checkbox
+            disabled={loading}
+            {...props}
+            bind:checked={$formData.disabled}
+          />
           <div class="space-y-1 leading-none">
             <Form.Label>disabled</Form.Label>
             <Form.Description>
@@ -109,7 +150,11 @@
     <Form.Control>
       {#snippet children({ props })}
         {#if $formData.disabled != null}
-          <Checkbox {...props} bind:checked={$formData.dblocked} />
+          <Checkbox
+            disabled={loading}
+            {...props}
+            bind:checked={$formData.dblocked}
+          />
           <div class="space-y-1 leading-none">
             <Form.Label>dblocked</Form.Label>
             <Form.Description>
@@ -130,7 +175,11 @@
     <Form.Control>
       {#snippet children({ props })}
         {#if $formData.disabled != null}
-          <Checkbox {...props} bind:checked={$formData.validated} />
+          <Checkbox
+            disabled={loading}
+            {...props}
+            bind:checked={$formData.validated}
+          />
           <div class="space-y-1 leading-none">
             <Form.Label>Validated</Form.Label>
             <Form.Description>
@@ -142,7 +191,7 @@
     </Form.Control>
   </Form.Field>
 
-  <Form.Button aria-label="submit">Submit</Form.Button>
+  <Form.Button disabled={loading} aria-label="submit">Submit</Form.Button>
 </form>
 
 {#if formData != null && showdebug == true}

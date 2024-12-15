@@ -6,26 +6,29 @@
   import { Input } from "$lib/components/ui/input/index.js";
   import SuperDebug, { superForm, defaults } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
-  import { newUserSchema } from "../schema.js";
+  import { newFormSchema } from "../schema.js";
   import { auth } from "$lib/stores/auth.svelte.js";
 
   const key = "role";
   let showdebug = $state(false);
-  const { data } = $props();
   let errormessage = $state("");
   let loading = $state(false);
 
-  const form = superForm(defaults(zod(newUserSchema)), {
+  const form = superForm(defaults(zod(newFormSchema)), {
     dataType: "json",
-    validators: zod(newUserSchema),
+    validators: zod(newFormSchema),
     SPA: true,
-    onUpdate: async ({ form, cancel  }) => {
+    onUpdate: async ({ form, cancel }) => {
       if (form.valid) {
         loading = true;
         try {
-          await auth.client.InsertOne({ collectionname: "users", item: { ...form.data, _type: "role" }, jwt: auth.access_token });
-          goto(base + `/${key}`);          
-       } catch (error:any) {
+          await auth.client.InsertOne({
+            collectionname: "users",
+            item: { ...form.data, _type: "role" },
+            jwt: auth.access_token,
+          });
+          goto(base + `/${key}`);
+        } catch (error: any) {
           errormessage = error.message;
           cancel();
         } finally {
@@ -49,9 +52,11 @@
   Add {key}
 </div>
 <form method="POST" use:enhance>
-  <Form.Button aria-label="submit" disabled={loading} >Submit</Form.Button>
-  <HotkeyButton aria-label="back" disabled={loading} onclick={() => goto(base + `/${key}`)}
-    >Back</HotkeyButton
+  <Form.Button aria-label="submit" disabled={loading}>Submit</Form.Button>
+  <HotkeyButton
+    aria-label="back"
+    disabled={loading}
+    onclick={() => goto(base + `/${key}`)}>Back</HotkeyButton
   >
   <Form.Field {form} name="name">
     <Form.Control>

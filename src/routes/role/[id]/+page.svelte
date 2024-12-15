@@ -6,7 +6,7 @@
   import { Input } from "$lib/components/ui/input/index.js";
   import SuperDebug, { superForm, defaults } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
-  import { userSchema } from "../schema.js";
+  import { editFormSchema } from "../schema.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { Acl } from "$lib/acl";
 
@@ -15,9 +15,9 @@
   let loading = $state(false);
   let errormessage = $state("");
   const { data } = $props();
-  const form = superForm(defaults(zod(userSchema)), {
+  const form = superForm(defaults(zod(editFormSchema)), {
     dataType: "json",
-    validators: zod(userSchema),
+    validators: zod(editFormSchema),
     SPA: true,
     onUpdate: async ({ form, cancel  }) => {
       if (form.valid) {

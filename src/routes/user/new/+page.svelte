@@ -2,7 +2,7 @@
   import * as Form from "$lib/components/ui/form/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
   import { Checkbox } from "$lib/components/ui/checkbox/index.js";
-  import SuperDebug, { superForm } from "sveltekit-superforms";
+  import SuperDebug, { superForm, defaults } from "sveltekit-superforms";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { base } from "$app/paths";
   import { goto } from "$app/navigation";
@@ -10,16 +10,35 @@
   import { Trash2 } from "lucide-svelte";
   import { newFormSchema } from "../schema.js";
   import { zod } from "sveltekit-superforms/adapters";
+  import { auth } from "$lib/stores/auth.svelte.js";
 
   const key = "user";
   let showdebug = $state(false);
-  const { data } = $props();
+  let loading = $state(false);
   let errormessage = $state("");
-  const form = superForm(data.form, {
+  const form = superForm(defaults(zod(newFormSchema)), {
     dataType: "json",
     validators: zod(newFormSchema),
+    SPA: true,
+    onUpdate: async ({ form, cancel }) => {
+      if (form.valid) {
+        loading = true;
+        try {
+          await auth.client.InsertOne({
+            collectionname: "users",
+            item: { ...form.data, _type: "user" },
+            jwt: auth.access_token,
+          });
+          goto(base + `/${key}`);
+        } catch (error: any) {
+          errormessage = error.message;
+          cancel();
+        } finally {
+          loading = false;
+        }
+      }
+    },
   });
-
   const { form: formData, enhance, message } = form;
 </script>
 
@@ -36,13 +55,17 @@
 </div>
 
 <form method="POST" use:enhance>
-  <Form.Button aria-label="submit">Submit</Form.Button>
-  <HotkeyButton onclick={() => goto(base + `/${key}`)}>Back</HotkeyButton>
+  <Form.Button disabled={loading} aria-label="submit">Submit</Form.Button>
+  <HotkeyButton
+    aria-label="back"
+    disabled={loading}
+    onclick={() => goto(base + `/${key}`)}>Back</HotkeyButton
+  >
   <Form.Field {form} name="name">
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Name</Form.Label>
-        <Input {...props} bind:value={$formData.name} />
+        <Input disabled={loading} {...props} bind:value={$formData.name} />
       {/snippet}
     </Form.Control>
     <Form.Description>This is your public display name.</Form.Description>
@@ -53,7 +76,7 @@
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Username</Form.Label>
-        <Input {...props} bind:value={$formData.username} />
+        <Input disabled={loading} {...props} bind:value={$formData.username} />
       {/snippet}
     </Form.Control>
     <Form.Description>This is your username.</Form.Description>
@@ -64,7 +87,12 @@
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Password</Form.Label>
-        <Input {...props} bind:value={$formData.password} type="password" />
+        <Input
+          disabled={loading}
+          {...props}
+          bind:value={$formData.password}
+          type="password"
+        />
       {/snippet}
     </Form.Control>
     <Form.Description>This is your password.</Form.Description>
@@ -75,7 +103,12 @@
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Email</Form.Label>
-        <Input {...props} bind:value={$formData.email} type="email" />
+        <Input
+          disabled={loading}
+          {...props}
+          bind:value={$formData.email}
+          type="email"
+        />
       {/snippet}
     </Form.Control>
     <Form.Description>This is your email.</Form.Description>
@@ -89,7 +122,11 @@
   >
     <Form.Control>
       {#snippet children({ props })}
-        <Checkbox {...props} bind:checked={$formData.disabled} />
+        <Checkbox
+          disabled={loading}
+          {...props}
+          bind:checked={$formData.disabled}
+        />
         <div class="space-y-1 leading-none">
           <Form.Label>disabled</Form.Label>
           <Form.Description>
@@ -107,7 +144,11 @@
   >
     <Form.Control>
       {#snippet children({ props })}
-        <Checkbox {...props} bind:checked={$formData.dblocked} />
+        <Checkbox
+          disabled={loading}
+          {...props}
+          bind:checked={$formData.dblocked}
+        />
         <div class="space-y-1 leading-none">
           <Form.Label>dblocked</Form.Label>
           <Form.Description>
@@ -126,7 +167,11 @@
   >
     <Form.Control>
       {#snippet children({ props })}
-        <Checkbox {...props} bind:checked={$formData.validated} />
+        <Checkbox
+          disabled={loading}
+          {...props}
+          bind:checked={$formData.validated}
+        />
         <div class="space-y-1 leading-none">
           <Form.Label>validated</Form.Label>
           <Form.Description>
@@ -144,7 +189,11 @@
   >
     <Form.Control>
       {#snippet children({ props })}
-        <Checkbox {...props} bind:checked={$formData.emailvalidated} />
+        <Checkbox
+          disabled={loading}
+          {...props}
+          bind:checked={$formData.emailvalidated}
+        />
         <div class="space-y-1 leading-none">
           <Form.Label>emailvalidated</Form.Label>
           <Form.Description>
@@ -162,7 +211,11 @@
   >
     <Form.Control>
       {#snippet children({ props })}
-        <Checkbox {...props} bind:checked={$formData.formvalidated} />
+        <Checkbox
+          disabled={loading}
+          {...props}
+          bind:checked={$formData.formvalidated}
+        />
         <div class="space-y-1 leading-none">
           <Form.Label>formvalidated</Form.Label>
           <Form.Description>
@@ -181,13 +234,19 @@
             {#snippet children({ props })}
               <Form.Label>Federation id {index + 1}</Form.Label>
               {#if $formData.federationids}
-                <Input {...props} bind:value={$formData.federationids[index]} />
+                <Input
+                  disabled={loading}
+                  {...props}
+                  bind:value={$formData.federationids[index]}
+                />
               {/if}
             {/snippet}
           </Form.Control>
           <Form.FieldErrors />
         </Form.Field>
         <Button
+          aria-label="delete"
+          disabled={loading}
           variant="outline"
           onclick={() => {
             let arr = $formData.federationids;
@@ -202,6 +261,8 @@
   {/if}
   <div>
     <Button
+      aria-label="add federation id"
+      disabled={loading}
       variant="outline"
       onclick={() => {
         let arr = $formData.federationids || [];
@@ -209,7 +270,7 @@
       }}>Add federation id</Button
     >
   </div>
-  <Form.Button aria-label="submit">Submit</Form.Button>
+  <Form.Button disabled={loading} aria-label="submit">Submit</Form.Button>
 </form>
 
 {#if formData != null && showdebug == true}
