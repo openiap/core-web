@@ -29,8 +29,6 @@ class entitiesdata {
 	errormessage = "";
 	async GetData(page: string, collectionname: string, query: any) {
 		data.loadsettings(page);
-		console.log("page", page);
-		console.log("GetData", page, "searchstring:", this.settings.searchstring);
 		let orderby = this.getOrderBy();
 		let usequery = this.createQuery(this.settings.searchstring, query);
 		let top = 5;
@@ -47,7 +45,7 @@ class entitiesdata {
 			top: 5,
 			jwt: auth.access_token,
 		});
-		console.log("GetData", collectionname, "order:", orderby, "result", entities.length);
+		console.log("GetData", page, "searchstring:", this.settings.searchstring, "col:", collectionname, "order:", orderby, "results", entities.length);
 		return entities;
 	}
 	persist() {

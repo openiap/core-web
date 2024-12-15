@@ -9,7 +9,7 @@
 	import AppSidebar from "$lib/sidebar/app-sidebar.svelte";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import { usersettings } from "$lib/stores/usersettings.svelte.js";
-	usersettings.stateload("layout.svelte", data.usersettings);
+	usersettings.stateload(data.usersettings);
 	let pagename = $derived(() =>
 		$page.url.pathname.replace(base, "").replace("/", ""),
 	);
