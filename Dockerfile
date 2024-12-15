@@ -16,8 +16,8 @@ EXPOSE 3000
 ENV NODE_ENV=production
 CMD [ "node", "build" ]
 
-# docker build -t cloudhack/core-web:0.0.7 . && docker run -it -p 80:3000 --rm cloudhack/core-web:0.0.7
-# docker build -t cloudhack/core-web:0.0.7 . && docker run -it -p 80:3000 --rm cloudhack/core-web:0.0.7
-# docker build -t cloudhack/core-web:0.0.7 . && docker push cloudhack/core-web:0.0.7
+# docker build -t cloudhack/core-web:0.0.8 . && docker run -it -p 80:3000 --rm cloudhack/core-web:0.0.8
+# docker build -t cloudhack/core-web:0.0.8 . && docker run -it -p 80:3000 --rm cloudhack/core-web:0.0.8
+# docker build -t cloudhack/core-web:0.0.8 . && docker push cloudhack/core-web:0.0.8
 
-# docker run -it -p 80:3000 --rm cloudhack/core-web:0.0.7
+# docker run -it -p 80:3000 --rm cloudhack/core-web:0.0.8
