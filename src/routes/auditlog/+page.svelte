@@ -16,10 +16,8 @@
   import Button from "$lib/components/ui/button/button.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
 
-	import { usersettings } from "$lib/stores/usersettings.svelte.js";
-	usersettings.stateload(data.usersettings);
-  let searchstring = $state(usersettings.getpage().searchstring);
-  let selected_items = $state(usersettings.getpage().selected_items);
+  let searchstring = $state(data.searchstring);
+  let selected_items = $state([]);
   let entities = $state(data.entities);
 
   async function deleteitem(item: any) {
