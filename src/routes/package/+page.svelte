@@ -1,8 +1,9 @@
 <script lang="ts" module>
-  export let page = "customer";
-  export let collectionname = "users";
-  export let query = { _type: "customer" };
+  export let page = "package";
+  export let collectionname = "agents";
+  export let query = { _type: "package" };
 </script>
+
 <script lang="ts">
   import { Entities } from "$lib/entities/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
@@ -34,8 +35,7 @@
       console.error(Error("deletecount is " + deletecount));
     }
   }
-  function deleteitems(ids: string[]) {
-  }
+  function deleteitems(ids: string[]) {}
   function single_item_click(item: any) {
     goto(base + `/${page}/${item._id}`);
   }
@@ -43,9 +43,14 @@
 
 <h1>All {page}s</h1>
 <Hotkeybutton
-  aria-label="Add customer"
+  aria-label="Add package"
   variant={"outline"}
   onclick={() => goto(base + `/${page}/new`)}>Add {page}</Hotkeybutton
+>
+<Hotkeybutton
+  aria-label="Agents"
+  variant={"outline"}
+  onclick={() => goto(base + `/agent`)}>Agents</Hotkeybutton
 >
 <div class="flex w-full max-w-sm flex-col gap-1.5">
   <Label for="email">Search</Label>

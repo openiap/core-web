@@ -3,6 +3,7 @@
   export let collectionname = "agents";
   export let query = { _type: "agent" };
 </script>
+
 <script lang="ts">
   import { Entities } from "$lib/entities/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
@@ -16,6 +17,8 @@
     Trash2,
     User,
     Webhook,
+    Eye,
+    Wrench,
   } from "lucide-svelte";
 
   import { goto } from "$app/navigation";
@@ -43,8 +46,7 @@
       console.error(Error("deletecount is " + deletecount));
     }
   }
-  function deleteitems(ids: string[]) {
-  }
+  function deleteitems(ids: string[]) {}
   function single_item_click(item: any) {
     goto(base + `/${page}/${item._id}`);
   }
@@ -57,8 +59,11 @@
   variant={"outline"}
   onclick={() => goto(base + `/${page}/new`)}>Add {page}</Hotkeybutton
 >
-<Hotkeybutton aria-label="package" title="package" variant={"outline"}
-  >Package</Hotkeybutton
+<Hotkeybutton
+  aria-label="packages"
+  title="package"
+  variant={"outline"}
+  onclick={() => goto(base + `/package`)}>Packages</Hotkeybutton
 >
 <Hotkeybutton aria-label="reload" title="reload" variant={"outline"}
   >Reload</Hotkeybutton
@@ -117,6 +122,15 @@
       <Square />
     </Button>
     <Button
+      aria-label="run"
+      title="run"
+      size="icon"
+      variant="secondary"
+      onclick={() => goto(base + `/${page}/${item._id}/run`)}
+    >
+      <Wrench />
+    </Button>
+    <Button
       aria-label="webhook"
       title="webhook"
       size="icon"
@@ -124,7 +138,13 @@
     >
       <Webhook />
     </Button>
-    <Button aria-label="edit" title="edit" size="icon" variant="secondary">
+    <Button
+      aria-label="edit"
+      title="edit"
+      size="icon"
+      variant="secondary"
+      onclick={() => goto(base + `/${page}/${item._id}`)}
+    >
       <Pencil />
     </Button>
     <Button

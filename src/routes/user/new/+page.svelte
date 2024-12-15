@@ -135,6 +135,7 @@
         </div>
       {/snippet}
     </Form.Control>
+    <Form.FieldErrors />
   </Form.Field>
 
   <Form.Field
@@ -158,6 +159,7 @@
         </div>
       {/snippet}
     </Form.Control>
+    <Form.FieldErrors />
   </Form.Field>
 
   <Form.Field
@@ -180,6 +182,7 @@
         </div>
       {/snippet}
     </Form.Control>
+    <Form.FieldErrors />
   </Form.Field>
 
   <Form.Field
@@ -202,6 +205,7 @@
         </div>
       {/snippet}
     </Form.Control>
+    <Form.FieldErrors />
   </Form.Field>
 
   <Form.Field
@@ -224,6 +228,7 @@
         </div>
       {/snippet}
     </Form.Control>
+    <Form.FieldErrors />
   </Form.Field>
 
   {#if $formData.federationids}

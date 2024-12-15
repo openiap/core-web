@@ -1,8 +1,12 @@
 <script lang="ts">
   import * as Select from "$lib/components/ui/select/index.js";
-  let { value = $bindable(), ...restProps } = $props();
+  let { value = $bindable(), disabled, ...restProps } = $props();
 
   const timezones = [
+    {
+      group: "",
+      items: [{ value: "", label: "UTC" }],
+    },
     {
       group: "Europe",
       items: [
@@ -290,7 +294,7 @@
   );
 </script>
 
-<Select.Root {...restProps} type="single" name="timezone" bind:value>
+<Select.Root {disabled} {...restProps} type="single" name="timezone" bind:value>
   <Select.Trigger class="w-[180px]">
     {triggerContent}
   </Select.Trigger>

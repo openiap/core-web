@@ -1,8 +1,12 @@
+<script lang="ts" module>
+  export let collectionname = "config";
+</script>
+
 <script lang="ts">
   import * as Form from "$lib/components/ui/form/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
   import { Checkbox } from "$lib/components/ui/checkbox/index.js";
-  import SuperDebug, { superForm } from "sveltekit-superforms";
+  import SuperDebug, { superForm, defaults } from "sveltekit-superforms";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { base } from "$app/paths";
   import { goto } from "$app/navigation";
@@ -12,7 +16,7 @@
   import * as Select from "$lib/components/ui/select/index.js";
   import Timezoneselector from "$lib/timezoneselector/timezoneselector.svelte";
   import { auth } from "$lib/stores/auth.svelte";
-  import { randomname } from "./helper.js";
+  import { randomname } from "../helper.js";
   import Button from "$lib/components/ui/button/button.svelte";
   import Entityselector from "$lib/entityselector/entityselector.svelte";
 
@@ -20,12 +24,32 @@
   let showdebug = $state(false);
   const { data } = $props();
 
+  let loading = $state(false);
   let errormessage = $state("");
-  const form = superForm(data.form, {
+  const form = superForm(defaults(zod(newFormSchema)), {
     dataType: "json",
     validators: zod(newFormSchema),
+    SPA: true,
+    onUpdate: async ({ form, cancel }) => {
+      if (form.valid) {
+        loading = true;
+        try {
+          console.log("test")
+          // await auth.client.InsertOne({
+          //   collectionname,
+          //   item: { ...form.data, _type: "agent" },
+          //   jwt: auth.access_token,
+          // });
+          goto(base + `/${key}`);
+        } catch (error: any) {
+          errormessage = error.message;
+          cancel();
+        } finally {
+          loading = false;
+        }
+      }
+    },
   });
-
   const { form: formData, enhance, message } = form;
 
   $formData.name = randomname();
@@ -50,8 +74,8 @@
 
   const triggerContentPlan = $derived(
     () =>
-      products.find((item: any) => item.stripeprice === $formData.stripeprice)?.name ??
-      "Select an agent plan",
+      products.find((item: any) => item.stripeprice === $formData.stripeprice)
+        ?.name ?? "Select an agent plan",
   );
 
   let sizewarningtitle = $state("");
@@ -200,11 +224,6 @@
       }
     }
   }
-
-  // $effect(() => {
-  //   ImageUpdated();
-  //   PlanUpdated();
-  // });
 </script>
 
 {#if errormessage && errormessage != ""}
@@ -220,13 +239,17 @@
 </div>
 
 <form method="POST" use:enhance>
-  <Form.Button aria-label="submit">Submit</Form.Button>
-  <HotkeyButton onclick={() => goto(base + `/${key}`)}>Back</HotkeyButton>
+  <Form.Button disabled={loading} aria-label="submit" title="submit">Submit</Form.Button>
+  <HotkeyButton
+    disabled={loading}
+    aria-label="submit"
+    onclick={() => goto(base + `/${key}`)} title="back">Back</HotkeyButton
+  >
   <Form.Field {form} name="name">
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Name</Form.Label>
-        <Input {...props} bind:value={$formData.name} />
+        <Input disabled={loading} bind:value={$formData.name} />
       {/snippet}
     </Form.Control>
     <Form.Description>This is your public display name.</Form.Description>
@@ -237,7 +260,7 @@
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>slug</Form.Label>
-        <Input {...props} bind:value={$formData.slug} />
+        <Input disabled={loading} {...props} bind:value={$formData.slug} />
       {/snippet}
     </Form.Control>
     <Form.Description>This is your slug.</Form.Description>
@@ -245,6 +268,9 @@
   </Form.Field>
 
   <Button
+    aria-label="refresh"
+    title="refresh"
+    disabled={loading}
     onclick={() => {
       $formData.name = randomname();
       $formData.slug = $formData.name;
@@ -256,6 +282,7 @@
       {#snippet children({ props })}
         <Form.Label>image</Form.Label>
         <Select.Root
+          disabled={loading}
           {...props}
           type="single"
           bind:value={$formData.image}
@@ -283,6 +310,7 @@
       {#snippet children({ props })}
         <Form.Label>plan</Form.Label>
         <Select.Root
+          disabled={loading}
           {...props}
           type="single"
           bind:value={$formData.stripeprice}
@@ -318,7 +346,11 @@
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>environment</Form.Label>
-        <ObjectInput {...props} bind:value={$formData.environment} />
+        <ObjectInput
+          disabled={loading}
+          {...props}
+          bind:value={$formData.environment}
+        />
       {/snippet}
     </Form.Control>
     <Form.Description>This is your environment.</Form.Description>
@@ -332,7 +364,11 @@
   >
     <Form.Control>
       {#snippet children({ props })}
-        <Checkbox {...props} bind:checked={$formData.autostart} />
+        <Checkbox
+          disabled={loading}
+          {...props}
+          bind:checked={$formData.autostart}
+        />
         <div class="space-y-1 leading-none">
           <Form.Label>autostart</Form.Label>
           <Form.Description>
@@ -341,6 +377,7 @@
         </div>
       {/snippet}
     </Form.Control>
+    <Form.FieldErrors />
   </Form.Field>
 
   <Form.Field
@@ -350,7 +387,11 @@
   >
     <Form.Control>
       {#snippet children({ props })}
-        <Checkbox {...props} bind:checked={$formData.webserver} />
+        <Checkbox
+          disabled={loading}
+          {...props}
+          bind:checked={$formData.webserver}
+        />
         <div class="space-y-1 leading-none">
           <Form.Label>webserver</Form.Label>
           <Form.Description>
@@ -359,6 +400,7 @@
         </div>
       {/snippet}
     </Form.Control>
+    <Form.FieldErrors />
   </Form.Field>
 
   <Form.Field
@@ -368,7 +410,11 @@
   >
     <Form.Control>
       {#snippet children({ props })}
-        <Checkbox {...props} bind:checked={$formData.sleep} />
+        <Checkbox
+          disabled={loading}
+          {...props}
+          bind:checked={$formData.sleep}
+        />
         <div class="space-y-1 leading-none">
           <Form.Label>sleep</Form.Label>
           <Form.Description>
@@ -377,13 +423,18 @@
         </div>
       {/snippet}
     </Form.Control>
+    <Form.FieldErrors />
   </Form.Field>
 
   <Form.Field {form} name="timezone">
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>timezone</Form.Label>
-        <Timezoneselector {...props} bind:value={$formData.timezone} />
+        <Timezoneselector
+          disabled={loading}
+          {...props}
+          bind:value={$formData.timezone}
+        />
       {/snippet}
     </Form.Control>
     <Form.Description>This is the name of the timezone.</Form.Description>
@@ -396,6 +447,7 @@
         <Form.Label>runas</Form.Label>
         <!-- <Input {...props} bind:value={$formData.runas} /> -->
         <Entityselector
+          disabled={loading}
           {...props}
           collectionname="user"
           basefilter={{ _type: "user" }}
@@ -407,7 +459,7 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Button aria-label="submit">Submit</Form.Button>
+  <Form.Button disabled={loading} aria-label="submit" title="submit">Submit</Form.Button>
 </form>
 
 <div class="italic text-gray-500 py-2">

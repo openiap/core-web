@@ -33,7 +33,7 @@
 
 <form method="POST" use:enhance>
   <Form.Button aria-label="submit">Submit</Form.Button>
-  <HotkeyButton onclick={() => goto(base + `/${key}`)}>Back</HotkeyButton>
+  <HotkeyButton aria-label="Back" onclick={() => goto(base + `/${key}`)}>Back</HotkeyButton>
 
   <Acl bind:value={$formData} />
 
@@ -63,6 +63,7 @@
           <Form.FieldErrors />
         </Form.Field>
         <Button
+          aria-label="Delete domain"
           variant="outline"
           onclick={() => {
             let arr = $formData.domains;
@@ -77,6 +78,7 @@
   {/if}
   <div>
     <Button
+      aria-label="Add domain"
       variant="outline"
       onclick={() => {
         let arr = $formData.domains || [];
