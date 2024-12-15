@@ -17,10 +17,10 @@ const config = {
 			precompress: true,
 			envPrefix: ''
 		}),
-		// paths: {
-		// 	base: "/ui",
-		// 	relative: false
-		// },
+		paths: {
+			base: "/ui",
+			relative: false
+		},
 	},
 };
 
