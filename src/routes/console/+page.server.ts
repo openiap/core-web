@@ -4,6 +4,7 @@ import { page, collectionname, query } from "./+page.svelte";
 
 export const load: PageServerLoad = async (x) => {
     data.loadsettings(page);
-    const entities = await data.GetData(page, collectionname, query);
-    return { entities };
+    const configs = await data.GetData(page, collectionname, query);
+    if(configs.length === 0) return { status: 404 };
+    return { config: configs[0] };
 };
