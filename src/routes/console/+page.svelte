@@ -20,7 +20,7 @@
   let messages: any[] = $state([]);
   let pause = $state(false);
   let lines = $state(500);
-  if (browser && lines == 500) {
+  if (browser) {
     auth.client.RegisterExchange(
       { exchangename: "openflow_logs", algorithm: "fanout" },
       (msg, payload, user, jwt) => {
