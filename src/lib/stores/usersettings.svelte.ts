@@ -22,6 +22,7 @@ export type userSettings = {
     userid: string;
     entities_collectionname: string;
     pagesettings: pageSettings[];
+    currentpage: string;
 }
 export class pagesettings implements pageSettings {
     page: string;
@@ -46,6 +47,7 @@ class _usersettings implements userSettings {
     name: string;
     entities_collectionname: string;
     pagesettings: pageSettings[] = $state([]);
+    currentpage: string = "";
     constructor() {
         this._id = "";
         this._type = "usersettings";
@@ -59,9 +61,17 @@ class _usersettings implements userSettings {
             settings = new pagesettings(page);
             this.pagesettings = [...this.pagesettings, settings];
         }
+        this.currentpage = page;
         return settings;
     }
-    async dbload(msg: string) {
+    getpagesettingsreactless(page: string) {
+        this.currentpage = page;
+        return $state.snapshot(this.getpagesettings(page));
+    }
+    getpage() {
+        return this.getpagesettings(this.currentpage);
+    }
+    async dbload() {
         let userid = auth.profile.sub;
         if (userid == null || userid == "") {
             return $state.snapshot(this);
@@ -77,7 +87,7 @@ class _usersettings implements userSettings {
             this.name = "Settings for " + auth.profile.name;
             return $state.snapshot(this);
         }
-        this.stateload(msg, settings);
+        this.stateload(settings);
         return $state.snapshot(this);
     }
     async reset() {
@@ -86,7 +96,7 @@ class _usersettings implements userSettings {
         this.pagesettings = [];
         this.dopersist();
     }
-    stateload(msg: string, settings: userSettings) {
+    stateload(settings: userSettings) {
         if (settings == null) {
             this.name = "Settings for " + auth.profile.name;
             this.userid = auth.profile.sub;

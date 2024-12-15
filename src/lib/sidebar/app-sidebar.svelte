@@ -70,6 +70,10 @@
 						url: `${base}/configuration`,
 					},
 					{
+						title: "Console",
+						url: `${base}/console`,
+					},
+					{
 						title: "Clients",
 						url: `${base}/client`,
 					},
