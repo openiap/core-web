@@ -1,14 +1,14 @@
 import { z } from 'zod';
-export const userSchema = z.object({
+export const editFormSchema = z.object({
   name: z.string().min(2),
   email: z.string().email()
 }).passthrough();
-export type UserSchema = typeof userSchema;
+export type UserSchema = typeof editFormSchema;
 
-export const newUserSchema = z.object({
+export const newFormSchema = z.object({
   name: z.string().min(2),
   email: z.string().email()
 });
-export type NewUserSchema = typeof newUserSchema;
+export type NewUserSchema = typeof newFormSchema;
 
 export let page = "role";
