@@ -76,6 +76,13 @@
               <Form.Label
                 >{setting.name}
                 <span class="text-gray-500">(Default: {setting.default})</span>
+                <Button
+                  class="text-green-500 ${$formData[setting.name] ===
+                    setting.default && 'hidden disabled'}"
+                  variant="link"
+                  onclick={() => ($formData[setting.name] = setting.default)}
+                  >clear</Button
+                >
               </Form.Label>
             {/snippet}
           </Form.Control>
@@ -97,6 +104,13 @@
               <Form.Label
                 >{setting.name}
                 <span class="text-gray-500">(Default: {setting.default})</span>
+                <Button
+                  class="text-green-500 ${$formData[setting.name] ===
+                    setting.default && 'hidden disabled'}"
+                  variant="link"
+                  onclick={() => ($formData[setting.name] = setting.default)}
+                  >clear</Button
+                >
               </Form.Label>
               <div class="ms-2 space-y-2">
                 <Input
@@ -128,6 +142,13 @@
                   >(Default: {setting.default
                     ? setting.default
                     : "Empty"})</span
+                >
+                <Button
+                  class="text-green-500 ${$formData[setting.name] ===
+                    setting.default && 'hidden disabled'}"
+                  variant="link"
+                  onclick={() => ($formData[setting.name] = setting.default)}
+                  >clear</Button
                 >
               </Form.Label>
               <div class="ms-2 space-y-2">
