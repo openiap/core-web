@@ -40,8 +40,16 @@
 						url: `${base}/credential`,
 					},
 					{
+						title: "Config",
+						url: `${base}/configuration`,
+					},
+					{
 						title: "Customers",
 						url: `${base}/customer`,
+					},
+					{
+						title: "Files",
+						url: `${base}/files`,
 					},
 					{
 						title: "Form Resources",
@@ -65,10 +73,7 @@
 						title: "Agents",
 						url: `${base}/agent`,
 					},
-					{
-						title: "Config",
-						url: `${base}/configuration`,
-					},
+
 					{
 						title: "Console",
 						url: `${base}/console`,
@@ -77,11 +82,6 @@
 						title: "Clients",
 						url: `${base}/client`,
 					},
-					{
-						title: "Files",
-						url: `${base}/files`,
-					},
-					
 					{
 						title: "Providers",
 						url: `${base}/provider`,
@@ -94,7 +94,6 @@
 			},
 		],
 	};
-
 </script>
 
 <script lang="ts">

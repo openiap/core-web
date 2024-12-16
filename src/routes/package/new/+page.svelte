@@ -10,34 +10,45 @@
   import { zod } from "sveltekit-superforms/adapters";
   import { auth } from "$lib/stores/auth.svelte.js";
   import * as Select from "$lib/components/ui/select/index.js";
+  import Button from "$lib/components/ui/button/button.svelte";
 
   const page = "package";
   let showdebug = $state(false);
+  let fileData = $state(null);
   let loading = $state(false);
   let errormessage = $state("");
+
   const form = superForm(defaults(zod(newFormSchema)), {
     dataType: "json",
     validators: zod(newFormSchema),
     SPA: true,
     onUpdate: async ({ form, cancel }) => {
+      console.log("onUpdate");
       if (form.valid) {
+        console.log("form.valid", form.valid);
         loading = true;
         try {
-          await auth.client.InsertOne({
+          const result = await auth.client.InsertOne({
             collectionname: "agents",
             item: { ...form.data, _type: "package" },
             jwt: auth.access_token,
           });
+          console.log("result", result);
           goto(base + `/${page}`);
         } catch (error: any) {
+          console.error(error);
           errormessage = error.message;
           cancel();
         } finally {
           loading = false;
         }
+      } else {
+        console.log("form.invalid", form.valid);
+        errormessage = "Form is invalid";
       }
     },
   });
+
   const { form: formData, enhance, message } = form;
 
   const selectItems = [
@@ -48,14 +59,40 @@
     { value: "exec", label: "Exec" },
     { value: "powershell", label: "Powershell" },
   ];
+
   const triggerContent = $derived(
     selectItems.find((f) => f.value === $formData.language)?.label ??
       "Select a language",
   );
+
+  async function uploadFile(e: any) {
+    loading = true;
+    const files = e.target.files;
+    const file1 = files[0];
+    const reader = new FileReader();
+    reader.onload = async function () {
+      const content = new Uint8Array(reader.result as ArrayBuffer);
+      var name = file1.name;
+      var type = file1.typr;
+      var id = await auth.client.UploadFile(
+        name,
+        type,
+        content,
+        auth.access_token,
+      );
+      // console.log("file " + name + " uploaded with id " + id);
+      $formData.fileid = id;
+      loading = false;
+      // e.target.value = null;
+    };
+    reader.readAsArrayBuffer(file1);
+  }
 </script>
 
 {#if errormessage && errormessage != ""}
-  {errormessage}
+  <div class="text-red-800">
+    {errormessage}
+  </div>
 {/if}
 
 {#if message && $message != ""}
@@ -102,6 +139,8 @@
     </Form.Control>
     <Form.FieldErrors />
   </Form.Field>
+
+  <div>Options</div>
 
   <Form.Field
     {form}
@@ -150,14 +189,27 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Field {form} name="package_file">
+  <Form.Field {form} name="fileid">
     <Form.Control>
       {#snippet children({ props })}
-        <Form.Label>package_file</Form.Label>
-        <Input disabled={loading} {...props} type="file" />
+        <Form.Label>Package file</Form.Label>
+        <div class="flex">
+          <Input
+            disabled={loading}
+            type="file"
+            bind:value={fileData}
+            onchange={uploadFile}
+          />
+          <Button
+            disabled={loading || !fileData}
+            onclick={() => (fileData = null)}
+            aria-label="Delete"
+          >
+            Delete
+          </Button>
+        </div>
       {/snippet}
     </Form.Control>
-    <!-- <Form.Description>This is your public display name.</Form.Description> -->
     <Form.FieldErrors />
   </Form.Field>
 

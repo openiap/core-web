@@ -218,7 +218,7 @@ class entitiesdata {
 			case "formresource":
 				return ["name", "collection", "_createdby", "_created", "_modified"];
 			case "files":
-				return ["filename", "metadata.name", "length"];
+				return ["filename", "metadata.name", "length", "metadata._created"];
 			case "customer":
 				return ["name", "dbusage", "_created", "_modified"];
 			case "credential":

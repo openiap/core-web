@@ -448,8 +448,7 @@
         <!-- <Input {...props} bind:value={$formData.runas} /> -->
         <Entityselector
           disabled={loading}
-          {...props}
-          collectionname="user"
+          collectionname="users"
           basefilter={{ _type: "user" }}
           bind:value={$formData.runas}
         />
