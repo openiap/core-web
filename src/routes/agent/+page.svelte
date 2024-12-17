@@ -23,13 +23,14 @@
 
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
+  import { data as data1 } from "$lib/entities/data.svelte.js";
 
-  let { data } = $props();
   import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
   import * as RadioGroup from "$lib/components/ui/radio-group/index.js";
 
+  let { data } = $props();
   let searchstring = $state(data.searchstring);
   let selected_items = $state([]);
   let entities = $state(data.entities);
@@ -71,20 +72,77 @@
 
 <RadioGroup.Root value="All" class="flex space-x-2 my-2">
   <div class="flex items-center space-x-2">
-    <RadioGroup.Item value="All" id="r1" />
+    <RadioGroup.Item
+      value="All"
+      id="r1"
+      onclick={async () => {
+        entities = await data1.GetData(page, collectionname, query);
+      }}
+      onkeydown={async (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          entities = await data1.GetData(page, collectionname, query);
+        }
+      }}
+    />
     <Label for="r1" class="cursor-pointer">All</Label>
   </div>
   <div class="flex items-center space-x-2">
-    <RadioGroup.Item value="Daemon" id="r2" />
+    <RadioGroup.Item
+      value="Daemon"
+      id="r2"
+      onclick={async () => {
+        entities = await data1.GetData(page, collectionname, query);
+      }}
+      onkeydown={async (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          entities = await data1.GetData(page, collectionname, query);
+        }
+      }}
+    />
     <Label for="r2" class="cursor-pointer">Daemon</Label>
   </div>
   <div class="flex items-center space-x-2">
-    <RadioGroup.Item value="Pods" id="r3" />
+    <RadioGroup.Item
+      value="Pods"
+      id="r3"
+      onclick={async () => {
+        entities = await data1.GetData(page, collectionname, query);
+      }}
+      onkeydown={async (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          entities = await data1.GetData(page, collectionname, query);
+        }
+      }}
+    />
     <Label for="r3" class="cursor-pointer">Pods</Label>
   </div>
   <div class="flex items-center space-x-2">
-    <RadioGroup.Item value="Docker" id="r4" />
-    <Label for="r4" class="cursor-pointer">Docker</Label>
+    <RadioGroup.Item
+      value="Docker"
+      id="r4"
+      onclick={async () => {
+        entities = await data1.GetData(page, collectionname, {
+          _type: "agent",
+          docker: true,
+        });
+      }}
+      onkeydown={async (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          entities = await data1.GetData(page, collectionname, query);
+        }
+      }}
+    />
+    <Label
+      for="r4"
+      class="cursor-pointer"
+      onclick={async () => {
+        console.log("docker");
+        entities = await data1.GetData(page, collectionname, {
+          _type: "agent",
+          docker: true,
+        });
+      }}>Docker</Label
+    >
   </div>
   <div class="flex items-center space-x-2">
     <RadioGroup.Item value="Assistant" id="r5" />
@@ -115,10 +173,32 @@
   bind:entities
 >
   {#snippet action(item: any)}
-    <Button aria-label="start" title="start" size="icon" variant="secondary">
+    <Button
+      aria-label="start"
+      title="start"
+      size="icon"
+      variant="secondary"
+      onclick={async () =>
+        await auth.client.CustomCommand({
+          command: "startagent",
+          id: item._id,
+          name: item.slug,
+        })}
+    >
       <Play />
     </Button>
-    <Button aria-label="stop" title="stop" size="icon" variant="secondary">
+    <Button
+      aria-label="stop"
+      title="stop"
+      size="icon"
+      variant="secondary"
+      onclick={async () =>
+        await auth.client.CustomCommand({
+          command: "stopagent",
+          id: item._id,
+          name: item.slug,
+        })}
+    >
       <Square />
     </Button>
     <Button
@@ -155,7 +235,13 @@
     >
       <DollarSign />
     </Button>
-    <Button aria-label="user" title="user" size="icon" variant="secondary">
+    <Button
+      aria-label="user"
+      title="user"
+      size="icon"
+      variant="secondary"
+      onclick={() => goto(base + `/user/${item.runas}`)}
+    >
       <User />
     </Button>
     <Button
@@ -163,6 +249,14 @@
       title="delete"
       size="icon"
       variant="destructive"
+      onclick={async () => {
+        await auth.client.CustomCommand({
+          command: "deleteagent",
+          id: item._id,
+          name: item.slug,
+        });
+        entities = await data1.GetData(page, collectionname, query);
+      }}
     >
       <Trash2 />
     </Button>

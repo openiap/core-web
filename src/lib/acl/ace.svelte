@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { EntitySelector } from "$lib/entityselector/index.js";
     import { Checkbox } from "$lib/components/ui/checkbox/index.js";
     import { Label } from "$lib/components/ui/label/index.js";
 

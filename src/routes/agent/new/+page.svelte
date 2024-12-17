@@ -1,7 +1,3 @@
-<script lang="ts" module>
-  export let collectionname = "config";
-</script>
-
 <script lang="ts">
   import * as Form from "$lib/components/ui/form/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
@@ -34,12 +30,13 @@
       if (form.valid) {
         loading = true;
         try {
-          console.log("test")
-          // await auth.client.InsertOne({
-          //   collectionname,
-          //   item: { ...form.data, _type: "agent" },
-          //   jwt: auth.access_token,
-          // });
+          console.log("test");
+          const result = await auth.client.InsertOne({
+            collectionname: "agents",
+            item: { ...form.data, _type: "agent" },
+            jwt: auth.access_token,
+          });
+          console.log("result", result);
           goto(base + `/${key}`);
         } catch (error: any) {
           errormessage = error.message;
@@ -47,6 +44,8 @@
         } finally {
           loading = false;
         }
+      } else {
+        errormessage = "Form is invalid";
       }
     },
   });
@@ -56,7 +55,8 @@
   $formData.slug = $formData.name;
   $formData.environment = {};
   $formData.stripeprice = "";
-  $formData.image = "";
+  $formData.image = "openiap/nodeagent";
+  $formData.runas = auth.profile.sub;
 
   const products = [
     { stripeprice: "", name: "Free tier" },
@@ -239,11 +239,14 @@
 </div>
 
 <form method="POST" use:enhance>
-  <Form.Button disabled={loading} aria-label="submit" title="submit">Submit</Form.Button>
+  <Form.Button disabled={loading} aria-label="submit" title="submit"
+    >Submit</Form.Button
+  >
   <HotkeyButton
     disabled={loading}
     aria-label="submit"
-    onclick={() => goto(base + `/${key}`)} title="back">Back</HotkeyButton
+    onclick={() => goto(base + `/${key}`)}
+    title="back">Back</HotkeyButton
   >
   <Form.Field {form} name="name">
     <Form.Control>
@@ -458,7 +461,9 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Button disabled={loading} aria-label="submit" title="submit">Submit</Form.Button>
+  <Form.Button disabled={loading} aria-label="submit" title="submit"
+    >Submit</Form.Button
+  >
 </form>
 
 <div class="italic text-gray-500 py-2">

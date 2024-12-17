@@ -229,6 +229,8 @@ class entitiesdata {
 				return ["_id", "name", "_type", "impostorname", "clientagent", "clientversion", "remoteip", "_created"];
 			case "agent":
 				return ["name", "image", "os", "stripeprice", "_createdby", "status"];
+			case "package":
+				return ["name", "language", "_createdby", "_created"];
 			// case "entities":
 			// 	return ["_id", "name", "_type", "_createdby", "_modified", "_created" ];
 			default:

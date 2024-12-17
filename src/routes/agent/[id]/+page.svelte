@@ -21,9 +21,11 @@
   import { ObjectInput } from "$lib/objectinput/index.js";
   import Timezoneselector from "$lib/timezoneselector/timezoneselector.svelte";
   import Entityselector from "$lib/entityselector/entityselector.svelte";
+  import { Trash2 } from "lucide-svelte";
 
   const page = "agent";
   let loading = $state(false);
+  let packageData: any = $state(null);
   let errormessage = $state("");
   let showdebug = $state(false);
   const { data } = $props();
@@ -33,20 +35,25 @@
     SPA: true,
     onUpdate: async ({ form, cancel }) => {
       if (form.valid) {
+        console.log("form", form.valid);
         loading = true;
         try {
           await auth.client.UpdateOne({
             collectionname,
-            item: { ...form.data, _type: "agent" },
+            item: { ...form.data },
             jwt: auth.access_token,
           });
           goto(base + `/${page}`);
         } catch (error: any) {
+          // console.log("error", error);
           errormessage = error.message;
           cancel();
         } finally {
           loading = false;
         }
+      } else {
+        console.log("form is invalid form.valid=", form.valid);
+        errormessage = "Form is invalid";
       }
     },
   });
@@ -232,7 +239,37 @@
       }
     }
   }
+
+  function addpackage() {
+    let copyData = {
+      name: packageData.name,
+      packageid: packageData._id,
+      enabled: true,
+      cron: "",
+      terminateIfRunning: false,
+      allowConcurrentRuns: true,
+      env: {},
+    };
+    if (packageData.daemon == false) {
+      copyData.cron = packageData.cron || "* * * * *";
+    }
+    console.log("packageData final", copyData);
+    if (
+      $formData.schedules &&
+      $formData.schedules.some(
+        (schedule) => schedule.packageid === copyData.packageid,
+      )
+    ) {
+      alert("This schedule already exists.");
+    } else {
+      $formData.schedules = [...($formData.schedules || []), copyData];
+    }
+  }
 </script>
+
+{#if errormessage && errormessage != ""}
+  {errormessage}
+{/if}
 
 {#if message && $message != ""}
   {$message}
@@ -465,6 +502,155 @@
     <Form.Description>This is your runas.</Form.Description>
     <Form.FieldErrors />
   </Form.Field>
+
+  <hr />
+
+  <div>Add schedule of package</div>
+  <div class="flex space-x-2 my-2">
+    <div class="flex items-center space-x-2">
+      <data>Package</data>
+      <Entityselector
+        collectionname="agents"
+        basefilter={{
+          _type: "package",
+          language: { $in: $formData.languages },
+        }}
+        returnObject={true}
+        bind:value={packageData}
+      />
+    </div>
+
+    {#if packageData?.daemon == false}
+      <div class="flex items-center space-x-2">
+        <data>Cron</data>
+        <Input
+          disabled={loading}
+          bind:value={packageData.cron}
+          placeholder="* * * * *"
+        />
+      </div>
+    {/if}
+
+    <Button onclick={addpackage}>Run package</Button>
+  </div>
+
+  <!-- schedules list -->
+  {#if $formData.schedules}
+    <div>Packages list</div>
+    {#each $formData.schedules as item, index}
+      <div class="flex items-center my-2">
+        <div class="p-4 border rounded-xl flec flex-col space-y-4">
+          {#if $formData.schedules}
+            <div class="flex items-center space-x-2 justify-between">
+              <div class="text-center">
+                Package {index + 1}
+              </div>
+              <Button
+                aria-label="Delete package"
+                variant="destructive"
+                onclick={() => {
+                  let arr = $formData.schedules;
+                  if (arr) {
+                    arr.splice(index, 1);
+                  }
+                  $formData.schedules = arr;
+                }}><Trash2 />Remove Schedule</Button
+              >
+            </div>
+
+            <div class="flex items-center space-x-2">
+              <Form.Field {form} name="schedules">
+                <Form.Control>
+                  <Form.Label>Name</Form.Label>
+                  <Input bind:value={item.name} />
+                </Form.Control>
+                <Form.FieldErrors />
+              </Form.Field>
+            </div>
+
+            {#if item.cron != ""}
+              <div class="flex items-center space-x-2">
+                <Form.Field {form} name="schedules">
+                  <Form.Control>
+                    <Form.Label>Cron</Form.Label>
+                    <Input
+                      disabled={loading}
+                      bind:value={item.cron}
+                      placeholder="* * * * *"
+                    />
+                  </Form.Control>
+                  <Form.FieldErrors />
+                </Form.Field>
+              </div>
+
+              <div class="flex items-center space-x-2">
+                <Form.Field {form} name="schedules">
+                  <Form.Control>
+                    <Checkbox
+                      disabled={loading}
+                      bind:checked={item.allowConcurrentRuns}
+                    />
+                    <div class="space-y-1 leading-none">
+                      <Form.Label>Allow concurent runs</Form.Label>
+                      <!-- <Form.Description>
+                        If enabled, the user is autostart and cannot signin
+                      </Form.Description> -->
+                    </div>
+                  </Form.Control>
+                  <Form.FieldErrors />
+                </Form.Field>
+              </div>
+
+              <div class="flex items-center space-x-2">
+                <Form.Field {form} name="schedules">
+                  <Form.Control>
+                    <Checkbox
+                      disabled={loading}
+                      bind:checked={item.terminateIfRunning}
+                    />
+                    <div class="space-y-1 leading-none">
+                      <Form.Label>Terminate If Running</Form.Label>
+                      <!-- <Form.Description>
+                        If enabled, the user is autostart and cannot signin
+                      </Form.Description> -->
+                    </div>
+                  </Form.Control>
+                  <Form.FieldErrors />
+                </Form.Field>
+              </div>
+            {/if}
+
+            <div class="flex items-center space-x-2">
+              <Form.Field {form} name="schedules">
+                <Form.Control>
+                  <Checkbox disabled={loading} bind:checked={item.enabled} />
+                  <div class="space-y-1 leading-none">
+                    <Form.Label>Enabled</Form.Label>
+                    <!-- <Form.Description>
+                      If enabled, the user is autostart and cannot signin
+                    </Form.Description> -->
+                  </div>
+                </Form.Control>
+                <Form.FieldErrors />
+              </Form.Field>
+            </div>
+
+            <div class="flex flex-col items-start space-y-2">
+              <Form.Field {form} name="schedules">
+                <Form.Control>
+                  <Form.Label>Environment</Form.Label>
+                  <ObjectInput disabled={loading} bind:value={item.env} />
+                </Form.Control>
+                <Form.FieldErrors />
+              </Form.Field>
+            </div>
+          {/if}
+        </div>
+      </div>
+    {/each}
+  {:else}
+    <div class="my-2">No packages found</div>
+  {/if}
 
   <Form.Button disabled={loading} aria-label="submit" title="submit"
     >Submit</Form.Button
