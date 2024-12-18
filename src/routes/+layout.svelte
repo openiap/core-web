@@ -9,6 +9,7 @@
 	import AppSidebar from "$lib/sidebar/app-sidebar.svelte";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import { usersettings } from "$lib/stores/usersettings.svelte.js";
+	import { Toaster } from "$lib/components/ui/sonner/index.js";
 	usersettings.stateload(data.usersettings);
 	let pagename = $derived(() =>
 		$page.url.pathname.replace(base, "").replace("/", ""),
@@ -75,6 +76,8 @@
 {:else}
 	{@render children()}
 {/if}
+
+<Toaster />
 
 <style>
 	/* .app {

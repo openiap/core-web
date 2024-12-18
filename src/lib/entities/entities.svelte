@@ -10,10 +10,7 @@
 	import SuperDebug from "sveltekit-superforms";
 
 	import { buttonVariants } from "$lib/components/ui/button/index.js";
-	import {
-		TableHeader,
-		type TTableHeader,
-	} from "./data.svelte.js";
+	import { TableHeader, type TTableHeader } from "./data.svelte.js";
 	import { type sort } from "$lib/stores/usersettings.svelte";
 </script>
 
@@ -51,11 +48,7 @@
 	// searchstring = data.settings.searchstring
 
 	async function GetData() {
-		const _entities = await data.GetData(
-			page,
-			collectionname,
-			query,
-		);
+		const _entities = await data.GetData(page, collectionname, query);
 		entities = _entities;
 
 		if (entities.length > 0) {
@@ -90,8 +83,11 @@
 	}
 	function EnsureDefaultHeaders(page: string) {
 		if (tableheaders.length == 0) {
-			if(data.settings.headers != null && data.settings.headers.length > 0) {
-				for ( let i = 0; i < data.settings.headers.length; i++) {
+			if (
+				data.settings.headers != null &&
+				data.settings.headers.length > 0
+			) {
+				for (let i = 0; i < data.settings.headers.length; i++) {
 					let org = data.settings.headers[i];
 					let header = new TableHeader();
 					header.show = true;
@@ -102,7 +98,6 @@
 				}
 				return;
 			}
-
 
 			const defaultcolumnnames = data.defaultcolumnnames(page);
 			for (let i = 0; i < defaultcolumnnames.length; i++) {

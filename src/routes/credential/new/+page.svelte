@@ -10,7 +10,7 @@
   import { newFormSchema } from "../schema.js";
   import { zod } from "sveltekit-superforms/adapters";
 
-  const key = "user";
+  const key = "credential";
   let showdebug = $state(false);
   const { data } = $props();
   let errormessage = $state("");

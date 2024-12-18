@@ -3,6 +3,7 @@
   export let collectionname = "audit";
   export let query = {};
 </script>
+
 <script lang="ts">
   import { Entities } from "$lib/entities/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
@@ -15,10 +16,13 @@
   let { data } = $props();
   import Button from "$lib/components/ui/button/button.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
+  import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
 
   let searchstring = $state(data.searchstring);
   let selected_items = $state([]);
   let entities = $state(data.entities);
+  let showWarning = $state(false);
+  let deleteData: any = $state({});
 
   async function deleteitem(item: any) {
     const deletecount = await auth.client.DeleteOne({
@@ -32,8 +36,7 @@
       console.error(Error("deletecount is " + deletecount));
     }
   }
-  function deleteitems(ids: string[]) {
-  }
+  function deleteitems(ids: string[]) {}
   function single_item_click(item: any) {
     goto(base + `/${page}/${item._id}`);
   }
@@ -64,14 +67,17 @@
 >
   {#snippet action(item: any)}
     <Button
-      title="Delete"
-      aria-label="delete"
-      onclick={() => deleteitem(item)}
+      title="View on map"
+      aria-label="view"
+      onclick={() => {
+        window.open(
+          `https://www.iplocation.net/?query=${item.remoteip}`,
+          "_blank",
+        );
+      }}
       size="icon"
-      variant="destructive"
+      variant="secondary"><MapPinHouse /></Button
     >
-      <Trash2 />
-    </Button>
     <Button
       title="Edit"
       aria-label="edit"
@@ -82,12 +88,34 @@
       <Pencil />
     </Button>
     <Button
-      title="View on map"
-      href={`https://www.iplocation.net/?query=${item.remoteip}`}
-      aria-label="view"
-      onclick={() => goto(base + `/${page}/${item._id}`)}
+      title="Delete"
+      aria-label="delete"
+      onclick={() => {
+        deleteData = item;
+        showWarning = !showWarning;
+      }}
       size="icon"
-      variant="secondary"><MapPinHouse /></Button
+      variant="destructive"
     >
+      <Trash2 />
+    </Button>
   {/snippet}
 </Entities>
+
+<Warningdialogue {showWarning} type="delete">
+  {#snippet action()}
+    <Button
+      variant="outline"
+      onclick={() => {
+        showWarning = false;
+      }}>Cancel</Button
+    >
+    <Button
+      variant="destructive"
+      onclick={async () => {
+        await deleteitem(deleteData);
+        showWarning = false;
+      }}>Delete</Button
+    >
+  {/snippet}
+</Warningdialogue>

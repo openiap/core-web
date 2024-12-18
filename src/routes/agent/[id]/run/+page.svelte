@@ -8,6 +8,8 @@
   import { auth } from "$lib/stores/auth.svelte.js";
   import { message } from "sveltekit-superforms";
   import { AnsiUp } from "ansi_up";
+  import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
+  import { toast } from "svelte-sonner";
 
   const ansi = new AnsiUp();
   const { data } = $props();
@@ -16,8 +18,10 @@
   let processes: any[] = $state([]);
   let packageId = $state("");
   let queuename = $state("");
+  let showWarning = $state(false);
+  let deleteData: any = $state({});
+
   async function init() {
-    console.log("init");
     queuename = await auth.client.RegisterQueue(
       {
         queuename: "",
@@ -27,7 +31,6 @@
         switch (payload.command) {
           case "listprocesses":
             processes = payload.processes;
-            console.log("listprocesses", payload);
             processes.forEach((element) => {
               element.output = "";
             });
@@ -48,8 +51,6 @@
         }
       },
     );
-    console.log("queuename", queuename);
-    console.log(agent.slug + "agent");
     await pokeagent();
     await listprocesses();
   }
@@ -98,6 +99,26 @@
     );
   }
 
+  async function handleAccept() {
+    try {
+      await auth.client.QueueMessage(
+        {
+          data: { command: "kill", id: deleteData.id },
+          queuename: agent.slug + "agent",
+        },
+        false,
+      );
+      toast.success("Deleted successfully", {
+        description: "",
+      });
+    } catch (error: any) {
+      toast.error("Error white deleting", {
+        description: error.message,
+      });
+      console.error(error);
+    }
+  }
+
   if (browser) init();
 </script>
 
@@ -125,11 +146,15 @@
             {process.id}
           </Accordion.Trigger>
           <Accordion.Content>
-            <Button onclick={() => killpackage(process.id)} variant="link"
-              >Kill process</Button
+            <Button
+              onclick={() => {
+                deleteData = process;
+                showWarning = true;
+              }}
+              variant="link">Kill process</Button
             >
-            <br/>
-             {@html ansi.ansi_to_html(process.output).split("\n").join("<br>")}  
+            <br />
+            {@html ansi.ansi_to_html(process.output).split("\n").join("<br>")}
           </Accordion.Content>
         </Accordion.Item>
       {/each}
@@ -139,3 +164,6 @@
       <pre>{process.output}</pre> -->
   </ul>
 {/if}
+
+<Warningdialogue bind:showWarning type="delete" onaccept={handleAccept}
+></Warningdialogue>

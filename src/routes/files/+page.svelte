@@ -19,12 +19,16 @@
   import Button from "$lib/components/ui/button/button.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Input from "$lib/components/ui/input/input.svelte";
+  import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
+  import { toast } from "svelte-sonner";
 
   let searchstring = $state(data.searchstring);
   let selected_items = $state([]);
   let entities = $state(data.entities);
   let loading = $state(false);
   let fileData: File | null = $state(null);
+  let showWarning = $state(false);
+  let deleteData: any = $state({});
 
   async function deleteitem(item: any) {
     const deletecount = await auth.client.DeleteOne({
@@ -99,6 +103,20 @@
       console.error(error);
     }
   }
+  async function handleAccept() {
+    try {
+      await deleteitem(deleteData);
+      toast.success("Deleted successfully", {
+        description: "",
+      });
+      entities = await data1.GetData(page, collectionname, query);
+    } catch (error: any) {
+      toast.error("Error white deleting", {
+        description: error.message,
+      });
+      console.error(error);
+    }
+  }
 </script>
 
 <h1>All {page}</h1>
@@ -151,14 +169,12 @@
 >
   {#snippet action(item: any)}
     <Button
-      title="Delete"
-      aria-label="delete"
-      onclick={() => deleteitem(item)}
+      onclick={() => downloadFile(item)}
+      title="download"
+      aria-label="download"
       size="icon"
-      variant="destructive"
+      variant="secondary"><Download /></Button
     >
-      <Trash2 />
-    </Button>
     <Button
       title="Edit"
       aria-label="edit"
@@ -168,12 +184,21 @@
     >
       <Pencil />
     </Button>
+
     <Button
-      onclick={() => downloadFile(item)}
-      title="download"
-      aria-label="download"
+      title="Delete"
+      aria-label="delete"
+      onclick={() => {
+        deleteData = item;
+        showWarning = !showWarning;
+      }}
       size="icon"
-      variant="secondary"><Download /></Button
+      variant="destructive"
     >
+      <Trash2 />
+    </Button>
   {/snippet}
 </Entities>
+
+<Warningdialogue bind:showWarning type="delete" onaccept={handleAccept}
+></Warningdialogue>

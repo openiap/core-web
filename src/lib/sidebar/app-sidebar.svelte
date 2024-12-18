@@ -31,10 +31,7 @@
 				title: "New Pages",
 				url: "#",
 				items: [
-					{
-						title: "Audit logs",
-						url: `${base}/auditlog`,
-					},
+					
 					{
 						title: "Credentials",
 						url: `${base}/credential`,
@@ -69,6 +66,10 @@
 				title: "Incomplete Pages",
 				url: "#",
 				items: [
+					{
+						title: "Audit logs",
+						url: `${base}/auditlog`,
+					},
 					{
 						title: "Agents",
 						url: `${base}/agent`,

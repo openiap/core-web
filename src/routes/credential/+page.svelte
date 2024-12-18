@@ -3,6 +3,7 @@
   export let collectionname = "openrpa";
   export let query = { _type: "credential" };
 </script>
+
 <script lang="ts">
   import { Entities } from "$lib/entities/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
@@ -16,10 +17,14 @@
   let { data } = $props();
   import Button from "$lib/components/ui/button/button.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
-
+  import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
+  import { data as data1 } from "$lib/entities/data.svelte.js";
+  import { toast } from "svelte-sonner";
   let searchstring = $state(data.searchstring);
   let selected_items = $state([]);
   let entities = $state(data.entities);
+  let showWarning = $state(false);
+  let deleteData: any = $state({});
 
   async function deleteitem(item: any) {
     const deletecount = await auth.client.DeleteOne({
@@ -33,10 +38,23 @@
       console.error(Error("deletecount is " + deletecount));
     }
   }
-  function deleteitems(ids: string[]) {
-  }
+  function deleteitems(ids: string[]) {}
   function single_item_click(item: any) {
     goto(base + `/${page}/${item._id}`);
+  }
+  async function handleAccept() {
+    try {
+      await deleteitem(deleteData);
+      toast.success("Deleted successfully", {
+        description: "",
+      });
+      entities = await data1.GetData(page, collectionname, query);
+    } catch (error: any) {
+      toast.error("Error white deleting", {
+        description: error.message,
+      });
+      console.error(error);
+    }
   }
 </script>
 
@@ -70,14 +88,6 @@
 >
   {#snippet action(item: any)}
     <Button
-      aria-label="delete"
-      onclick={() => deleteitem(item)}
-      size="icon"
-      variant="destructive"
-    >
-      <Trash2 />
-    </Button>
-    <Button
       aria-label="edit"
       onclick={() => goto(base + `/${page}/${item._id}`)}
       size="icon"
@@ -85,5 +95,19 @@
     >
       <Pencil />
     </Button>
+    <Button
+      aria-label="delete"
+      onclick={() => {
+        deleteData = item;
+        showWarning = !showWarning;
+      }}
+      size="icon"
+      variant="destructive"
+    >
+      <Trash2 />
+    </Button>
   {/snippet}
 </Entities>
+
+<Warningdialogue bind:showWarning type="delete" onaccept={handleAccept}
+></Warningdialogue>
