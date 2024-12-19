@@ -13,7 +13,6 @@ export const load: PageServerLoad = async ({ fetch, url, cookies, locals, params
   let currentSettings = await auth.client.FindOne<any>({ collectionname: "config", query: { "_type": "config" }, jwt: auth.access_token });
   let combinedSettings = { ...defaultSettings, ...currentSettings }
   data.form = await superValidate(combinedSettings, zod(editFormSchema));
-  console.log("data.form");
   return data;
 };
 
@@ -28,7 +27,6 @@ export const actions: Actions = {
     }
     try {
       const cleanData = cleanMatchingKeys(form.data);
-      console.log("cleanData", cleanData)
       await auth.client.UpdateOne({ collectionname: "config", item: cleanData, jwt: auth.access_token });
     } catch (err: any) {
       console.error("configuration: ", err);

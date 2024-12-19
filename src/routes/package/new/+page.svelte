@@ -23,9 +23,7 @@
     validators: zod(newFormSchema),
     SPA: true,
     onUpdate: async ({ form, cancel }) => {
-      console.log("onUpdate");
       if (form.valid) {
-        console.log("form.valid", form.valid);
         loading = true;
         try {
           const result = await auth.client.InsertOne({
@@ -33,7 +31,6 @@
             item: { ...form.data, _type: "package" },
             jwt: auth.access_token,
           });
-          console.log("result", result);
           goto(base + `/${page}`);
         } catch (error: any) {
           console.error(error);
@@ -43,7 +40,6 @@
           loading = false;
         }
       } else {
-        console.log("form.invalid", form.valid);
         errormessage = "Form is invalid";
       }
     },
@@ -80,10 +76,8 @@
         content,
         auth.access_token,
       );
-      // console.log("file " + name + " uploaded with id " + id);
       $formData.fileid = id;
       loading = false;
-      // e.target.value = null;
     };
     reader.readAsArrayBuffer(file1);
   }

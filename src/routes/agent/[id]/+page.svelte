@@ -22,12 +22,17 @@
   import Timezoneselector from "$lib/timezoneselector/timezoneselector.svelte";
   import Entityselector from "$lib/entityselector/entityselector.svelte";
   import { Trash2 } from "lucide-svelte";
+  import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
+  import { toast } from "svelte-sonner";
 
   const page = "agent";
   let loading = $state(false);
   let packageData: any = $state(null);
   let errormessage = $state("");
   let showdebug = $state(false);
+  let showWarning = $state(false);
+  let deleteData: any = $state({});
+
   const { data } = $props();
   const form = superForm(defaults(zod(editFormSchema)), {
     dataType: "json",
@@ -35,7 +40,6 @@
     SPA: true,
     onUpdate: async ({ form, cancel }) => {
       if (form.valid) {
-        console.log("form", form.valid);
         loading = true;
         try {
           await auth.client.UpdateOne({
@@ -52,7 +56,6 @@
           loading = false;
         }
       } else {
-        console.log("form is invalid form.valid=", form.valid);
         errormessage = "Form is invalid";
       }
     },
@@ -260,9 +263,35 @@
         (schedule) => schedule.packageid === copyData.packageid,
       )
     ) {
-      alert("This schedule already exists.");
+      toast.error("Error while adding package", {
+        description: "This schedule already exists.",
+      });
     } else {
       $formData.schedules = [...($formData.schedules || []), copyData];
+    }
+  }
+  async function handleAccept() {
+    try {
+      // await auth.client.CustomCommand({
+      //   command: "deleteagent",
+      //   id: deleteData._id,
+      //   name: deleteData.slug,
+      // });
+      let index = deleteData;
+      let arr = $formData.schedules;
+      if (arr) {
+        arr.splice(index, 1);
+      }
+      $formData.schedules = arr;
+      toast.success("Deleted successfully", {
+        description: "",
+      });
+      // entities = await data1.GetData(page, collectionname, query);
+    } catch (error: any) {
+      toast.error("Error white deleting", {
+        description: error.message,
+      });
+      console.error(error);
     }
   }
 </script>
@@ -549,11 +578,8 @@
                 aria-label="Delete package"
                 variant="destructive"
                 onclick={() => {
-                  let arr = $formData.schedules;
-                  if (arr) {
-                    arr.splice(index, 1);
-                  }
-                  $formData.schedules = arr;
+                  showWarning = true;
+                  deleteData = index;
                 }}><Trash2 />Remove Schedule</Button
               >
             </div>
@@ -668,3 +694,6 @@
   data-shortcut={"Control+d,Meta+d"}
   onclick={() => (showdebug = !showdebug)}>Toggle debug</HotkeyButton
 >
+
+<Warningdialogue bind:showWarning type="delete" onaccept={handleAccept}
+></Warningdialogue>

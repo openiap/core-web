@@ -30,13 +30,11 @@
       if (form.valid) {
         loading = true;
         try {
-          console.log("test");
           const result = await auth.client.InsertOne({
             collectionname: "agents",
             item: { ...form.data, _type: "agent" },
             jwt: auth.access_token,
           });
-          console.log("result", result);
           goto(base + `/${key}`);
         } catch (error: any) {
           errormessage = error.message;

@@ -51,7 +51,6 @@
     loading = true;
     const files = e.target.files;
     fileData = files[0];
-    console.log("fileData", fileData);
     loading = false;
   }
 
@@ -70,7 +69,6 @@
             content,
             auth.access_token,
           );
-          console.log("file " + name + " uploaded with id " + id);
           fileData = null;
           entities = await data1.GetData(page, collectionname, query);
           loading = false;
@@ -82,7 +80,6 @@
   }
 
   async function downloadFile(item: any) {
-    console.log("downloadFile", item);
     try {
       var filecontent: any = await auth.client.DownloadFile({
         id: item._id,

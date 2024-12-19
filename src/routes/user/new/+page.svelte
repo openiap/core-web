@@ -36,6 +36,8 @@
         } finally {
           loading = false;
         }
+      } else {
+        errormessage = "Form is invalid";
       }
     },
   });

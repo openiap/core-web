@@ -14,6 +14,5 @@ export const load: PageServerLoad = async ({ params }) => {
   if (item != null && item.webserver == null) {
     item.webserver = false;
   }
-  console.log(item);
   return { item, agentInstance };
 };

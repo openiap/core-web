@@ -44,6 +44,8 @@
         } finally {
           loading = false;
         }
+      } else {
+        errormessage = "Form is invalid";
       }
     },
   });
@@ -81,10 +83,8 @@
         content,
         auth.access_token,
       );
-      // console.log("file " + name + " uploaded with id " + id);
       $formData.fileid = id;
       loading = false;
-      // e.target.value = null;
     };
     reader.readAsArrayBuffer(file1);
   }

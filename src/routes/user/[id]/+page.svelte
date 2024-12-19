@@ -1,6 +1,7 @@
 <script lang="ts" module>
   export let collectionname = "users";
 </script>
+
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
@@ -40,6 +41,8 @@
         } finally {
           loading = false;
         }
+      } else {
+        errormessage = "Form is invalid";
       }
     },
   });
