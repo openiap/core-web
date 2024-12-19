@@ -16,6 +16,8 @@ EXPOSE 3000
 ENV NODE_ENV=production
 CMD [ "node", "build" ]
 
+# REMEMBER TO UPDATE svelte.config.js !!!!
+#
 # docker build -t cloudhack/core-web:0.0.9 . && docker run -it -p 80:3000 --rm cloudhack/core-web:0.0.9
 # docker build -t cloudhack/core-web:0.0.9 . && docker run -it -p 80:3000 --rm cloudhack/core-web:0.0.9
 # docker build -t cloudhack/core-web:0.0.9 . && docker push cloudhack/core-web:0.0.9
