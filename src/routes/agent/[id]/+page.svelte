@@ -24,16 +24,21 @@
   import { Trash2 } from "lucide-svelte";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import { toast } from "svelte-sonner";
+  import { AnsiUp } from "ansi_up";
+  import { json } from "@sveltejs/kit";
+  const ansi_up = new AnsiUp();
 
+  const { data } = $props();
   const page = "agent";
   let loading = $state(false);
   let packageData: any = $state(null);
   let errormessage = $state("");
   let showdebug = $state(false);
   let showWarning = $state(false);
+  let showWarningAgentDelete = $state(false);
   let deleteData: any = $state({});
-
-  const { data } = $props();
+  let instancelog: any = $state(null);
+  let resourceMonitor: any = data.resourceMonitor;
   const form = superForm(defaults(zod(editFormSchema)), {
     dataType: "json",
     validators: zod(editFormSchema),
@@ -60,7 +65,7 @@
       }
     },
   });
-
+  // console.log("instance", instance);
   const { form: formData, enhance, message, validateForm } = form;
   formData.set(data.item);
   validateForm({ update: true });
@@ -294,6 +299,60 @@
       console.error(error);
     }
   }
+
+  async function handleAcceptAgentDelete() {
+    try {
+      await auth.client.CustomCommand({
+        command: "deleteagent",
+        id: deleteData._id,
+        name: deleteData.slug,
+      });
+      toast.success("Deleted successfully", {
+        description: "",
+      });
+      goto(base + `/${page}`);
+    } catch (error: any) {
+      toast.error("Error white deleting", {
+        description: error.message,
+      });
+      console.error(error);
+    }
+  }
+  // async function getInstance() {
+  //   let instance: any = await auth.client.CustomCommand({
+  //     command: "getagentpods",
+  //     id: data.item._id,
+  //     name: data.item.slug,
+  //     jwt: auth.access_token,
+  //   });
+  //   instance = JSON.parse(instance)[0];
+  //   if (instance) {
+  //     instance.showstatus = "unknown";
+  //     if (instance.status && instance.status.phase) {
+  //       instance.showstatus = instance.status.phase;
+  //     }
+  //     if (
+  //       instance.showstatus == "running" ||
+  //       instance.showstatus == "Running"
+  //     ) {
+  //       if (
+  //         instance.status != null &&
+  //         instance.status.containerStatuses != null &&
+  //         instance.status.containerStatuses.length > 0
+  //       ) {
+  //         // instance.showstatus = instance.status.containerStatuses[0].state.running ? "running" : "stopped";
+  //         instance.showstatus = instance.status.containerStatuses[0].started
+  //           ? "Running"
+  //           : "Stopped " +
+  //             instance.status.containerStatuses[0].state.waiting.reason;
+  //       }
+  //     }
+  //     if (instance.metadata.deletionTimestamp) instance.showstatus = "Deleting";
+  //   }
+  //   console.log("instance", instance);
+  //   resourceMonitor = instance;
+  // }
+  // getInstance();
 </script>
 
 {#if errormessage && errormessage != ""}
@@ -307,17 +366,106 @@
 <div>
   Edit {page}
 </div>
+<HotkeyButton
+disabled={loading}
+aria-label="Back"
+onclick={() => goto(base + `/${page}`)}
+title="back">Back</HotkeyButton
+>
+<!-- Performance monitor -->
+{#if resourceMonitor != null}
+  <div class="border rounded-xl p-2 my-2">
+    <div>Resource monitor</div>
+    <div>
+      {resourceMonitor.metadata.name}
+    </div>
+    <hr />
+    <div class="flex justify-start space-x-5 p-2">
+      <div class="flex flex-col">
+        <div>Status</div>
+        <div>{resourceMonitor.showstatus}</div>
+      </div>
+      <div class="flex flex-col px-2 mx-2">
+        <div>CPU</div>
+        <div>
+          {resourceMonitor.metrics.cpu +
+            "/" +
+            resourceMonitor.spec.containers[0].resources.limits.cpu}
+        </div>
+      </div>
+      <div class="flex flex-col px-2 mx-2">
+        <div>Men</div>
+        <div>
+          {resourceMonitor.metrics.memory +
+            "/" +
+            resourceMonitor.spec.containers[0].resources.limits.memory}
+        </div>
+      </div>
+      <div class="flex flex-col">
+        <div>Created</div>
+        <div>{resourceMonitor.metadata.creationTimestamp}</div>
+      </div>
+    </div>
+    <div>
+      <Button
+        variant="outline"
+        aria-label="Logs"
+        title="Logs"
+        onclick={async () => {
+          loading = true;
+          try {
+            instancelog = null;
+            var lines: any = await auth.client.CustomCommand({
+              command: "getagentlog",
+              id: data.item._id,
+              name: resourceMonitor.metadata.name,
+            });
+            lines = JSON.parse(lines);
+            if (lines != null) {
+              lines = ansi_up.ansi_to_html(lines);
+              lines = lines.split("\n");
+              // reverse lines
+              lines = lines.reverse();
+            } else {
+              lines = [];
+            }
+            console.log("lines", lines);
+            lines = lines.join("<br>");
+            // instancelog = JSON.stringify(lines);
+            instancelog = lines;
+            console.log("instancelog", JSON.stringify(instancelog));
+            errormessage = "";
+          } catch (error: any) {
+            errormessage = error.message ? error.message : error;
+            instancelog = "";
+          }
+          loading = false;
+        }}>Logs</Button
+      >
+      <Button
+        variant="destructive"
+        aria-label="Delete"
+        title="Delete"
+        onclick={() => {
+          showWarningAgentDelete = true;
+          deleteData = data.item;
+        }}>Delete</Button
+      >
+    </div>
+  </div>
+{/if}
+{#if instancelog != null}
+  <div class="border rounded-xl p-2 my-2">
+    <div>Logs</div>
+    {@html instancelog}
+  </div>
+{/if}
 
 <form method="POST" use:enhance>
   <Form.Button disabled={loading} aria-label="submit" title="submit"
     >Submit</Form.Button
   >
-  <HotkeyButton
-    disabled={loading}
-    aria-label="submit"
-    onclick={() => goto(base + `/${page}`)}
-    title="back">Back</HotkeyButton
-  >
+
   <Form.Field {form} name="name">
     <Form.Control>
       {#snippet children({ props })}
@@ -429,7 +577,7 @@
     <Form.Description>This is your environment.</Form.Description>
     <Form.FieldErrors />
   </Form.Field>
-
+  <div>Options</div>
   <Form.Field
     {form}
     name="autostart"
@@ -696,4 +844,10 @@
 >
 
 <Warningdialogue bind:showWarning type="delete" onaccept={handleAccept}
+></Warningdialogue>
+
+<Warningdialogue
+  bind:showWarning={showWarningAgentDelete}
+  type="delete"
+  onaccept={handleAcceptAgentDelete}
 ></Warningdialogue>
