@@ -196,6 +196,7 @@
       id="r1"
       onclick={async () => {
         entities = await data1.GetData(page, collectionname, query);
+        getPods();
       }}
     />
     <Label for="r1" class="cursor-pointer">All</Label>
@@ -209,6 +210,7 @@
           _type: "agent",
           daemon: true,
         });
+        getPods();
       }}
     />
     <Label for="r2" class="cursor-pointer">Daemon</Label>
@@ -222,6 +224,7 @@
         entities = result.filter((x: any) =>
           knownpods.some((y: any) => x._id === y.metadata.labels.agentid),
         );
+        getPods();
       }}
     />
     <Label for="r3" class="cursor-pointer">Pods</Label>
@@ -235,6 +238,7 @@
           _type: "agent",
           docker: true,
         });
+        getPods();
       }}
     />
     <Label for="r4" class="cursor-pointer">Docker</Label>
@@ -248,6 +252,7 @@
           _type: "agent",
           assistant: true,
         });
+        getPods();
       }}
     />
     <Label for="r5" class="cursor-pointer">Assistant</Label>
