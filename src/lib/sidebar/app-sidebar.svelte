@@ -18,10 +18,7 @@
 						title: "Entities",
 						url: `${base}/entities`,
 					},
-					{
-						title: "Roles",
-						url: `${base}/role`,
-					},
+
 					{
 						title: "Users",
 						url: `${base}/user`,
@@ -32,6 +29,10 @@
 				title: "New Pages",
 				url: "#",
 				items: [
+					{
+						title: "Agents",
+						url: `${base}/agent`,
+					},
 					{
 						title: "Credentials",
 						url: `${base}/credential`,
@@ -71,11 +72,6 @@
 						url: `${base}/auditlog`,
 					},
 					{
-						title: "Agents",
-						url: `${base}/agent`,
-					},
-
-					{
 						title: "Console",
 						url: `${base}/console`,
 					},
@@ -90,6 +86,10 @@
 					{
 						title: "Resources",
 						url: `${base}/resource`,
+					},
+					{
+						title: "Roles",
+						url: `${base}/role`,
 					},
 				],
 			},

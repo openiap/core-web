@@ -19,6 +19,7 @@
     Webhook,
     Eye,
     Wrench,
+    EllipsisVertical,
   } from "lucide-svelte";
 
   import { goto } from "$app/navigation";
@@ -31,6 +32,7 @@
   import * as RadioGroup from "$lib/components/ui/radio-group/index.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import { toast } from "svelte-sonner";
+  import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
 
   let { data } = $props();
   let searchstring = $state(data.searchstring);
@@ -156,11 +158,11 @@
     }
   }
 
-  $effect(() => {
-    if (entities.length > 0) {
-      getPods();
-    }
-  });
+  // $effect(() => {
+  //   if (entities.length > 0) {
+  //     getPods();
+  //   }
+  // });
   getPods();
 </script>
 
@@ -177,8 +179,14 @@
   variant={"outline"}
   onclick={() => goto(base + `/package`)}>Packages</Hotkeybutton
 >
-<Hotkeybutton aria-label="reload" title="reload" variant={"outline"}
-  >Reload</Hotkeybutton
+<Hotkeybutton
+  aria-label="reload"
+  title="reload"
+  variant={"outline"}
+  onclick={() => {
+    goto(base + `/${page}`);
+    getPods();
+  }}>Reload</Hotkeybutton
 >
 
 <RadioGroup.Root value="All" class="flex space-x-2 my-2">
@@ -210,7 +218,10 @@
       value="Pods"
       id="r3"
       onclick={async () => {
-        // entities = await data1.GetData(page, "pod", { _id: item });
+        const result = await data1.GetData(page, collectionname, query);
+        entities = result.filter((x: any) =>
+          knownpods.some((y: any) => x._id === y.metadata.labels.agentid),
+        );
       }}
     />
     <Label for="r3" class="cursor-pointer">Pods</Label>
@@ -266,89 +277,87 @@
   bind:entities
 >
   {#snippet action(item: any)}
-    <Button
-      aria-label="start"
-      title="start"
-      size="icon"
-      variant="secondary"
-      onclick={async () =>
-        await auth.client.CustomCommand({
-          command: "startagent",
-          id: item._id,
-          name: item.slug,
-        })}
-    >
-      <Play />
-    </Button>
-    <Button
-      aria-label="stop"
-      title="stop"
-      size="icon"
-      variant="secondary"
-      onclick={async () =>
-        await auth.client.CustomCommand({
-          command: "stopagent",
-          id: item._id,
-          name: item.slug,
-        })}
-    >
-      <Square />
-    </Button>
-    <Button
-      aria-label="debug"
-      title="debug"
-      size="icon"
-      variant="secondary"
-      onclick={() => goto(base + `/${page}/${item._id}/run`)}
-    >
-      <Wrench />
-    </Button>
-    <Button
-      aria-label="webhook"
-      title="webhook"
-      size="icon"
-      variant="secondary"
-    >
-      <Webhook />
-    </Button>
-    <Button
-      aria-label="edit"
-      title="edit"
-      size="icon"
-      variant="secondary"
-      onclick={() => goto(base + `/${page}/${item._id}`)}
-    >
-      <Pencil />
-    </Button>
-    <Button
-      aria-label="billing"
-      title="billing"
-      size="icon"
-      variant="secondary"
-    >
-      <DollarSign />
-    </Button>
-    <Button
-      aria-label="user"
-      title="user"
-      size="icon"
-      variant="secondary"
-      onclick={() => goto(base + `/user/${item.runas}`)}
-    >
-      <User />
-    </Button>
-    <Button
-      aria-label="delete"
-      title="delete"
-      size="icon"
-      variant="destructive"
-      onclick={() => {
-        deleteData = item;
-        showWarning = !showWarning;
-      }}
-    >
-      <Trash2 />
-    </Button>
+    <div class="flex items-center space-x-2">
+      <Button
+        aria-label="start"
+        title="start"
+        size="icon"
+        variant="secondary"
+        onclick={async () =>
+          await auth.client.CustomCommand({
+            command: "startagent",
+            id: item._id,
+            name: item.slug,
+          })}
+      >
+        <Play />
+      </Button>
+      <Button
+        aria-label="stop"
+        title="stop"
+        size="icon"
+        variant="secondary"
+        onclick={async () =>
+          await auth.client.CustomCommand({
+            command: "stopagent",
+            id: item._id,
+            name: item.slug,
+          })}
+      >
+        <Square />
+      </Button>
+      <Button
+        aria-label="debug"
+        title="debug"
+        size="icon"
+        variant="secondary"
+        onclick={() => goto(base + `/${page}/${item._id}/run`)}
+      >
+        <Wrench />
+      </Button>
+
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger><EllipsisVertical /></DropdownMenu.Trigger>
+        <DropdownMenu.Content class="w-56">
+          <DropdownMenu.Item class="cursor-pointer">
+            <Webhook class="mr-2 size-4" />
+            <span>Webhook</span>
+          </DropdownMenu.Item>
+          <DropdownMenu.Separator />
+          <DropdownMenu.Item
+            class="cursor-pointer"
+            onclick={() => goto(base + `/${page}/${item._id}`)}
+          >
+            <Pencil class="mr-2 size-4" />
+            <span>Edit</span>
+          </DropdownMenu.Item>
+          <DropdownMenu.Separator />
+          <DropdownMenu.Item class="cursor-pointer">
+            <DollarSign class="mr-2 size-4" />
+            <span>Billing</span>
+          </DropdownMenu.Item>
+          <DropdownMenu.Separator />
+          <DropdownMenu.Item
+            class="cursor-pointer"
+            onclick={() => goto(base + `/user/${item.runas}`)}
+          >
+            <User class="mr-2 size-4" />
+            <span>User</span>
+          </DropdownMenu.Item>
+          <DropdownMenu.Separator />
+          <DropdownMenu.Item
+            class="text-red-500 cursor-pointer hover:text-white hover:bg-red-500 hover:bg-opacity-50"
+            onclick={() => {
+              deleteData = item;
+              showWarning = !showWarning;
+            }}
+          >
+            <Trash2 class="mr-2 size-4" />
+            <span>Delete</span>
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu.Root>
+    </div>
   {/snippet}
 </Entities>
 
