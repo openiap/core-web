@@ -9,7 +9,7 @@
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { HotkeyInput } from "$lib/components/ui/hotkeyinput/index.js";
   import { Label } from "$lib/components/ui/label/index.js";
-  import { Pencil, Trash2 } from "lucide-svelte";
+  import { Pencil, Plus, Trash2 } from "lucide-svelte";
 
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
@@ -21,6 +21,7 @@
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import { data as data1 } from "$lib/entities/data.svelte.js";
   import { toast } from "svelte-sonner";
+  import Searchinput from "$lib/searchinput/searchinput.svelte";
 
   let searchstring = $state(data.searchstring);
   let selected_items = $state([]);
@@ -60,24 +61,18 @@
   }
 </script>
 
-<h1>All {page}s</h1>
+<h1 class="font-bold mb-4">All {page}s</h1>
 <Hotkeybutton
   aria-label="add"
-  variant={"outline"}
-  onclick={() => goto(base + `/${page}/new`)}>Add {page}</Hotkeybutton
+  class="mb-4"
+  variant="default"
+  onclick={() => goto(base + `/${page}/new`)}
 >
-<div class="flex w-full max-w-sm flex-col gap-1.5">
-  <Label for="email">Search</Label>
-  <div class="flex gap-1.5">
-    <HotkeyInput
-      type="text"
-      id="searchstring"
-      placeholder="Searchstring or JSON query"
-      bind:value={searchstring}
-      data-shortcut={"Control+f,Meta+f"}
-    />
-  </div>
-</div>
+  <Plus />
+  Add {page}</Hotkeybutton
+>
+<Searchinput bind:searchstring />
+
 <Entities
   {collectionname}
   {query}

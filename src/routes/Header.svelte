@@ -7,25 +7,42 @@
 	import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
 	// import { base } from "$app/paths";
 	import { auth } from "$lib/stores/auth.svelte";
-	import { Github, Trash2 } from "lucide-svelte";	
+	import { Github, Trash2 } from "lucide-svelte";
 	import { Button } from "$lib/components/ui/button";
 	import Search from "$lib/search/search.svelte";
 
 	import { goto } from "$app/navigation";
 	import { base } from "$app/paths";
 	import { usersettings } from "$lib/stores/usersettings.svelte.js";
-
+	import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
+	import { toast } from "svelte-sonner";
 	// let props = $props();
+
+	let showWarning = $state(false);
 
 	function login() {
 		auth.login();
 	}
-	function logout() {
-		auth.logout();
+	async function logout() {
+		await auth.logout();
 	}
 	function reset() {
 		usersettings.reset();
 		goto(base + `/`);
+	}
+
+	async function handleAccept() {
+		try {
+			await logout();
+			toast.success("Logout successful", {
+				description: "",
+			});
+		} catch (error: any) {
+			toast.error("Error white logout", {
+				description: error.message,
+			});
+			console.error(error);
+		}
 	}
 </script>
 
@@ -48,11 +65,22 @@
 			</Button> -->
 			<Search />
 			<a href="https://github.com/openiap">
-				<Button variant="outline" aria-label="Visit us at Github">
+				<Button
+					variant="outline"
+					aria-label="Visit us at Github"
+					size="icon"
+					class="bg-indigo-600 hover:opacity-80 text-white"
+				>
 					<Github width="100%" />
 				</Button>
 			</a>
-			<Button variant="outline" aria-label="Clear cookies" onclick={reset}>
+			<Button
+				variant="outline"
+				size="icon"
+				aria-label="Clear cookies"
+				onclick={reset}
+				class="bg-indigo-600 hover:opacity-80 text-white"
+			>
 				<Trash2 />
 			</Button>
 			<HotkeyButton
@@ -60,6 +88,7 @@
 				variant="outline"
 				size="icon"
 				aria-label="Toggle darkmode"
+				class="bg-indigo-600 hover:opacity-80 text-white"
 			>
 				<Sun
 					class="rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
@@ -72,7 +101,7 @@
 			{#if auth.isAuthenticated == true}
 				<HotkeyButton
 					aria-label="Signout"
-					onclick={logout}
+					onclick={() => (showWarning = true)}
 					data-shortcut={"Control+q,Meta+q"}>Signout</HotkeyButton
 				>
 			{:else}
@@ -85,6 +114,8 @@
 		</div>
 	</div>
 </header>
+
+<Warningdialogue bind:showWarning type="logout" onaccept={handleAccept} />
 
 <style>
 	header {

@@ -27,10 +27,10 @@
   {$message}
 {/if}
 
-<div>
-  Edit {key}
+<div class="mb-4 font-bold">
+  Edit Configuration
 </div>
-<div class="flex items-center space-x-2 my-2">
+<div class="flex items-center space-x-2 mb-4">
   <Button
     onclick={() => (screen = "all")}
     variant={screen === "all" ? "default" : "outline"}

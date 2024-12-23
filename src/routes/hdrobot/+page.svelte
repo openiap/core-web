@@ -20,6 +20,8 @@
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import { toast } from "svelte-sonner";
   import { data as data1 } from "$lib/entities/data.svelte.js";
+  import { SearchInput } from "$lib/searchinput";
+  import Searchinput from "$lib/searchinput/searchinput.svelte";
 
   let searchstring = $state(data.searchstring);
   let selected_items = $state([]);
@@ -59,19 +61,8 @@
   }
 </script>
 
-<h1>All {page}s</h1>
-<div class="flex w-full max-w-sm flex-col gap-1.5">
-  <Label for="email">Search</Label>
-  <div class="flex gap-1.5">
-    <HotkeyInput
-      type="text"
-      id="searchstring"
-      placeholder="Searchstring or JSON query"
-      bind:value={searchstring}
-      data-shortcut={"Control+f,Meta+f"}
-    />
-  </div>
-</div>
+<div class="mb-4 font-bold">All {page}s</div>
+<Searchinput bind:searchstring />
 <Entities
   {collectionname}
   {query}
@@ -107,3 +98,4 @@
 
 <Warningdialogue bind:showWarning type="delete" onaccept={handleAccept}
 ></Warningdialogue>
+

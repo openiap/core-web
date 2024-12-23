@@ -3,7 +3,7 @@
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { HotkeyInput } from "$lib/components/ui/hotkeyinput/index.js";
   import { Label } from "$lib/components/ui/label/index.js";
-  import { Pencil, Trash2 } from "lucide-svelte";
+  import { Pencil, Plus, Trash2 } from "lucide-svelte";
 
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
@@ -11,6 +11,7 @@
   let { data } = $props();
   import Button from "$lib/components/ui/button/button.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
+  import { SearchInput } from "$lib/searchinput";
 
   const key = "client";
   let collectionname = "";
@@ -32,31 +33,23 @@
       console.error(Error("deletecount is " + deletecount));
     }
   }
-  function deleteitems(ids: string[]) {
-  }
+  function deleteitems(ids: string[]) {}
   function single_item_click(item: any) {
     goto(base + `/${key}/${item._id}`);
   }
 </script>
 
-<h1>All {key}s</h1>
+<div class="mb-4 font-bold">All {key}s</div>
 <Button
+  class="mb-4"
   aria-label="add"
-  variant={"outline"}
-  onclick={() => goto(base + `/${key}/new`)}>Add {key}</Button
+  variant="default"
+  onclick={() => goto(base + `/${key}/new`)}
 >
-<div class="flex w-full max-w-sm flex-col gap-1.5">
-  <Label for="email">Search</Label>
-  <div class="flex gap-1.5">
-    <HotkeyInput
-      type="text"
-      id="searchstring"
-      placeholder="Searchstring or JSON query"
-      bind:value={searchstring}
-      data-shortcut={"Control+f,Meta+f"}
-    />
-  </div>
-</div>
+  <Plus />
+  Add {key}</Button
+>
+<SearchInput bind:searchstring />
 <Entities
   {collectionname}
   {query}

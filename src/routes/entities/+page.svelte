@@ -9,8 +9,9 @@
   import { Label } from "$lib/components/ui/label/index.js";
 
   import { auth } from "$lib/stores/auth.svelte";
+  import Searchinput from "$lib/searchinput/searchinput.svelte";
+  import { Folder } from "lucide-svelte";
   let { data } = $props();
-
 
   let collectionname = $state("");
   collectionname = data.collectionname;
@@ -32,30 +33,39 @@
       console.error(Error("deletecount is " + deletecount));
     }
   }
-  function deleteitems(ids: string[]) {
-  }
+  function deleteitems(ids: string[]) {}
   function collectionvariant(name: string): any {
-    return name == collectionname ? "primary" : "secondary";
+    return name == collectionname ? "entitydefault" : "entityselected";
   }
   function selectcollection(name: string) {
     collectionname = name;
   }
 </script>
 
-collectionname: {collectionname}<br />
-<div class="flex min-h-screen items-start justify-center">
-  <div id="div1" class="w-full max-w-[300px] flex-shrink-0 hidden sm:block">
+<div class="flex items-start justify-between">
+  <div
+    id="div1"
+    class="w-full max-w-max flex-shrink-0 hidden sm:block p-6 border border-gray-400"
+  >
+    <div class="ms-4 mb-4">
+      <b> Collection Name: </b>
+      {collectionname}<br />
+    </div>
     <ScrollArea class="max-h-screen sm:max-h-[calc(100vh-8rem)] overflow-auto">
-    <!-- <ScrollArea class="max-h-[80vh]"> -->
+      <!-- <ScrollArea class="max-h-[80vh]"> -->
       <div class="p-4">
-        <h4 class="mb-4 text-sm font-medium leading-none">Tags</h4>
+        <h4 class="mb-4 text-sm font-medium leading-none">Collections:</h4>
         {#each collections as tag}
           <div class="text-sm">
             <Button
+              class="w-full"
               variant={collectionvariant(tag.name)}
               onclick={(e) => {
                 selectcollection(tag.name);
-              }}>{tag.name}</Button
+              }}
+            >
+              <Folder class="size-4" />
+              {tag.name}</Button
             >
           </div>
           <Separator class="my-2" />
@@ -63,19 +73,8 @@ collectionname: {collectionname}<br />
       </div>
     </ScrollArea>
   </div>
-  <div id="div2" class="flex-1 bg-white dark:bg-black overflow-auto">
-    <div class="flex w-full max-w-sm flex-col gap-1.5">
-      <Label for="email">Search</Label>
-      <div class="flex gap-1.5">
-        <HotkeyInput
-          type="text"
-          id="searchstring"
-          placeholder="Searchstring or JSON query"
-          bind:value={searchstring}
-          data-shortcut={"Control+f,Meta+f"}
-        />
-      </div>
-    </div>
+  <div id="div2" class="ms-6 flex-1 bg-white dark:bg-black">
+    <Searchinput bind:searchstring />
     <Entities
       {collectionname}
       {query}

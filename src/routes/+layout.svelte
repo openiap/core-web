@@ -25,12 +25,12 @@
 </svelte:head>
 <ModeWatcher />
 {#if $page.url.pathname != base + "/login" && $page.url.pathname != base + "/loginscreen"}
-	<div class="app">
+	<div>
 		<Sidebar.Provider>
 			<AppSidebar />
 			<Sidebar.Inset>
 				<header
-					class="flex h-16 shrink-0 items-center justify-between gap-2 border-b px-4"
+					class="flex h-16 shrink-0 items-center justify-between gap-2 px-4 bg-gradient-to-r from-lightgradident1 to-lightgradident2 dark:bg-gradient-to-r dark:from-darkgradident1 dark:to-darkgradident2 rounded m-2"
 				>
 					<div class="flex items-center">
 						<Sidebar.Trigger class="-ml-1" />
@@ -54,15 +54,24 @@
 					<Header />
 				</header>
 
-				<div class="flex flex-1 flex-col gap-4 p-4">
-					<main>
-						{#if auth.isAuthenticated == true || auth.isAuthenticated == false}
-							<!-- <p>Logged in</p> -->
+				<div
+					class="border border-gray-300 dark:border-gray-400 rounded m-2 h-full overflow-auto"
+				>
+					{#if auth.isAuthenticated == true || auth.isAuthenticated == false}
+						<!-- <p>Logged in</p> -->
+						<main>
+							{@render children()}
+						</main>
+						<!-- {#if pagename() == "entities"}
 							{@render children()}
 						{:else}
-							<!-- <p>Not logged in</p> -->
-						{/if}
-					</main>
+							<main>
+								{@render children()}
+							</main>
+						{/if} -->
+					{:else}
+						<!-- <p>Not logged in</p> -->
+					{/if}
 				</div>
 			</Sidebar.Inset>
 		</Sidebar.Provider>
@@ -80,44 +89,10 @@
 <Toaster />
 
 <style>
-	/* .app {
-		display: flex;
-		flex-direction: column;
-		min-height: 100vh;
-	} */
-
-	/* main {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		padding: 1rem;
-		width: 100%;
-		max-width: 64rem;
-		margin: 0 auto;
-		box-sizing: border-box;
-	} */
 	main {
-		padding: 1rem;
+		padding: 2rem 1.5rem;
 		width: 100%;
 		margin: 0 auto;
 		box-sizing: border-box;
 	}
-	/* 
-	footer {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		padding: 12px;
-	} */
-
-	/* footer a {
-		font-weight: bold;
-	} 
-
-	@media (min-width: 480px) {
-		footer {
-			padding: 12px 0;
-		}
-	}*/
 </style>

@@ -20,6 +20,11 @@
 
 	import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
 	import { auth } from "$lib/stores/auth.svelte.js";
+	import Custompagination from "$lib/custompagination/custompagination.svelte";
+	import Statuscard from "$lib/statuscard/statuscard.svelte";
+	import { Stat } from "@openiap/jsapi/dist/proto/base.js";
+	import { Trash2 } from "lucide-svelte";
+	import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
 	let {
 		page = "entities",
 		query = {},
@@ -41,7 +46,7 @@
 	let multi_sort = $state(false);
 	let showdebug = $state(false);
 	let page_index = $state(data.settings.page_index);
-	let total_count = $state(9999);
+	let total_count = $state(0);
 	let tableheaders = $state([]) as TTableHeader[];
 
 	selected_items = data.settings.selected_items;
@@ -192,7 +197,7 @@
 			data.settings.searchstring = searchstring;
 			data.settings.page_index = 0;
 			page_index = 0;
-			total_count = 99999;
+			total_count = 0;
 			data.persist();
 			GetData();
 		} else if (_collectionname != collectionname) {
@@ -205,7 +210,7 @@
 			searchstring = data.settings.searchstring;
 			selected_items = data.settings.selected_items;
 			page_index = data.settings.page_index;
-			total_count = 99999;
+			total_count = 0;
 			GetData();
 		}
 		data.settings.searchstring = $state.snapshot(searchstring);
@@ -366,213 +371,286 @@
 	 * ******************************************
 	 * Multi Select
 	 */
+
+	function handlenext() {
+		page_index = page_index + 1;
+		data.settings.page_index = page_index;
+		data.persist();
+		GetData();
+	}
+	function handleprevious() {
+		page_index = page_index - 1;
+		data.settings.page_index = page_index;
+		data.persist();
+		GetData();
+	}
+	function handlepageclick(page: number) {
+		page_index = page - 1;
+		data.settings.page_index = page_index;
+		data.persist();
+		GetData();
+	}
 </script>
 
 <!-- error message-->
 <div class="text-red-500">{data.errormessage}</div>
 <!-- <SuperDebug data={headers} theme="vscode" /> -->
-<Table.Root>
-	{#if entities.length === 0}
-		<Table.Caption>No entities found.</Table.Caption>
-	{:else if caption != ""}
-		<Table.Caption>{caption}</Table.Caption>
-	{:else}
-		<Table.Caption>
-			page {page_index + 1}
-			{#if entities.length == total_count}
-				showing {total_count} items
-			{:else}
-				showing item {page_index * 5 + 1}
-				{#if entities.length > 1}
-					to {page_index * 5 + entities.length}
-				{/if}
-				of {total_count}
-			{/if}
-			{#if selected_items.length > 0}
-				with {selected_items.length} selected (<button
-					onclick={() => (selected_items = [])}>clear</button
-				>)
-			{/if}.
-		</Table.Caption>
-	{/if}
-	<Table.Header>
-		<Table.Row>
-			{#if multi_select}
-				<Table.Head class="w-8" role="cell"
-					><Checkbox
-						aria-label="Select all"
-						checked={is_all_selected()}
-						onclick={ToogleAll}
-					/></Table.Head
-				>
-			{/if}
-			{#each tableheaders as head}
-				{#if head.show}
-					<Table.Head
-						class={head.headclass}
-						role="cell"
-						draggable="true"
-						onclick={(e) => toggleSort(e, head.field)}
-						ondragstart={(e) => ondragstart(e, head)}
-						{ondragover}
-						ondrop={(e) => ondrop(e, head)}
-						ontouchstart={(e) => ontouchstart(e, head)}
-						ontouchend={(e) => ontouchend(e, head)}
-						{ontouchmove}
-					>
-						{RenderHeaderName(head)}
-						{#if sortby(head.field) == "asc"}
-							<ArrowUp class="ml-2 h-4 w-4" />
-						{:else if sortby(head.field) == "desc"}
-							<ArrowDown class="ml-2 h-4 w-4" />
-						{/if}
-					</Table.Head>
-				{/if}
-			{/each}
-			{#if action}
-				<Table.Head>Action</Table.Head>
-			{/if}
-		</Table.Row>
-	</Table.Header>
-	<Table.Body>
-		{#each entities as item}
+<div class="border border-gray-400 rounded">
+	<Table.Root>
+		{#if entities.length === 0}
+			<Table.Caption class="mb-2">No data found.</Table.Caption>
+		{:else if caption != ""}
+			<Table.Caption>{caption}</Table.Caption>
+		{:else}
+			<Table.Caption></Table.Caption>
+		{/if}
+		<Table.Header>
 			<Table.Row
-				onclick={() => {
-					ToggleSelect(item);
-				}}
-				ondblclick={() => {
-					single_item_click(item);
-				}}
+				class="border-b border-gray-400  justify-center item-center"
 			>
 				{#if multi_select}
-					<Table.Cell class="w-8"
+					<Table.Head
+						class="w-8 text-black font-semibold dark:text-white"
+						role="cell"
 						><Checkbox
-							aria-label="Select item"
-							checked={selected_items.indexOf(item._id) > -1}
-						/></Table.Cell
+							aria-label="Select all"
+							checked={is_all_selected()}
+							onclick={ToogleAll}
+						/></Table.Head
 					>
 				{/if}
 				{#each tableheaders as head}
 					{#if head.show}
-						<Table.Cell class={head.cellclass}
-							>{RenderItemData(item, head.field)}</Table.Cell
+						<Table.Head
+							class={head.headclass +
+								" text-black font-semibold dark:text-white"}
+							role="cell"
+							draggable="true"
+							onclick={(e) => toggleSort(e, head.field)}
+							ondragstart={(e) => ondragstart(e, head)}
+							{ondragover}
+							ondrop={(e) => ondrop(e, head)}
+							ontouchstart={(e) => ontouchstart(e, head)}
+							ontouchend={(e) => ontouchend(e, head)}
+							{ontouchmove}
 						>
+							{RenderHeaderName(head)}
+							{#if sortby(head.field) == "asc"}
+								<ArrowUp class="ml-2 h-4 w-4" />
+							{:else if sortby(head.field) == "desc"}
+								<ArrowDown class="ml-2 h-4 w-4" />
+							{/if}
+						</Table.Head>
 					{/if}
 				{/each}
 				{#if action}
-					<Table.Cell>{@render action(item)}</Table.Cell>
+					<Table.Head class="text-black font-semibold dark:text-white"
+						>Action</Table.Head
+					>
 				{/if}
 			</Table.Row>
-		{/each}
-	</Table.Body>
-</Table.Root>
-
-<HotkeyButton
-	data-shortcut="Control+a,Meta+a"
-	onclick={() => {
-		if (!is_all_selected()) {
-			entities.map((x) => {
-				if (selected_items.indexOf(x._id) == -1) {
-					selected_items = [...selected_items, x._id];
-					data.settings.selected_items = selected_items;
-					data.persist();
-				}
-			});
-		} else {
-			entities.map((x) => {
-				if (selected_items.indexOf(x._id) >= -1) {
-					selected_items = selected_items.filter((y) => y != x._id);
-					data.settings.selected_items = selected_items;
-					data.persist();
-				}
-			});
-		}
-	}}
-	class="hidden"
-	hidden={true}
-/>
-<HotkeyButton
-	data-shortcut="ArrowLeft"
-	onclick={() => {
-		page_index = page_index - 1;
-		data.settings.page_index = page_index;
-		data.persist();
-		GetData();
-	}}
-	disabled={page_index <= 0}>Previous</HotkeyButton
->
-<HotkeyButton
-	data-shortcut="ArrowRight"
-	onclick={() => {
-		page_index = page_index + 1;
-		data.settings.page_index = page_index;
-		data.persist();
-		GetData();
-	}}
-	disabled={entities.length < 5 || page_index * 5 >= total_count}
->
-	Next</HotkeyButton
->
-{#if selected_items.length > 0}
-	<HotkeyButton
-		onclick={() => delete_selected($state.snapshot(selected_items))}
-		data-shortcut="Delete"
-		size="sm"
-		variant="destructive"
-	>
-		Delete {selected_items.length} items</HotkeyButton
-	>
-{/if}
-{#if tableheaders != null && tableheaders.length > 0}
-	<Sheet.Root>
-		<Sheet.Trigger>Select columns</Sheet.Trigger>
-		<Sheet.Content>
-			<Sheet.Header>
-				<Sheet.Title>Select columns</Sheet.Title>
-				<Sheet.Description>
-					Select what columns to show in the table.
-				</Sheet.Description>
-			</Sheet.Header>
-			<div class="grid gap-4 py-4">
-				<ScrollArea class="max-h-[70vh]">
-					{#each tableheaders as head}
-						<div
-							class=" flex items-center space-x-4 rounded-md border p-4"
+		</Table.Header>
+		<Table.Body>
+			{#each entities as item}
+				<Table.Row
+					class="border-b border-gray-400"
+					onclick={() => {
+						ToggleSelect(item);
+					}}
+					ondblclick={() => {
+						single_item_click(item);
+					}}
+				>
+					{#if multi_select}
+						<Table.Cell class="w-8"
+							><Checkbox
+								aria-label="Select item"
+								checked={selected_items.indexOf(item._id) > -1}
+							/></Table.Cell
 						>
-							<!-- <BellRing /> -->
-							<div class="flex-1 space-y-1">
-								<p class="text-muted-foreground text-sm">
-									{RenderHeaderName(head)}
-								</p>
-							</div>
-							<Switch
-								bind:checked={head.show}
-								onclick={() => {
-									// data.SaveHeaders();
-								}}
-							/>
-						</div>
+					{/if}
+					{#each tableheaders as head}
+						{#if head.show}
+							{#if head.field == "status"}
+								<Table.Cell class={head.cellclass}>
+									{#if item.status}
+										<Statuscard
+											bind:title={item.status as string}
+										/>
+									{/if}
+								</Table.Cell>
+							{:else}
+								<Table.Cell class={head.cellclass}
+									>{RenderItemData(
+										item,
+										head.field,
+									)}</Table.Cell
+								>
+							{/if}
+						{/if}
 					{/each}
-				</ScrollArea>
+					{#if action}
+						<Table.Cell>{@render action(item)}</Table.Cell>
+					{/if}
+				</Table.Row>
+			{/each}
+		</Table.Body>
+	</Table.Root>
+</div>
 
-				<!-- 
-				<div class="grid grid-cols-4 items-center gap-4">
-				  <Label for="name" class="text-right">Name</Label>
-				  <Input id="name" value="Pedro Duarte" class="col-span-3" />
+<div class="flex my-2 space-x-2 items-center">
+	{#if selected_items.length > 0}
+		<HotkeyButton
+			onclick={() => delete_selected($state.snapshot(selected_items))}
+			data-shortcut="Delete"
+			size="sm"
+			variant="destructive"
+			class="bg-red-500 text-white"
+		>
+			<Trash2 />
+			Delete {selected_items.length} items</HotkeyButton
+		>
+	{/if}
+
+	{#if selected_items.length > 0}
+		<Hotkeybutton variant="default" onclick={() => (selected_items = [])}
+			>Clear All Selections</Hotkeybutton
+		>
+	{/if}
+
+	{#if tableheaders != null && tableheaders.length > 0}
+		<Sheet.Root>
+			<Sheet.Trigger class={buttonVariants({ variant: "outline" })}
+				>Select columns</Sheet.Trigger
+			>
+			<Sheet.Content>
+				<Sheet.Header>
+					<Sheet.Title>Select columns</Sheet.Title>
+					<Sheet.Description>
+						Select what columns to show in the table.
+					</Sheet.Description>
+				</Sheet.Header>
+				<div class="grid gap-4 py-4">
+					<ScrollArea class="max-h-[70vh]">
+						{#each tableheaders as head}
+							<div
+								class=" flex items-center space-x-4 rounded-md border p-4"
+							>
+								<!-- <BellRing /> -->
+								<div class="flex-1 space-y-1">
+									<p class="text-muted-foreground text-sm">
+										{RenderHeaderName(head)}
+									</p>
+								</div>
+								<Switch
+									bind:checked={head.show}
+									onclick={() => {
+										// data.SaveHeaders();
+									}}
+								/>
+							</div>
+						{/each}
+					</ScrollArea>
+
+					<!-- 
+		<div class="grid grid-cols-4 items-center gap-4">
+		  <Label for="name" class="text-right">Name</Label>
+		  <Input id="name" value="Pedro Duarte" class="col-span-3" />
+		</div>
+		<div class="grid grid-cols-4 items-center gap-4">
+		  <Label for="username" class="text-right">Username</Label>
+		  <Input id="username" value="@peduarte" class="col-span-3" />
+		</div> -->
 				</div>
-				<div class="grid grid-cols-4 items-center gap-4">
-				  <Label for="username" class="text-right">Username</Label>
-				  <Input id="username" value="@peduarte" class="col-span-3" />
-				</div> -->
-			</div>
-			<Sheet.Footer>
-				<Sheet.Close class={buttonVariants({ variant: "outline" })}>
-					Close
-				</Sheet.Close>
-			</Sheet.Footer>
-		</Sheet.Content>
-	</Sheet.Root>
-{/if}
+				<Sheet.Footer>
+					<Sheet.Close class={buttonVariants({ variant: "outline" })}>
+						Close
+					</Sheet.Close>
+				</Sheet.Footer>
+			</Sheet.Content>
+		</Sheet.Root>
+	{/if}
+</div>
+
+<!-- <Custompagination
+	bind:page_index
+	bind:total_count
+	onnext={handlenext}
+	onprevious={handleprevious}
+	onpageclick={handlepageclick}
+/> -->
+
+<!-- Pagination -->
+<div class="flex flex-col justify-center items-center space-y-6">
+	<div>
+		page {page_index + 1}
+		{#if entities.length == total_count}
+			showing {total_count} items
+		{:else}
+			showing item {page_index * 5 + 1}
+			{#if entities.length > 1}
+				to {page_index * 5 + entities.length}
+			{/if}
+			of {total_count}
+		{/if}
+		{#if selected_items.length > 0}
+			with {selected_items.length} selected (<button
+				onclick={() => (selected_items = [])}>clear</button
+			>)
+		{/if}.
+	</div>
+	<div>
+		<HotkeyButton
+			data-shortcut="ArrowLeft"
+			onclick={() => {
+				page_index = page_index - 1;
+				data.settings.page_index = page_index;
+				data.persist();
+				GetData();
+			}}
+			disabled={page_index <= 0}>Previous</HotkeyButton
+		>
+		<HotkeyButton
+			data-shortcut="ArrowRight"
+			onclick={() => {
+				page_index = page_index + 1;
+				data.settings.page_index = page_index;
+				data.persist();
+				GetData();
+			}}
+			disabled={entities.length < 5 || page_index * 5 >= total_count}
+		>
+			Next</HotkeyButton
+		>
+
+		<HotkeyButton
+			data-shortcut="Control+a,Meta+a"
+			onclick={() => {
+				if (!is_all_selected()) {
+					entities.map((x) => {
+						if (selected_items.indexOf(x._id) == -1) {
+							selected_items = [...selected_items, x._id];
+							data.settings.selected_items = selected_items;
+							data.persist();
+						}
+					});
+				} else {
+					entities.map((x) => {
+						if (selected_items.indexOf(x._id) >= -1) {
+							selected_items = selected_items.filter(
+								(y) => y != x._id,
+							);
+							data.settings.selected_items = selected_items;
+							data.persist();
+						}
+					});
+				}
+			}}
+			class="hidden"
+			hidden={true}
+		/>
+	</div>
+</div>
 
 {#if tableheaders != null && tableheaders.length > 0 && showdebug == true}
 	<SuperDebug data={entities} theme="vscode" />

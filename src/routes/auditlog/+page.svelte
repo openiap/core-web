@@ -17,6 +17,9 @@
   import Button from "$lib/components/ui/button/button.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
+  import Search from "$lib/search/search.svelte";
+  import Searchinput from "$lib/searchinput/searchinput.svelte";
+  import { SearchInput } from "$lib/searchinput/index.js";
 
   let searchstring = $state(data.searchstring);
   let selected_items = $state([]);
@@ -42,19 +45,8 @@
   }
 </script>
 
-<h1>All {page}s</h1>
-<div class="flex w-full max-w-sm flex-col gap-1.5">
-  <Label for="email">Search</Label>
-  <div class="flex gap-1.5">
-    <HotkeyInput
-      type="text"
-      id="searchstring"
-      placeholder="Searchstring or JSON query"
-      bind:value={searchstring}
-      data-shortcut={"Control+f,Meta+f"}
-    />
-  </div>
-</div>
+<div class="mb-4 font-bold">All {page}s</div>
+<SearchInput bind:searchstring />
 <Entities
   {collectionname}
   {query}

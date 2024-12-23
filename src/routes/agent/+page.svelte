@@ -20,6 +20,10 @@
     Eye,
     Wrench,
     EllipsisVertical,
+    Search,
+    Plus,
+    Box,
+    RefreshCcw,
   } from "lucide-svelte";
 
   import { goto } from "$app/navigation";
@@ -33,6 +37,8 @@
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import { toast } from "svelte-sonner";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
+  import { Separator } from "$lib/components/ui/separator/index.js";
+  import Searchinput from "$lib/searchinput/searchinput.svelte";
 
   let { data } = $props();
   let searchstring = $state(data.searchstring);
@@ -166,111 +172,120 @@
   getPods();
 </script>
 
-<h1>All {page}s</h1>
-<Hotkeybutton
-  aria-label="add"
-  title="add"
-  variant={"outline"}
-  onclick={() => goto(base + `/${page}/new`)}>Add {page}</Hotkeybutton
->
-<Hotkeybutton
-  aria-label="packages"
-  title="package"
-  variant={"outline"}
-  onclick={() => goto(base + `/package`)}>Packages</Hotkeybutton
->
-<Hotkeybutton
-  aria-label="reload"
-  title="reload"
-  variant={"outline"}
-  onclick={() => {
-    goto(base + `/${page}`);
-    getPods();
-  }}>Reload</Hotkeybutton
->
+<div class="font-bold mb-4">All {page}s</div>
 
-<RadioGroup.Root value="All" class="flex space-x-2 my-2">
-  <div class="flex items-center space-x-2">
-    <RadioGroup.Item
-      value="All"
-      id="r1"
-      onclick={async () => {
-        entities = await data1.GetData(page, collectionname, query);
-        getPods();
-      }}
-    />
-    <Label for="r1" class="cursor-pointer">All</Label>
-  </div>
-  <div class="flex items-center space-x-2">
-    <RadioGroup.Item
-      value="Daemon"
-      id="r2"
-      onclick={async () => {
-        entities = await data1.GetData(page, collectionname, {
-          _type: "agent",
-          daemon: true,
-        });
-        getPods();
-      }}
-    />
-    <Label for="r2" class="cursor-pointer">Daemon</Label>
-  </div>
-  <div class="flex items-center space-x-2">
-    <RadioGroup.Item
-      value="Pods"
-      id="r3"
-      onclick={async () => {
-        const result = await data1.GetData(page, collectionname, query);
-        entities = result.filter((x: any) =>
-          knownpods.some((y: any) => x._id === y.metadata.labels.agentid),
-        );
-        getPods();
-      }}
-    />
-    <Label for="r3" class="cursor-pointer">Pods</Label>
-  </div>
-  <div class="flex items-center space-x-2">
-    <RadioGroup.Item
-      value="Docker"
-      id="r4"
-      onclick={async () => {
-        entities = await data1.GetData(page, collectionname, {
-          _type: "agent",
-          docker: true,
-        });
-        getPods();
-      }}
-    />
-    <Label for="r4" class="cursor-pointer">Docker</Label>
-  </div>
-  <div class="flex items-center space-x-2">
-    <RadioGroup.Item
-      value="Assistant"
-      id="r5"
-      onclick={async () => {
-        entities = await data1.GetData(page, collectionname, {
-          _type: "agent",
-          assistant: true,
-        });
-        getPods();
-      }}
-    />
-    <Label for="r5" class="cursor-pointer">Assistant</Label>
-  </div>
-</RadioGroup.Root>
-
-<div class="flex w-full max-w-sm flex-col gap-1.5">
-  <Label for="email">Search</Label>
-  <div class="flex gap-1.5">
-    <HotkeyInput
-      type="text"
-      id="searchstring"
-      placeholder="Searchstring or JSON query"
-      bind:value={searchstring}
-      data-shortcut={"Control+f,Meta+f"}
-    />
-  </div>
+<div
+  class="mb-4 border-b border-gray-300 flex justify-start pb-4 space-x-4 max-w-min"
+>
+  <Hotkeybutton
+    aria-label="add"
+    title="add"
+    variant="default"
+    onclick={() => goto(base + `/${page}/new`)}
+  >
+    <Plus />
+    Add {page}</Hotkeybutton
+  >
+  <Hotkeybutton
+    aria-label="packages"
+    title="package"
+    variant="default"
+    onclick={() => goto(base + `/package`)}
+  >
+    <Box />
+    Packages</Hotkeybutton
+  >
+  <Hotkeybutton
+    aria-label="reload"
+    title="reload"
+    variant="default"
+    onclick={async () => {
+      // goto(base + `/${page}`);
+      entities = await data1.GetData(page, collectionname, query);
+      await getPods();
+    }}
+  >
+    <RefreshCcw />
+    Reload</Hotkeybutton
+  >
 </div>
+
+<!-- <Separator /> -->
+
+<div class="my-6">
+  <RadioGroup.Root value="All" class="flex space-x-4">
+    <div class="flex items-center space-x-2">
+      <RadioGroup.Item
+        value="All"
+        id="r1"
+        onclick={async () => {
+          entities = await data1.GetData(page, collectionname, query);
+          getPods();
+        }}
+      />
+      <Label for="r1" class="cursor-pointer">All</Label>
+    </div>
+    <div class="flex items-center space-x-2">
+      <RadioGroup.Item
+        value="Daemon"
+        id="r2"
+        onclick={async () => {
+          entities = await data1.GetData(page, collectionname, {
+            _type: "agent",
+            daemon: true,
+          });
+          getPods();
+        }}
+      />
+      <Label for="r2" class="cursor-pointer">Daemon</Label>
+    </div>
+    <div class="flex items-center space-x-2">
+      <RadioGroup.Item
+        value="Pods"
+        id="r3"
+        onclick={async () => {
+          const result = await data1.GetData(page, collectionname, query);
+          entities = result.filter((x: any) =>
+            knownpods.some((y: any) => x._id === y.metadata.labels.agentid),
+          );
+          getPods();
+        }}
+      />
+      <Label for="r3" class="cursor-pointer">Pods</Label>
+    </div>
+    <div class="flex items-center space-x-2">
+      <RadioGroup.Item
+        value="Docker"
+        id="r4"
+        onclick={async () => {
+          entities = await data1.GetData(page, collectionname, {
+            _type: "agent",
+            docker: true,
+          });
+          getPods();
+        }}
+      />
+      <Label for="r4" class="cursor-pointer">Docker</Label>
+    </div>
+    <div class="flex items-center space-x-2">
+      <RadioGroup.Item
+        value="Assistant"
+        id="r5"
+        onclick={async () => {
+          entities = await data1.GetData(page, collectionname, {
+            _type: "agent",
+            assistant: true,
+          });
+          getPods();
+        }}
+      />
+      <Label for="r5" class="cursor-pointer">Assistant</Label>
+    </div>
+  </RadioGroup.Root>
+</div>
+
+<Searchinput bind:searchstring />
+
 <Entities
   {collectionname}
   {query}
@@ -287,7 +302,7 @@
         aria-label="start"
         title="start"
         size="icon"
-        variant="secondary"
+        variant="ghost"
         onclick={async () =>
           await auth.client.CustomCommand({
             command: "startagent",
@@ -301,7 +316,7 @@
         aria-label="stop"
         title="stop"
         size="icon"
-        variant="secondary"
+        variant="ghost"
         onclick={async () =>
           await auth.client.CustomCommand({
             command: "stopagent",
@@ -315,7 +330,7 @@
         aria-label="debug"
         title="debug"
         size="icon"
-        variant="secondary"
+        variant="ghost"
         onclick={() => goto(base + `/${page}/${item._id}/run`)}
       >
         <Wrench />

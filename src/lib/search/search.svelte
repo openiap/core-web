@@ -9,10 +9,9 @@
     </Dialog.Trigger>
     <Dialog.Content>
         <Dialog.Header>
-            <Dialog.Title>Are you sure absolutely sure?</Dialog.Title>
+            <Dialog.Title>Search</Dialog.Title>
             <Dialog.Description>
-                This action cannot be undone. This will permanently delete your
-                account and remove your data from our servers.
+                Search the whole site
             </Dialog.Description>
         </Dialog.Header>
     </Dialog.Content>

@@ -21,6 +21,8 @@
   import Input from "$lib/components/ui/input/input.svelte";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import { toast } from "svelte-sonner";
+    import Search from "$lib/search/search.svelte";
+    import { SearchInput } from "$lib/searchinput";
 
   let searchstring = $state(data.searchstring);
   let selected_items = $state([]);
@@ -116,43 +118,35 @@
   }
 </script>
 
-<h1>All {page}</h1>
-<div class="flex w-full max-w-sm flex-col gap-1.5">
-  <Label for="email">Search</Label>
-  <div class="flex gap-1.5">
-    <HotkeyInput
-      type="text"
-      id="searchstring"
-      placeholder="Searchstring or JSON query"
-      bind:value={searchstring}
-      data-shortcut={"Control+f,Meta+f"}
+<div class="mb-4 font-bold">All {page}</div>
+
+<div class="mb-4">
+  <div class="mb-2">Upload New File</div>
+  <div class="flex space-x-2">
+    <Input
+      disabled={loading}
+      type="file"
+      bind:value={fileData}
+      onchange={handleChange}
     />
+    <Button
+      disabled={loading || !fileData}
+      onclick={() => (fileData = null)}
+      aria-label="Delete"
+    >
+      Delete
+    </Button>
+    <Button
+      disabled={loading || !fileData}
+      onclick={uploadFile}
+      aria-label="Upload"
+    >
+      Upload
+    </Button>
   </div>
 </div>
 
-<div>Upload New File</div>
-<div class="flex">
-  <Input
-    disabled={loading}
-    type="file"
-    bind:value={fileData}
-    onchange={handleChange}
-  />
-  <Button
-    disabled={loading || !fileData}
-    onclick={() => (fileData = null)}
-    aria-label="Delete"
-  >
-    Delete
-  </Button>
-  <Button
-    disabled={loading || !fileData}
-    onclick={uploadFile}
-    aria-label="Upload"
-  >
-    Upload
-  </Button>
-</div>
+<SearchInput bind:searchstring />
 
 <Entities
   {collectionname}

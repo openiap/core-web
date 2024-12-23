@@ -1,8 +1,9 @@
 <script lang="ts" module>
   export let page = "mailhistory";
   export let collectionname = "mailhist";
-  export let query = { };
+  export let query = {};
 </script>
+
 <script lang="ts">
   import { Entities } from "$lib/entities/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
@@ -16,6 +17,8 @@
   let { data } = $props();
   import Button from "$lib/components/ui/button/button.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
+  import Search from "$lib/search/search.svelte";
+  import Searchinput from "$lib/searchinput/searchinput.svelte";
 
   const title = "Mail History";
   let collectionname = "mailhist";
@@ -35,26 +38,14 @@
       console.error(Error("deletecount is " + deletecount));
     }
   }
-  function deleteitems(ids: string[]) {
-  }
+  function deleteitems(ids: string[]) {}
   function single_item_click(item: any) {
     goto(base + `/${page}/${item._id}`);
   }
 </script>
 
-<h1>All {title}s</h1>
-<div class="flex w-full max-w-sm flex-col gap-1.5">
-  <Label for="email">Search</Label>
-  <div class="flex gap-1.5">
-    <HotkeyInput
-      type="text"
-      id="searchstring"
-      placeholder="Searchstring or JSON query"
-      bind:value={searchstring}
-      data-shortcut={"Control+f,Meta+f"}
-    />
-  </div>
-</div>
+<div class="mb-4 font-bold">All {title}</div>
+<Searchinput bind:searchstring />
 <Entities
   {collectionname}
   {query}
