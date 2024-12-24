@@ -45,16 +45,17 @@
 <div class="flex items-start justify-between">
   <div
     id="div1"
-    class="w-full max-w-max flex-shrink-0 hidden sm:block p-6 border border-gray-400"
+    class="w-full max-w-max flex-shrink-0 hidden sm:block p-6 border-r border-gray-400"
   >
     <div class="ms-4 mb-4">
       <b> Collection Name: </b>
+      <br />
       {collectionname}<br />
     </div>
+    <h4 class="mb-4 text-sm font-medium leading-none ms-4">Collections:</h4>
     <ScrollArea class="max-h-screen sm:max-h-[calc(100vh-8rem)] overflow-auto">
       <!-- <ScrollArea class="max-h-[80vh]"> -->
       <div class="p-4">
-        <h4 class="mb-4 text-sm font-medium leading-none">Collections:</h4>
         {#each collections as tag}
           <div class="text-sm">
             <Button
@@ -73,7 +74,7 @@
       </div>
     </ScrollArea>
   </div>
-  <div id="div2" class="ms-6 flex-1 bg-white dark:bg-black">
+  <div id="div2" class="m-6 flex-1">
     <Searchinput bind:searchstring />
     <Entities
       {collectionname}

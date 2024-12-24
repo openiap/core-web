@@ -8,7 +8,7 @@
     const isDesktop = new MediaQuery("(min-width: 768px)");
 
     let {
-        total_count = $bindable(0),
+        count = $bindable(0),
         page_index = $bindable(0),
         onnext = (item: any) => {},
         onprevious = (item: any) => {},
@@ -20,9 +20,8 @@
     const calculateitems = () => {
         if (page_index === 0) {
             return 1;
-        } 
-        else if (total_count){
-        }else {
+        } else if (count) {
+        } else {
             return `${page_index * perPage + 1} of ${page_index * perPage + 5}`;
         }
     };
@@ -30,21 +29,16 @@
 
 <div class="text-sm text-gray-500 dark:text-gray-400 text-center mb-4">
     Showing item {calculateitems()} of
-    {total_count}
+    {count}
 </div>
 
-<Pagination.Root
-    count={total_count}
-    {perPage}
-    {siblingCount}
-    page={page_index + 1}
->
+<Pagination.Root {count} {perPage} {siblingCount} page={page_index + 1}>
     {#snippet children({ pages, currentPage })}
         <Pagination.Content>
             <Pagination.Item>
                 <!-- <Pagination.PrevButton onclick={() => onnext()}> -->
                 <HotkeyButton
-                    disabled={!total_count || page_index + 1 === 1}
+                    disabled={!count || page_index + 1 === 1}
                     onclick={() => onprevious()}
                     data-shortcut="ArrowLeft"
                     variant="default"
@@ -64,8 +58,7 @@
                         <Pagination.Link
                             tabindex={-1}
                             {page}
-                            isActive={!total_count ||
-                                currentPage === page.value}
+                            isActive={!count || currentPage === page.value}
                             onclick={() => onpageclick(page.value)}
                         >
                             {page.value}
@@ -76,8 +69,7 @@
             <Pagination.Item>
                 <!-- <Pagination.NextButton onclick={() => onprevious()}> -->
                 <HotkeyButton
-                    disabled={!total_count ||
-                        currentPage === Math.ceil(total_count / 5)}
+                    disabled={!count || currentPage === Math.ceil(count / 5)}
                     onclick={() => onnext()}
                     data-shortcut="ArrowRight"
                     variant="default"
@@ -90,4 +82,3 @@
         </Pagination.Content>
     {/snippet}
 </Pagination.Root>
-

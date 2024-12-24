@@ -20,11 +20,15 @@
 
 	import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
 	import { auth } from "$lib/stores/auth.svelte.js";
-	import Custompagination from "$lib/custompagination/custompagination.svelte";
 	import Statuscard from "$lib/statuscard/statuscard.svelte";
-	import { Stat } from "@openiap/jsapi/dist/proto/base.js";
 	import { Trash2 } from "lucide-svelte";
 	import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
+	import ChevronLeft from "lucide-svelte/icons/chevron-left";
+	import ChevronRight from "lucide-svelte/icons/chevron-right";
+	import { MediaQuery } from "runed";
+	import * as Pagination from "$lib/components/ui/pagination/index.js";
+	import Custompagination from "$lib/custompagination/custompagination.svelte";
+
 	let {
 		page = "entities",
 		query = {},
@@ -46,8 +50,21 @@
 	let multi_sort = $state(false);
 	let showdebug = $state(false);
 	let page_index = $state(data.settings.page_index);
-	let total_count = $state(0);
+	let total_count = $state(9999);
 	let tableheaders = $state([]) as TTableHeader[];
+
+	const isDesktop = new MediaQuery("(min-width: 768px)");
+	const perPage = 5;
+	const siblingCount = $derived(isDesktop.matches ? 3 : 0);
+
+	const calculateitems = () => {
+		if (page_index === 0) {
+			return 1;
+		} else if (total_count) {
+		} else {
+			return `${page_index * perPage + 1} of ${page_index * perPage + 5}`;
+		}
+	};
 
 	selected_items = data.settings.selected_items;
 	// searchstring = data.settings.searchstring
@@ -197,7 +214,7 @@
 			data.settings.searchstring = searchstring;
 			data.settings.page_index = 0;
 			page_index = 0;
-			total_count = 0;
+			total_count = 99999;
 			data.persist();
 			GetData();
 		} else if (_collectionname != collectionname) {
@@ -210,7 +227,7 @@
 			searchstring = data.settings.searchstring;
 			selected_items = data.settings.selected_items;
 			page_index = data.settings.page_index;
-			total_count = 0;
+			total_count = 99999;
 			GetData();
 		}
 		data.settings.searchstring = $state.snapshot(searchstring);
@@ -572,17 +589,80 @@
 	{/if}
 </div>
 
-<!-- <Custompagination
+<Custompagination
 	bind:page_index
-	bind:total_count
+	bind:count={total_count}
 	onnext={handlenext}
 	onprevious={handleprevious}
 	onpageclick={handlepageclick}
-/> -->
+/>
+
+<!-- custom pagination -->
+<!-- <div>
+	<div class="text-sm text-gray-500 dark:text-gray-400 text-center mb-4">
+		Showing item {calculateitems()} of
+		{total_count}
+	</div>
+
+	<Pagination.Root
+		count={total_count}
+		{perPage}
+		{siblingCount}
+		page={page_index + 1}
+	>
+		{#snippet children({ pages, currentPage })}
+			<Pagination.Content>
+				<Pagination.Item>
+					<HotkeyButton
+						disabled={!total_count || page_index + 1 === 1}
+						onclick={() => handleprevious()}
+						data-shortcut="ArrowLeft"
+						variant="default"
+					>
+						<ChevronLeft class="size-4" />
+						<span class="hidden sm:block">Previous</span>
+					</HotkeyButton>
+				</Pagination.Item>
+				{#each pages as page (page.key)}
+					{#if page.type === "ellipsis"}
+						<Pagination.Item>
+							<Pagination.Ellipsis />
+						</Pagination.Item>
+					{:else}
+						<Pagination.Item tabindex={-1}>
+							<Pagination.Link
+								tabindex={-1}
+								{page}
+								isActive={!total_count ||
+									currentPage === page.value}
+								onclick={() => handlepageclick(page.value)}
+							>
+								{page.value}
+							</Pagination.Link>
+						</Pagination.Item>
+					{/if}
+				{/each}
+				<Pagination.Item>
+					<HotkeyButton
+						disabled={!total_count ||
+							currentPage === Math.ceil(total_count / 5)}
+						onclick={() => handlenext()}
+						data-shortcut="ArrowRight"
+						variant="default"
+					>
+						<span class="hidden sm:block">Next</span>
+						<ChevronRight class="size-4" />
+					</HotkeyButton>
+				</Pagination.Item>
+			</Pagination.Content>
+		{/snippet}
+	</Pagination.Root>
+</div> -->
 
 <!-- Pagination -->
-<div class="flex flex-col justify-center items-center space-y-6">
-	<div>
+<!-- Pagination -->
+<div class="flex flex-col justify-center items-center space-y-2">
+	<div class="mt-4">
 		page {page_index + 1}
 		{#if entities.length == total_count}
 			showing {total_count} items
@@ -593,11 +673,11 @@
 			{/if}
 			of {total_count}
 		{/if}
-		{#if selected_items.length > 0}
+		<!-- {#if selected_items.length > 0}
 			with {selected_items.length} selected (<button
 				onclick={() => (selected_items = [])}>clear</button
 			>)
-		{/if}.
+		{/if}. -->
 	</div>
 	<div>
 		<HotkeyButton

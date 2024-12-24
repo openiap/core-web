@@ -25,12 +25,14 @@
 </svelte:head>
 <ModeWatcher />
 {#if $page.url.pathname != base + "/login" && $page.url.pathname != base + "/loginscreen"}
-	<div>
+	<div class="overflow-hidden flex flex-col w-full h-screen">
 		<Sidebar.Provider>
-			<AppSidebar />
-			<Sidebar.Inset>
+			<div class="">
+				<AppSidebar />
+			</div>
+			<div class="flex flex-col w-full">
 				<header
-					class="flex h-16 shrink-0 items-center justify-between gap-2 px-4 bg-gradient-to-r from-lightgradident1 to-lightgradident2 dark:bg-gradient-to-r dark:from-darkgradident1 dark:to-darkgradident2 rounded m-2"
+					class="flex h-16 shrink-0 items-center justify-between gap-2 px-4 bg-gradient-to-b from-lightgradident1 to-lightgradident2 dark:bg-gradient-to-b dark:from-darkgradident1 dark:to-darkgradident2 rounded mx-2.5 my-2.5"
 				>
 					<div class="flex items-center">
 						<Sidebar.Trigger class="-ml-1" />
@@ -55,25 +57,25 @@
 				</header>
 
 				<div
-					class="border border-gray-300 dark:border-gray-400 rounded m-2 h-full overflow-auto"
+					class="border border-gray-300 dark:border-gray-400 rounded mb-2.5 mx-2.5 h-full overflow-auto"
 				>
 					{#if auth.isAuthenticated == true || auth.isAuthenticated == false}
 						<!-- <p>Logged in</p> -->
-						<main>
+						<!-- <main>
 							{@render children()}
-						</main>
-						<!-- {#if pagename() == "entities"}
+						</main> -->
+						{#if pagename() == "entities"}
 							{@render children()}
 						{:else}
 							<main>
 								{@render children()}
 							</main>
-						{/if} -->
+						{/if}
 					{:else}
 						<!-- <p>Not logged in</p> -->
 					{/if}
 				</div>
-			</Sidebar.Inset>
+			</div>
 		</Sidebar.Provider>
 
 		<!-- <footer>
@@ -90,7 +92,7 @@
 
 <style>
 	main {
-		padding: 2rem 1.5rem;
+		padding: 1.25rem 1.5rem;
 		width: 100%;
 		margin: 0 auto;
 		box-sizing: border-box;

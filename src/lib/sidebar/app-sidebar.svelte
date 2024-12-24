@@ -115,7 +115,7 @@
 
 <Sidebar.Root bind:ref {...restProps}>
 	<div
-		class="bg-gradient-to-b from-lightgradident1 to-lightgradident2 dark:bg-gradient-to-r dark:from-darkgradident1 dark:to-darkgradident2 rounded m-2 h-full overflow-auto"
+		class="bg-gradient-to-b from-lightgradident1 to-lightgradident2 dark:bg-gradient-to-b dark:from-darkgradident1 dark:to-darkgradident2 rounded my-2.5 mx-3 h-full overflow-auto"
 	>
 		<Sidebar.Header>
 			<button

@@ -10,7 +10,7 @@
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { HotkeyInput } from "$lib/components/ui/hotkeyinput/index.js";
   import { Label } from "$lib/components/ui/label/index.js";
-  import { Pencil, Trash2 } from "lucide-svelte";
+  import { ArrowLeft, Pencil, Plus, Trash2 } from "lucide-svelte";
 
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
@@ -21,6 +21,7 @@
   import Button from "$lib/components/ui/button/button.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
+  import Searchinput from "$lib/searchinput/searchinput.svelte";
 
   let searchstring = $state(data.searchstring);
   let selected_items = $state([]);
@@ -68,29 +69,24 @@
   }
 </script>
 
-<h1>All {page}s</h1>
-<Hotkeybutton
-  aria-label="Add package"
-  variant={"outline"}
-  onclick={() => goto(base + `/${page}/new`)}>Add {page}</Hotkeybutton
->
-<Hotkeybutton
-  aria-label="Agents"
-  variant={"outline"}
-  onclick={() => goto(base + `/agent`)}>Agents</Hotkeybutton
->
-<div class="flex w-full max-w-sm flex-col gap-1.5">
-  <Label for="email">Search</Label>
-  <div class="flex gap-1.5">
-    <HotkeyInput
-      type="text"
-      id="searchstring"
-      placeholder="Searchstring or JSON query"
-      bind:value={searchstring}
-      data-shortcut={"Control+f,Meta+f"}
-    />
-  </div>
+<div class="mb-4 font-bold">All {page}s</div>
+
+<div class="mb-4">
+  <Hotkeybutton
+    aria-label="Add package"
+    onclick={() => goto(base + `/${page}/new`)}
+  >
+    <Plus />
+    Add {page}</Hotkeybutton
+  >
+  <Hotkeybutton aria-label="Agents" onclick={() => goto(base + `/agent`)}>
+    <ArrowLeft />
+    Agents</Hotkeybutton
+  >
 </div>
+
+<Searchinput bind:searchstring />
+
 <Entities
   {collectionname}
   {query}

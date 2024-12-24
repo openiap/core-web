@@ -114,7 +114,7 @@
   {$message}
 {/if}
 
-<div>
+<div class="mb-4 font-bold">
   Edit {page}
 </div>
 
@@ -125,18 +125,31 @@
     onclick={() => goto(base + `/${page}`)}
     aria-label="Back">Back</HotkeyButton
   >
-  <Form.Field {form} name="name">
+
+  <Form.Field
+    {form}
+    name="name"
+    class="flex flex-row items-center space-x-5 space-y-0 p-4 max-w-sm"
+  >
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Name</Form.Label>
-        <Input disabled={loading} {...props} bind:value={$formData.name} />
+        <Input
+          disabled={loading}
+          {...props}
+          bind:value={$formData.name}
+        />
       {/snippet}
     </Form.Control>
     <!-- <Form.Description>This is your public display name.</Form.Description> -->
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Field {form} name="language">
+  <Form.Field
+    {form}
+    name="language"
+    class="flex flex-row items-center space-x-5 space-y-0 p-4 max-w-sm"
+  >
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Language</Form.Label>
