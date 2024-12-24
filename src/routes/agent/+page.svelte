@@ -339,17 +339,17 @@
       <DropdownMenu.Root>
         <DropdownMenu.Trigger><EllipsisVertical /></DropdownMenu.Trigger>
         <DropdownMenu.Content class="w-56">
-          <DropdownMenu.Item class="cursor-pointer">
-            <Webhook class="mr-2 size-4" />
-            <span>Webhook</span>
-          </DropdownMenu.Item>
-          <DropdownMenu.Separator />
           <DropdownMenu.Item
             class="cursor-pointer"
             onclick={() => goto(base + `/${page}/${item._id}`)}
           >
             <Pencil class="mr-2 size-4" />
             <span>Edit</span>
+          </DropdownMenu.Item>
+          <DropdownMenu.Separator />
+          <DropdownMenu.Item class="cursor-pointer">
+            <Webhook class="mr-2 size-4" />
+            <span>Webhook</span>
           </DropdownMenu.Item>
           <DropdownMenu.Separator />
           <DropdownMenu.Item class="cursor-pointer">

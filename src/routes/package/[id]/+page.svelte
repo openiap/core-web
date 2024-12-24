@@ -17,6 +17,7 @@
   import { editFormSchema } from "../schema.js";
   import * as Select from "$lib/components/ui/select/index.js";
   import Button from "$lib/components/ui/button/button.svelte";
+  import { ArrowLeft, Check } from "lucide-svelte";
 
   const page = "package";
   let loading = $state(false);
@@ -108,6 +109,8 @@
       console.error(error);
     }
   }
+
+  const maindiv = "flex flex-row items-center p-4 max-w-sm";
 </script>
 
 {#if message && $message != ""}
@@ -119,134 +122,136 @@
 </div>
 
 <form method="POST" use:enhance>
-  <Form.Button disabled={loading} aria-label="Submit">Submit</Form.Button>
   <HotkeyButton
     disabled={loading}
     onclick={() => goto(base + `/${page}`)}
-    aria-label="Back">Back</HotkeyButton
+    aria-label="Back"
+  >
+    <ArrowLeft />
+    Back</HotkeyButton
+  >
+  <Form.Button disabled={loading} aria-label="Submit">
+    <Check />
+    Submit</Form.Button
   >
 
-  <Form.Field
-    {form}
-    name="name"
-    class="flex flex-row items-center space-x-5 space-y-0 p-4 max-w-sm"
-  >
+  <Form.Field {form} name="name" class={maindiv}>
     <Form.Control>
       {#snippet children({ props })}
-        <Form.Label>Name</Form.Label>
-        <Input
-          disabled={loading}
-          {...props}
-          bind:value={$formData.name}
-        />
+        <div class="grid grid-cols-3 items-center">
+          <Form.Label class="col-span-1">Name</Form.Label>
+          <div class="col-span-2">
+            <Input disabled={loading} {...props} bind:value={$formData.name} />
+          </div>
+        </div>
       {/snippet}
     </Form.Control>
     <!-- <Form.Description>This is your public display name.</Form.Description> -->
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Field
-    {form}
-    name="language"
-    class="flex flex-row items-center space-x-5 space-y-0 p-4 max-w-sm"
-  >
+  <Form.Field {form} name="language" class={maindiv}>
     <Form.Control>
       {#snippet children({ props })}
-        <Form.Label>Language</Form.Label>
-        <Select.Root type="single" {...props} bind:value={$formData.language}>
-          <Select.Trigger>{triggerContent}</Select.Trigger>
-          <Select.Content>
-            {#each selectItems as item}
-              <Select.Item value={item.value} label={item.label}
-                >{item.label}</Select.Item
-              >
-            {/each}
-          </Select.Content>
-        </Select.Root>
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-
-  <Form.Field
-    {form}
-    name="chromium"
-    class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4"
-  >
-    <Form.Control>
-      {#snippet children({ props })}
-        <Checkbox
-          disabled={loading}
-          {...props}
-          bind:checked={$formData.chromium}
-        />
-        <div class="space-y-1 leading-none">
-          <Form.Label>Require Chromium</Form.Label>
-          <!-- <Form.Description>
-            If enabled, the user is disabled and cannot signin
-          </Form.Description> -->
+        <div class="grid grid-cols-3 items-center gap-8">
+          <Form.Label class="col-span-1">Language</Form.Label>
+          <div class="col-span-2">
+            <Select.Root
+              type="single"
+              {...props}
+              bind:value={$formData.language}
+            >
+              <Select.Trigger>{triggerContent}</Select.Trigger>
+              <Select.Content>
+                {#each selectItems as item}
+                  <Select.Item value={item.value} label={item.label}
+                    >{item.label}</Select.Item
+                  >
+                {/each}
+              </Select.Content>
+            </Select.Root>
+          </div>
         </div>
       {/snippet}
     </Form.Control>
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Field
-    {form}
-    name="daemon"
-    class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4"
-  >
+  <Form.Field {form} name="chromium" class={maindiv}>
     <Form.Control>
       {#snippet children({ props })}
-        <Checkbox
-          disabled={loading}
-          {...props}
-          bind:checked={$formData.daemon}
-        />
-        <div class="space-y-1 leading-none">
-          <Form.Label>Daemon</Form.Label>
-          <!-- <Form.Description>
-            If enabled, the user is can only login using web interface and
-            cannot add more data to the database
-          </Form.Description> -->
+        <div class="grid grid-cols-3 items-center gap-8">
+          <Form.Label class="col-span-1">Require <br />Chromium</Form.Label>
+          <Checkbox
+            class="col-span-2"
+            disabled={loading}
+            {...props}
+            bind:checked={$formData.chromium}
+          />
         </div>
       {/snippet}
     </Form.Control>
     <Form.FieldErrors />
   </Form.Field>
 
-  <div>Package file (OLD)</div>
-  <Button
-    disabled={loading || !$formData.fileid}
-    onclick={downloadFile}
-    aria-label="Download">Download</Button
-  >
+  <Form.Field {form} name="daemon" class={maindiv}>
+    <Form.Control>
+      {#snippet children({ props })}
+        <div class="grid grid-cols-3 items-center justify-center gap-11">
+          <Form.Label class="col-span-1">Daemon</Form.Label>
+          <div class="col-span-2">
+            <Checkbox
+              disabled={loading}
+              {...props}
+              bind:checked={$formData.daemon}
+            />
+          </div>
+        </div>
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field>
 
-  <Form.Field {form} name="fileid">
+  <div class={maindiv}>
+    <div>Package file (OLD)</div>
+    <Button
+      class="ml-4"
+      disabled={loading || !$formData.fileid}
+      onclick={downloadFile}
+      aria-label="Download">Download</Button
+    >
+  </div>
+
+  <Form.Field {form} name="fileid" class={maindiv}>
     <Form.Control>
       <Form.Label>Package file (NEW)</Form.Label>
-      <div class="flex">
-        <Input
-          disabled={loading}
-          type="file"
-          bind:value={fileData}
-          onchange={uploadFile}
-        />
-        <Button
-          disabled={loading || !fileData}
-          onclick={() => (fileData = null)}
-          aria-label="Delete"
-        >
-          Delete
-        </Button>
+      <div class="flex flex-col space-y-2 ms-10">
+        <div class="flex max-w-sm space-x-2">
+          <Input
+            disabled={loading}
+            type="file"
+            bind:value={fileData}
+            onchange={uploadFile}
+          />
+          <Button
+            disabled={loading || !fileData}
+            onclick={() => (fileData = null)}
+            aria-label="Delete"
+          >
+            Delete
+          </Button>
+        </div>
+        <div class="text-sm text-gray-500">
+          If no file is chosen, the default package will be <span>
+            https://github.com/openiap/nodeworkitemagent.git
+          </span>
+        </div>
       </div>
     </Form.Control>
     <Form.FieldErrors />
   </Form.Field>
 
-  <div>
-    git example <span> https://github.com/openiap/nodeworkitemagent.git </span>
-  </div>
+  <div></div>
 
   <Form.Button disabled={loading} aria-label="Submit">Submit</Form.Button>
 </form>

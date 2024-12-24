@@ -1,7 +1,7 @@
 <script lang="ts">
-    const { title = $bindable("") } = $props();
+    let { title = $bindable("") } = $props();
     let bgcolor = "";
-
+    title = title.toLowerCase();
     function renderClass() {
         switch (title) {
             case "running":
@@ -28,7 +28,7 @@
                 break;
         }
         return (
-            `rounded rounded-full px-2.5 py-1.5 text-black max-w-20 flex justify-center items-center text-sm ` +
+            `text-center rounded rounded-full px-2.5 py-1.5 text-black max-w-20 flex justify-center items-center text-sm ` +
             bgcolor
         );
     }

@@ -26,7 +26,12 @@
     });
 </script>
 
-<Textarea {disabled} bind:value={intermediateJson} {...restProps}></Textarea>
+<Textarea
+    class="w-full min-h-52"
+    {disabled}
+    bind:value={intermediateJson}
+    {...restProps}
+></Textarea>
 {#if errormessage}
     <div class="text-red-500">{errormessage}</div>
 {/if}

@@ -72,16 +72,16 @@
 <div class="mb-4 font-bold">All {page}s</div>
 
 <div class="mb-4">
+  <Hotkeybutton aria-label="Agents" onclick={() => goto(base + `/agent`)}>
+    <ArrowLeft />
+    Agents</Hotkeybutton
+  >
   <Hotkeybutton
     aria-label="Add package"
     onclick={() => goto(base + `/${page}/new`)}
   >
     <Plus />
     Add {page}</Hotkeybutton
-  >
-  <Hotkeybutton aria-label="Agents" onclick={() => goto(base + `/agent`)}>
-    <ArrowLeft />
-    Agents</Hotkeybutton
   >
 </div>
 

@@ -16,7 +16,6 @@ export const load: PageServerLoad = async ({ params }) => {
     item.webserver = false;
   }
   instance = JSON.parse(instance)[0];
-  console.log("instance", instance);
   if (instance) {
     instance.showstatus = "unknown"
     if (instance.status && instance.status.phase) {

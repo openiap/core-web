@@ -21,11 +21,22 @@
   import { ObjectInput } from "$lib/objectinput/index.js";
   import Timezoneselector from "$lib/timezoneselector/timezoneselector.svelte";
   import Entityselector from "$lib/entityselector/entityselector.svelte";
-  import { Trash2 } from "lucide-svelte";
+  import {
+    ArrowLeft,
+    ArrowRight,
+    Check,
+    RefreshCcw,
+    Trash2,
+    User,
+  } from "lucide-svelte";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import { toast } from "svelte-sonner";
   import { AnsiUp } from "ansi_up";
   import { json } from "@sveltejs/kit";
+  import { preventDefault } from "svelte/legacy";
+  import Switch from "$lib/components/ui/switch/switch.svelte";
+  import Separator from "$lib/components/ui/separator/separator.svelte";
+  import Statuscard from "$lib/statuscard/statuscard.svelte";
   const ansi_up = new AnsiUp();
 
   const { data } = $props();
@@ -261,7 +272,6 @@
     if (packageData.daemon == false) {
       copyData.cron = packageData.cron || "* * * * *";
     }
-    console.log("packageData final", copyData);
     if (
       $formData.schedules &&
       $formData.schedules.some(
@@ -363,94 +373,174 @@
   {$message}
 {/if}
 
-<div>
+<div class="font-bold mb-4">
   Edit {page}
 </div>
 <HotkeyButton
-disabled={loading}
-aria-label="Back"
-onclick={() => goto(base + `/${page}`)}
-title="back">Back</HotkeyButton
+  class="mb-4"
+  disabled={loading}
+  aria-label="Back"
+  onclick={() => goto(base + `/${page}`)}
+  title="back"
+>
+  <ArrowLeft />
+  Back</HotkeyButton
 >
 <!-- Performance monitor -->
 {#if resourceMonitor != null}
-  <div class="border rounded-xl p-2 my-2">
+  <div class="my-2">
     <div>Resource monitor</div>
-    <div>
+    <div class="font-bold mb-4">
       {resourceMonitor.metadata.name}
     </div>
-    <hr />
-    <div class="flex justify-start space-x-5 p-2">
-      <div class="flex flex-col">
-        <div>Status</div>
-        <div>{resourceMonitor.showstatus}</div>
-      </div>
-      <div class="flex flex-col px-2 mx-2">
-        <div>CPU</div>
-        <div>
-          {resourceMonitor.metrics.cpu +
-            "/" +
-            resourceMonitor.spec.containers[0].resources.limits.cpu}
+
+    <!-- <div class=" p-2 border rounded mb-4">
+      <div class="flex justify-between px-4">
+        <div class="flex flex-col">
+          <div class="text-center">Status</div>
+          <Separator />
+          <div>{resourceMonitor.showstatus}</div>
+        </div>
+        <div class="flex flex-col px-2 mx-2">
+          <div class="text-center">CPU</div>
+          <Separator />
+          <div>
+            {resourceMonitor.metrics.cpu +
+              "/" +
+              resourceMonitor.spec.containers[0].resources.limits.cpu}
+          </div>
+        </div>
+        <div class="flex flex-col px-2 mx-2">
+          <div class="text-center">Men</div>
+          <Separator />
+          <div>
+            {resourceMonitor.metrics.memory +
+              "/" +
+              resourceMonitor.spec.containers[0].resources.limits.memory}
+          </div>
+        </div>
+        <div class="flex flex-col">
+          <div class="text-center">Created</div>
+          <Separator />
+          <div>{resourceMonitor.metadata.creationTimestamp}</div>
         </div>
       </div>
-      <div class="flex flex-col px-2 mx-2">
-        <div>Men</div>
-        <div>
-          {resourceMonitor.metrics.memory +
-            "/" +
-            resourceMonitor.spec.containers[0].resources.limits.memory}
-        </div>
-      </div>
-      <div class="flex flex-col">
-        <div>Created</div>
-        <div>{resourceMonitor.metadata.creationTimestamp}</div>
-      </div>
-    </div>
-    <div>
-      <Button
-        variant="outline"
-        aria-label="Logs"
-        title="Logs"
-        onclick={async () => {
-          loading = true;
-          try {
-            instancelog = null;
-            var lines: any = await auth.client.CustomCommand({
-              command: "getagentlog",
-              id: data.item._id,
-              name: resourceMonitor.metadata.name,
-            });
-            lines = JSON.parse(lines);
-            if (lines != null) {
-              lines = ansi_up.ansi_to_html(lines);
-              lines = lines.split("\n");
-              // reverse lines
-              lines = lines.reverse();
-            } else {
-              lines = [];
+
+      <div>
+        <Button
+          variant="outline"
+          aria-label="Logs"
+          title="Logs"
+          onclick={async () => {
+            loading = true;
+            try {
+              instancelog = null;
+              var lines: any = await auth.client.CustomCommand({
+                command: "getagentlog",
+                id: data.item._id,
+                name: resourceMonitor.metadata.name,
+              });
+              lines = JSON.parse(lines);
+              if (lines != null) {
+                lines = ansi_up.ansi_to_html(lines);
+                lines = lines.split("\n");
+                // reverse lines
+                lines = lines.reverse();
+              } else {
+                lines = [];
+              }
+              console.log("lines", lines);
+              lines = lines.join("<br>");
+              // instancelog = JSON.stringify(lines);
+              instancelog = lines;
+              console.log("instancelog", JSON.stringify(instancelog));
+              errormessage = "";
+            } catch (error: any) {
+              errormessage = error.message ? error.message : error;
+              instancelog = "";
             }
-            console.log("lines", lines);
-            lines = lines.join("<br>");
-            // instancelog = JSON.stringify(lines);
-            instancelog = lines;
-            console.log("instancelog", JSON.stringify(instancelog));
-            errormessage = "";
-          } catch (error: any) {
-            errormessage = error.message ? error.message : error;
-            instancelog = "";
-          }
-          loading = false;
-        }}>Logs</Button
-      >
-      <Button
-        variant="destructive"
-        aria-label="Delete"
-        title="Delete"
-        onclick={() => {
-          showWarningAgentDelete = true;
-          deleteData = data.item;
-        }}>Delete</Button
-      >
+            loading = false;
+          }}>Logs</Button
+        >
+        <Button
+          variant="destructive"
+          aria-label="Delete"
+          title="Delete"
+          onclick={() => {
+            showWarningAgentDelete = true;
+            deleteData = data.item;
+          }}>Delete</Button
+        >
+      </div>
+    </div> -->
+
+    <div class="grid grid-cols-6 items-center justify-center border rounded">
+      <div class="border-b text-center p-4 col-span-1">Status</div>
+      <div class="border-b text-center p-4 col-span-2">CPU</div>
+      <div class="border-b text-center p-4 col-span-2">Men</div>
+      <div class="border-b text-center p-4 col-span-1">Created</div>
+      <div class="flex items-center justify-center p-4 col-span-1">
+        <Statuscard title={resourceMonitor.showstatus} />
+      </div>
+      <div class="text-center p-4 col-span-2">
+        {resourceMonitor.metrics.cpu +
+          "/" +
+          resourceMonitor.spec.containers[0].resources.limits.cpu}
+      </div>
+      <div class="text-center p-4 col-span-2">
+        {resourceMonitor.metrics.memory +
+          "/" +
+          resourceMonitor.spec.containers[0].resources.limits.memory}
+      </div>
+      <div class="text-center p-4 col-span-1">
+        {resourceMonitor.metadata.creationTimestamp}
+      </div>
+
+      <div class="px-4 pb-4">
+        <Button
+          variant="outline"
+          aria-label="Logs"
+          title="Logs"
+          onclick={async () => {
+            loading = true;
+            try {
+              instancelog = null;
+              var lines: any = await auth.client.CustomCommand({
+                command: "getagentlog",
+                id: data.item._id,
+                name: resourceMonitor.metadata.name,
+              });
+              lines = JSON.parse(lines);
+              if (lines != null) {
+                lines = ansi_up.ansi_to_html(lines);
+                lines = lines.split("\n");
+                // reverse lines
+                lines = lines.reverse();
+              } else {
+                lines = [];
+              }
+              lines = lines.join("<br>");
+              // instancelog = JSON.stringify(lines);
+              instancelog = lines;
+              errormessage = "";
+            } catch (error: any) {
+              errormessage = error.message ? error.message : error;
+              instancelog = "";
+            }
+            loading = false;
+          }}>Logs</Button
+        >
+        <Button
+          class="ml-4"
+          variant="destructive"
+          aria-label="Delete"
+          title="Delete"
+          onclick={() => {
+            showWarningAgentDelete = true;
+            deleteData = data.item;
+          }}>Delete</Button
+        >
+      </div>
     </div>
   </div>
 {/if}
@@ -462,139 +552,154 @@ title="back">Back</HotkeyButton
 {/if}
 
 <form method="POST" use:enhance>
-  <Form.Button disabled={loading} aria-label="submit" title="submit"
-    >Submit</Form.Button
-  >
-
-  <Form.Field {form} name="name">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Name</Form.Label>
-        <Input disabled={loading} bind:value={$formData.name} />
-      {/snippet}
-    </Form.Control>
-    <Form.Description>This is your public display name.</Form.Description>
-    <Form.FieldErrors />
-  </Form.Field>
-
-  <Form.Field {form} name="slug">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>slug</Form.Label>
-        <Input disabled={loading} {...props} bind:value={$formData.slug} />
-      {/snippet}
-    </Form.Control>
-    <Form.Description>This is your slug.</Form.Description>
-    <Form.FieldErrors />
-  </Form.Field>
-
-  <Button
-    aria-label="refresh"
-    title="refresh"
+  <Form.Button
     disabled={loading}
-    onclick={() => {
-      $formData.name = randomname();
-      $formData.slug = $formData.name;
-    }}>Refresh</Button
+    aria-label="submit"
+    title="submit"
+    class="mb-4"
+  >
+    <Check />
+    Submit</Form.Button
   >
 
-  <Form.Field {form} name="image">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>image</Form.Label>
-        <Select.Root
-          disabled={loading}
-          {...props}
-          type="single"
-          bind:value={$formData.image}
-          onValueChange={ImageUpdated}
-        >
-          <Select.Trigger class="w-[180px]">
-            {triggerContentImage()}
-          </Select.Trigger>
-          <Select.Content>
-            {#each images as image}
-              <Select.Item value={image.image} label={image.name}
-                >{image.name}</Select.Item
-              >
-            {/each}
-          </Select.Content>
-        </Select.Root>
-      {/snippet}
-    </Form.Control>
-    <Form.Description>This is the name of the image.</Form.Description>
-    <Form.FieldErrors />
-  </Form.Field>
+  <div class="flex items-center justify-between space-x-4">
+    <Form.Field {form} name="name" class="w-full">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Name</Form.Label>
+          <Input disabled={loading} bind:value={$formData.name} />
+        {/snippet}
+      </Form.Control>
+      <!-- <Form.Description>This is your public display name.</Form.Description> -->
+      <Form.FieldErrors />
+    </Form.Field>
 
-  <Form.Field {form} name="stripeprice">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>plan</Form.Label>
-        <Select.Root
-          disabled={loading}
-          {...props}
-          type="single"
-          bind:value={$formData.stripeprice}
-          onValueChange={PlanUpdated}
-        >
-          <Select.Trigger class="w-[180px]">
-            {triggerContentPlan()}
-          </Select.Trigger>
-          <Select.Content>
-            {#each products as plan}
-              <Select.Item value={plan.stripeprice} label={plan.name}
-                >{plan.name}</Select.Item
-              >
-            {/each}
-          </Select.Content>
-        </Select.Root>
-      {/snippet}
-    </Form.Control>
-    <Form.Description>This is the name of the image.</Form.Description>
-    <Form.FieldErrors />
-  </Form.Field>
+    <Form.Field {form} name="slug" class="w-full">
+      <Form.Control>
+        {#snippet children({ props })}
+          <div class="flex items-center">
+            <Form.Label>Slug</Form.Label>
+            <button
+              class="ms-2 hover:opacity-80 border p-1 rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
+              aria-label="refresh"
+              title="refresh"
+              disabled={loading}
+              onclick={() => {
+                $formData.name = randomname();
+                $formData.slug = $formData.name;
+              }}><RefreshCcw class="size-3" /></button
+            >
+          </div>
+          <Input disabled={loading} {...props} bind:value={$formData.slug} />
+        {/snippet}
+      </Form.Control>
+      <!-- <Form.Description>This is your slug.</Form.Description> -->
+      <Form.FieldErrors />
+    </Form.Field>
+
+    <Form.Field {form} name="image" class="w-full">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Image</Form.Label>
+          <Select.Root
+            disabled={loading}
+            {...props}
+            type="single"
+            bind:value={$formData.image}
+            onValueChange={ImageUpdated}
+          >
+            <Select.Trigger>
+              {triggerContentImage()}
+            </Select.Trigger>
+            <Select.Content>
+              {#each images as image}
+                <Select.Item value={image.image} label={image.name}
+                  >{image.name}</Select.Item
+                >
+              {/each}
+            </Select.Content>
+          </Select.Root>
+        {/snippet}
+      </Form.Control>
+      <!-- <Form.Description>This is the name of the image.</Form.Description> -->
+      <Form.FieldErrors />
+    </Form.Field>
+
+    <Form.Field {form} name="stripeprice" class="w-full">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Plan</Form.Label>
+          <Select.Root
+            disabled={loading}
+            {...props}
+            type="single"
+            bind:value={$formData.stripeprice}
+            onValueChange={PlanUpdated}
+          >
+            <Select.Trigger>
+              {triggerContentPlan()}
+            </Select.Trigger>
+            <Select.Content>
+              {#each products as plan}
+                <Select.Item value={plan.stripeprice} label={plan.name}
+                  >{plan.name}</Select.Item
+                >
+              {/each}
+            </Select.Content>
+          </Select.Root>
+        {/snippet}
+      </Form.Control>
+      <!-- <Form.Description>This is the name of the image.</Form.Description> -->
+      <Form.FieldErrors />
+    </Form.Field>
+  </div>
 
   {#if sizewarningtitle != ""}
     <div
-      class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative"
+      class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-4 rounded relative"
     >
       <strong class="font-bold">{sizewarningtitle}</strong>
       <span class="block sm:inline">{sizewarning}</span>
     </div>
   {/if}
 
-  <Form.Field {form} name="environment">
+  <Form.Field {form} name="environment" class="mb-4">
     <Form.Control>
       {#snippet children({ props })}
-        <Form.Label>environment</Form.Label>
+        <Form.Label>Environment</Form.Label>
         <ObjectInput
           disabled={loading}
           {...props}
           bind:value={$formData.environment}
+          class="min-h-52"
         />
       {/snippet}
     </Form.Control>
-    <Form.Description>This is your environment.</Form.Description>
+    <!-- <Form.Description>This is your environment.</Form.Description> -->
     <Form.FieldErrors />
   </Form.Field>
-  <div>Options</div>
+  <!-- <div>Options</div> -->
   <Form.Field
     {form}
     name="autostart"
-    class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4"
+    class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 mb-4"
   >
     <Form.Control>
       {#snippet children({ props })}
-        <Checkbox
-          disabled={loading}
-          {...props}
-          bind:checked={$formData.autostart}
-        />
-        <div class="space-y-1 leading-none">
-          <Form.Label>autostart</Form.Label>
+        <div class="flex flex-col space-y-4">
+          <Form.Label>Auto Start</Form.Label>
           <Form.Description>
             If enabled, the user is autostart and cannot signin
           </Form.Description>
+          <div class="flex items-center space-x-4">
+            <Switch
+              disabled={loading}
+              bind:checked={$formData.autostart}
+              {...props}
+              aria-readonly
+            />
+            <span> {$formData.autostart ? "On" : "Off"} </span>
+          </div>
         </div>
       {/snippet}
     </Form.Control>
@@ -604,20 +709,24 @@ title="back">Back</HotkeyButton
   <Form.Field
     {form}
     name="webserver"
-    class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4"
+    class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 mb-4"
   >
     <Form.Control>
       {#snippet children({ props })}
-        <Checkbox
-          disabled={loading}
-          {...props}
-          bind:checked={$formData.webserver}
-        />
-        <div class="space-y-1 leading-none">
-          <Form.Label>webserver</Form.Label>
+        <div class="flex flex-col space-y-4">
+          <Form.Label>Web Server</Form.Label>
           <Form.Description>
             If enabled, the user is webserver and cannot signin
           </Form.Description>
+          <div class="flex space-x-4">
+            <Switch
+              disabled={loading}
+              bind:checked={$formData.webserver}
+              {...props}
+              aria-readonly
+            />
+            <span> {$formData.webserver ? "On" : "Off"} </span>
+          </div>
         </div>
       {/snippet}
     </Form.Control>
@@ -627,60 +736,76 @@ title="back">Back</HotkeyButton
   <Form.Field
     {form}
     name="sleep"
-    class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4"
+    class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 mb-4"
   >
     <Form.Control>
       {#snippet children({ props })}
-        <Checkbox
-          disabled={loading}
-          {...props}
-          bind:checked={$formData.sleep}
-        />
-        <div class="space-y-1 leading-none">
-          <Form.Label>sleep</Form.Label>
+        <div class="flex flex-col space-y-4">
+          <Form.Label>Sleep</Form.Label>
           <Form.Description>
             If enabled, the user is sleep and cannot signin
           </Form.Description>
+          <div class="flex space-x-4">
+            <Switch
+              disabled={loading}
+              bind:checked={$formData.sleep}
+              {...props}
+              aria-readonly
+            />
+            <span> {$formData.sleep ? "On" : "Off"} </span>
+          </div>
         </div>
       {/snippet}
     </Form.Control>
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Field {form} name="timezone">
+  <Form.Field {form} name="timezone" class="mb-4">
     <Form.Control>
       {#snippet children({ props })}
-        <Form.Label>timezone</Form.Label>
-        <Timezoneselector
-          disabled={loading}
-          {...props}
-          bind:value={$formData.timezone}
-        />
+        <div class="flex items-center space-x-6">
+          <Form.Label>Timezone</Form.Label>
+          <Timezoneselector
+            disabled={loading}
+            {...props}
+            bind:value={$formData.timezone}
+          />
+        </div>
       {/snippet}
     </Form.Control>
-    <Form.Description>This is the name of the timezone.</Form.Description>
+    <!-- <Form.Description>This is the name of the timezone.</Form.Description> -->
     <Form.FieldErrors />
   </Form.Field>
 
   <Form.Field {form} name="runas">
     <Form.Control>
       {#snippet children({ props })}
-        <Form.Label>runas</Form.Label>
-        <!-- <Input {...props} bind:value={$formData.runas} /> -->
-        <Entityselector
-          disabled={loading}
-          {...props}
-          collectionname="users"
-          basefilter={{ _type: "user" }}
-          bind:value={$formData.runas}
-        />
+        <div class="flex items-center space-x-5">
+          <Form.Label class="me-6">Runas</Form.Label>
+          <Entityselector
+            disabled={loading}
+            {...props}
+            collectionname="users"
+            basefilter={{ _type: "user" }}
+            bind:value={$formData.runas}
+          />
+          <Button
+            variant="outline"
+            aria-label="Refresh"
+            title="Refresh"
+            disabled={loading}
+            onclick={() => {
+              goto(base + `/user/${$formData.runas}`);
+            }}><User />User details</Button
+          >
+        </div>
       {/snippet}
     </Form.Control>
-    <Form.Description>This is your runas.</Form.Description>
+    <!-- <Form.Description>This is your runas.</Form.Description> -->
     <Form.FieldErrors />
   </Form.Field>
 
-  <hr />
+  <Separator class="my-6" />
 
   <div>Add schedule of package</div>
   <div class="flex space-x-2 my-2">
@@ -716,24 +841,16 @@ title="back">Back</HotkeyButton
     <div>Packages list</div>
     {#each $formData.schedules as item, index}
       <div class="flex items-center my-2">
-        <div class="p-4 border rounded-xl flec flex-col space-y-4">
-          {#if $formData.schedules}
+        {#if $formData.schedules}
+          <div class="p-4 border rounded-xl flex flex-col space-y-4 w-full">
             <div class="flex items-center space-x-2 justify-between">
               <div class="text-center">
                 Package {index + 1}
               </div>
-              <Button
-                aria-label="Delete package"
-                variant="destructive"
-                onclick={() => {
-                  showWarning = true;
-                  deleteData = index;
-                }}><Trash2 />Remove Schedule</Button
-              >
             </div>
 
             <div class="flex items-center space-x-2">
-              <Form.Field {form} name="schedules">
+              <Form.Field {form} name="item.name">
                 <Form.Control>
                   <Form.Label>Name</Form.Label>
                   <Input bind:value={item.name} />
@@ -744,7 +861,7 @@ title="back">Back</HotkeyButton
 
             {#if item.cron != ""}
               <div class="flex items-center space-x-2">
-                <Form.Field {form} name="schedules">
+                <Form.Field {form} name="item.cron">
                   <Form.Control>
                     <Form.Label>Cron</Form.Label>
                     <Input
@@ -758,17 +875,18 @@ title="back">Back</HotkeyButton
               </div>
 
               <div class="flex items-center space-x-2">
-                <Form.Field {form} name="schedules">
+                <Form.Field {form} name="item.allowConcurrentRuns">
                   <Form.Control>
-                    <Checkbox
-                      disabled={loading}
-                      bind:checked={item.allowConcurrentRuns}
-                    />
-                    <div class="space-y-1 leading-none">
-                      <Form.Label>Allow concurent runs</Form.Label>
-                      <!-- <Form.Description>
-                        If enabled, the user is autostart and cannot signin
-                      </Form.Description> -->
+                    <div class="flex items-center justify-center space-x-2">
+                      <Switch
+                        disabled={loading}
+                        bind:checked={item.allowConcurrentRuns}
+                      />
+                      <Form.Label
+                        >Concurent Runs {item.allowConcurrentRuns
+                          ? "On"
+                          : "Off"}</Form.Label
+                      >
                     </div>
                   </Form.Control>
                   <Form.FieldErrors />
@@ -776,17 +894,14 @@ title="back">Back</HotkeyButton
               </div>
 
               <div class="flex items-center space-x-2">
-                <Form.Field {form} name="schedules">
+                <Form.Field {form} name="item.terminateIfRunning">
                   <Form.Control>
-                    <Checkbox
-                      disabled={loading}
-                      bind:checked={item.terminateIfRunning}
-                    />
-                    <div class="space-y-1 leading-none">
+                    <div class="flex items-center justify-center space-x-2">
+                      <Checkbox
+                        disabled={loading}
+                        bind:checked={item.terminateIfRunning}
+                      />
                       <Form.Label>Terminate If Running</Form.Label>
-                      <!-- <Form.Description>
-                        If enabled, the user is autostart and cannot signin
-                      </Form.Description> -->
                     </div>
                   </Form.Control>
                   <Form.FieldErrors />
@@ -795,22 +910,21 @@ title="back">Back</HotkeyButton
             {/if}
 
             <div class="flex items-center space-x-2">
-              <Form.Field {form} name="schedules">
+              <Form.Field {form} name="item.enabled">
                 <Form.Control>
-                  <Checkbox disabled={loading} bind:checked={item.enabled} />
-                  <div class="space-y-1 leading-none">
-                    <Form.Label>Enabled</Form.Label>
-                    <!-- <Form.Description>
-                      If enabled, the user is autostart and cannot signin
-                    </Form.Description> -->
+                  <div class="flex items-center justify-center space-x-2">
+                    <Switch disabled={loading} bind:checked={item.enabled} />
+                    <Form.Label
+                      >Enabled {item.enabled ? "On" : "Off"}</Form.Label
+                    >
                   </div>
                 </Form.Control>
                 <Form.FieldErrors />
               </Form.Field>
             </div>
 
-            <div class="flex flex-col items-start space-y-2">
-              <Form.Field {form} name="schedules">
+            <div class="flex flex-col items-start space-y-2 w-full">
+              <Form.Field {form} name="item.env">
                 <Form.Control>
                   <Form.Label>Environment</Form.Label>
                   <ObjectInput disabled={loading} bind:value={item.env} />
@@ -818,8 +932,18 @@ title="back">Back</HotkeyButton
                 <Form.FieldErrors />
               </Form.Field>
             </div>
-          {/if}
-        </div>
+
+            <Button
+              class="max-w-fit"
+              aria-label="Delete package"
+              variant="destructive"
+              onclick={() => {
+                showWarning = true;
+                deleteData = index;
+              }}><Trash2 />Remove Schedule</Button
+            >
+          </div>
+        {/if}
       </div>
     {/each}
   {:else}

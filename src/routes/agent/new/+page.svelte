@@ -15,6 +15,8 @@
   import { randomname } from "../helper.js";
   import Button from "$lib/components/ui/button/button.svelte";
   import Entityselector from "$lib/entityselector/entityselector.svelte";
+  import { ArrowLeft, Check, RefreshCcw, User } from "lucide-svelte";
+  import Switch from "$lib/components/ui/switch/switch.svelte";
 
   const key = "agent";
   let showdebug = $state(false);
@@ -232,121 +234,130 @@
   {$message}
 {/if}
 
-<div>
+<div class="font-bold mb-4">
   Add {key}
 </div>
 
 <form method="POST" use:enhance>
-  <Form.Button disabled={loading} aria-label="submit" title="submit"
-    >Submit</Form.Button
-  >
   <HotkeyButton
     disabled={loading}
     aria-label="submit"
     onclick={() => goto(base + `/${key}`)}
-    title="back">Back</HotkeyButton
+    title="back"
   >
-  <Form.Field {form} name="name">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Name</Form.Label>
-        <Input disabled={loading} bind:value={$formData.name} />
-      {/snippet}
-    </Form.Control>
-    <Form.Description>This is your public display name.</Form.Description>
-    <Form.FieldErrors />
-  </Form.Field>
-
-  <Form.Field {form} name="slug">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>slug</Form.Label>
-        <Input disabled={loading} {...props} bind:value={$formData.slug} />
-      {/snippet}
-    </Form.Control>
-    <Form.Description>This is your slug.</Form.Description>
-    <Form.FieldErrors />
-  </Form.Field>
-
-  <Button
-    aria-label="refresh"
-    title="refresh"
-    disabled={loading}
-    onclick={() => {
-      $formData.name = randomname();
-      $formData.slug = $formData.name;
-    }}>Refresh</Button
+    <ArrowLeft />
+    Back</HotkeyButton
+  >
+  <Form.Button disabled={loading} aria-label="submit" title="submit">
+    <Check />
+    Submit</Form.Button
   >
 
-  <Form.Field {form} name="image">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>image</Form.Label>
-        <Select.Root
-          disabled={loading}
-          {...props}
-          type="single"
-          bind:value={$formData.image}
-          onValueChange={ImageUpdated}
-        >
-          <Select.Trigger class="w-[180px]">
-            {triggerContentImage()}
-          </Select.Trigger>
-          <Select.Content>
-            {#each images as image}
-              <Select.Item value={image.image} label={image.name}
-                >{image.name}</Select.Item
-              >
-            {/each}
-          </Select.Content>
-        </Select.Root>
-      {/snippet}
-    </Form.Control>
-    <Form.Description>This is the name of the image.</Form.Description>
-    <Form.FieldErrors />
-  </Form.Field>
+  <div class="flex items-center justify-between space-x-4 mb-2">
+    <Form.Field {form} name="name" class="w-full">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Name</Form.Label>
+          <Input disabled={loading} bind:value={$formData.name} />
+        {/snippet}
+      </Form.Control>
+      <!-- <Form.Description>This is your public display name.</Form.Description> -->
+      <Form.FieldErrors />
+    </Form.Field>
 
-  <Form.Field {form} name="stripeprice">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>plan</Form.Label>
-        <Select.Root
-          disabled={loading}
-          {...props}
-          type="single"
-          bind:value={$formData.stripeprice}
-          onValueChange={PlanUpdated}
-        >
-          <Select.Trigger class="w-[180px]">
-            {triggerContentPlan()}
-          </Select.Trigger>
-          <Select.Content>
-            {#each products as plan}
-              <Select.Item value={plan.stripeprice} label={plan.name}
-                >{plan.name}</Select.Item
-              >
-            {/each}
-          </Select.Content>
-        </Select.Root>
-      {/snippet}
-    </Form.Control>
-    <Form.Description>This is the name of the image.</Form.Description>
-    <Form.FieldErrors />
-  </Form.Field>
+    <Form.Field {form} name="slug" class="w-full">
+      <Form.Control>
+        {#snippet children({ props })}
+          <div class="flex items-center">
+            <Form.Label>Slug</Form.Label>
+            <button
+              class="ms-2 hover:opacity-80 border p-1 rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
+              aria-label="refresh"
+              title="refresh"
+              disabled={loading}
+              onclick={() => {
+                $formData.name = randomname();
+                $formData.slug = $formData.name;
+              }}><RefreshCcw class="size-3" /></button
+            >
+          </div>
+          <Input disabled={loading} {...props} bind:value={$formData.slug} />
+        {/snippet}
+      </Form.Control>
+      <!-- <Form.Description>This is your slug.</Form.Description> -->
+      <Form.FieldErrors />
+    </Form.Field>
+
+    <Form.Field {form} name="image" class="w-full">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Image</Form.Label>
+          <Select.Root
+            disabled={loading}
+            {...props}
+            type="single"
+            bind:value={$formData.image}
+            onValueChange={ImageUpdated}
+          >
+            <Select.Trigger>
+              {triggerContentImage()}
+            </Select.Trigger>
+            <Select.Content>
+              {#each images as image}
+                <Select.Item value={image.image} label={image.name}
+                  >{image.name}</Select.Item
+                >
+              {/each}
+            </Select.Content>
+          </Select.Root>
+        {/snippet}
+      </Form.Control>
+      <!-- <Form.Description>This is the name of the image.</Form.Description> -->
+      <Form.FieldErrors />
+    </Form.Field>
+
+    <Form.Field {form} name="stripeprice" class="w-full">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Plan</Form.Label>
+          <Select.Root
+            disabled={loading}
+            {...props}
+            type="single"
+            bind:value={$formData.stripeprice}
+            onValueChange={PlanUpdated}
+          >
+            <Select.Trigger>
+              {triggerContentPlan()}
+            </Select.Trigger>
+            <Select.Content>
+              {#each products as plan}
+                <Select.Item value={plan.stripeprice} label={plan.name}
+                  >{plan.name}</Select.Item
+                >
+              {/each}
+            </Select.Content>
+          </Select.Root>
+        {/snippet}
+      </Form.Control>
+      <!-- <Form.Description>This is the name of the image.</Form.Description> -->
+      <Form.FieldErrors />
+    </Form.Field>
+  </div>
 
   {#if sizewarningtitle != ""}
     <div
-      class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative"
+      class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-4 rounded relative"
     >
       <strong class="font-bold">{sizewarningtitle}</strong>
       <span class="block sm:inline">{sizewarning}</span>
     </div>
   {/if}
 
-  <Form.Field {form} name="environment">
+  <Form.Field {form} name="environment" class="min-h-52 w-full mb-4">
     <Form.Control>
       {#snippet children({ props })}
-        <Form.Label>environment</Form.Label>
+        <Form.Label>Environment</Form.Label>
         <ObjectInput
           disabled={loading}
           {...props}
@@ -354,27 +365,31 @@
         />
       {/snippet}
     </Form.Control>
-    <Form.Description>This is your environment.</Form.Description>
+    <!-- <Form.Description>This is your environment.</Form.Description> -->
     <Form.FieldErrors />
   </Form.Field>
 
   <Form.Field
     {form}
     name="autostart"
-    class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4"
+    class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 mb-4"
   >
     <Form.Control>
       {#snippet children({ props })}
-        <Checkbox
-          disabled={loading}
-          {...props}
-          bind:checked={$formData.autostart}
-        />
-        <div class="space-y-1 leading-none">
-          <Form.Label>autostart</Form.Label>
+        <div class="flex flex-col space-y-4">
+          <Form.Label>Auto Start</Form.Label>
           <Form.Description>
             If enabled, the user is autostart and cannot signin
           </Form.Description>
+          <div class="flex items-center space-x-4">
+            <Switch
+              disabled={loading}
+              bind:checked={$formData.autostart}
+              {...props}
+              aria-readonly
+            />
+            <span> {$formData.autostart ? "On" : "Off"} </span>
+          </div>
         </div>
       {/snippet}
     </Form.Control>
@@ -384,20 +399,24 @@
   <Form.Field
     {form}
     name="webserver"
-    class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4"
+    class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 mb-4"
   >
     <Form.Control>
       {#snippet children({ props })}
-        <Checkbox
-          disabled={loading}
-          {...props}
-          bind:checked={$formData.webserver}
-        />
-        <div class="space-y-1 leading-none">
-          <Form.Label>webserver</Form.Label>
+        <div class="flex flex-col space-y-4">
+          <Form.Label>Web Server</Form.Label>
           <Form.Description>
             If enabled, the user is webserver and cannot signin
           </Form.Description>
+          <div class="flex space-x-4">
+            <Switch
+              disabled={loading}
+              bind:checked={$formData.webserver}
+              {...props}
+              aria-readonly
+            />
+            <span> {$formData.webserver ? "On" : "Off"} </span>
+          </div>
         </div>
       {/snippet}
     </Form.Control>
@@ -407,60 +426,78 @@
   <Form.Field
     {form}
     name="sleep"
-    class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4"
+    class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 mb-4"
   >
     <Form.Control>
       {#snippet children({ props })}
-        <Checkbox
-          disabled={loading}
-          {...props}
-          bind:checked={$formData.sleep}
-        />
-        <div class="space-y-1 leading-none">
-          <Form.Label>sleep</Form.Label>
+        <div class="flex flex-col space-y-4">
+          <Form.Label>Sleep</Form.Label>
           <Form.Description>
             If enabled, the user is sleep and cannot signin
           </Form.Description>
+          <div class="flex space-x-4">
+            <Switch
+              disabled={loading}
+              bind:checked={$formData.sleep}
+              {...props}
+              aria-readonly
+            />
+            <span> {$formData.sleep ? "On" : "Off"} </span>
+          </div>
         </div>
       {/snippet}
     </Form.Control>
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Field {form} name="timezone">
+  <Form.Field {form} name="timezone" class="mb-4">
     <Form.Control>
       {#snippet children({ props })}
-        <Form.Label>timezone</Form.Label>
-        <Timezoneselector
-          disabled={loading}
-          {...props}
-          bind:value={$formData.timezone}
-        />
+        <div class="flex items-center space-x-6">
+          <Form.Label>Timezone</Form.Label>
+          <Timezoneselector
+            disabled={loading}
+            {...props}
+            bind:value={$formData.timezone}
+          />
+        </div>
       {/snippet}
     </Form.Control>
-    <Form.Description>This is the name of the timezone.</Form.Description>
+    <!-- <Form.Description>This is the name of the timezone.</Form.Description> -->
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Field {form} name="runas">
+  <Form.Field {form} name="runas" class="mb-4">
     <Form.Control>
       {#snippet children({ props })}
-        <Form.Label>runas</Form.Label>
-        <!-- <Input {...props} bind:value={$formData.runas} /> -->
-        <Entityselector
-          disabled={loading}
-          collectionname="users"
-          basefilter={{ _type: "user" }}
-          bind:value={$formData.runas}
-        />
+        <div class="flex items-center space-x-5">
+          <Form.Label class="me-6">Runas</Form.Label>
+          <Entityselector
+            disabled={loading}
+            {...props}
+            collectionname="users"
+            basefilter={{ _type: "user" }}
+            bind:value={$formData.runas}
+          />
+          <Button
+            variant="outline"
+            aria-label="Refresh"
+            title="Refresh"
+            disabled={loading}
+            onclick={() => {
+              goto(base + `/user/${$formData.runas}`);
+            }}><User />User details</Button
+          >
+        </div>
       {/snippet}
     </Form.Control>
-    <Form.Description>This is your runas.</Form.Description>
+    <!-- <Form.Description>This is your runas.</Form.Description> -->
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Button disabled={loading} aria-label="submit" title="submit"
-    >Submit</Form.Button
+  <Form.Button disabled={loading} aria-label="submit" title="submit">
+    <Check />
+    Submit</Form.Button
   >
 </form>
 
