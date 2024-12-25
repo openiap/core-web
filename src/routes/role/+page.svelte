@@ -3,17 +3,19 @@
   export let collectionname = "users";
   export let query = { _type: "role" };
 </script>
+
 <script lang="ts">
   import { Entities } from "$lib/entities/index.js";
   import Button from "$lib/components/ui/button/button.svelte";
   import { HotkeyInput } from "$lib/components/ui/hotkeyinput/index.js";
   import { Label } from "$lib/components/ui/label/index.js";
-  import { Pencil, Trash2 } from "lucide-svelte";
+  import { Pencil, Plus, Trash2 } from "lucide-svelte";
 
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
+  import Searchinput from "$lib/searchinput/searchinput.svelte";
 
   let { data } = $props();
 
@@ -32,31 +34,23 @@
       console.error(Error("deletecount is " + deletecount));
     }
   }
-  function deleteitems(ids: string[]) {
-  }
+  function deleteitems(ids: string[]) {}
   function single_item_click(item: any) {
     goto(base + `/${page}/${item._id}`);
   }
 </script>
 
-<h1>All {page}s</h1>
+<div class="font-bold mb-4">All {page}s</div>
 <Hotkeybutton
+class="mb-4"
   aria-label="add"
-  variant={"outline"}
-  onclick={() => goto(base + `/${page}/new`)}>Add {page}</Hotkeybutton
+  variant="default"
+  onclick={() => goto(base + `/${page}/new`)}
 >
-<div class="flex w-full max-w-sm flex-col gap-1.5">
-  <Label for="email">Search</Label>
-  <div class="flex gap-1.5">
-    <HotkeyInput
-      type="text"
-      id="searchstring"
-      placeholder="Searchstring or JSON query"
-      bind:value={searchstring}
-      data-shortcut={"Control+f,Meta+f"}
-    />
-  </div>
-</div>
+  <Plus />
+  Add {page}</Hotkeybutton
+>
+<Searchinput bind:searchstring />
 <Entities
   {collectionname}
   {query}
@@ -68,15 +62,15 @@
   bind:entities
 >
   {#snippet action(item: any)}
-    <Button onclick={() => deleteitem(item)} size="icon" variant="destructive">
-      <Trash2 />
-    </Button>
     <Button
       onclick={() => goto(base + `/${page}/${item._id}`)}
       size="icon"
       variant="secondary"
     >
       <Pencil />
+    </Button>
+    <Button onclick={() => deleteitem(item)} size="icon" variant="destructive">
+      <Trash2 />
     </Button>
   {/snippet}
 </Entities>

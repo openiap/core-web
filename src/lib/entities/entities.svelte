@@ -589,16 +589,16 @@
 	{/if}
 </div>
 
-<Custompagination
+<!-- <Custompagination
 	bind:page_index
 	bind:count={total_count}
 	onnext={handlenext}
 	onprevious={handleprevious}
 	onpageclick={handlepageclick}
-/>
+/> -->
 
 <!-- custom pagination -->
-<!-- <div>
+<div>
 	<div class="text-sm text-gray-500 dark:text-gray-400 text-center mb-4">
 		Showing item {calculateitems()} of
 		{total_count}
@@ -657,7 +657,7 @@
 			</Pagination.Content>
 		{/snippet}
 	</Pagination.Root>
-</div> -->
+</div>
 
 <!-- Pagination -->
 <!-- Pagination -->
@@ -732,13 +732,15 @@
 	</div>
 </div>
 
-{#if tableheaders != null && tableheaders.length > 0 && showdebug == true}
-	<SuperDebug data={entities} theme="vscode" />
-{/if}
+<div class="mt-4">
+	{#if tableheaders != null && tableheaders.length > 0 && showdebug == true}
+		<SuperDebug data={entities} theme="vscode" />
+	{/if}
 
-<HotkeyButton
-	hidden
-	class="hidden"
-	data-shortcut={"Control+d,Meta+d"}
-	onclick={() => (showdebug = !showdebug)}>Toggle debug</HotkeyButton
->
+	<HotkeyButton
+		hidden
+		class="hidden"
+		data-shortcut={"Control+d,Meta+d"}
+		onclick={() => (showdebug = !showdebug)}>Toggle debug</HotkeyButton
+	>
+</div>

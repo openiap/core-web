@@ -18,7 +18,10 @@
 						title: "Entities",
 						url: `${base}/entities`,
 					},
-
+					{
+						title: "Roles",
+						url: `${base}/role`,
+					},
 					{
 						title: "Users",
 						url: `${base}/user`,
@@ -86,10 +89,6 @@
 					{
 						title: "Resources",
 						url: `${base}/resource`,
-					},
-					{
-						title: "Roles",
-						url: `${base}/role`,
 					},
 				],
 			},

@@ -5,7 +5,7 @@
     import * as Accordion from "$lib/components/ui/accordion/index.js";
 
     import { auth } from "$lib/stores/auth.svelte.js";
-    let { value = $bindable(null) } = $props();
+    let { value = $bindable(null), open = $bindable(null) } = $props();
     let newid = $state("");
 
     async function addace(id: string) {
@@ -24,7 +24,7 @@
     });
 </script>
 
-<Accordion.Root type="single" class="my-2">
+<Accordion.Root type="single" class="my-2" value={open}>
     <Accordion.Item value="item-1">
         <Accordion.Trigger>Access Control List</Accordion.Trigger>
         <Accordion.Content>
