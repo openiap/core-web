@@ -23,13 +23,12 @@
 		content="Get performance data and generates index suggestions for better database performance"
 	/>
 </svelte:head>
+
 <ModeWatcher />
 {#if $page.url.pathname != base + "/login" && $page.url.pathname != base + "/loginscreen"}
 	<div class="overflow-hidden flex flex-col w-full h-screen">
 		<Sidebar.Provider>
-			<div class="">
-				<AppSidebar />
-			</div>
+			<AppSidebar />
 			<div class="flex flex-col w-full">
 				<header
 					class="flex h-16 shrink-0 items-center justify-between gap-2 px-4 bg-gradient-to-b from-lightgradident1 to-lightgradident2 dark:bg-gradient-to-b dark:from-darkgradident1 dark:to-darkgradident2 rounded mx-2.5 my-2.5"
@@ -77,12 +76,6 @@
 				</div>
 			</div>
 		</Sidebar.Provider>
-
-		<!-- <footer>
-			<p>
-				<i><small>OpenCore © - OpenIAP ApS - 2024</small></i>
-			</p>
-		</footer> -->
 	</div>
 {:else}
 	{@render children()}

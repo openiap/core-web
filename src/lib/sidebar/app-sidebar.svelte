@@ -116,6 +116,9 @@
 	<div
 		class="bg-gradient-to-b from-lightgradident1 to-lightgradident2 dark:bg-gradient-to-b dark:from-darkgradident1 dark:to-darkgradident2 rounded my-2.5 mx-3 h-full overflow-auto"
 	>
+		<!-- <div
+		class="bg-gradient-to-b from-lightgradident1 to-lightgradident2 dark:bg-gradient-to-b dark:from-darkgradident1 dark:to-darkgradident2 rounded my-2.5 mx-3"
+	> -->
 		<Sidebar.Header>
 			<button
 				onclick={() => goto("/")}
@@ -136,6 +139,7 @@
 			</button>
 		</Sidebar.Header>
 
+		<!-- <div class="max-h-[calc(88vh)]  overflow-auto"> -->
 		<Sidebar.Content>
 			<!-- We create a Sidebar.Group for each parent. -->
 			{#each data.navMain as group (group.title)}
