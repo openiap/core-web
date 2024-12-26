@@ -19,7 +19,7 @@
 
   let { data } = $props();
 
-  let searchstring = $state("");
+  let searchstring = $state(data.searchstring);
   let selected_items = $state([]);
   let entities = $state(data.entities);
   async function deleteitem(item: any) {
