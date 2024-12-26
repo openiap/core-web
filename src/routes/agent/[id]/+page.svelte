@@ -483,17 +483,17 @@
         <Statuscard title={resourceMonitor.showstatus} />
       </div>
       <div class="text-center p-4 col-span-2">
-        {resourceMonitor.metrics.cpu +
+        {resourceMonitor?.metrics?.cpu +
           "/" +
-          resourceMonitor.spec.containers[0].resources.limits.cpu}
+          resourceMonitor?.spec?.containers[0]?.resources?.limits?.cpu}
       </div>
       <div class="text-center p-4 col-span-2">
-        {resourceMonitor.metrics.memory +
+        {resourceMonitor?.metrics?.memory +
           "/" +
-          resourceMonitor.spec.containers[0].resources.limits.memory}
+          resourceMonitor?.spec?.containers[0]?.resources?.limits?.memory}
       </div>
       <div class="text-center p-4 col-span-1">
-        {resourceMonitor.metadata.creationTimestamp}
+        {resourceMonitor?.metadata?.creationTimestamp}
       </div>
 
       <div class="px-4 pb-4">

@@ -29,6 +29,46 @@
 				],
 			},
 			{
+				title: "Incomplete Pages",
+				url: "#",
+				items: [
+					{
+						title: "Work Items",
+						url: `${base}/workitem`,
+					},
+					{
+						title: "Work Item Queue",
+						url: `${base}/workitemqueue`,
+					},
+					{
+						title: "Providers",
+						url: `${base}/provider`,
+					},
+					{
+						title: "Resources",
+						url: `${base}/resource`,
+					},
+				],
+			},
+			{
+				title: "Almost done Pages",
+				url: "#",
+				items: [
+					{
+						title: "Audit logs",
+						url: `${base}/auditlog`,
+					},
+					{
+						title: "Clients",
+						url: `${base}/client`,
+					},
+					{
+						title: "Console",
+						url: `${base}/console`,
+					},
+				],
+			},
+			{
 				title: "Completed Pages",
 				url: "#",
 				items: [
@@ -64,38 +104,6 @@
 					{
 						title: "Mail History",
 						url: `${base}/mailhistory`,
-					},
-				],
-			},
-			{
-				title: "Almost done Pages",
-				url: "#",
-				items: [
-					{
-						title: "Audit logs",
-						url: `${base}/auditlog`,
-					},
-					{
-						title: "Clients",
-						url: `${base}/client`,
-					},
-					{
-						title: "Console",
-						url: `${base}/console`,
-					},
-				],
-			},
-			{
-				title: "Incomplete Pages",
-				url: "#",
-				items: [
-					{
-						title: "Providers",
-						url: `${base}/provider`,
-					},
-					{
-						title: "Resources",
-						url: `${base}/resource`,
 					},
 				],
 			},
@@ -151,7 +159,10 @@
 			<!-- We create a Sidebar.Group for each parent. -->
 			{#each data.navMain as group (group.title)}
 				<Sidebar.Group class="ps-4">
-					<Sidebar.GroupLabel class="font-bold text-black dark:text-white">{group.title}</Sidebar.GroupLabel>
+					<Sidebar.GroupLabel
+						class="font-bold text-black dark:text-white"
+						>{group.title}</Sidebar.GroupLabel
+					>
 					<Sidebar.GroupContent>
 						<Sidebar.Menu>
 							{#each group.items as item (item.title)}
