@@ -532,24 +532,27 @@
 </div>
 
 <div class="flex my-2 space-x-2 items-center">
-	{#if selected_items.length > 0}
-		<HotkeyButton
-			onclick={() => (showWarning = true)}
-			data-shortcut="Delete"
-			size="sm"
-			variant="destructive"
-			class="bg-red-500 text-white"
-		>
-			<Trash2 />
-			Delete {selected_items.length} items</HotkeyButton
-		>
-	{/if}
+	<!-- {#if selected_items.length > 0} -->
+	<HotkeyButton
+		disabled={selected_items.length === 0}
+		onclick={() => (showWarning = true)}
+		data-shortcut="Delete"
+		size="sm"
+		variant="destructive"
+		class="bg-red-500 text-white"
+	>
+		<Trash2 />
+		Delete {selected_items.length} items</HotkeyButton
+	>
+	<!-- {/if} -->
 
-	{#if selected_items.length > 0}
-		<Hotkeybutton variant="default" onclick={() => (selected_items = [])}
-			>Clear All Selections</Hotkeybutton
-		>
-	{/if}
+	<!-- {#if selected_items.length > 0} -->
+	<Hotkeybutton
+		disabled={selected_items.length === 0}
+		variant="default"
+		onclick={() => (selected_items = [])}>Clear All Selections</Hotkeybutton
+	>
+	<!-- {/if} -->
 
 	{#if tableheaders != null && tableheaders.length > 0}
 		<Sheet.Root>
