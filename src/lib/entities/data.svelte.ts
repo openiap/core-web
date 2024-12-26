@@ -45,7 +45,12 @@ class entitiesdata {
 			top: 5,
 			jwt: auth.access_token,
 		});
-		console.log("GetData", page, "searchstring:", this.settings.searchstring, "col:", collectionname, "order:", orderby, "results", entities.length);
+		this.settings.total_count = await auth.client.Count({
+			collectionname,
+			query: usequery,
+			jwt: auth.access_token,
+		});
+		console.log("GetData", page, "searchstring:", this.settings.searchstring, "col:", collectionname, "order:", orderby, "results", entities.length, "total_count:", this.settings.total_count);
 		return entities;
 	}
 	persist() {
@@ -54,6 +59,10 @@ class entitiesdata {
 	loadsettings(page: string) {
 		this.settings = usersettings.getpagesettings(page);
 	}
+	getpagesettingsreactless() {
+        return $state.snapshot(this.settings);
+    }
+
 	SaveHeaders(tableheaders: TTableHeader[]) {
 		let result: SettingsTableHeader[] = [];
 		for (let i = 0; i < tableheaders.length; i++) {

@@ -14,6 +14,7 @@ export type pageSettings = {
     selected_items: string[];
     headers: SettingsTableHeader[];
     page_index: number;
+    total_count: number;
 }
 export type userSettings = {
     _id: string;
@@ -37,7 +38,7 @@ export class pagesettings implements pageSettings {
         this.headers = [];
         this.selected_items = [];
         this.page_index = 0;
-        this.total_count = 999999;
+        this.total_count = 99999;
     }
 }
 class _usersettings implements userSettings {
@@ -96,6 +97,15 @@ class _usersettings implements userSettings {
         this.pagesettings = [];
         this.dopersist();
     }
+    loadpage(settings: pageSettings) {
+        if(settings == null) return;
+        let current = this.getpage();
+        current.searchstring = settings.searchstring;
+        current.selected_items = settings.selected_items;
+        current.page_index = settings.page_index;
+        current.headers = settings.headers;
+        current.total_count = settings.total_count;
+    }
     stateload(settings: userSettings) {
         if (settings == null) {
             this.name = "Settings for " + auth.profile.name;
@@ -138,8 +148,8 @@ class _usersettings implements userSettings {
                 searchstring: org.searchstring,
                 selected_items: org.selected_items,
                 page_index: org.page_index,
-                headers: org.headers
-                // total_count: org.total_count
+                headers: org.headers,
+                total_count: org.total_count
                 // tableheaders: org.tableheaders,
                 // page_index: $state.snapshot(org.page_index)
             };

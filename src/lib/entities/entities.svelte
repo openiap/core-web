@@ -30,6 +30,8 @@
 	import Custompagination from "$lib/custompagination/custompagination.svelte";
 	import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
 	import { toast } from "svelte-sonner";
+    import { set } from "zod";
+    import { browser } from "$app/environment";
 
 	let {
 		page = "entities",
@@ -52,7 +54,7 @@
 	let multi_sort = $state(false);
 	let showdebug = $state(false);
 	let page_index = $state(data.settings.page_index);
-	let total_count = $state(9999);
+	let total_count = $state(data.settings.total_count);
 	let tableheaders = $state([]) as TTableHeader[];
 	let showWarning = $state(false);
 
@@ -70,11 +72,11 @@
 	};
 
 	selected_items = data.settings.selected_items;
-	// searchstring = data.settings.searchstring
 
 	async function GetData() {
 		const _entities = await data.GetData(page, collectionname, query);
 		entities = _entities;
+		total_count = data.settings.total_count;
 
 		if (entities.length > 0) {
 			let keys = [];
@@ -98,14 +100,13 @@
 					tableheaders.push(header);
 				}
 			}
-			let usequery = data.createQuery(searchstring, query);
-			total_count = await auth.client.Count({
-				collectionname,
-				query: usequery,
-				jwt: auth.access_token,
-			});
+			total_count = data.settings.total_count;
 		}
 	}
+	if(browser && data.settings.total_count == 99999) {
+		GetData();
+	}
+
 	function EnsureDefaultHeaders(page: string) {
 		if (tableheaders.length == 0) {
 			if (
@@ -217,7 +218,6 @@
 			data.settings.searchstring = searchstring;
 			data.settings.page_index = 0;
 			page_index = 0;
-			total_count = 99999;
 			data.persist();
 			GetData();
 		} else if (_collectionname != collectionname) {
@@ -230,15 +230,12 @@
 			searchstring = data.settings.searchstring;
 			selected_items = data.settings.selected_items;
 			page_index = data.settings.page_index;
-			total_count = 99999;
 			GetData();
 		}
 		data.settings.searchstring = $state.snapshot(searchstring);
-		// data.SaveHeaders(page);
 		data.settings.selected_items = selected_items;
 		data.settings.page_index = page_index;
 		SetHeaders();
-		// data.SaveHeaders(tableheaders);
 	});
 
 	SetHeaders();
