@@ -26,6 +26,10 @@
 						title: "Users",
 						url: `${base}/user`,
 					},
+					{
+						title: "Workspaces",
+						url: `${base}/workspace`,
+					},
 				],
 			},
 			{
