@@ -28,6 +28,8 @@
 	import { MediaQuery } from "runed";
 	import * as Pagination from "$lib/components/ui/pagination/index.js";
 	import Custompagination from "$lib/custompagination/custompagination.svelte";
+	import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
+	import { toast } from "svelte-sonner";
 
 	let {
 		page = "entities",
@@ -52,6 +54,7 @@
 	let page_index = $state(data.settings.page_index);
 	let total_count = $state(9999);
 	let tableheaders = $state([]) as TTableHeader[];
+	let showWarning = $state(false);
 
 	const isDesktop = new MediaQuery("(min-width: 768px)");
 	const perPage = 5;
@@ -407,6 +410,19 @@
 		data.persist();
 		GetData();
 	}
+	async function handleAccept() {
+		try {
+			await delete_selected($state.snapshot(selected_items));
+			toast.success("Deleted successfully", {
+				description: "",
+			});
+		} catch (error: any) {
+			toast.error("Error white deleting", {
+				description: error.message,
+			});
+			console.error(error);
+		}
+	}
 </script>
 
 <!-- error message-->
@@ -518,7 +534,7 @@
 <div class="flex my-2 space-x-2 items-center">
 	{#if selected_items.length > 0}
 		<HotkeyButton
-			onclick={() => delete_selected($state.snapshot(selected_items))}
+			onclick={() => (showWarning = true)}
 			data-shortcut="Delete"
 			size="sm"
 			variant="destructive"
@@ -744,3 +760,6 @@
 		onclick={() => (showdebug = !showdebug)}>Toggle debug</HotkeyButton
 	>
 </div>
+
+<Warningdialogue bind:showWarning type="deleteall" onaccept={handleAccept}
+></Warningdialogue>

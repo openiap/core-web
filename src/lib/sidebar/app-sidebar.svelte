@@ -29,13 +29,14 @@
 				],
 			},
 			{
-				title: "New Pages",
+				title: "Completed Pages",
 				url: "#",
 				items: [
 					{
 						title: "Agents",
 						url: `${base}/agent`,
 					},
+
 					{
 						title: "Credentials",
 						url: `${base}/credential`,
@@ -67,7 +68,7 @@
 				],
 			},
 			{
-				title: "Incomplete Pages",
+				title: "Almost done Pages",
 				url: "#",
 				items: [
 					{
@@ -75,13 +76,19 @@
 						url: `${base}/auditlog`,
 					},
 					{
-						title: "Console",
-						url: `${base}/console`,
-					},
-					{
 						title: "Clients",
 						url: `${base}/client`,
 					},
+					{
+						title: "Console",
+						url: `${base}/console`,
+					},
+				],
+			},
+			{
+				title: "Incomplete Pages",
+				url: "#",
+				items: [
 					{
 						title: "Providers",
 						url: `${base}/provider`,
@@ -144,7 +151,7 @@
 			<!-- We create a Sidebar.Group for each parent. -->
 			{#each data.navMain as group (group.title)}
 				<Sidebar.Group class="ps-4">
-					<Sidebar.GroupLabel>{group.title}</Sidebar.GroupLabel>
+					<Sidebar.GroupLabel class="font-bold text-black dark:text-white">{group.title}</Sidebar.GroupLabel>
 					<Sidebar.GroupContent>
 						<Sidebar.Menu>
 							{#each group.items as item (item.title)}

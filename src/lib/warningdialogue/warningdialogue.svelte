@@ -28,6 +28,12 @@
                 "You will not be able to see your data in the platform until you log in again.";
             buttonaname = "Logout";
             break;
+        case "deleteall":
+            title = "Are you absolutely sure?";
+            description =
+                "This action is irreversible. This will permanently delete all selected items.";
+            buttonaname = "Delete All";
+            break;
         case "default":
             title = "Are you sure?";
             description = "This action cannot be undone.";

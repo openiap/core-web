@@ -224,7 +224,7 @@ class entitiesdata {
 			case "credential":
 				return ["name", "username", "_created", "_modified"];
 			case "client":
-				return ["name", "username", "clientagent", "clientversion", "created"];
+				return ["id", "name", "clientagent", "clientversion", "_created", "remoteip"];
 			case "auditlog":
 				return ["_id", "name", "_type", "impostorname", "clientagent", "clientversion", "remoteip", "_created"];
 			case "agent":
