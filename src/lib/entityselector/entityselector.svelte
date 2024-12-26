@@ -19,13 +19,11 @@
 
     const triggerContent = $derived(async () => {
         let id;
-        // console.log("returnObject", returnObject, "value", value);
         if (returnObject) {
             id = value?._id;
         } else {
             id = value;
         }
-        // console.log("id", id);
         let item = await auth.client.FindOne<any>({
             collectionname,
             query: { _id: id },
@@ -83,14 +81,11 @@
                 {#each entities as item}
                     <Command.Item
                         onSelect={() => {
-                            // console.log("Command item", item);
                             if (returnObject) {
                                 value = item;
                             } else {
                                 value = item._id;
                             }
-                            // console.log("Command item value", value);
-                            // closeAndRefocusTrigger(ids.trigger);
                             closeAndRefocusTrigger();
                         }}
                         value={item._id}

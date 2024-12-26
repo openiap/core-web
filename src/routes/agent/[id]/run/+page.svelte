@@ -46,7 +46,6 @@
             process.output = _string + process.output;
             break;
           default:
-            // console.log("default", payload);
             break;
         }
       },

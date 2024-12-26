@@ -65,7 +65,6 @@
           });
           goto(base + `/${page}`);
         } catch (error: any) {
-          // console.log("error", error);
           errormessage = error.message;
           cancel();
         } finally {
@@ -76,7 +75,6 @@
       }
     },
   });
-  // console.log("instance", instance);
   const { form: formData, enhance, message, validateForm } = form;
   formData.set(data.item);
   validateForm({ update: true });
@@ -328,41 +326,6 @@
       console.error(error);
     }
   }
-  // async function getInstance() {
-  //   let instance: any = await auth.client.CustomCommand({
-  //     command: "getagentpods",
-  //     id: data.item._id,
-  //     name: data.item.slug,
-  //     jwt: auth.access_token,
-  //   });
-  //   instance = JSON.parse(instance)[0];
-  //   if (instance) {
-  //     instance.showstatus = "unknown";
-  //     if (instance.status && instance.status.phase) {
-  //       instance.showstatus = instance.status.phase;
-  //     }
-  //     if (
-  //       instance.showstatus == "running" ||
-  //       instance.showstatus == "Running"
-  //     ) {
-  //       if (
-  //         instance.status != null &&
-  //         instance.status.containerStatuses != null &&
-  //         instance.status.containerStatuses.length > 0
-  //       ) {
-  //         // instance.showstatus = instance.status.containerStatuses[0].state.running ? "running" : "stopped";
-  //         instance.showstatus = instance.status.containerStatuses[0].started
-  //           ? "Running"
-  //           : "Stopped " +
-  //             instance.status.containerStatuses[0].state.waiting.reason;
-  //       }
-  //     }
-  //     if (instance.metadata.deletionTimestamp) instance.showstatus = "Deleting";
-  //   }
-  //   console.log("instance", instance);
-  //   resourceMonitor = instance;
-  // }
-  // getInstance();
 </script>
 
 {#if errormessage && errormessage != ""}
@@ -393,87 +356,6 @@
     <div class="font-bold mb-4">
       {resourceMonitor.metadata.name}
     </div>
-
-    <!-- <div class=" p-2 border rounded mb-4">
-      <div class="flex justify-between px-4">
-        <div class="flex flex-col">
-          <div class="text-center">Status</div>
-          <Separator />
-          <div>{resourceMonitor.showstatus}</div>
-        </div>
-        <div class="flex flex-col px-2 mx-2">
-          <div class="text-center">CPU</div>
-          <Separator />
-          <div>
-            {resourceMonitor.metrics.cpu +
-              "/" +
-              resourceMonitor.spec.containers[0].resources.limits.cpu}
-          </div>
-        </div>
-        <div class="flex flex-col px-2 mx-2">
-          <div class="text-center">Men</div>
-          <Separator />
-          <div>
-            {resourceMonitor.metrics.memory +
-              "/" +
-              resourceMonitor.spec.containers[0].resources.limits.memory}
-          </div>
-        </div>
-        <div class="flex flex-col">
-          <div class="text-center">Created</div>
-          <Separator />
-          <div>{resourceMonitor.metadata.creationTimestamp}</div>
-        </div>
-      </div>
-
-      <div>
-        <Button
-          variant="outline"
-          aria-label="Logs"
-          title="Logs"
-          onclick={async () => {
-            loading = true;
-            try {
-              instancelog = null;
-              var lines: any = await auth.client.CustomCommand({
-                command: "getagentlog",
-                id: data.item._id,
-                name: resourceMonitor.metadata.name,
-              });
-              lines = JSON.parse(lines);
-              if (lines != null) {
-                lines = ansi_up.ansi_to_html(lines);
-                lines = lines.split("\n");
-                // reverse lines
-                lines = lines.reverse();
-              } else {
-                lines = [];
-              }
-              console.log("lines", lines);
-              lines = lines.join("<br>");
-              // instancelog = JSON.stringify(lines);
-              instancelog = lines;
-              console.log("instancelog", JSON.stringify(instancelog));
-              errormessage = "";
-            } catch (error: any) {
-              errormessage = error.message ? error.message : error;
-              instancelog = "";
-            }
-            loading = false;
-          }}>Logs</Button
-        >
-        <Button
-          variant="destructive"
-          aria-label="Delete"
-          title="Delete"
-          onclick={() => {
-            showWarningAgentDelete = true;
-            deleteData = data.item;
-          }}>Delete</Button
-        >
-      </div>
-    </div> -->
-
     <div class="grid grid-cols-6 items-center justify-center border rounded">
       <div class="border-b text-center p-4 col-span-1">Status</div>
       <div class="border-b text-center p-4 col-span-2">CPU</div>

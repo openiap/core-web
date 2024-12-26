@@ -70,7 +70,6 @@
       jwt: auth.access_token,
       projection: { name: 1, _id: 1 },
     });
-    console.log("item", item);
     members.push({ _id: item._id, name: item.name });
   }
 </script>

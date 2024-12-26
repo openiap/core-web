@@ -18,7 +18,6 @@ export const load: PageServerLoad = async ({ fetch, url, cookies, locals, params
 
 export const actions: Actions = {
   default: async (event: any) => {
-    console.error("actions: ");
     const form = await superValidate(event, zod(editFormSchema));
     if (!form.valid) {
       return fail(400, {

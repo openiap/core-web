@@ -54,10 +54,6 @@
       });
       toast.success("Deleted successfully", {
         description: "",
-        action: {
-          label: "Undo",
-          onClick: () => console.info("Undo"),
-        },
       });
       entities = await data1.GetData(page, collectionname, query);
     } catch (error: any) {

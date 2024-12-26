@@ -20,7 +20,6 @@
   let messages: any[] = $state([]);
   let pause = $state(false);
   let lines = $state(500);
-  console.log("configs", data.config);
 
   if (browser) {
     auth.client.RegisterExchange(
@@ -45,14 +44,12 @@
       .Watch(
         { collectionname: "config", paths: ["$.[?(@ && @._type == 'config')"] },
         (operation: any, document: any) => {
-          console.log(operation, document);
           if (document != null && document._type == "config") {
             config = document;
           }
         },
       )
       .then((watchid: any) => {
-        console.log("watchid:", watchid);
       });
   }
   function saveconfig(e: any) {
