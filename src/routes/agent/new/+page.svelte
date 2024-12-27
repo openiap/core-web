@@ -58,10 +58,12 @@
   $formData.image = "openiap/nodeagent";
   $formData.runas = auth.profile.sub;
 
-  const products = [
-    { stripeprice: "", name: "Free tier" },
-    ...data.agentInstance.products,
-  ];
+  let products = $state([
+    { stripeprice: "", name: "Free tier", metadata: { resources: {requests: { memory: "128Mi" },  limits: { memory: "128Mi" }  }  }},
+  ]);
+  if(data.agentInstance != null) {
+    products = [{ stripeprice: "", name: "Free tier" }, ...data.agentInstance.products];
+  }
 
   const resource = data.agentInstance;
   const images = auth.config.agent_images;
@@ -172,10 +174,10 @@
     var product = products.find(
       (x: any) => x.stripeprice == $formData.stripeprice,
     );
-    if (product == null || product.stripeprice == "") product = null;
-    var ram = product?.metadata?.resources?.limits?.memory;
+    if (product == null || product.stripeprice == "") product = null as any;
+    var ram:number = product?.metadata?.resources?.limits?.memory as any;
     if (ram == null) {
-      ram = product?.metadata?.resources?.requests?.memory;
+      ram = product?.metadata?.resources?.requests?.memory as any;
     }
     if (ram == null) {
       ram = resource?.defaultmetadata?.resources?.limits?.memory;
@@ -184,13 +186,13 @@
       ram = resource?.defaultmetadata?.resources?.requests?.memory;
     }
 
-    if (ram == null) ram = "128Mi";
-    if (ram.indexOf("Mi") > -1) {
-      ram = ram.replace("Mi", "");
-      ram = parseInt(ram) / 1024;
-    } else if (ram.indexOf("Gi") > -1) {
-      ram = ram.replace("Gi", "");
-      ram = parseInt(ram);
+    if (ram == null) ram = "128Mi" as any;
+    if ((ram as any).indexOf("Mi") > -1) {
+      ram = (ram as any).replace("Mi", "");
+      ram = parseInt((ram as any)) / 1024;
+    } else if ((ram as any).indexOf("Gi") > -1) {
+      ram = (ram as any).replace("Gi", "");
+      ram = parseInt((ram as any));
     }
     if ($formData.image == null) return;
     if ($formData.image.indexOf("openiap/nodechromiumagent") > -1) {
@@ -502,10 +504,9 @@
 </form>
 
 <div class="italic text-gray-500 py-2">
-  Agents using free plan will be shutdown after {data.agentInstance
-    .defaultmetadata.runtime_hours} hours. Buy one or more products on the customer
+  Agents using free plan will be shutdown after {data.agentInstance?.defaultmetadata.runtime_hours} hours. Buy one or more products on the customer
   page, and then assign it to an agent to allow it to run 24/7. You are limited to
-  {data.agentInstance.defaultmetadata.agentcount} free agents. Add more resources
+  {data.agentInstance?.defaultmetadata.agentcount} free agents. Add more resources
   on the customer page to increase the limit.
 </div>
 
