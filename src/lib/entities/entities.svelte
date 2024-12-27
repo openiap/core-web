@@ -58,6 +58,8 @@
 	let tableheaders = $state([]) as TTableHeader[];
 	let showWarning = $state(false);
 
+	let actioncellclass = $state("");
+	let actionheadclass = $state("");
 	const isDesktop = new MediaQuery("(min-width: 768px)");
 	const perPage = 5;
 	const siblingCount = $derived(isDesktop.matches ? 3 : 0);
@@ -149,16 +151,28 @@
 	function SetHeaders() {
 		EnsureDefaultHeaders(page);
 		let foundfirst = false;
+		let lastindex = -1;
 		for (let i = 0; i < tableheaders.length; i++) {
 			let header = tableheaders[i];
 			if (foundfirst == false && header.show == true) {
+				if(action == null) lastindex = i;
 				foundfirst = true;
 				header.headclass = "";
 				header.cellclass = "font-medium";
-			} else {
+			} else if (header.show == true){
+				if(action == null) lastindex = i;
 				header.headclass = "w-[100px]";
 				header.cellclass = "truncate overflow-ellipsis";
 			}
+		}
+		if(lastindex > -1) {
+			console.log("lastindex", lastindex);
+			tableheaders[lastindex].headclass = "text-right w-[100px]";
+			actioncellclass = "";
+			actionheadclass = "";
+		} else {
+			actioncellclass = "text-right w-[200px]";
+			actionheadclass = "text-right w-[200px]";
 		}
 	}
 	function RenderItemData(item: any, field: string) {
@@ -474,7 +488,7 @@
 					{/if}
 				{/each}
 				{#if action}
-					<Table.Head class="text-black font-semibold dark:text-white"
+					<Table.Head class="text-black font-semibold dark:text-white {actionheadclass}"
 						>Action</Table.Head
 					>
 				{/if}
@@ -520,7 +534,7 @@
 						{/if}
 					{/each}
 					{#if action}
-						<Table.Cell>{@render action(item)}</Table.Cell>
+						<Table.Cell class={actioncellclass}>{@render action(item)}</Table.Cell>
 					{/if}
 				</Table.Row>
 			{/each}
