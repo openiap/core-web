@@ -243,16 +243,16 @@
 <form method="POST" use:enhance>
   <HotkeyButton
     disabled={loading}
-    aria-label="submit"
+    aria-label="Cancel"
     onclick={() => goto(base + `/${key}`)}
-    title="back"
+    title="Cancel"
   >
     <ArrowLeft />
-    Back</HotkeyButton
+    Cancel</HotkeyButton
   >
-  <Form.Button disabled={loading} aria-label="submit" title="submit">
+  <Form.Button disabled={loading} aria-label="Create agent" title="Create agent">
     <Check />
-    Submit</Form.Button
+    Create agent</Form.Button
   >
 
   <div class="flex items-center justify-between space-x-4 mb-2">
@@ -497,9 +497,9 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Button disabled={loading} aria-label="submit" title="submit">
+  <Form.Button disabled={loading} aria-label="Create agent" title="Create agent">
     <Check />
-    Submit</Form.Button
+    Create agent</Form.Button
   >
 </form>
 
