@@ -241,6 +241,10 @@
 </div>
 
 <form method="POST" use:enhance>
+  <Form.Button disabled={loading} aria-label="Create agent" title="Create agent">
+    <Check />
+    Create agent</Form.Button
+  >
   <HotkeyButton
     disabled={loading}
     aria-label="Cancel"
@@ -249,10 +253,6 @@
   >
     <ArrowLeft />
     Cancel</HotkeyButton
-  >
-  <Form.Button disabled={loading} aria-label="Create agent" title="Create agent">
-    <Check />
-    Create agent</Form.Button
   >
 
   <div class="flex items-center justify-between space-x-4 mb-2">

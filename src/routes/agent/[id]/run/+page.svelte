@@ -111,7 +111,7 @@
         description: "",
       });
     } catch (error: any) {
-      toast.error("Error white deleting", {
+      toast.error("Error while deleting", {
         description: error.message,
       });
       console.error(error);

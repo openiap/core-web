@@ -91,10 +91,12 @@
     selectItems.find((f) => f.value === $formData.language)?.label ??
       "Select a language",
   );
-  const products = [
-    { stripeprice: "", name: "Free tier" },
-    ...data.agentInstance.products,
-  ];
+  let products = $state([
+    { stripeprice: "", name: "Free tier", metadata: { resources: {requests: { memory: "128Mi" },  limits: { memory: "128Mi" }  }  }},
+  ]);
+  if(data.agentInstance != null) {
+    products = [{ stripeprice: "", name: "Free tier" }, ...data.agentInstance.products];
+  }
   const resource = data.agentInstance;
   const images = auth.config.agent_images;
 
@@ -204,7 +206,7 @@
     var product = products.find(
       (x: any) => x.stripeprice == $formData.stripeprice,
     );
-    if (product == null || product.stripeprice == "") product = null;
+    if (product == null || product.stripeprice == "") product = null as any;
     var ram = product?.metadata?.resources?.limits?.memory;
     if (ram == null) {
       ram = product?.metadata?.resources?.requests?.memory;
@@ -219,14 +221,14 @@
     if (ram == null) ram = "128Mi";
     if (ram.indexOf("Mi") > -1) {
       ram = ram.replace("Mi", "");
-      ram = parseInt(ram) / 1024;
+      ram = parseInt(ram) / 1024 as any;
     } else if (ram.indexOf("Gi") > -1) {
       ram = ram.replace("Gi", "");
-      ram = parseInt(ram);
+      ram = parseInt(ram) as any;
     }
     if ($formData.image == null) return;
     if ($formData.image.indexOf("openiap/nodechromiumagent") > -1) {
-      if (product == null || ram < 0.25) {
+      if (product == null || (ram as any) < 0.25) {
         sizewarningtitle = "Not enough ram";
         if (
           auth.config.stripe_api_key != null &&
@@ -241,7 +243,7 @@
       }
     }
     if ($formData.image.indexOf("openiap/pychromiumagent") > -1) {
-      if (product == null || ram < 0.25) {
+      if (product == null || (ram as any) < 0.25) {
         sizewarningtitle = "Not enough ram";
         if (
           auth.config.stripe_api_key != null &&
@@ -285,11 +287,6 @@
   }
   async function handleAccept() {
     try {
-      // await auth.client.CustomCommand({
-      //   command: "deleteagent",
-      //   id: deleteData._id,
-      //   name: deleteData.slug,
-      // });
       let index = deleteData;
       let arr = $formData.schedules;
       if (arr) {
@@ -301,7 +298,7 @@
       });
       // entities = await data1.GetData(page, collectionname, query);
     } catch (error: any) {
-      toast.error("Error white deleting", {
+      toast.error("Error while deleting", {
         description: error.message,
       });
       console.error(error);
@@ -320,7 +317,7 @@
       });
       goto(base + `/${page}`);
     } catch (error: any) {
-      toast.error("Error white deleting", {
+      toast.error("Error while deleting", {
         description: error.message,
       });
       console.error(error);
@@ -336,19 +333,7 @@
   {$message}
 {/if}
 
-<div class="font-bold mb-4">
-  Edit {page}
-</div>
-<HotkeyButton
-  class="mb-4"
-  disabled={loading}
-  aria-label="Back"
-  onclick={() => goto(base + `/${page}`)}
-  title="back"
->
-  <ArrowLeft />
-  Back</HotkeyButton
->
+
 <!-- Performance monitor -->
 {#if resourceMonitor != null}
   <div class="my-2">
@@ -406,6 +391,11 @@
               instancelog = lines;
               errormessage = "";
             } catch (error: any) {
+              toast.error("Error while deleting", {
+                description: error.message,
+              });
+              console.error(error);
+
               errormessage = error.message ? error.message : error;
               instancelog = "";
             }
@@ -436,13 +426,23 @@
 <form method="POST" use:enhance>
   <Form.Button
     disabled={loading}
-    aria-label="submit"
-    title="submit"
+    aria-label="Update agent"
+    title="Update agent"
     class="mb-4"
   >
     <Check />
-    Submit</Form.Button
+    Update agent</Form.Button
   >
+  <HotkeyButton
+  class="mb-4"
+  disabled={loading}
+  aria-label="Cancel"
+  onclick={() => goto(base + `/${page}`)}
+  title="Cancel"
+>
+  <ArrowLeft />
+  Cancel</HotkeyButton
+>
 
   <div class="flex items-center justify-between space-x-4">
     <Form.Field {form} name="name" class="w-full">
@@ -832,10 +832,17 @@
     <div class="my-2">No packages found</div>
   {/if}
 
-  <Form.Button disabled={loading} aria-label="submit" title="submit"
-    >Submit</Form.Button
+  <Form.Button disabled={loading} aria-label="Update agent" title="Update agent"
+    >Update agent</Form.Button
   >
 </form>
+
+<div class="italic text-gray-500 py-2">
+  Agents using free plan will be shutdown after {data.agentInstance?.defaultmetadata.runtime_hours} hours. Buy one or more products on the customer
+  page, and then assign it to an agent to allow it to run 24/7. You are limited to
+  {data.agentInstance?.defaultmetadata.agentcount} free agents. Add more resources
+  on the customer page to increase the limit.
+</div>
 
 {#if formData != null && showdebug == true}
   <SuperDebug data={formData} theme="vscode" />

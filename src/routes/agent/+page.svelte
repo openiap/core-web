@@ -8,6 +8,7 @@
   import { Entities } from "$lib/entities/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { HotkeyInput } from "$lib/components/ui/hotkeyinput/index.js";
+	import Statuscard from "$lib/statuscard/statuscard.svelte";
   import { Label } from "$lib/components/ui/label/index.js";
   import {
     DollarSign,
@@ -128,7 +129,8 @@
   }
 
   async function getPods() {
-    if (knownpods.length == 0) {
+    try {
+      if (knownpods.length == 0) {
       knownpods = JSON.parse(
         await auth.client.CustomCommand({ command: "getagentpods" }),
       );
@@ -143,6 +145,12 @@
       getStatus(entities[x]);
     }
     entities = entities;
+    } catch (error: any) {
+      toast.error("Error while getting pods", {
+        description: error.message,
+      });
+      console.error(error);
+    }
   }
 
   async function handleAccept() {
@@ -157,7 +165,7 @@
       });
       entities = await data1.GetData(page, collectionname, query);
     } catch (error: any) {
-      toast.error("Error white deleting", {
+      toast.error("Error while deleting", {
         description: error.message,
       });
       console.error(error);
@@ -296,6 +304,11 @@
   bind:selected_items
   bind:entities
 >
+  {#snippet status(item: any)}
+    {#if item}
+      <Statuscard bind:title={item.status as string} />
+    {/if}
+  {/snippet}
   {#snippet action(item: any)}
     <div class="flex items-center space-x-2">
       <Button

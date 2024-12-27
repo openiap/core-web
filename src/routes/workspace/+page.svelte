@@ -34,7 +34,14 @@
   let deleteData: any = $state({});
 
   async function deleteitem(item: any) {
-    await auth.client.CustomCommand({ command: "deleteworkspace", id: item._id, jwt: auth.access_token });
+    try {
+      await auth.client.CustomCommand({ command: "deleteworkspace", id: item._id, jwt: auth.access_token });
+    } catch (error:any) {
+      toast.error("Error while deleting", {
+        description: error.message,
+      });
+      console.error(error);
+    }
   }
   async function deleteitems(ids: string[]) {
     for (let id of ids) {
@@ -53,7 +60,7 @@
       });
       entities = await data1.GetData(page, collectionname, query);
     } catch (error: any) {
-      toast.error("Error white deleting", {
+      toast.error("Error while deleting", {
         description: error.message,
       });
       console.error(error);

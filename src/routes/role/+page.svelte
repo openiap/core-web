@@ -61,6 +61,9 @@ class="mb-4"
   bind:selected_items
   bind:entities
 >
+  {#snippet members(item: any)}
+    {item.members?.length}
+  {/snippet}
   {#snippet action(item: any)}
     <Button
       onclick={() => goto(base + `/${page}/${item._id}`)}

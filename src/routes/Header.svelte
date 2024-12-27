@@ -38,7 +38,7 @@
 				description: "",
 			});
 		} catch (error: any) {
-			toast.error("Error white logout", {
+			toast.error("Error while logout", {
 				description: error.message,
 			});
 			console.error(error);

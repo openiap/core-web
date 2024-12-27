@@ -57,7 +57,7 @@
       });
       entities = await data1.GetData(page, collectionname, query);
     } catch (error: any) {
-      toast.error("Error white deleting", {
+      toast.error("Error while deleting", {
         description: error.message,
       });
       console.error(error);

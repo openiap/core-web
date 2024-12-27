@@ -20,7 +20,6 @@
 
 	import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
 	import { auth } from "$lib/stores/auth.svelte.js";
-	import Statuscard from "$lib/statuscard/statuscard.svelte";
 	import { Trash2 } from "lucide-svelte";
 	import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
 	import ChevronLeft from "lucide-svelte/icons/chevron-left";
@@ -44,7 +43,6 @@
 		delete_selected = (items: string[]) => {},
 		single_item_click = (item: any) => {},
 		multi_select = true,
-		action = null,
 		...rest
 	} = $props();
 
@@ -155,12 +153,12 @@
 		for (let i = 0; i < tableheaders.length; i++) {
 			let header = tableheaders[i];
 			if (foundfirst == false && header.show == true) {
-				if(action == null) lastindex = i;
+				if(rest["action"] == null) lastindex = i;
 				foundfirst = true;
 				header.headclass = "";
 				header.cellclass = "font-medium";
 			} else if (header.show == true){
-				if(action == null) lastindex = i;
+				if(rest["action"] == null) lastindex = i;
 				header.headclass = "w-[100px]";
 				header.cellclass = "truncate overflow-ellipsis";
 			}
@@ -428,7 +426,7 @@
 				description: "",
 			});
 		} catch (error: any) {
-			toast.error("Error white deleting", {
+			toast.error("Error while deleting", {
 				description: error.message,
 			});
 			console.error(error);
@@ -487,7 +485,7 @@
 						</Table.Head>
 					{/if}
 				{/each}
-				{#if action}
+				{#if rest["action"]}
 					<Table.Head class="text-black font-semibold dark:text-white {actionheadclass}"
 						>Action</Table.Head
 					>
@@ -498,9 +496,6 @@
 			{#each entities as item}
 				<Table.Row
 					class="border-b border-gray-400"
-					onclick={() => {
-						ToggleSelect(item);
-					}}
 					ondblclick={() => {
 						single_item_click(item);
 					}}
@@ -515,16 +510,29 @@
 					{/if}
 					{#each tableheaders as head}
 						{#if head.show}
-							{#if head.field == "status"}
-								<Table.Cell class={head.cellclass}>
-									{#if item.status}
-										<Statuscard
-											bind:title={item.status as string}
-										/>
-									{/if}
+							{#if head.field == "name"}
+								<Table.Cell class={head.cellclass}
+								onclick={() => {
+									if(multi_select && selected_items.length > 0) {
+										ToggleSelect(item);
+									} else {
+										single_item_click(item);
+									}						
+								}}
+									>{RenderItemData(item, head.field)}
 								</Table.Cell>
+							{:else if rest[head.field] != null }
+							<Table.Cell class={actioncellclass}>{@render rest[head.field](item)}</Table.Cell>
 							{:else}
 								<Table.Cell class={head.cellclass}
+									onclick={() => {
+										if(multi_select) {
+											ToggleSelect(item);
+										} else {
+											single_item_click(item);
+										}						
+									}}
+
 									>{RenderItemData(
 										item,
 										head.field,
@@ -533,8 +541,8 @@
 							{/if}
 						{/if}
 					{/each}
-					{#if action}
-						<Table.Cell class={actioncellclass}>{@render action(item)}</Table.Cell>
+					{#if rest["action"]}
+						<Table.Cell class={actioncellclass}>{@render rest["action"](item)}</Table.Cell>
 					{/if}
 				</Table.Row>
 			{/each}

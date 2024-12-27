@@ -25,7 +25,6 @@ export const actions: Actions = {
       });
     }
     try {
-      // await auth.client.UpdateOne({ collectionname: "users", item: form.data, jwt: auth.access_token });
       await auth.client.CustomCommand({ command: "ensureworkspace", data: JSON.stringify(form.data), jwt: auth.access_token });
     } catch (err: any) {
       setError(form, 'name', err.message);

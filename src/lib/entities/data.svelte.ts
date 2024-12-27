@@ -206,7 +206,7 @@ class entitiesdata {
 			case "user":
 				return ["_id", "name", "username", "email", "lastseen", "_created"];
 			case "role":
-				return ["_id", "name", "rparole", "_created"];
+				return ["_id", "name", "members", "_created"];
 			case "workitem":
 				return ["_id", "name", "wiq", "_created"];
 			case "resource":
