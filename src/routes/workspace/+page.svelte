@@ -36,6 +36,7 @@
   async function deleteitem(item: any) {
     try {
       await auth.client.CustomCommand({ command: "deleteworkspace", id: item._id, jwt: auth.access_token });
+      selected_items = selected_items.filter((i) => i !== item._id);
     } catch (error:any) {
       toast.error("Error while deleting", {
         description: error.message,
@@ -48,6 +49,7 @@
       await deleteitem({ _id: id });
       entities = await data1.GetData(page, collectionname, query);
     }
+    selected_items = [];
   }
   function single_item_click(item: any) {
     goto(base + `/${page}/${item._id}`);

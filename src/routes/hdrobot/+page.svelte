@@ -37,6 +37,7 @@
     });
     if (deletecount == 1) {
       entities = entities.filter((entity: any) => entity._id != item._id);
+      selected_items = selected_items.filter((i) => i !== item._id);
     } else {
       console.error(Error("deletecount is " + deletecount));
     }
