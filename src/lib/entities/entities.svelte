@@ -697,78 +697,32 @@
 	</Pagination.Root>
 </div>
 
-<!-- Pagination -->
-<!-- Pagination -->
-<div class="flex flex-col justify-center items-center space-y-2">
-	<div class="mt-4">
-		page {page_index + 1}
-		{#if entities.length == total_count}
-			showing {total_count} items
-		{:else}
-			showing item {page_index * 5 + 1}
-			{#if entities.length > 1}
-				to {page_index * 5 + entities.length}
-			{/if}
-			of {total_count}
-		{/if}
-		<!-- {#if selected_items.length > 0}
-			with {selected_items.length} selected (<button
-				onclick={() => (selected_items = [])}>clear</button
-			>)
-		{/if}. -->
-	</div>
-	<div>
-		<HotkeyButton
-			data-shortcut="ArrowLeft"
-			onclick={() => {
-				page_index = page_index - 1;
-				data.settings.page_index = page_index;
-				data.persist();
-				GetData();
-			}}
-			disabled={page_index <= 0}>Previous</HotkeyButton
-		>
-		<HotkeyButton
-			data-shortcut="ArrowRight"
-			onclick={() => {
-				page_index = page_index + 1;
-				data.settings.page_index = page_index;
-				data.persist();
-				GetData();
-			}}
-			disabled={entities.length < 5 || page_index * 5 >= total_count}
-		>
-			Next</HotkeyButton
-		>
-
-		<HotkeyButton
-			data-shortcut="Control+a,Meta+a"
-			onclick={() => {
-				if (!is_all_selected()) {
-					entities.map((x) => {
-						if (selected_items.indexOf(x._id) == -1) {
-							selected_items = [...selected_items, x._id];
-							data.settings.selected_items = selected_items;
-							data.persist();
-						}
-					});
-				} else {
-					entities.map((x) => {
-						if (selected_items.indexOf(x._id) >= -1) {
-							selected_items = selected_items.filter(
-								(y) => y != x._id,
-							);
-							data.settings.selected_items = selected_items;
-							data.persist();
-						}
-					});
+<HotkeyButton
+	data-shortcut="Control+a,Meta+a"
+	onclick={() => {
+		if (!is_all_selected()) {
+			entities.map((x) => {
+				if (selected_items.indexOf(x._id) == -1) {
+					selected_items = [...selected_items, x._id];
+					data.settings.selected_items = selected_items;
+					data.persist();
 				}
-			}}
-			class="hidden"
-			hidden={true}
-		/>
-	</div>
-</div>
+			});
+		} else {
+			entities.map((x) => {
+				if (selected_items.indexOf(x._id) >= -1) {
+					selected_items = selected_items.filter(
+						(y) => y != x._id,
+					);
+					data.settings.selected_items = selected_items;
+					data.persist();
+				}
+			});
+		}
+	}}
+	class="hidden"
+	hidden={true}
+/>
 
 <div class="mt-4">
 	{#if tableheaders != null && tableheaders.length > 0 && showdebug == true}
