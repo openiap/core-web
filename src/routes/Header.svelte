@@ -101,7 +101,7 @@
 			{#if auth.isAuthenticated == true}
 				<HotkeyButton
 					aria-label="Signout"
-					onclick={() => (showWarning = true)}
+					onclick={() => (handleAccept())}
 					data-shortcut={"Control+q,Meta+q"}>Signout</HotkeyButton
 				>
 			{:else}

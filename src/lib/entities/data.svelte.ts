@@ -240,6 +240,11 @@ class entitiesdata {
 				return ["name", "image", "os", "stripeprice", "_createdby", "status"];
 			case "package":
 				return ["name", "language", "_createdby", "_created"];
+			case "workspace":
+				return ["name", "_created", "_modified"];
+			case "member":
+				return ["name", "status", "role", "_modified"];
+
 			// case "entities":
 			// 	return ["_id", "name", "_type", "_createdby", "_modified", "_created" ];
 			default:

@@ -4,10 +4,10 @@
   import SuperDebug, { superForm } from "sveltekit-superforms";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { base } from "$app/paths";
-  import { goto } from "$app/navigation";
+  import { goto, invalidateAll } from "$app/navigation";
   import Button from "$lib/components/ui/button/button.svelte";
   import { Trash2 } from "lucide-svelte";
-  import { newFormSchema } from "../schema.js";
+  import { newMemberSchema } from "../../schema.js";
   import { zod } from "sveltekit-superforms/adapters";
   
   const key = "workspace";
@@ -16,7 +16,7 @@
   let errormessage = $state("");
   const form = superForm(data.form, {
     dataType: "json",
-    validators: zod(newFormSchema),
+    validators: zod(newMemberSchema),
   });
 
   const { form: formData, enhance, message } = form;
@@ -30,19 +30,19 @@
   {$message}
 {/if}
 <form method="POST" use:enhance>
-  <Form.Field {form} name="name">
+  <Form.Field {form} name="email">
     <Form.Control>
       {#snippet children({ props })}
-        <Form.Label>Workspace Name</Form.Label>
-        <Input {...props} bind:value={$formData.name} />
+        <Form.Label>Email</Form.Label>
+        <Input {...props} bind:value={$formData.email} />
       {/snippet}
     </Form.Control>
-    <Form.Description>This is the name of your new workspace.</Form.Description>
+    <Form.Description>The user you want to invite</Form.Description>
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Button aria-label="Create workspace">Create workspace</Form.Button>
-  <HotkeyButton aria-label="Cancel" onclick={() => goto(base + `/${key}`)}>Cancel</HotkeyButton>
+  <Form.Button aria-label="Create workspace">Create Invitation</Form.Button>
+  <HotkeyButton aria-label="Cancel" onclick={() => goto(base + `/${key}/${$formData.workspaceid}`)}>Cancel</HotkeyButton>
 </form>
 
 {#if formData != null && showdebug == true}

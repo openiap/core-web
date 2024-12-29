@@ -306,7 +306,7 @@
   bind:entities
 >
   {#snippet status(item: any)}
-    {#if item}
+    {#if item && item.status}
       <Statuscard bind:title={item.status as string} />
     {/if}
   {/snippet}

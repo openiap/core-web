@@ -29,8 +29,8 @@
 	import Custompagination from "$lib/custompagination/custompagination.svelte";
 	import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
 	import { toast } from "svelte-sonner";
-    import { set } from "zod";
-    import { browser } from "$app/environment";
+	import { set } from "zod";
+	import { browser } from "$app/environment";
 
 	let {
 		page = "entities",
@@ -103,7 +103,7 @@
 			total_count = data.settings.total_count;
 		}
 	}
-	if(browser && data.settings.total_count == 99999) {
+	if (browser && data.settings.total_count == 99999) {
 		GetData();
 	}
 
@@ -153,17 +153,17 @@
 		for (let i = 0; i < tableheaders.length; i++) {
 			let header = tableheaders[i];
 			if (foundfirst == false && header.show == true) {
-				if(rest["action"] == null) lastindex = i;
+				if (rest["action"] == null) lastindex = i;
 				foundfirst = true;
 				header.headclass = "";
 				header.cellclass = "font-medium";
-			} else if (header.show == true){
-				if(rest["action"] == null) lastindex = i;
+			} else if (header.show == true) {
+				if (rest["action"] == null) lastindex = i;
 				header.headclass = "w-[100px]";
 				header.cellclass = "truncate overflow-ellipsis";
 			}
 		}
-		if(lastindex > -1) {
+		if (lastindex > -1) {
 			console.log("lastindex", lastindex);
 			tableheaders[lastindex].headclass = "text-right w-[100px]";
 			actioncellclass = "";
@@ -486,7 +486,8 @@
 					{/if}
 				{/each}
 				{#if rest["action"]}
-					<Table.Head class="text-black font-semibold dark:text-white {actionheadclass}"
+					<Table.Head
+						class="text-black font-semibold dark:text-white {actionheadclass}"
 						>Action</Table.Head
 					>
 				{/if}
@@ -511,28 +512,36 @@
 					{#each tableheaders as head}
 						{#if head.show}
 							{#if head.field == "name"}
-								<Table.Cell class={head.cellclass}
-								onclick={() => {
-									if(multi_select && selected_items.length > 0) {
-										ToggleSelect(item);
-									} else {
-										single_item_click(item);
-									}						
-								}}
-									>{RenderItemData(item, head.field)}
-								</Table.Cell>
-							{:else if rest[head.field] != null }
-							<Table.Cell class={actioncellclass}>{@render rest[head.field](item)}</Table.Cell>
-							{:else}
-								<Table.Cell class={head.cellclass}
+								<Table.Cell
+									class={head.cellclass}
 									onclick={() => {
-										if(multi_select) {
+										if (
+											multi_select &&
+											selected_items.length > 0
+										) {
 											ToggleSelect(item);
 										} else {
 											single_item_click(item);
-										}						
+										}
 									}}
-
+									>{RenderItemData(item, head.field)}
+								</Table.Cell>
+							{:else if rest[head.field] != null}
+								<Table.Cell class={head.cellclass}
+									>{@render rest[head.field](
+										item,
+									)}</Table.Cell
+								>
+							{:else}
+								<Table.Cell
+									class={head.cellclass}
+									onclick={() => {
+										if (multi_select) {
+											ToggleSelect(item);
+										} else {
+											single_item_click(item);
+										}
+									}}
 									>{RenderItemData(
 										item,
 										head.field,
@@ -542,7 +551,9 @@
 						{/if}
 					{/each}
 					{#if rest["action"]}
-						<Table.Cell class={actioncellclass}>{@render rest["action"](item)}</Table.Cell>
+						<Table.Cell class={actioncellclass}
+							>{@render rest["action"](item)}</Table.Cell
+						>
 					{/if}
 				</Table.Row>
 			{/each}
@@ -635,135 +646,30 @@
 	onpageclick={handlepageclick}
 />
 
-<!-- custom pagination -->
-<!-- <div>
-	<div class="text-sm text-gray-500 dark:text-gray-400 text-center mb-4">
-		Showing item {calculateitems()} of
-		{total_count}
-	</div>
-
-	<Pagination.Root
-		count={total_count}
-		{perPage}
-		{siblingCount}
-		page={page_index + 1}
-	>
-		{#snippet children({ pages, currentPage })}
-			<Pagination.Content>
-				<Pagination.Item>
-					<HotkeyButton
-						disabled={!total_count || page_index + 1 === 1}
-						onclick={() => handleprevious()}
-						data-shortcut="ArrowLeft"
-						variant="default"
-					>
-						<ChevronLeft class="size-4" />
-						<span class="hidden sm:block">Previous</span>
-					</HotkeyButton>
-				</Pagination.Item>
-				{#each pages as page (page.key)}
-					{#if page.type === "ellipsis"}
-						<Pagination.Item>
-							<Pagination.Ellipsis />
-						</Pagination.Item>
-					{:else}
-						<Pagination.Item tabindex={-1}>
-							<Pagination.Link
-								tabindex={-1}
-								{page}
-								isActive={!total_count ||
-									currentPage === page.value}
-								onclick={() => handlepageclick(page.value)}
-							>
-								{page.value}
-							</Pagination.Link>
-						</Pagination.Item>
-					{/if}
-				{/each}
-				<Pagination.Item>
-					<HotkeyButton
-						disabled={!total_count ||
-							currentPage === Math.ceil(total_count / 5)}
-						onclick={() => handlenext()}
-						data-shortcut="ArrowRight"
-						variant="default"
-					>
-						<span class="hidden sm:block">Next</span>
-						<ChevronRight class="size-4" />
-					</HotkeyButton>
-				</Pagination.Item>
-			</Pagination.Content>
-		{/snippet}
-	</Pagination.Root>
-</div> -->
-
-<!-- Pagination -->
-<!-- Pagination -->
-<!-- <div class="flex flex-col justify-center items-center space-y-2">
-	<div class="mt-4">
-		page {page_index + 1}
-		{#if entities.length == total_count}
-			showing {total_count} items
-		{:else}
-			showing item {page_index * 5 + 1}
-			{#if entities.length > 1}
-				to {page_index * 5 + entities.length}
-			{/if}
-			of {total_count}
-		{/if}
-	</div>
-	<div>
-		<HotkeyButton
-			data-shortcut="ArrowLeft"
-			onclick={() => {
-				page_index = page_index - 1;
-				data.settings.page_index = page_index;
-				data.persist();
-				GetData();
-			}}
-			disabled={page_index <= 0}>Previous</HotkeyButton
-		>
-		<HotkeyButton
-			data-shortcut="ArrowRight"
-			onclick={() => {
-				page_index = page_index + 1;
-				data.settings.page_index = page_index;
-				data.persist();
-				GetData();
-			}}
-			disabled={entities.length < 5 || page_index * 5 >= total_count}
-		>
-			Next</HotkeyButton
-		>
-
-		<HotkeyButton
-			data-shortcut="Control+a,Meta+a"
-			onclick={() => {
-				if (!is_all_selected()) {
-					entities.map((x) => {
-						if (selected_items.indexOf(x._id) == -1) {
-							selected_items = [...selected_items, x._id];
-							data.settings.selected_items = selected_items;
-							data.persist();
-						}
-					});
-				} else {
-					entities.map((x) => {
-						if (selected_items.indexOf(x._id) >= -1) {
-							selected_items = selected_items.filter(
-								(y) => y != x._id,
-							);
-							data.settings.selected_items = selected_items;
-							data.persist();
-						}
-					});
+<HotkeyButton
+	data-shortcut="Control+a,Meta+a"
+	onclick={() => {
+		if (!is_all_selected()) {
+			entities.map((x) => {
+				if (selected_items.indexOf(x._id) == -1) {
+					selected_items = [...selected_items, x._id];
+					data.settings.selected_items = selected_items;
+					data.persist();
 				}
-			}}
-			class="hidden"
-			hidden={true}
-		/>
-	</div>
-</div> -->
+			});
+		} else {
+			entities.map((x) => {
+				if (selected_items.indexOf(x._id) >= -1) {
+					selected_items = selected_items.filter((y) => y != x._id);
+					data.settings.selected_items = selected_items;
+					data.persist();
+				}
+			});
+		}
+	}}
+	class="hidden"
+	hidden={true}
+/>
 
 <div class="mt-4">
 	{#if tableheaders != null && tableheaders.length > 0 && showdebug == true}
