@@ -7,18 +7,28 @@
   import { Input } from "$lib/components/ui/input/index.js";
   import { Trash2 } from "lucide-svelte";
   import SuperDebug, { superForm } from "sveltekit-superforms";
-  import { newFormSchema } from "../schema.js";
+  import { memberSchema } from "../../../schema.js";
   import { zod } from "sveltekit-superforms/adapters";
     import { Acl } from "$lib/acl/index.js";
+    import { auth } from "$lib/stores/auth.svelte.js";
 
   const key = "workspace";
   let showdebug = $state(false);
   const { data } = $props();
   const form = superForm(data.form, {
     dataType: "json",
-    validators: zod(newFormSchema),
+    validators: zod(memberSchema),
   });
   const { form: formData, enhance, message } = form;
+
+  async function accept() {
+    await auth.client.CustomCommand({ command: "acceptinvite", data: JSON.stringify($formData), jwt: auth.access_token });
+    goto(base + `/${key}/${$formData.workspaceid}/member`)
+  }
+  async function decline() {
+    await auth.client.CustomCommand({ command: "declineinvite", data: JSON.stringify($formData), jwt: auth.access_token });
+    goto(base + `/${key}/${$formData.workspaceid}/member`)
+  }
 </script>
 
 {#if message && $message != ""}
@@ -26,22 +36,17 @@
 {/if}
 
 <form method="POST" use:enhance>
-  <Acl bind:value={$formData} />
-
-  <Form.Field {form} name="name">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Workspace Name</Form.Label>
-        <Input {...props} bind:value={$formData.name} />
-      {/snippet}
-    </Form.Control>
-    <Form.Description>This is the name of your new workspace.</Form.Description>
-    <Form.FieldErrors />
-  </Form.Field>
-  <Form.Button aria-label="submit">Update workspace</Form.Button>
-  <HotkeyButton aria-label="Back" onclick={() => goto(base + `/${key}`)}>Cancel</HotkeyButton>
-  <HotkeyButton aria-label="Invite" onclick={() => goto(base + `/${key}/${$formData._id}/member`)}>Members</HotkeyButton>
-  <HotkeyButton aria-label="Invite" onclick={() => goto(base + `/${key}/${$formData._id}/invite`)}>Invite user to workspace</HotkeyButton>
+{#if $formData.status == "pending"}
+  {$formData.invitedbyname} has invited you to join {$formData.workspacename}.<br />
+  <br />
+  <Button variant="outline" onclick={accept}>Accept</Button>
+  <Button variant="outline" onclick={decline}>Decline</Button>
+{:else if $formData.status == "accepted"}
+  You have accepted the invitation to join {$formData.workspacename}.<br />
+{:else if $formData.status == "rejected"}
+  You have declined the invitation to join {$formData.workspacename}.<br />
+  <Button variant="outline" onclick={accept}>Accept</Button>
+{/if}
 </form>
 
 {#if formData != null && showdebug == true}

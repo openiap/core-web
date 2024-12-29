@@ -522,7 +522,7 @@
 									>{RenderItemData(item, head.field)}
 								</Table.Cell>
 							{:else if rest[head.field] != null }
-							<Table.Cell class={actioncellclass}>{@render rest[head.field](item)}</Table.Cell>
+							<Table.Cell class={head.cellclass}>{@render rest[head.field](item)}</Table.Cell>
 							{:else}
 								<Table.Cell class={head.cellclass}
 									onclick={() => {

@@ -82,7 +82,6 @@
         item: $state.snapshot(config),
         jwt: auth.access_token,
       }).then((result) => {
-        console.log(result);
       });
     }, 250);
   }
