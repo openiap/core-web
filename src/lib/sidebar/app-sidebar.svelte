@@ -37,12 +37,8 @@
 				url: "#",
 				items: [
 					{
-						title: "Work Items",
-						url: `${base}/workitem`,
-					},
-					{
-						title: "Work Item Queue",
-						url: `${base}/workitemqueue`,
+						title: "Forms",
+						url: `${base}/form`,
 					},
 					{
 						title: "Providers",
@@ -69,14 +65,6 @@
 					{
 						title: "Console",
 						url: `${base}/console`,
-					},
-					{
-						title: "HD Robots",
-						url: `${base}/hdrobot`,
-					},
-					{
-						title: "Mail History",
-						url: `${base}/mailhistory`,
 					},
 				],
 			},
@@ -109,7 +97,14 @@
 						title: "Form Resources",
 						url: `${base}/formresource`,
 					},
-					
+					{
+						title: "HD Robots",
+						url: `${base}/hdrobot`,
+					},
+					{
+						title: "Mail History",
+						url: `${base}/mailhistory`,
+					},
 				],
 			},
 		],

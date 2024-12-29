@@ -19,10 +19,9 @@
 
     const calculateitems = () => {
         if (page_index === 0) {
-            return 1;
-        } else if (count) {
+            return `${1} to ${page_index * perPage + 5}`;
         } else {
-            return `${page_index * perPage + 1} of ${page_index * perPage + 5}`;
+            return `${page_index * perPage + 1} to ${page_index * perPage + 5 < count ? page_index * perPage + 5 : count}`;
         }
     };
 </script>

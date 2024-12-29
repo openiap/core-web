@@ -1,7 +1,7 @@
 <script lang="ts" module>
-  export let page = "hdrobot";
-  export let collectionname = "openrpa";
-  export let query = { _type: "unattendedclient" };
+  export let page = "form";
+  export let collectionname = "forms";
+  export let query = { _type: "form" };
 </script>
 
 <script lang="ts">
@@ -108,13 +108,6 @@
 >
   {#snippet action(item: any)}
     <div class="flex items-center space-x-2">
-      <Switch
-        bind:checked={item.enabled}
-        onclick={() => {
-          showWarningToggle = true;
-          toggleData = item;
-        }}
-      ></Switch>
       <Button
         aria-label="edit"
         onclick={() => goto(base + `/entities/hdrobots/edit/${item._id}`)}
@@ -139,11 +132,4 @@
 </Entities>
 
 <Warningdialogue bind:showWarning type="delete" onaccept={handleAccept}
-></Warningdialogue>
-
-<Warningdialogue
-  bind:showWarning={showWarningToggle}
-  type="toggle"
-  onaccept={handleToggle}
-  oncancel={undoToggle}
 ></Warningdialogue>

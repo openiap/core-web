@@ -34,6 +34,11 @@
                 "This action is irreversible. This will permanently delete all selected items.";
             buttonaname = "Delete All";
             break;
+        case "toggle":
+            title = "Are you sure?";
+            description = "This is toggle the state of the item.";
+            buttonaname = "Toggle";
+            break;
         case "default":
             title = "Are you sure?";
             description = "This action cannot be undone.";
@@ -62,8 +67,8 @@
             <Button
                 tabindex={0}
                 variant="outline"
-                onclick={() => {
-                    // oncancel();
+                onclick={async () => {
+                    await oncancel();
                     showWarning = false;
                 }}>Cancel</Button
             >

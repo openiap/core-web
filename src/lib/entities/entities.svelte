@@ -627,16 +627,16 @@
 	{/if}
 </div>
 
-<!-- <Custompagination
+<Custompagination
 	bind:page_index
 	bind:count={total_count}
 	onnext={handlenext}
 	onprevious={handleprevious}
 	onpageclick={handlepageclick}
-/> -->
+/>
 
 <!-- custom pagination -->
-<div>
+<!-- <div>
 	<div class="text-sm text-gray-500 dark:text-gray-400 text-center mb-4">
 		Showing item {calculateitems()} of
 		{total_count}
@@ -695,11 +695,11 @@
 			</Pagination.Content>
 		{/snippet}
 	</Pagination.Root>
-</div>
+</div> -->
 
 <!-- Pagination -->
 <!-- Pagination -->
-<div class="flex flex-col justify-center items-center space-y-2">
+<!-- <div class="flex flex-col justify-center items-center space-y-2">
 	<div class="mt-4">
 		page {page_index + 1}
 		{#if entities.length == total_count}
@@ -711,11 +711,6 @@
 			{/if}
 			of {total_count}
 		{/if}
-		<!-- {#if selected_items.length > 0}
-			with {selected_items.length} selected (<button
-				onclick={() => (selected_items = [])}>clear</button
-			>)
-		{/if}. -->
 	</div>
 	<div>
 		<HotkeyButton
@@ -768,7 +763,7 @@
 			hidden={true}
 		/>
 	</div>
-</div>
+</div> -->
 
 <div class="mt-4">
 	{#if tableheaders != null && tableheaders.length > 0 && showdebug == true}
