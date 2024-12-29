@@ -70,6 +70,14 @@
 						title: "Console",
 						url: `${base}/console`,
 					},
+					{
+						title: "HD Robots",
+						url: `${base}/hdrobot`,
+					},
+					{
+						title: "Mail History",
+						url: `${base}/mailhistory`,
+					},
 				],
 			},
 			{
@@ -101,14 +109,7 @@
 						title: "Form Resources",
 						url: `${base}/formresource`,
 					},
-					{
-						title: "HD Robots",
-						url: `${base}/hdrobot`,
-					},
-					{
-						title: "Mail History",
-						url: `${base}/mailhistory`,
-					},
+					
 				],
 			},
 		],

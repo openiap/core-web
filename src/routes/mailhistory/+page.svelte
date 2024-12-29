@@ -6,9 +6,9 @@
 
 <script lang="ts">
   import { Entities } from "$lib/entities/index.js";
-  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
-  import { HotkeyInput } from "$lib/components/ui/hotkeyinput/index.js";
-  import { Label } from "$lib/components/ui/label/index.js";
+  // import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
+  // import { HotkeyInput } from "$lib/components/ui/hotkeyinput/index.js";
+  // import { Label } from "$lib/components/ui/label/index.js";
   import { Pencil, Eye } from "lucide-svelte";
 
   import { goto } from "$app/navigation";
@@ -17,7 +17,7 @@
   let { data } = $props();
   import Button from "$lib/components/ui/button/button.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
-  import Search from "$lib/search/search.svelte";
+  // import Search from "$lib/search/search.svelte";
   import Searchinput from "$lib/searchinput/searchinput.svelte";
 
   const title = "Mail History";
