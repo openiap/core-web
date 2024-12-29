@@ -422,9 +422,6 @@
 	async function handleAccept() {
 		try {
 			await delete_selected($state.snapshot(selected_items));
-			toast.success("Deleted successfully", {
-				description: "",
-			});
 		} catch (error: any) {
 			toast.error("Error while deleting", {
 				description: error.message,
@@ -503,9 +500,11 @@
 				>
 					{#if multi_select}
 						<Table.Cell class="w-8"
+						onclick={() => ToggleSelect(item)}
 							><Checkbox
 								aria-label="Select item"
 								checked={selected_items.indexOf(item._id) > -1}
+								
 							/></Table.Cell
 						>
 					{/if}

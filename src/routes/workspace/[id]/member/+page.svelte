@@ -25,7 +25,11 @@
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import Input from "$lib/components/ui/input/input.svelte";
   import { readonly } from "svelte/store";
-  let query = {_type: "member", workspaceid: data.id, status: {"$ne": "rejected"}}
+  let query = {
+    _type: "member",
+    workspaceid: data.id,
+    status: { $ne: "rejected" },
+  };
 
   usersettings.loadpage(data.settings);
 
@@ -37,28 +41,11 @@
 
   async function deleteitem(item: any) {
     try {
-      await auth.client.DeleteOne({collectionname, id: item._id});
-      selected_items = selected_items.filter((i) => i !== item._id);
-    } catch (error:any) {
-      toast.error("Error while deleting", {
-        description: error.message,
+      await auth.client.CustomCommand({
+        command: "removemember",
+        id: item._id,
       });
-      console.error(error);
-    }
-  }
-  async function deleteitems(ids: string[]) {
-    for (let id of ids) {
-      await auth.client.DeleteOne({collectionname, id});
-      entities = await data1.GetData(page, collectionname, query);
-    }
-    selected_items = [];
-  }
-  function single_item_click(item: any) {
-    
-  }
-  async function handleAccept() {
-    try {
-      await deleteitem(deleteData);
+      selected_items = selected_items.filter((i) => i !== item._id);
       toast.success("Deleted successfully", {
         description: "",
       });
@@ -70,7 +57,35 @@
       console.error(error);
     }
   }
-  function copylink(workspaceid:string, token:string) {
+  async function deleteitems(ids: string[]) {
+    try {
+      for (let id of ids) {
+        await auth.client.CustomCommand({ command: "removemember", id });
+        entities = await data1.GetData(page, collectionname, query);
+      }
+      selected_items = [];
+      toast.success("Deleted successfully", {
+        description: "",
+      });
+    } catch (error:any) {
+      toast.error("Error while deleting", {
+        description: error.message,
+      });
+      console.error(error);
+    }
+  }
+  function single_item_click(item: any) {}
+  async function handleAccept() {
+    try {
+      await deleteitem(deleteData);
+    } catch (error: any) {
+      toast.error("Error while deleting", {
+        description: error.message,
+      });
+      console.error(error);
+    }
+  }
+  function copylink(workspaceid: string, token: string) {
     const baseurl = window.location.origin;
     const url = `${baseurl}${base}/workspace/${workspaceid}/accept/${token}`;
     const el = document.createElement("textarea");
@@ -87,7 +102,11 @@
 
 <Searchinput bind:searchstring />
 
-<HotkeyButton aria-label="Invite" onclick={() => goto(base + `/workspace/${data.id}/invite`)}>Invite user to workspace</HotkeyButton>
+<HotkeyButton
+  aria-label="Invite"
+  onclick={() => goto(base + `/workspace/${data.id}/invite`)}
+  >Invite user to workspace</HotkeyButton
+>
 <Entities
   {collectionname}
   {query}
@@ -99,18 +118,18 @@
   bind:entities
 >
   {#snippet status(item: any)}
-  {#if item.status == "pending"}
-    <!-- <Input type="text" bind:value={item.token} readonly onclick={()=> { copylink(item.workspaceid, item.token)}} /> -->
-    <Button
+    {#if item.status == "pending"}
+      <!-- <Input type="text" bind:value={item.token} readonly onclick={()=> { copylink(item.workspaceid, item.token)}} /> -->
+      <Button
         aria-label="Copy"
         onclick={() => copylink(item.workspaceid, item.token)}
         variant="secondary"
       >
-      Copy invite link
+        Copy invite link
       </Button>
-  {:else}
-    <Label>{item.status}</Label>
-  {/if}
+    {:else}
+      <Label>{item.status}</Label>
+    {/if}
   {/snippet}
   {#snippet action(item: any)}
     <Button

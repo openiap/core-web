@@ -83,7 +83,9 @@ class _usersettings implements userSettings {
             }
         }
         let settings = await auth.client.FindOne<userSettings>({ collectionname: "users", query: { userid: userid, "_type": "usersettings" }, jwt: auth.access_token });
+        console.log("Loaded user settings userid:", userid, settings);
         if (settings == null) {
+            this._id = "";
             this.userid = userid;
             this.name = "Settings for " + auth.profile.name;
             return $state.snapshot(this);
@@ -108,6 +110,7 @@ class _usersettings implements userSettings {
     }
     stateload(settings: userSettings) {
         if (settings == null) {
+            this._id = "";
             this.name = "Settings for " + auth.profile.name;
             this.userid = auth.profile.sub;
             return;
@@ -180,8 +183,9 @@ class _usersettings implements userSettings {
         // @ts-ignore
         delete item.persisttimer;
         let result = await auth.client.InsertOrUpdateOne<userSettings>({ collectionname: "users", item, uniqeness: "userid,_type", jwt: auth.access_token });
-        console.log("Persisted user settings", result._id);
         this._id = result._id;
+        console.log("Persisted user settings userid:", item.userid, "_id", this._id);
+        
     }
 }
 
