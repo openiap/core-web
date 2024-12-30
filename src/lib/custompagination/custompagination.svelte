@@ -1,18 +1,16 @@
 <script lang="ts">
+    import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
+    import * as Pagination from "$lib/components/ui/pagination/index.js";
     import ChevronLeft from "lucide-svelte/icons/chevron-left";
     import ChevronRight from "lucide-svelte/icons/chevron-right";
     import { MediaQuery } from "runed";
-    import * as Pagination from "$lib/components/ui/pagination/index.js";
-    import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
 
     const isDesktop = new MediaQuery("(min-width: 768px)");
 
     let {
-        count = $bindable(0),
-        page_index = $bindable(0),
-        onnext = (item: any) => {},
-        onprevious = (item: any) => {},
-        onpageclick = (item: any) => {},
+        total_count = 0,
+        page_index = 0,
+        ...restProps
     } = $props();
     const perPage = 5;
     const siblingCount = $derived(isDesktop.matches ? 3 : 0);
@@ -21,59 +19,54 @@
         if (page_index === 0) {
             return `${1} to ${page_index * perPage + 5}`;
         } else {
-            return `${page_index * perPage + 1} to ${page_index * perPage + 5 < count ? page_index * perPage + 5 : count}`;
+            return `${page_index * perPage + 1} to ${page_index * perPage + 5 < total_count ? page_index * perPage + 5 : total_count}`;
         }
     };
 </script>
 
-<div class="text-sm text-gray-500 dark:text-gray-400 text-center mb-4">
-    Showing item {calculateitems()} of
-    {count}
-</div>
-
-<Pagination.Root {count} {perPage} {siblingCount} page={page_index + 1}>
-    {#snippet children({ pages, currentPage })}
-        <Pagination.Content>
-            <Pagination.Item>
-                <HotkeyButton
-                    disabled={!count || page_index + 1 === 1}
-                    onclick={() => onprevious()}
-                    data-shortcut="ArrowLeft"
-                    variant="default"
-                >
-                    <ChevronLeft class="size-4" />
-                    <span class="hidden sm:block">Previous</span>
-                </HotkeyButton>
-            </Pagination.Item>
-            {#each pages as page (page.key)}
-                {#if page.type === "ellipsis"}
-                    <Pagination.Item>
-                        <Pagination.Ellipsis />
-                    </Pagination.Item>
-                {:else}
-                    <Pagination.Item tabindex={-1}>
-                        <Pagination.Link
-                            tabindex={-1}
-                            {page}
-                            isActive={!count || currentPage === page.value}
-                            onclick={() => onpageclick(page.value)}
-                        >
-                            {page.value}
-                        </Pagination.Link>
-                    </Pagination.Item>
-                {/if}
-            {/each}
-            <Pagination.Item>
-                <HotkeyButton
-                    disabled={!count || currentPage === Math.ceil(count / 5)}
-                    onclick={() => onnext()}
+<Pagination.Root count={total_count} perPage={5} {...restProps} >
+	{#snippet children({ pages, currentPage })}
+	<div class="my-8 flex items-center">
+	  <Pagination.Content>
+		<Pagination.Item>
+		  <Pagination.PrevButton >
+			<HotkeyButton
+			data-shortcut="ArrowLeft"
+			variant="ghost"
+		>
+			<ChevronLeft class="size-4" />
+			<span class="hidden sm:block">Previous</span>
+		</HotkeyButton>
+		  </Pagination.PrevButton>
+		</Pagination.Item>
+		{#each pages as page (page.key)}
+		  {#if page.type === "ellipsis"}
+			<Pagination.Item>
+			  <Pagination.Ellipsis />
+			</Pagination.Item>
+		  {:else}
+			<Pagination.Item >
+			  <Pagination.Link {page} isActive={currentPage === page.value}>
+				{page.value}
+			  </Pagination.Link>
+			</Pagination.Item>
+		  {/if}
+		{/each}
+		<Pagination.Item>
+		  <Pagination.NextButton >
+			<HotkeyButton
                     data-shortcut="ArrowRight"
                     variant="default"
                 >
                     <span class="hidden sm:block">Next</span>
                     <ChevronRight class="size-4" />
                 </HotkeyButton>
-            </Pagination.Item>
-        </Pagination.Content>
-    {/snippet}
-</Pagination.Root>
+		  </Pagination.NextButton>
+		</Pagination.Item>
+	  </Pagination.Content>
+	</div>
+	<p class="text-center text-[13px] text-muted-foreground">
+		Showing item {calculateitems()} of {total_count}
+	  </p>
+	{/snippet}
+  </Pagination.Root>
