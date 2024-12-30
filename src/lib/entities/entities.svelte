@@ -384,25 +384,6 @@
 	 * ******************************************
 	 * Multi Select
 	 */
-
-	function handlenext() {
-		page_index = page_index + 1;
-		data.settings.page_index = page_index;
-		data.persist();
-		GetData();
-	}
-	function handleprevious() {
-		page_index = page_index - 1;
-		data.settings.page_index = page_index;
-		data.persist();
-		GetData();
-	}
-	function handlepageclick(page: number) {
-		page_index = page - 1;
-		data.settings.page_index = page_index;
-		data.persist();
-		GetData();
-	}
 	async function handleAccept() {
 		try {
 			await delete_selected($state.snapshot(selected_items));
@@ -412,18 +393,6 @@
 			});
 		}
 	}
-
-	const isDesktop = new MediaQuery("(min-width: 768px)");
-	const perPage = 5;
-	const siblingCount = $derived(isDesktop.matches ? 3 : 0);
-
-	const calculateitems = () => {
-		if (page_index === 0) {
-			return `${1} to ${page_index * perPage + 5}`;
-		} else {
-			return `${page_index * perPage + 1} to ${page_index * perPage + 5 < total_count ? page_index * perPage + 5 : total_count}`;
-		}
-	};
 </script>
 
 <div class="text-red-500">{data.errormessage}</div>

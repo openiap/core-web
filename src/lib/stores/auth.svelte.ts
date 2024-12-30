@@ -8,6 +8,48 @@ const { UserManager, WebStorageStateStore } = pkg;
 // @ts-ignore
 import ws from 'ws';
 
+export class Workspace {
+    public _id: string = "";
+    public name: string = "";
+    public billingid: string = "";
+    public admins: string = "";
+    public users: string = "";
+    public price: string = "";
+}
+class Config {
+    wshost: string = "";
+    wsurl: string = "";
+    domain: string = "";
+    auto_create_users: boolean = false;
+    auto_create_personal_nodered_group: boolean = false;
+    auto_create_personal_noderedapi_group: boolean = false;
+    namespace: string = "";
+    agent_domain_schema: string = "";
+    websocket_package_size: number = 0;
+    version: string = "";
+    stripe_api_key: string = "";
+    getting_started_url: string = "";
+    validate_user_form: boolean = false;
+    validate_emails: boolean = false;
+    forgot_pass_emails: boolean = false;
+    supports_watch: boolean = false;
+    agent_images: string[] = [];
+    amqp_enabled_exchange: string = "";
+    multi_tenant: boolean = false;
+    workspace_enabled: boolean = false;
+    enable_entity_restriction: boolean = false;
+    enable_web_tours: boolean = false;
+    enable_nodered_tours: boolean = false;
+    collections_with_text_index: string[] = [];
+    timeseries_collections: string[] = [];
+    ping_clients_interval: number = 0;
+    validlicense: boolean = false;
+    forceddomains: string[] = [];
+    grafana_url: string = "";
+    llmchat_queue: string = "";
+    enable_analytics: boolean = false;
+    enable_gitserver: boolean = false;
+}
 class authState {
     isAuthenticated: boolean = $state(false);
     profile: pkg.Profile = {} as any;
@@ -15,37 +57,47 @@ class authState {
     client: openiap = null as any;
     userManager: any;
     isConnected: boolean = $state(false);
-    config: any = $state(null);
+    config: Config = $state(null) as any;
+    workspace: Workspace = $state(new Workspace());
     baseurl = $state("");
-    origin = $state("");
     wsurl = $state("");
+    domain = $state("");
+    client_id = $state("");
+    protocol = $state("");
     constructor() {
     }
-    async getConfig(domain: string, origin: string, fetch: any) {
-        this.origin = origin;
-        this.baseurl = origin;
-        let configurl = "/config";
-        this.baseurl = "https://" + domain;
-        configurl = this.baseurl + "/config";
-        this.wsurl = this.baseurl.replace("https://", "wss://").replace("http://", "ws://") + "/ws/v2";
-        try {
-            let f = await fetch(configurl);
-            if (f.status !== 200) {
-                f = await fetch(this.baseurl + "/config");
-            }
-            if (f.status !== 200) {
-                f = await fetch("http://localhost:3000/config");
-            }
-            if (f.status !== 200) {
-                throw new Error(`Failed to load config from ${configurl}`);
-            }
-            this.config = await f.json();
-        } catch (error) {
-            console .error('Failed to load config', error);
+    async getConfig(protocol: string, domain: string, fetch: any) {
+        const configurl = protocol + '://' + domain + "/config";
+        let f = await fetch(configurl);
+        if (f.status !== 200) {
+            throw new Error(`Failed to load config from ${configurl}`);
         }
+        this.config = await f.json();
+        this.baseurl = protocol + '://' + domain;
+        this.wsurl = this.baseurl.replace("https://", "wss://").replace("http://", "ws://") + "/ws/v2";
     }
-    async clientinit(domain: string, client_id: string, origin: string, fetch: any, cookies: any) {
-        if (this.config == null) await this.getConfig(domain, origin, fetch);
+    async serverinit(protocol: string, domain: string, client_id: string, origin: string, fetch: any, cookies: any) {
+        if (this.config == null) {
+            await this.getConfig(protocol, domain, fetch);
+        }
+        if (this.client == null) {
+            global.WebSocket = ws;
+            this.client = new openiap(this.wsurl, "");
+            await this.client.connect(true);
+            this.client.onDisconnected = async () => {
+                console.log("*********************************")
+                console.log("serverinint.onDisconnected");
+                console.log("*********************************")
+                this.isConnected = false;
+            }
+            this.client.onConnected = async () => {
+                console.log("*********************************")
+                console.log("serverinint.onConnected");
+                console.log("*********************************")
+                this.isConnected = true;
+            }
+            this.isConnected = true;
+        }
         const settings = {
             authority: this.baseurl + "/oidc",
             client_id: client_id,
@@ -57,7 +109,37 @@ class authState {
             userStore: new WebStorageStateStore({ store: new SvelteStorage(cookies) }),
         };
         this.userManager = new UserManager(settings) as any;
-        await this.loadUserAndClient();
+        await this.loadUser();
+    }
+    async clientinit(protocol: string, domain: string, client_id: string, origin: string, access_token: string, profile: any, fetch: any, cookies: any) {
+        if (this.config == null) await this.getConfig(protocol, domain, fetch);
+        const settings = {
+            authority: this.baseurl + "/oidc",
+            client_id: client_id,
+            redirect_uri: origin + base + "/",
+            response_type: "code",
+            scope: "openid profile email",
+            post_logout_redirect_uri: origin + base + "/",
+            // userStore: new WebStorageStateStore({ store: window.localStorage }),
+            userStore: new WebStorageStateStore({ store: new SvelteStorage(cookies) }),
+        };
+        this.userManager = new UserManager(settings) as any;
+        if (access_token != null && access_token != "" && auth.access_token != access_token) {
+            this.access_token = access_token;
+            this.profile = profile;
+            auth.isAuthenticated = true;
+        } else if (auth.access_token == null || auth.access_token == "") {
+            await this.loadUser();
+        } else {
+            auth.isAuthenticated = true;
+        }
+        await this.connect(this.access_token);
+        let _workspace = await auth.client.FindOne<Workspace>({ collectionname: "users", query: { _type: "workspace" }, jwt: auth.access_token });
+        if (_workspace == null) {
+            this.workspace = new Workspace();
+        } else {
+            this.workspace = _workspace;
+        }
     }
     async login() {
         if (this.userManager == null) throw new Error("UserManager not initialized");
@@ -67,7 +149,7 @@ class authState {
         if (this.userManager == null) throw new Error("UserManager not initialized");
         await this.userManager.signoutRedirect();
     }
-    async loadUserAndClient() {
+    async loadUser() {
         this.isAuthenticated = false;
         const result = await this.userManager.getUser();
         if (result != null) {
@@ -81,24 +163,31 @@ class authState {
         if (!browser) {
             global.WebSocket = ws;
         }
-        await this.connect();
     }
     connectWaitingPromisses: any[] = [];
-    async connect() {
-        if(this.client != null && this.client.connected) {
+    async connect(access_token: string) {
+        if (this.client != null && this.client.connected) {
             return;
         }
-        if(this.client == null) {
-            if(browser) {
-                this.client = new openiap(this.wsurl, this.access_token);
-            } else {
-                this.client = new openiap(this.wsurl, "");
-            }
+        if (this.client == null) {
+            this.client = new openiap(this.wsurl, access_token);
             await this.client.connect(true);
             this.isConnected = true;
             this.connectWaitingPromisses.forEach((resolve: any) => {
                 resolve();
             });
+            if (browser) {
+                this.client.Watch({ collectionname: "users", paths: [], jwt: access_token }, async (operation: any, document: any) => {
+                    if (document._type == "workspace") {
+                        let _workspace = await auth.client.FindOne<Workspace>({ collectionname: "users", query: { _type: "workspace" } });
+                        if (_workspace == null) {
+                            this.workspace = new Workspace();
+                        } else {
+                            this.workspace = _workspace;
+                        }
+                    }
+                });
+            }
         } else {
             await new Promise((resolve) => {
                 this.connectWaitingPromisses.push(resolve);

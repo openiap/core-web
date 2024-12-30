@@ -13,7 +13,7 @@
 	import Header from "./Header.svelte";
 
 	let { children, data } = $props();
-	usersettings.stateload(data.usersettings);
+	// usersettings.stateload(data.usersettings);
 	let pagename = $derived(() =>
 		$page.url.pathname.replace(base, "").replace("/", ""),
 	);
@@ -42,18 +42,21 @@
 						<Breadcrumb.Root>
 							<Breadcrumb.List>
 								{#each pagename().split("/") as page, index}
-								<Breadcrumb.Item class="hidden md:block">
+									<Breadcrumb.Item class="hidden md:block">
+										{#if pagename().split("/").length - 1 !== index}
+											<Breadcrumb.Link
+												href="{base}/{page.trim()}"
+												>{page.trim()}</Breadcrumb.Link
+											>
+										{:else}
+											{page.trim()}
+										{/if}
+									</Breadcrumb.Item>
 									{#if pagename().split("/").length - 1 !== index}
-										<Breadcrumb.Link href="{base}/{page.trim()}"
-											>{page.trim()}</Breadcrumb.Link
-										>
-									{:else}
-										{page.trim()}
+										<Breadcrumb.Separator
+											class="hidden md:block"
+										/>
 									{/if}
-								</Breadcrumb.Item>
-								{#if pagename().split("/").length - 1 !== index}
-									<Breadcrumb.Separator class="hidden md:block" />
-								{/if}
 								{/each}
 							</Breadcrumb.List>
 						</Breadcrumb.Root>

@@ -5,20 +5,20 @@
 </script>
 
 <script lang="ts">
-  import { Entities } from "$lib/entities/index.js";
-  import { Pencil, Plus, Trash2 } from "lucide-svelte";
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import Button from "$lib/components/ui/button/button.svelte";
   import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
-  import { data as data1 } from "$lib/entities/data.svelte.js";
+  import { data as datacomponent } from "$lib/entities/data.svelte.js";
+  import { Entities } from "$lib/entities/index.js";
   import Searchinput from "$lib/searchinput/searchinput.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
+  import { Pencil, Plus, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
-  let searchstring = $state(data.searchstring);
+  let searchstring = $state(datacomponent.settings.searchstring);
   let selected_items = $state([]);
   let entities = $state(data.entities);
   let showWarning = $state(false);
@@ -49,7 +49,7 @@
       toast.success("Deleted successfully", {
         description: "",
       });
-      entities = await data1.GetData(page, collectionname, query);
+      entities = await datacomponent.GetData(page, collectionname, query);
     } catch (error: any) {
       toast.error("Error while deleting", {
         description: error.message,

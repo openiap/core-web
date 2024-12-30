@@ -9,6 +9,7 @@
   import { base } from "$app/paths";
   import Button from "$lib/components/ui/button/button.svelte";
   import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
+  import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
   import Searchinput from "$lib/searchinput/searchinput.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
@@ -16,7 +17,7 @@
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
-  let searchstring = $state(data.searchstring);
+  let searchstring = $state(datacomponent.settings.searchstring);
   let selected_items = $state([]);
   let entities = $state(data.entities);
   async function deleteitem(item: any) {
@@ -42,7 +43,7 @@
 
 <div class="font-bold mb-4">All {page}s</div>
 <Hotkeybutton
-class="mb-4"
+  class="mb-4"
   aria-label="add"
   variant="default"
   onclick={() => goto(base + `/${page}/new`)}
