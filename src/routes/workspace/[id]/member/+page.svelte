@@ -121,15 +121,31 @@
       <Label>{item.status}</Label>
     {/if}
   {/snippet}
+  {#snippet role(item: any)}
+    <select
+    bind:value={item.role}
+    onchange={async () => {
+      try {
+        await auth.client.CustomCommand({
+          command: "updatemember",
+          data: JSON.stringify(item),
+        });
+        toast.success("Updated successfully", {
+          description: "",
+        });
+      } catch (error:any) {
+        toast.error("Error while updating", {
+          description: error.message,
+        });        
+      }
+      // Run again to "reset"
+      entities = await data1.GetData(page, collectionname, query);
+    }}>
+    <option value="member">Member</option>
+    <option value="admin">Admin</option>
+  </select>
+  {/snippet}
   {#snippet action(item: any)}
-    <Button
-      aria-label="Edit"
-      onclick={() => goto(base + `/${page}/${item._id}`)}
-      size="icon"
-      variant="secondary"
-    >
-      <Pencil />
-    </Button>
     <Button
       aria-label="Delete"
       onclick={() => {

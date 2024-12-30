@@ -31,6 +31,9 @@
     try {
       await auth.client.CustomCommand({ command: "deleteworkspace", id: item._id, jwt: auth.access_token });
       selected_items = selected_items.filter((i) => i !== item._id);
+      toast.success("Deleted successfully", {
+        description: "",
+      });
     } catch (error:any) {
       toast.error("Error while deleting", {
         description: error.message,

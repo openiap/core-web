@@ -364,6 +364,11 @@
 	 * Multi Select
 	 * ******************************************
 	 */
+	function ClearSelected() {
+		selected_items = [];
+		data.settings.selected_items = selected_items;
+		data.persist();
+	}
 	function ToogleAll() {
 		entities.map((x) => {
 			if (selected_items.indexOf(x._id) > -1) {
@@ -565,7 +570,7 @@
 	<Hotkeybutton
 		disabled={selected_items.length === 0}
 		variant="default"
-		onclick={() => (selected_items = [])}>Clear All Selections</Hotkeybutton
+		onclick={ClearSelected}>Clear All Selections</Hotkeybutton
 	>
 
 	{#if tableheaders != null && tableheaders.length > 0}

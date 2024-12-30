@@ -46,7 +46,7 @@
   if (browser) {
     auth.client.RegisterExchange(
       { exchangename: "openflow_logs", algorithm: "fanout" },
-      (msg, payload, user, jwt) => {
+      (msg:any, payload:any, user:any, jwt:string) => {
         if (pause == true) return;
         if (payload.lvl == 0) payload.lvl = "inf";
         if (payload.lvl == 1) payload.lvl = "err";
@@ -77,7 +77,7 @@
         collectionname: "config",
         item: $state.snapshot(config),
         jwt: auth.access_token,
-      }).then((result) => {
+      }).then((result:any) => {
       });
     }, 250);
   }
