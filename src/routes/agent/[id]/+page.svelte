@@ -9,34 +9,30 @@
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
-  import { Acl } from "$lib/acl";
   import { auth } from "$lib/stores/auth.svelte.js";
 
-  import SuperDebug, { superForm, defaults } from "sveltekit-superforms";
-  import { zod } from "sveltekit-superforms/adapters";
-  import { editFormSchema } from "../schema.js";
-  import * as Select from "$lib/components/ui/select/index.js";
   import Button from "$lib/components/ui/button/button.svelte";
-  import { randomname } from "../helper.js";
-  import { ObjectInput } from "$lib/objectinput/index.js";
-  import Timezoneselector from "$lib/timezoneselector/timezoneselector.svelte";
-  import Entityselector from "$lib/entityselector/entityselector.svelte";
-  import {
-    ArrowLeft,
-    ArrowRight,
-    Check,
-    RefreshCcw,
-    Trash2,
-    User,
-  } from "lucide-svelte";
-  import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
-  import { toast } from "svelte-sonner";
-  import { AnsiUp } from "ansi_up";
-  import { json } from "@sveltejs/kit";
-  import { preventDefault } from "svelte/legacy";
-  import Switch from "$lib/components/ui/switch/switch.svelte";
+  import * as Select from "$lib/components/ui/select/index.js";
   import Separator from "$lib/components/ui/separator/separator.svelte";
+  import Switch from "$lib/components/ui/switch/switch.svelte";
+  import Entityselector from "$lib/entityselector/entityselector.svelte";
+  import { ObjectInput } from "$lib/objectinput/index.js";
   import Statuscard from "$lib/statuscard/statuscard.svelte";
+  import Timezoneselector from "$lib/timezoneselector/timezoneselector.svelte";
+  import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
+  import { AnsiUp } from "ansi_up";
+  import {
+      ArrowLeft,
+      Check,
+      RefreshCcw,
+      Trash2,
+      User
+  } from "lucide-svelte";
+  import { toast } from "svelte-sonner";
+  import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
+  import { zod } from "sveltekit-superforms/adapters";
+  import { randomname } from "../helper.js";
+  import { editFormSchema } from "../schema.js";
   const ansi_up = new AnsiUp();
 
   const { data } = $props();
@@ -144,7 +140,6 @@
       $formData.webserver = false;
     }
     if ($formData.image.indexOf("openiap/nodeagent") > -1) {
-      // "gitrepo": "https://github.com/openiap/nodeworkitemagent.git",
       $formData.environment = {};
     }
     if ($formData.image.indexOf("openiap/noderedagent") > -1) {
@@ -153,30 +148,18 @@
         admin_role: "users",
         api_role: "",
       };
-      // try {
-      //     var name = WebSocketClient.instance.user.username.toLowerCase();
-      //     name = name.replace(/([^a-z0-9]+){1,63}/gi, "");
-      //     $formData.environment["old_nodered_id"] = name;
-      // } catch (error) {
-      // }
     }
     if ($formData.image.indexOf("openiap/nodechromiumagent") > -1) {
-      // "gitrepo": "https://github.com/openiap/nodepuppeteeragent.git",
       $formData.environment = {};
       PlanUpdated();
     }
     if ($formData.image.indexOf("openiap/dotnetagent") > -1) {
-      // "gitrepo": "https://github.com/openiap/dotnetworkitemagent.git",
       $formData.environment = {};
     }
     if ($formData.image.indexOf("openiap/pyagent") > -1) {
-      // "gitrepo": "https://github.com/openiap/pyworkitemagent.git",
       $formData.environment = {};
     }
     if ($formData.image.indexOf("openiap/pychromiumagent") > -1) {
-      // "gitrepo3": "https://github.com/openiap/rccworkitemagent.git",
-      // "gitrepo2": "https://github.com/openiap/robotframeworkagent.git",
-      // "gitrepo": "https://github.com/openiap/taguiagent.git",
       $formData.environment = {};
       PlanUpdated();
     }
@@ -296,12 +279,10 @@
       toast.success("Deleted successfully", {
         description: "",
       });
-      // entities = await data1.GetData(page, collectionname, query);
     } catch (error: any) {
       toast.error("Error while deleting", {
         description: error.message,
       });
-      console.error(error);
     }
   }
 
@@ -320,7 +301,6 @@
       toast.error("Error while deleting", {
         description: error.message,
       });
-      console.error(error);
     }
   }
 </script>
@@ -334,7 +314,6 @@
 {/if}
 
 
-<!-- Performance monitor -->
 {#if resourceMonitor != null}
   <div class="my-2">
     <div>Resource monitor</div>
@@ -381,21 +360,17 @@
               if (lines != null) {
                 lines = ansi_up.ansi_to_html(lines);
                 lines = lines.split("\n");
-                // reverse lines
                 lines = lines.reverse();
               } else {
                 lines = [];
               }
               lines = lines.join("<br>");
-              // instancelog = JSON.stringify(lines);
               instancelog = lines;
               errormessage = "";
             } catch (error: any) {
               toast.error("Error while deleting", {
                 description: error.message,
               });
-              console.error(error);
-
               errormessage = error.message ? error.message : error;
               instancelog = "";
             }
@@ -452,7 +427,6 @@
           <Input disabled={loading} bind:value={$formData.name} />
         {/snippet}
       </Form.Control>
-      <!-- <Form.Description>This is your public display name.</Form.Description> -->
       <Form.FieldErrors />
     </Form.Field>
 
@@ -475,7 +449,6 @@
           <Input disabled={loading} {...props} bind:value={$formData.slug} />
         {/snippet}
       </Form.Control>
-      <!-- <Form.Description>This is your slug.</Form.Description> -->
       <Form.FieldErrors />
     </Form.Field>
 
@@ -503,7 +476,6 @@
           </Select.Root>
         {/snippet}
       </Form.Control>
-      <!-- <Form.Description>This is the name of the image.</Form.Description> -->
       <Form.FieldErrors />
     </Form.Field>
 
@@ -531,7 +503,6 @@
           </Select.Root>
         {/snippet}
       </Form.Control>
-      <!-- <Form.Description>This is the name of the image.</Form.Description> -->
       <Form.FieldErrors />
     </Form.Field>
   </div>
@@ -557,10 +528,8 @@
         />
       {/snippet}
     </Form.Control>
-    <!-- <Form.Description>This is your environment.</Form.Description> -->
     <Form.FieldErrors />
   </Form.Field>
-  <!-- <div>Options</div> -->
   <Form.Field
     {form}
     name="autostart"
@@ -655,7 +624,6 @@
         </div>
       {/snippet}
     </Form.Control>
-    <!-- <Form.Description>This is the name of the timezone.</Form.Description> -->
     <Form.FieldErrors />
   </Form.Field>
 
@@ -683,7 +651,6 @@
         </div>
       {/snippet}
     </Form.Control>
-    <!-- <Form.Description>This is your runas.</Form.Description> -->
     <Form.FieldErrors />
   </Form.Field>
 
@@ -718,7 +685,6 @@
     <Button onclick={addpackage}>Run package</Button>
   </div>
 
-  <!-- schedules list -->
   {#if $formData.schedules}
     <div>Packages list</div>
     {#each $formData.schedules as item, index}

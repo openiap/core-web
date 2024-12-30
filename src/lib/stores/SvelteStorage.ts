@@ -6,7 +6,7 @@ export class SvelteStorage {
     constructor(cookies: any) {
         this.cookies = cookies;
         if (this.cookies == null) {
-            this.storage = new CookieStorage(); // {path: "/"}
+            this.storage = new CookieStorage();
         }
     }
     clear() {
@@ -28,12 +28,12 @@ export class SvelteStorage {
         let provider = "cookiestorage";
         if (this.cookies == null) provider = "cookie";
         let urlencodedkey = encodeURIComponent(key);
-        this.cookies ? this.cookies.set(urlencodedkey, value) : this.storage.setItem(key, value); // , {path: "/"}
+        this.cookies ? this.cookies.set(urlencodedkey, value) : this.storage.setItem(key, value);
     }
     removeItem(key: string): void {
         let urlencodedkey = encodeURIComponent(key);
         let provider = "cookiestorage";
         if (this.cookies == null) provider = "cookie";
-        this.cookies ? this.cookies.delete(urlencodedkey) : this.storage.removeItem(key); // , {path: "/"}
+        this.cookies ? this.cookies.delete(urlencodedkey) : this.storage.removeItem(key);
     }
 }

@@ -1,15 +1,18 @@
 <script lang="ts">
-	import Header from "./Header.svelte";
-	import "../app.css";
-	import { auth } from "$lib/stores/auth.svelte";
-	let { children, data } = $props();
-	import { ModeWatcher } from "mode-watcher";
 	import { base } from "$app/paths";
 	import { page } from "$app/stores";
-	import AppSidebar from "$lib/sidebar/app-sidebar.svelte";
+	import * as Breadcrumb from "$lib/components/ui/breadcrumb/index.js";
+	import Separator from "$lib/components/ui/separator/separator.svelte";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
-	import { usersettings } from "$lib/stores/usersettings.svelte.js";
 	import { Toaster } from "$lib/components/ui/sonner/index.js";
+	import AppSidebar from "$lib/sidebar/app-sidebar.svelte";
+	import { auth } from "$lib/stores/auth.svelte";
+	import { usersettings } from "$lib/stores/usersettings.svelte.js";
+	import { ModeWatcher } from "mode-watcher";
+	import "../app.css";
+	import Header from "./Header.svelte";
+
+	let { children, data } = $props();
 	usersettings.stateload(data.usersettings);
 	let pagename = $derived(() =>
 		$page.url.pathname.replace(base, "").replace("/", ""),
@@ -35,22 +38,25 @@
 				>
 					<div class="flex items-center">
 						<Sidebar.Trigger class="-ml-1" />
-						<!-- <Separator orientation="vertical" class="mr-2 h-4" />
+						<Separator orientation="vertical" class="mr-2 h-4" />
 						<Breadcrumb.Root>
 							<Breadcrumb.List>
+								{#each pagename().split("/") as page, index}
 								<Breadcrumb.Item class="hidden md:block">
-									<Breadcrumb.Link href="#"
-										>Building Your Application</Breadcrumb.Link
-									>
+									{#if pagename().split("/").length - 1 !== index}
+										<Breadcrumb.Link href="{base}/{page.trim()}"
+											>{page.trim()}</Breadcrumb.Link
+										>
+									{:else}
+										{page.trim()}
+									{/if}
 								</Breadcrumb.Item>
-								<Breadcrumb.Separator class="hidden md:block" />
-								<Breadcrumb.Item>
-									<Breadcrumb.Page
-										>Data Fetching</Breadcrumb.Page
-									>
-								</Breadcrumb.Item>
+								{#if pagename().split("/").length - 1 !== index}
+									<Breadcrumb.Separator class="hidden md:block" />
+								{/if}
+								{/each}
 							</Breadcrumb.List>
-						</Breadcrumb.Root> -->
+						</Breadcrumb.Root>
 					</div>
 					<Header />
 				</header>
@@ -59,10 +65,6 @@
 					class="border border-gray-300 dark:border-gray-400 rounded mb-2.5 mx-2.5 h-full overflow-auto"
 				>
 					{#if auth.isAuthenticated == true || auth.isAuthenticated == false}
-						<!-- <p>Logged in</p> -->
-						<!-- <main>
-							{@render children()}
-						</main> -->
 						{#if pagename() == "entities"}
 							{@render children()}
 						{:else}
@@ -70,8 +72,6 @@
 								{@render children()}
 							</main>
 						{/if}
-					{:else}
-						<!-- <p>Not logged in</p> -->
 					{/if}
 				</div>
 			</div>

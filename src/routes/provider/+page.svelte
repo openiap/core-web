@@ -4,20 +4,18 @@
   export let query = { _type: "provider" };
 </script>
 <script lang="ts">
-  import { Entities } from "$lib/entities/index.js";
-  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { HotkeyInput } from "$lib/components/ui/hotkeyinput/index.js";
   import { Label } from "$lib/components/ui/label/index.js";
+  import { Entities } from "$lib/entities/index.js";
   import { Pencil, Trash2 } from "lucide-svelte";
-
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
+  import Button from "$lib/components/ui/button/button.svelte";
+  import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
+  import { auth } from "$lib/stores/auth.svelte.js";
+  import { toast } from "svelte-sonner";
 
   let { data } = $props();
-  import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
-  import Button from "$lib/components/ui/button/button.svelte";
-  import { auth } from "$lib/stores/auth.svelte.js";
-
   let searchstring = $state(data.searchstring);
   let selected_items = $state([]);
   let entities = $state(data.entities);
@@ -32,7 +30,9 @@
       entities = entities.filter((entity: any) => entity._id != item._id);
       selected_items = selected_items.filter((i) => i !== item._id);
     } else {
-      console.error(Error("deletecount is " + deletecount));
+      toast.error("Error", {
+        description: "Error deleting item",
+      });
     }
   }
   function deleteitems(ids: string[]) {

@@ -1,16 +1,16 @@
 <script lang="ts">
-  import * as Form from "$lib/components/ui/form/index.js";
-  import { Input } from "$lib/components/ui/input/index.js";
-  import { Checkbox } from "$lib/components/ui/checkbox/index.js";
-  import SuperDebug, { superForm, defaults } from "sveltekit-superforms";
-  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
-  import { base } from "$app/paths";
   import { goto } from "$app/navigation";
+  import { base } from "$app/paths";
   import Button from "$lib/components/ui/button/button.svelte";
-  import { Trash2 } from "lucide-svelte";
-  import { newFormSchema } from "../schema.js";
-  import { zod } from "sveltekit-superforms/adapters";
+  import { Checkbox } from "$lib/components/ui/checkbox/index.js";
+  import * as Form from "$lib/components/ui/form/index.js";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
+  import { Input } from "$lib/components/ui/input/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
+  import { Trash2 } from "lucide-svelte";
+  import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
+  import { zod } from "sveltekit-superforms/adapters";
+  import { newFormSchema } from "../schema.js";
 
   const key = "user";
   let showdebug = $state(false);

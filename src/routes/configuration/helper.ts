@@ -1,10 +1,4 @@
 const settings = [
-    // {"name": "supports_watch", "type": "boolean", "default": false},
-    // {"name": "NODE_ENV", "type": "string", "default": "development"},
-    // {"name": "log_to_exchange", "type": "boolean", "default": false}, // called straming handled elsewere
-    // {"name": "aes_secret", "type": "string", "default": ""}, // ONLY envoriment variable
-    // {"name": "signing_crt", "type": "string", "default": ""}, // ONLY envoriment variable
-    // {"name": "singing_key", "type": "string", "default": ""}, // ONLY envoriment variable
     { "name": "license_key", "type": "string", "default": "" },
     { "name": "enable_openapi", "type": "boolean", "default": true },
     { "name": "enable_grafanaapi", "type": "boolean", "default": true },
@@ -105,6 +99,7 @@ const settings = [
     { "name": "allow_merge_acl", "type": "boolean", "default": false },
 
     { "name": "multi_tenant", "type": "boolean", "default": false },
+    { "name": "workspace_enabled", "type": "boolean", "default": false },
     { "name": "enable_guest", "type": "boolean", "default": false },
     { "name": "enable_guest_file_upload", "type": "boolean", "default": false },
 
@@ -316,6 +311,7 @@ const defaultSettings = {
     "update_acl_based_on_groups": true,
     "allow_merge_acl": false,
     "multi_tenant": false,
+    "workspace_enabled": false,
     "enable_guest": false,
     "enable_guest_file_upload": false,
     "enable_gitserver": false,
@@ -437,8 +433,4 @@ function cleanMatchingKeys(config: { [key: string]: any }) {
     return cleanedConfig;
 }
 
-// Usage example
-// const cleanedConfig = cleanMatchingKeys(configuration, settings);
-
-
-export { settings, defaultSettings, cleanMatchingKeys }
+export { cleanMatchingKeys, defaultSettings, settings };

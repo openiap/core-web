@@ -5,48 +5,28 @@
 </script>
 
 <script lang="ts">
-  import { toast } from "svelte-sonner";
   import { Entities } from "$lib/entities/index.js";
-  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
-  import { HotkeyInput } from "$lib/components/ui/hotkeyinput/index.js";
-  import { Label } from "$lib/components/ui/label/index.js";
   import { ArrowLeft, Pencil, Plus, Trash2 } from "lucide-svelte";
-
+  import { toast } from "svelte-sonner";
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
-  import { data as data1 } from "$lib/entities/data.svelte.js";
-
-  let { data } = $props();
-  import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
+  import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
+  import { data as data1 } from "$lib/entities/data.svelte.js";
+  import Searchinput from "$lib/searchinput/searchinput.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
-  import Searchinput from "$lib/searchinput/searchinput.svelte";
 
+  let { data } = $props();
   let searchstring = $state(data.searchstring);
   let selected_items = $state([]);
   let entities = $state(data.entities);
   let showWarning = $state(false);
   let deleteData: any = $state({});
 
-  async function deleteitem(item: any) {
-    const deletecount = await auth.client.DeleteOne({
-      id: item._id,
-      collectionname,
-      jwt: auth.access_token,
-    });
-    if (deletecount == 1) {
-      entities = entities.filter((entity: any) => entity._id != item._id);
-      selected_items = selected_items.filter((i) => i !== item._id);
-    } else {
-      console.error(Error("deletecount is " + deletecount));
-    }
-  }
-  function deleteitems(ids: string[]) {}
   function single_item_click(item: any) {
     goto(base + `/${page}/${item._id}`);
   }
-
   async function handleAccept() {
     try {
       await auth.client.CustomCommand({
@@ -61,7 +41,6 @@
       toast.error("Error while deleting", {
         description: error.message,
       });
-      console.error(error);
     }
   }
 </script>
@@ -89,7 +68,7 @@
   {query}
   bind:searchstring
   {page}
-  delete_selected={deleteitems}
+  multi_select={false}
   {single_item_click}
   bind:selected_items
   bind:entities

@@ -1,18 +1,18 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
+  import Acl from "$lib/acl/acl.svelte";
+  import Button from "$lib/components/ui/button/button.svelte";
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
   import { Input } from "$lib/components/ui/input/index.js";
-  import SuperDebug, { superForm, defaults } from "sveltekit-superforms";
-  import { zod } from "sveltekit-superforms/adapters";
-  import { newFormSchema } from "../schema.js";
+  import Switch from "$lib/components/ui/switch/switch.svelte";
+  import { EntitySelector } from "$lib/entityselector/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { ArrowLeft, Check, Plus, Trash2 } from "lucide-svelte";
-  import Acl from "$lib/acl/acl.svelte";
-  import Switch from "$lib/components/ui/switch/switch.svelte";
-  import Button from "$lib/components/ui/button/button.svelte";
-  import { EntitySelector } from "$lib/entityselector/index.js";
+  import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
+  import { zod } from "sveltekit-superforms/adapters";
+  import { newFormSchema } from "../schema.js";
 
   const key = "role";
   let showdebug = $state(false);
@@ -63,7 +63,6 @@
       query: { _id: id },
       jwt: auth.access_token,
     });
-    // $formData.members.push({ _id: item._id, name: item.name, rights: 65535 });
   }
 </script>
 
@@ -101,7 +100,6 @@
         <Input disabled={loading} {...props} bind:value={$formData.name} />
       {/snippet}
     </Form.Control>
-    <!-- <Form.Description>This is the name.</Form.Description> -->
     <Form.FieldErrors />
   </Form.Field>
 
@@ -114,9 +112,6 @@
       {#snippet children({ props })}
         <div class="flex flex-col space-y-4">
           <Form.Label>RPA Role</Form.Label>
-          <!-- <Form.Description>
-            If enabled, the user is autostart and cannot signin
-          </Form.Description> -->
           <div class="flex items-center space-x-4">
             <Switch
               disabled={loading}
@@ -141,9 +136,6 @@
       {#snippet children({ props })}
         <div class="flex flex-col space-y-4">
           <Form.Label>Hide Members</Form.Label>
-          <!-- <Form.Description>
-            If enabled, the user is autostart and cannot signin
-          </Form.Description> -->
           <div class="flex items-center space-x-4">
             <Switch
               disabled={loading}

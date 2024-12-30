@@ -1,22 +1,21 @@
 <script lang="ts">
-  import * as Form from "$lib/components/ui/form/index.js";
-  import { Input } from "$lib/components/ui/input/index.js";
-  import { Checkbox } from "$lib/components/ui/checkbox/index.js";
-  import SuperDebug, { superForm, defaults } from "sveltekit-superforms";
-  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
-  import { base } from "$app/paths";
   import { goto } from "$app/navigation";
-  import { newFormSchema } from "../schema.js";
-  import { zod } from "sveltekit-superforms/adapters";
-  import { ObjectInput } from "$lib/objectinput/index.js";
-  import * as Select from "$lib/components/ui/select/index.js";
-  import Timezoneselector from "$lib/timezoneselector/timezoneselector.svelte";
-  import { auth } from "$lib/stores/auth.svelte";
-  import { randomname } from "../helper.js";
+  import { base } from "$app/paths";
   import Button from "$lib/components/ui/button/button.svelte";
-  import Entityselector from "$lib/entityselector/entityselector.svelte";
-  import { ArrowLeft, Check, RefreshCcw, User } from "lucide-svelte";
+  import * as Form from "$lib/components/ui/form/index.js";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
+  import { Input } from "$lib/components/ui/input/index.js";
+  import * as Select from "$lib/components/ui/select/index.js";
   import Switch from "$lib/components/ui/switch/switch.svelte";
+  import Entityselector from "$lib/entityselector/entityselector.svelte";
+  import { ObjectInput } from "$lib/objectinput/index.js";
+  import { auth } from "$lib/stores/auth.svelte";
+  import Timezoneselector from "$lib/timezoneselector/timezoneselector.svelte";
+  import { ArrowLeft, Check, RefreshCcw, User } from "lucide-svelte";
+  import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
+  import { zod } from "sveltekit-superforms/adapters";
+  import { randomname } from "../helper.js";
+  import { newFormSchema } from "../schema.js";
 
   const key = "agent";
   let showdebug = $state(false);
@@ -112,7 +111,6 @@
       $formData.webserver = false;
     }
     if ($formData.image.indexOf("openiap/nodeagent") > -1) {
-      // "gitrepo": "https://github.com/openiap/nodeworkitemagent.git",
       $formData.environment = {};
     }
     if ($formData.image.indexOf("openiap/noderedagent") > -1) {
@@ -121,30 +119,18 @@
         admin_role: "users",
         api_role: "",
       };
-      // try {
-      //     var name = WebSocketClient.instance.user.username.toLowerCase();
-      //     name = name.replace(/([^a-z0-9]+){1,63}/gi, "");
-      //     $formData.environment["old_nodered_id"] = name;
-      // } catch (error) {
-      // }
     }
     if ($formData.image.indexOf("openiap/nodechromiumagent") > -1) {
-      // "gitrepo": "https://github.com/openiap/nodepuppeteeragent.git",
       $formData.environment = {};
       PlanUpdated();
     }
     if ($formData.image.indexOf("openiap/dotnetagent") > -1) {
-      // "gitrepo": "https://github.com/openiap/dotnetworkitemagent.git",
       $formData.environment = {};
     }
     if ($formData.image.indexOf("openiap/pyagent") > -1) {
-      // "gitrepo": "https://github.com/openiap/pyworkitemagent.git",
       $formData.environment = {};
     }
     if ($formData.image.indexOf("openiap/pychromiumagent") > -1) {
-      // "gitrepo3": "https://github.com/openiap/rccworkitemagent.git",
-      // "gitrepo2": "https://github.com/openiap/robotframeworkagent.git",
-      // "gitrepo": "https://github.com/openiap/taguiagent.git",
       $formData.environment = {};
       PlanUpdated();
     }
@@ -263,7 +249,6 @@
           <Input disabled={loading} bind:value={$formData.name} />
         {/snippet}
       </Form.Control>
-      <!-- <Form.Description>This is your public display name.</Form.Description> -->
       <Form.FieldErrors />
     </Form.Field>
 
@@ -286,7 +271,6 @@
           <Input disabled={loading} {...props} bind:value={$formData.slug} />
         {/snippet}
       </Form.Control>
-      <!-- <Form.Description>This is your slug.</Form.Description> -->
       <Form.FieldErrors />
     </Form.Field>
 
@@ -314,7 +298,6 @@
           </Select.Root>
         {/snippet}
       </Form.Control>
-      <!-- <Form.Description>This is the name of the image.</Form.Description> -->
       <Form.FieldErrors />
     </Form.Field>
 
@@ -342,7 +325,6 @@
           </Select.Root>
         {/snippet}
       </Form.Control>
-      <!-- <Form.Description>This is the name of the image.</Form.Description> -->
       <Form.FieldErrors />
     </Form.Field>
   </div>
@@ -367,7 +349,6 @@
         />
       {/snippet}
     </Form.Control>
-    <!-- <Form.Description>This is your environment.</Form.Description> -->
     <Form.FieldErrors />
   </Form.Field>
 
@@ -465,7 +446,6 @@
         </div>
       {/snippet}
     </Form.Control>
-    <!-- <Form.Description>This is the name of the timezone.</Form.Description> -->
     <Form.FieldErrors />
   </Form.Field>
 
@@ -493,7 +473,6 @@
         </div>
       {/snippet}
     </Form.Control>
-    <!-- <Form.Description>This is your runas.</Form.Description> -->
     <Form.FieldErrors />
   </Form.Field>
 

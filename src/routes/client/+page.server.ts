@@ -1,5 +1,5 @@
-import { auth } from "$lib/stores/auth.svelte.js";
 import { data } from "$lib/entities/data.svelte.js";
+import { auth } from "$lib/stores/auth.svelte.js";
 import type { PageServerLoad } from "./$types.js";
 export const load: PageServerLoad = async () => {
     let entities = [];
@@ -10,7 +10,6 @@ export const load: PageServerLoad = async () => {
             jwt: auth.access_token,
         }));
     } catch (error) {
-        console.error("client page errror: ", error);
     }
     return { entities, searchstring };
 

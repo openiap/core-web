@@ -5,41 +5,36 @@
 </script>
 
 <script lang="ts">
-  import { Entities } from "$lib/entities/index.js";
-  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
-  import { HotkeyInput } from "$lib/components/ui/hotkeyinput/index.js";
-	import Statuscard from "$lib/statuscard/statuscard.svelte";
   import { Label } from "$lib/components/ui/label/index.js";
+  import { Entities } from "$lib/entities/index.js";
+  import Statuscard from "$lib/statuscard/statuscard.svelte";
   import {
-    DollarSign,
-    Pencil,
-    Play,
-    Square,
-    Trash2,
-    User,
-    Webhook,
-    Eye,
-    Wrench,
-    EllipsisVertical,
-    Search,
-    Plus,
-    Box,
-    RefreshCcw,
+      Box,
+      DollarSign,
+      EllipsisVertical,
+      Pencil,
+      Play,
+      Plus,
+      RefreshCcw,
+      Square,
+      Trash2,
+      User,
+      Webhook,
+      Wrench
   } from "lucide-svelte";
 
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import { data as data1 } from "$lib/entities/data.svelte.js";
 
-  import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
-  import { auth } from "$lib/stores/auth.svelte.js";
+  import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
+  import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
   import * as RadioGroup from "$lib/components/ui/radio-group/index.js";
+  import Searchinput from "$lib/searchinput/searchinput.svelte";
+  import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import { toast } from "svelte-sonner";
-  import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
-  import { Separator } from "$lib/components/ui/separator/index.js";
-  import Searchinput from "$lib/searchinput/searchinput.svelte";
 
   let { data } = $props();
   let searchstring = $state(data.searchstring);
@@ -60,7 +55,9 @@
       entities = entities.filter((entity: any) => entity._id != item._id);
       selected_items = selected_items.filter((i) => i !== item._id);
     } else {
-      console.error(Error("deletecount is " + deletecount));
+      toast.error("Error while deleting", {
+        description: "deletecount is " + deletecount,
+      });
     }
   }
   function deleteitems(ids: string[]) {}
@@ -126,7 +123,6 @@
         }
       }
     }
-    // if (!this.$scope.$$phase) { this.$scope.$apply(); }
   }
 
   async function getPods() {
@@ -150,7 +146,6 @@
       toast.error("Error while getting pods", {
         description: error.message,
       });
-      console.error(error);
     }
   }
 
@@ -169,15 +164,8 @@
       toast.error("Error while deleting", {
         description: error.message,
       });
-      console.error(error);
     }
   }
-
-  // $effect(() => {
-  //   if (entities.length > 0) {
-  //     getPods();
-  //   }
-  // });
   getPods();
 </script>
 
@@ -209,7 +197,6 @@
     title="reload"
     variant="default"
     onclick={async () => {
-      // goto(base + `/${page}`);
       entities = await data1.GetData(page, collectionname, query);
       await getPods();
     }}
@@ -218,8 +205,6 @@
     Reload</Hotkeybutton
   >
 </div>
-
-<!-- <Separator /> -->
 
 <div class="my-6">
   <RadioGroup.Root value="All" class="flex space-x-4">

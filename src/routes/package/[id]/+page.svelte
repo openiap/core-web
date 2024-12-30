@@ -9,20 +9,18 @@
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
-  import { Acl } from "$lib/acl";
   import { auth } from "$lib/stores/auth.svelte.js";
-
-  import SuperDebug, { superForm, defaults } from "sveltekit-superforms";
+  import Button from "$lib/components/ui/button/button.svelte";
+  import * as Select from "$lib/components/ui/select/index.js";
+  import { ArrowLeft, Check } from "lucide-svelte";
+  import { toast } from "svelte-sonner";
+  import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../schema.js";
-  import * as Select from "$lib/components/ui/select/index.js";
-  import Button from "$lib/components/ui/button/button.svelte";
-  import { ArrowLeft, Check } from "lucide-svelte";
 
   const page = "package";
   let loading = $state(false);
   let fileData = $state(null);
-  let errormessage = $state("");
   let showdebug = $state(false);
   const { data } = $props();
   const form = superForm(defaults(zod(editFormSchema)), {
@@ -40,13 +38,13 @@
           });
           goto(base + `/${page}`);
         } catch (error: any) {
-          errormessage = error.message;
+          toast.error("Error", {
+            description: error.message,
+          });
           cancel();
         } finally {
           loading = false;
         }
-      } else {
-        errormessage = "Form is invalid";
       }
     },
   });
@@ -105,8 +103,10 @@
       link.href = window.URL.createObjectURL(blob);
       link.download = item.name || item.metadata.name;
       link.click();
-    } catch (error) {
-      console.error(error);
+    } catch (error:any) {
+      toast.error("Error downloading file", {
+        description: error.message,
+      });
     }
   }
 
@@ -146,7 +146,6 @@
         </div>
       {/snippet}
     </Form.Control>
-    <!-- <Form.Description>This is your public display name.</Form.Description> -->
     <Form.FieldErrors />
   </Form.Field>
 

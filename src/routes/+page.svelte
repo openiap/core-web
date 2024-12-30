@@ -1,6 +1,5 @@
 <script lang="ts">
   import { browser } from "$app/environment";
-  import { pushState } from "$app/navigation";
   import { base } from "$app/paths";
   let { data } = $props();
   if (data.redirect == true && browser) {

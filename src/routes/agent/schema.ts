@@ -14,13 +14,6 @@ export const newFormSchema = z.object({
   port: z.number().optional(),
   stripeprice: z.string().optional(),
   schedules: z.array(z.object({
-    // name: z.string(),
-    // packageid: z.string(),
-    // enabled: z.boolean(),
-    // allowConcurrentRuns: z.boolean(),
-    // terminateIfRunning: z.boolean(),
-    // cron: z.string().optional(),
-    // env: z.object({}).optional(),
   })).default([]),
 });
 export type NewFormSchema = typeof newFormSchema;
@@ -36,7 +29,6 @@ export const editFormSchema = z.object({
   timezone: z.string().default(""),
   runas: z.string().min(2),
   languages: z.array(z.string()),
-  // port: z.number(),
   stripeprice: z.string().optional(),
   schedules: z.array(z.object({
     name: z.string(),

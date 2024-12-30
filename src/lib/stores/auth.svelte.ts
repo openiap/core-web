@@ -1,10 +1,10 @@
 import pkg from "oidc-client";
 
-import { base } from "$app/paths";
-const { UserManager, WebStorageStateStore } = pkg;
 import { browser } from '$app/environment';
+import { base } from "$app/paths";
 import { openiap } from "@openiap/jsapi";
 import { SvelteStorage } from "./SvelteStorage";
+const { UserManager, WebStorageStateStore } = pkg;
 // @ts-ignore
 import ws from 'ws';
 
@@ -25,30 +25,23 @@ class authState {
         this.origin = origin;
         this.baseurl = origin;
         let configurl = "/config";
-        // if (this.origin.includes(":517") || this.origin.includes(":417")) {
-        //     this.baseurl = "https://dev.openiap.io";
-        //     configurl = this.baseurl + "/config";
-        // }
         this.baseurl = "https://" + domain;
         configurl = this.baseurl + "/config";
         this.wsurl = this.baseurl.replace("https://", "wss://").replace("http://", "ws://") + "/ws/v2";
         try {
             let f = await fetch(configurl);
-            if (f.status === 200) console.debug("Loaded config from", configurl);
             if (f.status !== 200) {
                 f = await fetch(this.baseurl + "/config");
-                if (f.status === 200) console.debug("Loaded config from", this.baseurl + "/config");
             }
             if (f.status !== 200) {
                 f = await fetch("http://localhost:3000/config");
-                if (f.status === 200) console.debug("Loaded config from", "http://localhost:3000/config");
             }
             if (f.status !== 200) {
                 throw new Error(`Failed to load config from ${configurl}`);
             }
             this.config = await f.json();
         } catch (error) {
-            console.error('Failed to load config', error);
+            console .error('Failed to load config', error);
         }
     }
     async clientinit(domain: string, client_id: string, origin: string, fetch: any, cookies: any) {
@@ -96,7 +89,6 @@ class authState {
             return;
         }
         if(this.client == null) {
-            console.debug("Creating new client for", this.wsurl);
             if(browser) {
                 this.client = new openiap(this.wsurl, this.access_token);
             } else {

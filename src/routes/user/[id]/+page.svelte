@@ -5,14 +5,14 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
+  import { Acl } from "$lib/acl";
   import Checkbox from "$lib/components/ui/checkbox/checkbox.svelte";
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
-  import { Acl } from "$lib/acl";
   import { auth } from "$lib/stores/auth.svelte.js";
 
-  import SuperDebug, { superForm, defaults } from "sveltekit-superforms";
+  import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../schema.js";
 

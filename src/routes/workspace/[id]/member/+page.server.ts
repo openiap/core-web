@@ -1,6 +1,6 @@
-import type { PageServerLoad } from "./$types.js";
 import { data } from "$lib/entities/data.svelte.js";
-import { page, collectionname } from "./+page.svelte";
+import type { PageServerLoad } from "./$types.js";
+import { collectionname, page } from "./+page.svelte";
 
 export const load: PageServerLoad = async ({ params }) => {
     let id = params.id;

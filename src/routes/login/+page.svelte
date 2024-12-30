@@ -4,8 +4,6 @@
 	import { Input } from "$lib/components/ui/input/index.js";
 	import { Label } from "$lib/components/ui/label/index.js";
 
-  // import { goto } from "$app/navigation";
-  // import { base } from "$app/paths";
   import { auth } from "$lib/stores/auth.svelte";
   function goto(url: string) {
     window.location.href = auth.baseurl + url;

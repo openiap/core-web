@@ -1,6 +1,4 @@
 import { browser } from "$app/environment";
-import type { TTableHeader } from "$lib/entities/data.svelte";
-import { object } from "zod";
 import { auth } from "./auth.svelte";
 export type sort = "asc" | "desc" | "";
 export type SettingsTableHeader = {
@@ -77,13 +75,11 @@ class _usersettings implements userSettings {
         if (userid == null || userid == "") {
             return $state.snapshot(this);
         } else if (this.userid == userid) {
-            // always load from db on server
             if (browser) {
                 return $state.snapshot(this);
             }
         }
         let settings = await auth.client.FindOne<userSettings>({ collectionname: "users", query: { userid: userid, "_type": "usersettings" }, jwt: auth.access_token });
-        console.log("Loaded user settings userid:", userid, settings);
         if (settings == null) {
             this._id = "";
             this.userid = userid;
@@ -153,7 +149,6 @@ class _usersettings implements userSettings {
                 page_index: org.page_index,
                 headers: org.headers,
                 total_count: org.total_count
-                // tableheaders: org.tableheaders,
                 // page_index: $state.snapshot(org.page_index)
             };
             // @ts-ignore
@@ -184,8 +179,6 @@ class _usersettings implements userSettings {
         delete item.persisttimer;
         let result = await auth.client.InsertOrUpdateOne<userSettings>({ collectionname: "users", item, uniqeness: "userid,_type", jwt: auth.access_token });
         this._id = result._id;
-        console.log("Persisted user settings userid:", item.userid, "_id", this._id);
-        
     }
 }
 

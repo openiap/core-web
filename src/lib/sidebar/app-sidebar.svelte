@@ -1,6 +1,6 @@
 <script lang="ts" module>
-	import { page } from "$app/stores";
 	import { base } from "$app/paths";
+	import { page } from "$app/stores";
 	import { Volleyball } from "lucide-svelte";
 
 	const data = {
@@ -29,6 +29,10 @@
 					{
 						title: "Workspaces",
 						url: `${base}/workspace`,
+					},
+					{
+						title: "Invites",
+						url: `${base}/workspace/invites`,
 					},
 				],
 			},
@@ -112,15 +116,9 @@
 </script>
 
 <script lang="ts">
-	// import * as Collapsible from "$lib/components/ui/collapsible/index.js";
-	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
-	// import Minus from "lucide-svelte/icons/minus";
-	// import Plus from "lucide-svelte/icons/plus";
-	import type { ComponentProps } from "svelte";
-	// import Button from "$lib/components/ui/button/button.svelte";
 	import { goto } from "$app/navigation";
-	// import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
-
+	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
+	import type { ComponentProps } from "svelte";
 	let {
 		ref = $bindable(null),
 		...restProps
@@ -131,9 +129,6 @@
 	<div
 		class="bg-gradient-to-b from-lightgradident1 to-lightgradident2 dark:bg-gradient-to-b dark:from-darkgradident1 dark:to-darkgradident2 rounded my-2.5 mx-3 h-full overflow-auto"
 	>
-		<!-- <div
-		class="bg-gradient-to-b from-lightgradident1 to-lightgradident2 dark:bg-gradient-to-b dark:from-darkgradident1 dark:to-darkgradident2 rounded my-2.5 mx-3"
-	> -->
 		<Sidebar.Header>
 			<button
 				onclick={() => goto("/")}
@@ -154,9 +149,7 @@
 			</button>
 		</Sidebar.Header>
 
-		<!-- <div class="max-h-[calc(88vh)]  overflow-auto"> -->
 		<Sidebar.Content>
-			<!-- We create a Sidebar.Group for each parent. -->
 			{#each data.navMain as group (group.title)}
 				<Sidebar.Group class="ps-4">
 					<Sidebar.GroupLabel

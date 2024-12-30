@@ -1,10 +1,7 @@
 <script lang="ts">
-    import * as Select from "$lib/components/ui/select/index.js";
     import * as Popover from "$lib/components/ui/popover/index.js";
 
     import { buttonVariants } from "$lib/components/ui/button/index.js";
-    import { Input } from "$lib/components/ui/input/index.js";
-    import { Label } from "$lib/components/ui/label/index.js";
     import * as Command from "$lib/components/ui/command/index.js";
     import { ChevronsUpDown } from "lucide-svelte";
 
@@ -51,7 +48,6 @@
     let open = $state(false);
     function closeAndRefocusTrigger() {
         open = false;
-        // tick().then(() => document.getElementById(triggerId)?.focus());
     }
 </script>
 

@@ -1,17 +1,15 @@
 <script lang="ts">
-  import * as Form from "$lib/components/ui/form/index.js";
-  import { Input } from "$lib/components/ui/input/index.js";
-  import SuperDebug, { superForm } from "sveltekit-superforms";
-  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
-  import { ObjectInput } from "$lib/objectinput/index.js";
   import { CollectionSelector } from "$lib/collectionselector/index.js";
+  import * as Form from "$lib/components/ui/form/index.js";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
+  import { Input } from "$lib/components/ui/input/index.js";
+  import { ObjectInput } from "$lib/objectinput/index.js";
+  import SuperDebug, { superForm } from "sveltekit-superforms";
   
-  import { base } from "$app/paths";
   import { goto } from "$app/navigation";
-  // import Button from "$lib/components/ui/button/button.svelte";
-  // import { Trash2 } from "lucide-svelte";
-  import { newFormSchema } from "../schema.js";
+  import { base } from "$app/paths";
   import { zod } from "sveltekit-superforms/adapters";
+  import { newFormSchema } from "../schema.js";
 
   const title = "Form Resource";
   const key = "formresource";

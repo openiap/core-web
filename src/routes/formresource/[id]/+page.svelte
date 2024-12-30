@@ -1,15 +1,15 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
+  import { Acl } from "$lib/acl/index.js";
+  import { CollectionSelector } from "$lib/collectionselector/index.js";
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
-  import SuperDebug, { superForm } from "sveltekit-superforms";
-  import { newFormSchema } from "../schema.js";
-  import { zod } from "sveltekit-superforms/adapters";
   import { ObjectInput } from "$lib/objectinput/index.js";
-  import { CollectionSelector } from "$lib/collectionselector/index.js";
-  import { Acl } from "$lib/acl/index.js";
+  import SuperDebug, { superForm } from "sveltekit-superforms";
+  import { zod } from "sveltekit-superforms/adapters";
+  import { newFormSchema } from "../schema.js";
   const key = "formresource";
   let showdebug = $state(false);
   const { data } = $props();

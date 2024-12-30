@@ -1,11 +1,8 @@
 <script lang="ts">
-	// import { page } from "$app/stores";
-	// import logo from "$lib/images/logo.png";
 	import Sun from "lucide-svelte/icons/sun";
 	import Moon from "lucide-svelte/icons/moon";
 	import { toggleMode } from "mode-watcher";
 	import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
-	// import { base } from "$app/paths";
 	import { auth } from "$lib/stores/auth.svelte";
 	import { Github, Trash2 } from "lucide-svelte";
 	import { Button } from "$lib/components/ui/button";
@@ -16,7 +13,6 @@
 	import { usersettings } from "$lib/stores/usersettings.svelte.js";
 	import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
 	import { toast } from "svelte-sonner";
-	// let props = $props();
 
 	let showWarning = $state(false);
 
@@ -41,28 +37,13 @@
 			toast.error("Error while logout", {
 				description: error.message,
 			});
-			console.error(error);
 		}
 	}
 </script>
 
 <header>
-	<!-- <div class="corner">
-		<a href="/">
-			<img src={logo} alt="Logo" />
-		</a>
-	</div> -->
-
 	<div class="flex items-center justify-center">
 		<div class="flex gap-1.5">
-			<!-- <Button
-				variant="outline"
-				onclick={() => {
-					props.openHelp = true;
-				}}
-			>
-				<HelpCircle />
-			</Button> -->
 			<Search />
 			<a href="https://github.com/openiap">
 				<Button

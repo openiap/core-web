@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
+  import { page } from "$app/stores";
   import Button from "$lib/components/ui/button/button.svelte";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
@@ -33,7 +34,6 @@
       toast.error("Error while accepting", {
         description: error.message,
       });
-      console.error(error);
     }
   }
   async function decline() {
@@ -51,14 +51,20 @@
       toast.error("Error while declining", {
         description: error.message,
       });
-      console.error(error);
     }
   }
+  let status = $page.status
 </script>
 
-{#if message && $message != ""}
-  {$message}
+{#if $message}
+  <div 
+    class:success={status == 200} 
+    class:error={status >= 400}
+  >
+    {$message}
+  </div>
 {/if}
+{#if $formData.workspacename}
 
 <form method="POST" use:enhance>
   {#if $formData.status == "pending"}
@@ -74,7 +80,7 @@
     <Button variant="outline" onclick={accept}>Accept</Button>
   {/if}
 </form>
-
+{/if}
 {#if formData != null && showdebug == true}
   <SuperDebug data={formData} theme="vscode" />
 {/if}

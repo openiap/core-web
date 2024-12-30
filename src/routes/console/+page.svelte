@@ -5,16 +5,15 @@
 </script>
 
 <script lang="ts">
+  import { browser } from "$app/environment";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
+  import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label/index.js";
   import { Switch } from "$lib/components/ui/switch/index.js";
-  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
-  import SuperDebug from "sveltekit-superforms";
-  let { data } = $props();
   import { auth } from "$lib/stores/auth.svelte.js";
-  import { ObjectInput } from "$lib/objectinput";
-  import { browser } from "$app/environment";
-  import { Input } from "$lib/components/ui/input";
-
+  import SuperDebug from "sveltekit-superforms";
+  
+  let { data } = $props();
   if(data.config != null) {
     if(data.config.log_to_exchange == null) data.config.log_to_exchange = false;
     if(data.config.log_cache == null) data.config.log_cache = false;
@@ -57,12 +56,9 @@
         if (payload.lvl == 5) payload.lvl = "ver";
         if (payload.lvl == 6) payload.lvl = "sil";
         messages.unshift(payload);
-        // if messages has more than 1000 rows, then remove the last 500 rows
         if (messages.length >= lines) messages.splice(lines - 1);
       },
     );
-    // [{ "$match": { "fullDocument._type": "config" } }]
-    // $.[?(@ && @._type == 'config')]
     auth.client
       .Watch(
         { collectionname: "config", paths: ["$.[?(@ && @._type == 'config')"] },

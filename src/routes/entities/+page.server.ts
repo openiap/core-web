@@ -1,7 +1,7 @@
-import { auth } from "$lib/stores/auth.svelte.js";
-import type { PageServerLoad } from "./$types.js";
 import { data } from "$lib/entities/data.svelte.js";
+import { auth } from "$lib/stores/auth.svelte.js";
 import { usersettings } from "$lib/stores/usersettings.svelte.js";
+import type { PageServerLoad } from "./$types.js";
 
 export const load: PageServerLoad = async ({ fetch, url, cookies, locals, params }) => {
     let collectionname = usersettings.entities_collectionname;

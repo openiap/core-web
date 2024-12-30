@@ -1,16 +1,17 @@
 <script lang="ts">
-  import * as Form from "$lib/components/ui/form/index.js";
-  import { Input } from "$lib/components/ui/input/index.js";
-  import { Checkbox } from "$lib/components/ui/checkbox/index.js";
-  import SuperDebug, { superForm, defaults } from "sveltekit-superforms";
-  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
-  import { base } from "$app/paths";
   import { goto } from "$app/navigation";
-  import { newFormSchema } from "../schema.js";
-  import { zod } from "sveltekit-superforms/adapters";
-  import { auth } from "$lib/stores/auth.svelte.js";
-  import * as Select from "$lib/components/ui/select/index.js";
+  import { base } from "$app/paths";
   import Button from "$lib/components/ui/button/button.svelte";
+  import { Checkbox } from "$lib/components/ui/checkbox/index.js";
+  import * as Form from "$lib/components/ui/form/index.js";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
+  import { Input } from "$lib/components/ui/input/index.js";
+  import * as Select from "$lib/components/ui/select/index.js";
+  import { auth } from "$lib/stores/auth.svelte.js";
+  import { toast } from "svelte-sonner";
+  import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
+  import { zod } from "sveltekit-superforms/adapters";
+  import { newFormSchema } from "../schema.js";
 
   const page = "package";
   let showdebug = $state(false);
@@ -33,7 +34,9 @@
           });
           goto(base + `/${page}`);
         } catch (error: any) {
-          console.error(error);
+          toast.error("Error", {
+            description: error.message,
+          });
           errormessage = error.message;
           cancel();
         } finally {
@@ -111,7 +114,6 @@
         <Input disabled={loading} {...props} bind:value={$formData.name} />
       {/snippet}
     </Form.Control>
-    <!-- <Form.Description>This is your public display name.</Form.Description> -->
     <Form.FieldErrors />
   </Form.Field>
 
@@ -150,9 +152,6 @@
         />
         <div class="space-y-1 leading-none">
           <Form.Label>Require Chromium</Form.Label>
-          <!-- <Form.Description>
-            If enabled, the user is disabled and cannot signin
-          </Form.Description> -->
         </div>
       {/snippet}
     </Form.Control>
@@ -173,10 +172,6 @@
         />
         <div class="space-y-1 leading-none">
           <Form.Label>Daemon</Form.Label>
-          <!-- <Form.Description>
-            If enabled, the user is can only login using web interface and
-            cannot add more data to the database
-          </Form.Description> -->
         </div>
       {/snippet}
     </Form.Control>

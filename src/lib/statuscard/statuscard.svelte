@@ -23,8 +23,6 @@
                 bgcolor = " bg-orange-200 dark:bg-orange-600 dark:text-white";
                 break;
             default:
-                // console.log("title", title);
-                // bgcolor = "bg-gray-200 dark:bg-gray-600 dark:text-white";
                 break;
         }
         return (

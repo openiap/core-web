@@ -35,7 +35,6 @@
     {#snippet children({ pages, currentPage })}
         <Pagination.Content>
             <Pagination.Item>
-                <!-- <Pagination.PrevButton onclick={() => onnext()}> -->
                 <HotkeyButton
                     disabled={!count || page_index + 1 === 1}
                     onclick={() => onprevious()}
@@ -45,7 +44,6 @@
                     <ChevronLeft class="size-4" />
                     <span class="hidden sm:block">Previous</span>
                 </HotkeyButton>
-                <!-- </Pagination.PrevButton> -->
             </Pagination.Item>
             {#each pages as page (page.key)}
                 {#if page.type === "ellipsis"}
@@ -66,7 +64,6 @@
                 {/if}
             {/each}
             <Pagination.Item>
-                <!-- <Pagination.NextButton onclick={() => onprevious()}> -->
                 <HotkeyButton
                     disabled={!count || currentPage === Math.ceil(count / 5)}
                     onclick={() => onnext()}
@@ -76,7 +73,6 @@
                     <span class="hidden sm:block">Next</span>
                     <ChevronRight class="size-4" />
                 </HotkeyButton>
-                <!-- </Pagination.NextButton> -->
             </Pagination.Item>
         </Pagination.Content>
     {/snippet}

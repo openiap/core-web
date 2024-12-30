@@ -1,16 +1,16 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
+  import Button from "$lib/components/ui/button/button.svelte";
   import Checkbox from "$lib/components/ui/checkbox/checkbox.svelte";
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
+  import { ObjectInput } from "$lib/objectinput/index.js";
   import SuperDebug, { superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
-  import { editFormSchema } from "./schema.js";
   import { settings } from "./helper.js";
-  import { ObjectInput } from "$lib/objectinput/index.js";
-  import Button from "$lib/components/ui/button/button.svelte";
+  import { editFormSchema } from "./schema.js";
 
   const key = "user";
   let showdebug = $state(false);
@@ -51,7 +51,7 @@
   </Button>
 </div>
 <form method="POST" use:enhance>
-  <Form.Button aria-label="submit">Submit</Form.Button>
+  <Form.Button aria-label="submit">Save</Form.Button>
   <HotkeyButton aria-label="back" onclick={() => goto(base + `/${key}`)}
     >Back</HotkeyButton
   >
@@ -210,7 +210,7 @@
     {/if}
   {/each}
 
-  <Form.Button aria-label="submit">Submit</Form.Button>
+  <Form.Button aria-label="submit">Save</Form.Button>
 </form>
 
 {#if formData != null && showdebug == true}

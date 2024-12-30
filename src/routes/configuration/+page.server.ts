@@ -1,12 +1,10 @@
-import type { PageServerLoad, Actions } from "./$types.js";
-import { superValidate, setError } from "sveltekit-superforms";
-import { zod } from "sveltekit-superforms/adapters";
-import { fail, redirect } from "@sveltejs/kit";
 import { auth } from "$lib/stores/auth.svelte.js";
-import { base } from "$app/paths";
-import { editFormSchema } from "./schema.js";
+import { fail } from "@sveltejs/kit";
+import { setError, superValidate } from "sveltekit-superforms";
+import { zod } from "sveltekit-superforms/adapters";
+import type { Actions, PageServerLoad } from "./$types.js";
 import { cleanMatchingKeys, defaultSettings } from "./helper.js";
-// const key = "user"
+import { editFormSchema } from "./schema.js";
 
 export const load: PageServerLoad = async ({ fetch, url, cookies, locals, params }) => {
   let data: any = {};
@@ -28,13 +26,11 @@ export const actions: Actions = {
       const cleanData = cleanMatchingKeys(form.data);
       await auth.client.UpdateOne({ collectionname: "config", item: cleanData, jwt: auth.access_token });
     } catch (err: any) {
-      console.error("configuration: ", err);
       setError(form, 'name', err.message);
       return {
         form,
       };
     }
-    // throw redirect(303, base + `/${key}`);
   },
 };
 

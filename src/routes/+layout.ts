@@ -1,6 +1,7 @@
+import { browser } from "$app/environment";
 import { auth } from "$lib/stores/auth.svelte.js";
 import type { LayoutLoad } from "./$types.js";
-import { browser } from "$app/environment";
+
 export const load: LayoutLoad = async ({ data, fetch, url }) => {
 	const { client_id, domain } = data;
 	let redirect = false;
@@ -13,7 +14,6 @@ export const load: LayoutLoad = async ({ data, fetch, url }) => {
 				redirect = true;
 			} catch (error) {
 				redirect = true;
-				console.error("error", error);				
 			}
 		}
 	}

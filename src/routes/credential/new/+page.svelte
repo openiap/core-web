@@ -1,14 +1,12 @@
 <script lang="ts">
+  import { goto } from "$app/navigation";
+  import { base } from "$app/paths";
   import * as Form from "$lib/components/ui/form/index.js";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
   import SuperDebug, { superForm } from "sveltekit-superforms";
-  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
-  import { base } from "$app/paths";
-  import { goto } from "$app/navigation";
-  // import Button from "$lib/components/ui/button/button.svelte";
-  // import { Trash2 } from "lucide-svelte";
-  import { newFormSchema } from "../schema.js";
   import { zod } from "sveltekit-superforms/adapters";
+  import { newFormSchema } from "../schema.js";
 
   const key = "credential";
   let showdebug = $state(false);

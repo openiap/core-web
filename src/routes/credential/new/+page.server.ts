@@ -1,10 +1,10 @@
-import type { PageServerLoad, Actions } from "./$types.js";
-import { superValidate, setError } from "sveltekit-superforms";
-import { zod } from "sveltekit-superforms/adapters";
-import { fail, redirect } from "@sveltejs/kit";
-import { auth } from "$lib/stores/auth.svelte.js";
 import { base } from "$app/paths";
+import { auth } from "$lib/stores/auth.svelte.js";
+import { fail, redirect } from "@sveltejs/kit";
+import { setError, superValidate } from "sveltekit-superforms";
+import { zod } from "sveltekit-superforms/adapters";
 import { newFormSchema } from "../schema.js";
+import type { Actions, PageServerLoad } from "./$types.js";
 
 const key = "credential"
 
@@ -30,7 +30,6 @@ export const actions: Actions = {
     try {
       await auth.client.InsertOne({ collectionname: "openrpa", item: { ...form.data, _type: "credential" }, jwt: auth.access_token });
     } catch (err: any) {
-      console.error(err);
       setError(form, 'name', err.message);
       return {
         form,

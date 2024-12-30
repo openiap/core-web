@@ -1,5 +1,5 @@
-import type { PageServerLoad } from "./$types.js";
 import { auth } from "$lib/stores/auth.svelte.js";
+import type { PageServerLoad } from "./$types.js";
 import { collectionname } from "./+page.svelte";
 export const load: PageServerLoad = async ({ params }) => {
   try {
@@ -24,7 +24,6 @@ export const load: PageServerLoad = async ({ params }) => {
       }
       if (instance.showstatus == "running" || instance.showstatus == "Running") {
         if (instance.status != null && instance.status.containerStatuses != null && instance.status.containerStatuses.length > 0) {
-          // instance.showstatus = instance.status.containerStatuses[0].state.running ? "running" : "stopped";
           instance.showstatus = instance.status.containerStatuses[0].started ? "Running" : "Stopped " + instance.status.containerStatuses[0].state.waiting.reason;
         }
       }
@@ -34,7 +33,6 @@ export const load: PageServerLoad = async ({ params }) => {
 
     return { item, agentInstance, resourceMonitor:instance };
   } catch (error) {
-    console.error("Error loading agent page", error);
   }
   return { item: null, agentInstance: null, resourceMonitor: null };
 };

@@ -6,24 +6,19 @@
 
 <script lang="ts">
   import { Entities } from "$lib/entities/index.js";
-  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
-  import { HotkeyInput } from "$lib/components/ui/hotkeyinput/index.js";
-  import { Label } from "$lib/components/ui/label/index.js";
   import { Download, Pencil, Trash2 } from "lucide-svelte";
 
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
-  import { data as data1 } from "$lib/entities/data.svelte.js";
-
-  let { data } = $props();
   import Button from "$lib/components/ui/button/button.svelte";
-  import { auth } from "$lib/stores/auth.svelte.js";
   import Input from "$lib/components/ui/input/input.svelte";
+  import { data as data1 } from "$lib/entities/data.svelte.js";
+  import { SearchInput } from "$lib/searchinput";
+  import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import { toast } from "svelte-sonner";
-    import Search from "$lib/search/search.svelte";
-    import { SearchInput } from "$lib/searchinput";
 
+  let { data } = $props();
   let searchstring = $state(data.searchstring);
   let selected_items = $state([]);
   let entities = $state(data.entities);
@@ -42,7 +37,9 @@
       entities = entities.filter((entity: any) => entity._id != item._id);
       selected_items = selected_items.filter((i) => i !== item._id);
     } else {
-      console.error(Error("deletecount is " + deletecount));
+      toast.error("Error while deleting", {
+        description: "Error while deleting",
+      });
     }
   }
   function deleteitems(ids: string[]) {}
@@ -93,14 +90,10 @@
       link.href = window.URL.createObjectURL(blob);
       link.download = item.name || item.metadata.name;
       link.click();
-
-      // const img = document.createElement('img');
-      // img.src = URL.createObjectURL(
-      //   new Blob([filecontent], { type: 'image/png' })
-      // );
-      // document.body.appendChild(img);
-    } catch (error) {
-      console.error(error);
+    } catch (error:any) {
+      toast.error("Error while downloading", {
+        description: error.message,
+      });
     }
   }
   async function handleAccept() {
@@ -114,7 +107,6 @@
       toast.error("Error while deleting", {
         description: error.message,
       });
-      console.error(error);
     }
   }
 </script>

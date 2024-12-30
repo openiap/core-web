@@ -5,12 +5,12 @@
 </script>
 
 <script lang="ts">
-  import { Entities } from "$lib/entities/index.js";
-  import { MapPinHouse, Pencil } from "lucide-svelte";
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import Button from "$lib/components/ui/button/button.svelte";
+  import { Entities } from "$lib/entities/index.js";
   import { SearchInput } from "$lib/searchinput/index.js";
+  import { MapPinHouse, Pencil } from "lucide-svelte";
 
   let { data } = $props();
   let searchstring = $state(data.searchstring);

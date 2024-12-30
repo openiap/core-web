@@ -1,36 +1,30 @@
 <script lang="ts" module>
-	import * as Table from "$lib/components/ui/table/index.js";
 	import { Checkbox } from "$lib/components/ui/checkbox/index.js";
+	import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
 	import * as Sheet from "$lib/components/ui/sheet/index.js";
 	import { Switch } from "$lib/components/ui/switch/index.js";
-	import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
+	import * as Table from "$lib/components/ui/table/index.js";
 
-	import ArrowUp from "lucide-svelte/icons/arrow-up";
 	import ArrowDown from "lucide-svelte/icons/arrow-down";
+	import ArrowUp from "lucide-svelte/icons/arrow-up";
 	import SuperDebug from "sveltekit-superforms";
 
 	import { buttonVariants } from "$lib/components/ui/button/index.js";
-	import { TableHeader, type TTableHeader } from "./data.svelte.js";
 	import { type sort } from "$lib/stores/usersettings.svelte";
+	import { TableHeader, type TTableHeader } from "./data.svelte.js";
 </script>
 
 <script lang="ts">
-	import { data } from "./data.svelte.js";
 	import { usersettings } from "$lib/stores/usersettings.svelte.js";
+	import { data } from "./data.svelte.js";
 
 	import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
-	import { auth } from "$lib/stores/auth.svelte.js";
-	import { Trash2 } from "lucide-svelte";
 	import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
-	import ChevronLeft from "lucide-svelte/icons/chevron-left";
-	import ChevronRight from "lucide-svelte/icons/chevron-right";
-	import { MediaQuery } from "runed";
-	import * as Pagination from "$lib/components/ui/pagination/index.js";
 	import Custompagination from "$lib/custompagination/custompagination.svelte";
 	import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
+	import { Trash2 } from "lucide-svelte";
+	import { MediaQuery } from "runed";
 	import { toast } from "svelte-sonner";
-	import { set } from "zod";
-	import { browser } from "$app/environment";
 
 	let {
 		page = "entities",
@@ -103,9 +97,9 @@
 			total_count = data.settings.total_count;
 		}
 	}
-	if (browser && data.settings.total_count == 99999) {
+	//if (browser && data.settings.total_count == 99999) {
 		GetData();
-	}
+	//}
 
 	function EnsureDefaultHeaders(page: string) {
 		if (tableheaders.length == 0) {
@@ -164,7 +158,6 @@
 			}
 		}
 		if (lastindex > -1) {
-			console.log("lastindex", lastindex);
 			tableheaders[lastindex].headclass = "text-right w-[100px]";
 			actioncellclass = "";
 			actionheadclass = "";
@@ -426,14 +419,11 @@
 			toast.error("Error while deleting", {
 				description: error.message,
 			});
-			console.error(error);
 		}
 	}
 </script>
 
-<!-- error message-->
 <div class="text-red-500">{data.errormessage}</div>
-<!-- <SuperDebug data={headers} theme="vscode" /> -->
 <div class="border border-gray-400 rounded">
 	<Table.Root>
 		{#if entities.length === 0}
@@ -561,7 +551,6 @@
 </div>
 
 <div class="flex my-2 space-x-2 items-center">
-	<!-- {#if selected_items.length > 0} -->
 	<HotkeyButton
 		disabled={selected_items.length === 0}
 		onclick={() => (showWarning = true)}
@@ -573,15 +562,11 @@
 		<Trash2 />
 		Delete {selected_items.length} items</HotkeyButton
 	>
-	<!-- {/if} -->
-
-	<!-- {#if selected_items.length > 0} -->
 	<Hotkeybutton
 		disabled={selected_items.length === 0}
 		variant="default"
 		onclick={() => (selected_items = [])}>Clear All Selections</Hotkeybutton
 	>
-	<!-- {/if} -->
 
 	{#if tableheaders != null && tableheaders.length > 0}
 		<Sheet.Root>
@@ -601,7 +586,6 @@
 							<div
 								class=" flex items-center space-x-4 rounded-md border p-4"
 							>
-								<!-- <BellRing /> -->
 								<div class="flex-1 space-y-1">
 									<p class="text-muted-foreground text-sm">
 										{RenderHeaderName(head)}
@@ -610,22 +594,12 @@
 								<Switch
 									bind:checked={head.show}
 									onclick={() => {
-										// data.SaveHeaders();
 									}}
 								/>
 							</div>
 						{/each}
 					</ScrollArea>
 
-					<!-- 
-		<div class="grid grid-cols-4 items-center gap-4">
-		  <Label for="name" class="text-right">Name</Label>
-		  <Input id="name" value="Pedro Duarte" class="col-span-3" />
-		</div>
-		<div class="grid grid-cols-4 items-center gap-4">
-		  <Label for="username" class="text-right">Username</Label>
-		  <Input id="username" value="@peduarte" class="col-span-3" />
-		</div> -->
 				</div>
 				<Sheet.Footer>
 					<Sheet.Close class={buttonVariants({ variant: "outline" })}>

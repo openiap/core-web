@@ -11,6 +11,7 @@
   import { auth } from "$lib/stores/auth.svelte";
   import Searchinput from "$lib/searchinput/searchinput.svelte";
   import { Folder } from "lucide-svelte";
+    import { toast } from "svelte-sonner";
   let { data } = $props();
 
   let collectionname = $state("");
@@ -31,7 +32,9 @@
       entities = entities.filter((entity: any) => entity._id != item._id);
       selected_items = selected_items.filter((i) => i !== item._id);
     } else {
-      console.error(Error("deletecount is " + deletecount));
+      toast.error("Error while deleting", {
+        description: "Error while deleting",
+      });
     }
   }
   function deleteitems(ids: string[]) {}
@@ -55,7 +58,6 @@
     </div>
     <h4 class="mb-4 text-sm font-medium leading-none ms-4">Collections:</h4>
     <ScrollArea class="max-h-screen sm:max-h-[calc(100vh-8rem)] overflow-auto">
-      <!-- <ScrollArea class="max-h-[80vh]"> -->
       <div class="p-4">
         {#each collections as tag}
           <div class="text-sm">
@@ -87,16 +89,6 @@
       bind:selected_items
       bind:entities
     >
-      <!-- {#snippet action(item: any)}
-          <Button
-            onclick={() => deleteitem(item)}
-            size="icon"
-            variant="destructive"
-            disabled={selected_items.length > 0}
-          >
-            <X />
-          </Button>
-        {/snippet} -->
     </Entities>
   </div>
 </div>

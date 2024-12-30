@@ -10,21 +10,18 @@
 
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
-
-  let { data } = $props();
   import Button from "$lib/components/ui/button/button.svelte";
+  import { data as data1 } from "$lib/entities/data.svelte.js";
+  import Searchinput from "$lib/searchinput/searchinput.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import { toast } from "svelte-sonner";
-  import { data as data1 } from "$lib/entities/data.svelte.js";
-  import Searchinput from "$lib/searchinput/searchinput.svelte";
-  import Switch from "$lib/components/ui/switch/switch.svelte";
 
+  let { data } = $props();
   let searchstring = $state(data.searchstring);
   let selected_items = $state([]);
   let entities = $state(data.entities);
   let showWarning = $state(false);
-  let showWarningToggle = $state(false);
   let deleteData: any = $state({});
   let toggleData: any = $state({});
 
@@ -38,7 +35,9 @@
       entities = entities.filter((entity: any) => entity._id != item._id);
       selected_items = selected_items.filter((i) => i !== item._id);
     } else {
-      console.error(Error("deletecount is " + deletecount));
+      toast.error("Error while deleting", {
+        description: "Error while deleting",
+      });
     }
   }
   function deleteitems(ids: string[]) {}
@@ -56,7 +55,6 @@
       toast.error("Error while deleting", {
         description: error.message,
       });
-      console.error(error);
     }
   }
   async function handleToggle() {
@@ -81,7 +79,6 @@
       toast.error("Error while updating", {
         description: error.message,
       });
-      console.error(error);
     }
   }
   function undoToggle() {

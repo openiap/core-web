@@ -6,10 +6,10 @@
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
-  import SuperDebug, { superForm, defaults } from "sveltekit-superforms";
+  import Switch from "$lib/components/ui/switch/switch.svelte";
+  import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../schema.js";
-  import Switch from "$lib/components/ui/switch/switch.svelte";
 
   const key = "mailhistory";
   let showdebug = $state(false);
@@ -21,7 +21,6 @@
   });
   const { form: formData, message } = form;
   formData.set(data.item);
-  console.log(data.item.opened.length);
 </script>
 
 {#if message && $message != ""}

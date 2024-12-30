@@ -26,14 +26,12 @@
 </script>
 
 <div class="flex flex-row items-center p-2 justify-between w-full">
-    <!-- <EntitySelector bind:value={value._id} collectionname="users" /> -->
     <div>
         {value.name}
     </div>
 
     <div class="flex">
         {#each items as item}
-            <!-- svelte-ignore a11y_click_events_have_key_events -->
             <div
                 role="button"
                 tabindex="0"

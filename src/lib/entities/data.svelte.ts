@@ -1,7 +1,6 @@
-import { usersettings, pagesettings, type pageSettings, type SettingsTableHeader } from "$lib/stores/usersettings.svelte.js";
 import { auth } from "$lib/stores/auth.svelte";
-import { X } from "lucide-svelte";
 import { type sort } from "$lib/stores/usersettings.svelte";
+import { usersettings, type pageSettings, type SettingsTableHeader } from "$lib/stores/usersettings.svelte.js";
 
 export type TTableHeader = {
 	name: string;
@@ -50,7 +49,6 @@ class entitiesdata {
 			query: usequery,
 			jwt: auth.access_token,
 		});
-		console.log("GetData", page, "searchstring:", this.settings.searchstring, "col:", collectionname, "order:", orderby, "results", entities.length, "total_count:", this.settings.total_count);
 		return entities;
 	}
 	persist() {
@@ -91,28 +89,9 @@ class entitiesdata {
 			}
 		}
 		if (Object.keys(orderby).length == 0) {
-			// orderby["_id"] = -1;
 			return "";
 		}
 		return orderby;
-
-		// const orderby: { [key: string]: number } = {};
-		// let ordered = tableheaders
-		// 	.filter((x) => x.order != "")
-		// 	.sort((a, b) => {
-		// 		return a.orderindex - b.orderindex;
-		// 	});
-		// for (let i = 0; i < ordered.length; i++) {
-		// 	const sortKey = ordered[i];
-		// 	if (sortKey.order != null && sortKey.order != "") {
-		// 		orderby[sortKey.field] = sortKey.order == "desc" ? -1 : 1;
-		// 	}
-		// }
-		// if (Object.keys(orderby).length == 0) {
-		// 	// orderby["_id"] = -1;
-		// 	return "";
-		// }
-		// return orderby;
 	}
 	private parseJson(txt: string, reviver: any, context: any) {
 		context = context || 20;
@@ -161,22 +140,6 @@ class entitiesdata {
 
 	createQuery(searchstring: string, query: any) {
 		let q: any = { ...query };
-
-		// if (this.hide_empty_on_sort == true) {
-		// 	let ordered = this.settings.tableheaders.filter(
-		// 		(x) => x.order != "" && x.field != "_id",
-		// 	);
-		// 	if (ordered.length > 0) {
-		// 		let ands: any = {};
-		// 		for (let i = 0; i < ordered.length; i++) {
-		// 			const field = ordered[i].field;
-		// 			const or: any = {};
-		// 			ands[field] = { $exists: true, $ne: null };
-		// 		}
-		// 		q = { $and: [ands, q] };
-		// 	}
-		// }
-
 		if (searchstring == null || searchstring == "") {
 			return q;
 		}
@@ -244,9 +207,8 @@ class entitiesdata {
 				return ["name", "_created", "_modified"];
 			case "member":
 				return ["name", "status", "role", "_modified"];
-
-			// case "entities":
-			// 	return ["_id", "name", "_type", "_createdby", "_modified", "_created" ];
+			case "invites":
+				return ["name", "status", "role", "_modified"];
 			default:
 				return ["_id", "name", "_type", "_createdby", "_created"];
 		}

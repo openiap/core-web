@@ -1,18 +1,18 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
+  import { Acl } from "$lib/acl";
+  import Button from "$lib/components/ui/button/button.svelte";
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
-  import SuperDebug, { superForm, defaults } from "sveltekit-superforms";
+  import Switch from "$lib/components/ui/switch/switch.svelte";
+  import { EntitySelector } from "$lib/entityselector/index.js";
+  import { auth } from "$lib/stores/auth.svelte.js";
+  import { ArrowLeft, Check, Plus, Trash2 } from "lucide-svelte";
+  import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../schema.js";
-  import { auth } from "$lib/stores/auth.svelte.js";
-  import { Acl } from "$lib/acl";
-  import { ArrowLeft, Check, Plus, Trash2 } from "lucide-svelte";
-  import Switch from "$lib/components/ui/switch/switch.svelte";
-  import Button from "$lib/components/ui/button/button.svelte";
-  import { EntitySelector } from "$lib/entityselector/index.js";
 
   const key = "role";
   let showdebug = $state(false);
@@ -104,7 +104,6 @@
         <Input {...props} bind:value={$formData.name} />
       {/snippet}
     </Form.Control>
-    <!-- <Form.Description>This is the name.</Form.Description> -->
     <Form.FieldErrors />
   </Form.Field>
 
@@ -117,9 +116,6 @@
       {#snippet children({ props })}
         <div class="flex flex-col space-y-4">
           <Form.Label>RPA Role</Form.Label>
-          <!-- <Form.Description>
-            If enabled, the user is autostart and cannot signin
-          </Form.Description> -->
           <div class="flex items-center space-x-4">
             <Switch
               disabled={loading}
@@ -144,9 +140,6 @@
       {#snippet children({ props })}
         <div class="flex flex-col space-y-4">
           <Form.Label>Hide Members</Form.Label>
-          <!-- <Form.Description>
-            If enabled, the user is autostart and cannot signin
-          </Form.Description> -->
           <div class="flex items-center space-x-4">
             <Switch
               disabled={loading}

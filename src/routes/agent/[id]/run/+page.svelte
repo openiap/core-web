@@ -1,14 +1,11 @@
 <script lang="ts">
   import { browser } from "$app/environment";
-  import { goto } from "$app/navigation";
-  import { base } from "$app/paths";
   import * as Accordion from "$lib/components/ui/accordion";
   import Button from "$lib/components/ui/button/button.svelte";
   import Entityselector from "$lib/entityselector/entityselector.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
-  import { message } from "sveltekit-superforms";
-  import { AnsiUp } from "ansi_up";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
+  import { AnsiUp } from "ansi_up";
   import { toast } from "svelte-sonner";
 
   const ansi = new AnsiUp();
@@ -114,7 +111,6 @@
       toast.error("Error while deleting", {
         description: error.message,
       });
-      console.error(error);
     }
   }
 
@@ -158,9 +154,6 @@
         </Accordion.Item>
       {/each}
     </Accordion.Root>
-
-    <!-- <li>{process.packagename} {process.schedulename} {process.id}</li>
-      <pre>{process.output}</pre> -->
   </ul>
 {/if}
 
