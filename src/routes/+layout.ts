@@ -23,11 +23,11 @@ export const load: LayoutLoad = async ({ data, fetch, url, route }) => {
 	}
 
 	let _usersettings: userSettings = await usersettings.dbload();
-	const shortpage = (route.id != null && route.id.indexOf("/") > -1 ? route.id.split("/")[1] : "");
-	if (shortpage != "") {
-		usersettings.currentpage = shortpage;
-		_usersettings.currentpage = shortpage;
-	}
+	// const shortpage = (route.id != null && route.id.indexOf("/") > -1 ? route.id.split("/")[1] : "");
+	// if (shortpage != "") {
+	// 	usersettings.currentpage = shortpage;
+	// 	_usersettings.currentpage = shortpage;
+	// }
 
 	const page = url.pathname;
 	let entities: any[] = [];

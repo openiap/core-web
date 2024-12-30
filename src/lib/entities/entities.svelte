@@ -116,11 +116,11 @@
 				}
 				if (i == 0) {
 					header.headclass = "w-[100px]";
-					header.cellclass = "font-medium";
+					header.cellclass = "truncate overflow-ellipsis font-medium";
 				}
 				if (i == defaultcolumnnames.length - 1) {
 					header.headclass = "text-right";
-					header.cellclass = "text-right";
+					header.cellclass = "truncate overflow-ellipsis text-right";
 				}
 				tableheaders.push(header);
 			}
@@ -136,7 +136,7 @@
 				if (rest["action"] == null) lastindex = i;
 				foundfirst = true;
 				header.headclass = "";
-				header.cellclass = "font-medium";
+				header.cellclass = "truncate overflow-ellipsis font-medium";
 			} else if (header.show == true) {
 				if (rest["action"] == null) lastindex = i;
 				header.headclass = "w-[100px]";

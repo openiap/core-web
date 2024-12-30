@@ -27,7 +27,7 @@ class entitiesdata {
 	hide_empty_on_sort = true;
 	errormessage = "";
 	async GetData(page: string, collectionname: string, query: any) {
-		data.loadsettings(page);
+		// data.loadsettings(page);
 		let orderby = this.getOrderBy();
 		let usequery = this.createQuery(this.settings.searchstring, query);
 		let top = 5;
@@ -36,6 +36,7 @@ class entitiesdata {
 		if (auth.isConnected == false) {
 			return [];
 		}
+		console.log("GetData", collectionname, usequery, orderby, this.settings.page, this.settings.page_index, this.settings.total_count);
 		const entities = await auth.client.Query<any>({
 			collectionname: collectionname,
 			query: usequery,
