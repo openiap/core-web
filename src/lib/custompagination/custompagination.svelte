@@ -30,13 +30,16 @@
 	  <Pagination.Content>
 		<Pagination.Item>
 		  <Pagination.PrevButton >
+			total_count: {total_count} / page_index: {page_index + 1} / disabled: {!total_count || page_index + 1 === 1}
 			<HotkeyButton
-			data-shortcut="ArrowLeft"
-			variant="ghost"
-		>
-			<ChevronLeft class="size-4" />
-			<span class="hidden sm:block">Previous</span>
-		</HotkeyButton>
+				href="#"
+				data-shortcut="ArrowLeft"
+				variant="ghost"
+				disabled={!total_count || page_index + 1 === 1}
+				>
+				<ChevronLeft class="size-4" />
+				<span class="hidden sm:block">Previous</span>
+			</HotkeyButton>
 		  </Pagination.PrevButton>
 		</Pagination.Item>
 		{#each pages as page (page.key)}
@@ -55,8 +58,10 @@
 		<Pagination.Item>
 		  <Pagination.NextButton >
 			<HotkeyButton
-                    data-shortcut="ArrowRight"
-                    variant="ghost"
+				href="#"
+				data-shortcut="ArrowRight"
+				variant="ghost"
+				disabled={!total_count || currentPage === Math.ceil(total_count / 5)}
                 >
                     <span class="hidden sm:block">Next</span>
                     <ChevronRight class="size-4" />
