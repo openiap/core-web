@@ -56,7 +56,7 @@
 		  <Pagination.NextButton >
 			<HotkeyButton
                     data-shortcut="ArrowRight"
-                    variant="default"
+                    variant="ghost"
                 >
                     <span class="hidden sm:block">Next</span>
                     <ChevronRight class="size-4" />
