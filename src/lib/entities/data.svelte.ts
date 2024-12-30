@@ -58,8 +58,8 @@ class entitiesdata {
 		this.settings = usersettings.getpagesettings(page);
 	}
 	getpagesettingsreactless() {
-        return $state.snapshot(this.settings);
-    }
+		return $state.snapshot(this.settings);
+	}
 
 	SaveHeaders(tableheaders: TTableHeader[]) {
 		let result: SettingsTableHeader[] = [];

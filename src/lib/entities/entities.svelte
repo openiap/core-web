@@ -1,30 +1,28 @@
 <script lang="ts" module>
+	import { buttonVariants } from "$lib/components/ui/button/index.js";
 	import { Checkbox } from "$lib/components/ui/checkbox/index.js";
 	import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
 	import * as Sheet from "$lib/components/ui/sheet/index.js";
 	import { Switch } from "$lib/components/ui/switch/index.js";
 	import * as Table from "$lib/components/ui/table/index.js";
-
+	import Custompagination from "$lib/custompagination/custompagination.svelte";
+	import { type sort } from "$lib/stores/usersettings.svelte";
 	import ArrowDown from "lucide-svelte/icons/arrow-down";
 	import ArrowUp from "lucide-svelte/icons/arrow-up";
+	import { MediaQuery } from "runed";
 	import SuperDebug from "sveltekit-superforms";
-
-	import { buttonVariants } from "$lib/components/ui/button/index.js";
-	import { type sort } from "$lib/stores/usersettings.svelte";
 	import { TableHeader, type TTableHeader } from "./data.svelte.js";
 </script>
 
 <script lang="ts">
-	import { usersettings } from "$lib/stores/usersettings.svelte.js";
-	import { data } from "./data.svelte.js";
-
 	import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
 	import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
-	import Custompagination from "$lib/custompagination/custompagination.svelte";
+	import { usersettings } from "$lib/stores/usersettings.svelte.js";
 	import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
 	import { Trash2 } from "lucide-svelte";
-	import { MediaQuery } from "runed";
 	import { toast } from "svelte-sonner";
+	import { data } from "./data.svelte.js";
+    import { browser } from "$app/environment";
 
 	let {
 		page = "entities",
@@ -52,19 +50,6 @@
 
 	let actioncellclass = $state("");
 	let actionheadclass = $state("");
-	const isDesktop = new MediaQuery("(min-width: 768px)");
-	const perPage = 5;
-	const siblingCount = $derived(isDesktop.matches ? 3 : 0);
-
-	const calculateitems = () => {
-		if (page_index === 0) {
-			return 1;
-		} else if (total_count) {
-		} else {
-			return `${page_index * perPage + 1} of ${page_index * perPage + 5}`;
-		}
-	};
-
 	selected_items = data.settings.selected_items;
 
 	async function GetData() {
@@ -96,10 +81,11 @@
 			}
 			total_count = data.settings.total_count;
 		}
+		return entities;
 	}
-	//if (browser && data.settings.total_count == 99999) {
+	if (browser && data.settings.total_count == 99999) {
 		GetData();
-	//}
+	}
 
 	function EnsureDefaultHeaders(page: string) {
 		if (tableheaders.length == 0) {
@@ -426,6 +412,18 @@
 			});
 		}
 	}
+
+	const isDesktop = new MediaQuery("(min-width: 768px)");
+	const perPage = 5;
+	const siblingCount = $derived(isDesktop.matches ? 3 : 0);
+
+	const calculateitems = () => {
+		if (page_index === 0) {
+			return `${1} to ${page_index * perPage + 5}`;
+		} else {
+			return `${page_index * perPage + 1} to ${page_index * perPage + 5 < total_count ? page_index * perPage + 5 : total_count}`;
+		}
+	};
 </script>
 
 <div class="text-red-500">{data.errormessage}</div>
@@ -494,12 +492,12 @@
 					}}
 				>
 					{#if multi_select}
-						<Table.Cell class="w-8"
-						onclick={() => ToggleSelect(item)}
+						<Table.Cell
+							class="w-8"
+							onclick={() => ToggleSelect(item)}
 							><Checkbox
 								aria-label="Select item"
 								checked={selected_items.indexOf(item._id) > -1}
-								
 							/></Table.Cell
 						>
 					{/if}
@@ -598,13 +596,11 @@
 								</div>
 								<Switch
 									bind:checked={head.show}
-									onclick={() => {
-									}}
+									onclick={() => {}}
 								/>
 							</div>
 						{/each}
 					</ScrollArea>
-
 				</div>
 				<Sheet.Footer>
 					<Sheet.Close class={buttonVariants({ variant: "outline" })}>
@@ -617,11 +613,16 @@
 </div>
 
 <Custompagination
-	bind:page_index
-	bind:count={total_count}
-	onnext={handlenext}
-	onprevious={handleprevious}
-	onpageclick={handlepageclick}
+	controlledPage
+	{page_index}
+	{total_count}
+	page={page_index + 1}
+	onPageChange={(p: any) => {
+		page_index = p - 1;
+		data.settings.page_index = page_index;
+		data.persist();
+		GetData();
+	}}
 />
 
 <HotkeyButton
