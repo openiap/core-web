@@ -30,7 +30,6 @@
 	  <Pagination.Content>
 		<Pagination.Item>
 		  <Pagination.PrevButton >
-			total_count: {total_count} / page_index: {page_index + 1} / disabled: {!total_count || page_index + 1 === 1}
 			<HotkeyButton
 				href="#"
 				data-shortcut="ArrowLeft"
