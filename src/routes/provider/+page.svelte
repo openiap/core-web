@@ -3,20 +3,23 @@
   export let collectionname = "config";
   export let query = { _type: "provider" };
 </script>
+
 <script lang="ts">
-  import { HotkeyInput } from "$lib/components/ui/hotkeyinput/index.js";
-  import { Label } from "$lib/components/ui/label/index.js";
-  import { Entities } from "$lib/entities/index.js";
-  import { Pencil, Trash2 } from "lucide-svelte";
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import Button from "$lib/components/ui/button/button.svelte";
   import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
+  import { HotkeyInput } from "$lib/components/ui/hotkeyinput/index.js";
+  import { Label } from "$lib/components/ui/label/index.js";
+  import { data as datacomponent } from "$lib/entities/data.svelte.js";
+  import { Entities } from "$lib/entities/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
+  import { Pencil, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
-  let searchstring = $state(data.searchstring);
+  datacomponent.parsesettings(data.settings);
+  let searchstring = $state(datacomponent.settings.searchstring);
   let selected_items = $state([]);
   let entities = $state(data.entities);
 
@@ -35,14 +38,12 @@
       });
     }
   }
-  function deleteitems(ids: string[]) {
-  }
+  function deleteitems(ids: string[]) {}
   function single_item_click(item: any) {
     goto(base + `/user/${item._id}`);
   }
 </script>
 
-<h1>All {page}s</h1>
 <Hotkeybutton
   aria-label="add"
   variant={"outline"}

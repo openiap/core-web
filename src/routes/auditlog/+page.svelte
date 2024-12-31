@@ -7,21 +7,21 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
+  import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import Button from "$lib/components/ui/button/button.svelte";
   import { Entities } from "$lib/entities/index.js";
   import { SearchInput } from "$lib/searchinput/index.js";
   import { MapPinHouse, Pencil } from "lucide-svelte";
 
   let { data } = $props();
-  let searchstring = $state(data.searchstring);
+  datacomponent.parsesettings(data.settings);
+  let searchstring = $state(datacomponent.settings.searchstring);
   let entities = $state(data.entities);
 
   function single_item_click(item: any) {
     goto(base + `/${page}/${item._id}`);
   }
 </script>
-
-<div class="mb-4 font-bold">All {page}s</div>
 
 <SearchInput bind:searchstring />
 

@@ -7,9 +7,9 @@
 <script lang="ts">
   import { Entities } from "$lib/entities/index.js";
   import { Download, Pencil, Trash2 } from "lucide-svelte";
-
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
+  import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import Button from "$lib/components/ui/button/button.svelte";
   import Input from "$lib/components/ui/input/input.svelte";
   import { data as data1 } from "$lib/entities/data.svelte.js";
@@ -19,7 +19,8 @@
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
-  let searchstring = $state(data.searchstring);
+  datacomponent.parsesettings(data.settings);
+  let searchstring = $state(datacomponent.settings.searchstring);
   let selected_items = $state([]);
   let entities = $state(data.entities);
   let loading = $state(false);
@@ -110,8 +111,6 @@
     }
   }
 </script>
-
-<div class="mb-4 font-bold">All {page}</div>
 
 <div class="mb-4">
   <div class="mb-2">Upload New File</div>

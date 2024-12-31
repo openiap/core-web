@@ -10,7 +10,11 @@ export const handle: Handle = async ({ event, resolve }) => {
     let client_id = process.env.web_client_id;
     if (client_id == null || client_id == "") client_id = web_client_id;
     const { url, cookies } = event;
-    await auth.serverinit(protocol, domain, client_id, url.origin, fetch, cookies);
+    try {
+        await auth.serverinit(protocol, domain, client_id, url.origin, fetch, cookies);
+    } catch (error) {
+        console.error(error);        
+    }
     event.locals = event.locals || {};
     // @ts-ignore
     event.locals.protocol = protocol;

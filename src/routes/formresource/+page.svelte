@@ -8,7 +8,7 @@
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import Button from "$lib/components/ui/button/button.svelte";
-  import { data as data1 } from "$lib/entities/data.svelte.js";
+  import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
   import Searchinput from "$lib/searchinput/searchinput.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
@@ -17,8 +17,8 @@
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
-  const title = "Form Resources";
-  let searchstring = $state(data.searchstring);
+  datacomponent.parsesettings(data.settings);
+  let searchstring = $state(datacomponent.settings.searchstring);
   let selected_items = $state([]);
   let entities = $state(data.entities);
   let showWarning = $state(false);
@@ -49,7 +49,7 @@
       toast.success("Deleted successfully", {
         description: "",
       });
-      entities = await data1.GetData(page, collectionname, query);
+      entities = await datacomponent.GetData(page, collectionname, query);
     } catch (error: any) {
       toast.error("Error while deleting", {
         description: error.message,
@@ -58,7 +58,6 @@
   }
 </script>
 
-<div class="mb-4 font-bold">All {title}</div>
 <Button
   class="mb-4"
   aria-label="add"

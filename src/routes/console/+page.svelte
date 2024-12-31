@@ -5,6 +5,7 @@
 </script>
 
 <script lang="ts">
+  import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { browser } from "$app/environment";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { Input } from "$lib/components/ui/input";
@@ -12,41 +13,46 @@
   import { Switch } from "$lib/components/ui/switch/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import SuperDebug from "sveltekit-superforms";
-  
+
   let { data } = $props();
-  if(data.config != null) {
-    if(data.config.log_to_exchange == null) data.config.log_to_exchange = false;
-    if(data.config.log_cache == null) data.config.log_cache = false;
-    if(data.config.log_amqp == null) data.config.log_amqp = false;
-    if(data.config.log_websocket == null) data.config.log_websocket = false;
-    if(data.config.log_webserver == null) data.config.log_webserver = false;
-    if(data.config.log_oauth == null) data.config.log_oauth = false;
-    if(data.config.log_database == null) data.config.log_database = false;
-    if(data.config.log_grafana == null) data.config.log_grafana = false;
-    if(data.config.log_housekeeping == null) data.config.log_housekeeping = false;
-    if(data.config.log_git == null) data.config.log_git = false;
-    if(data.config.log_login_provider == null) data.config.log_login_provider = false;
-    if(data.config.log_otel == null) data.config.log_otel = false;
-    if(data.config.log_blocked_ips == null) data.config.log_blocked_ips = false;
-    if(data.config.log_openapi == null) data.config.log_openapi = false;
-    if(data.config.log_database_queries == null) data.config.log_database_queries = false;
-    if(data.config.log_database_queries_ms == null) data.config.log_database_queries_ms = 100;
-    if(data.config.log_all_watches == null) data.config.log_all_watches = false;
-    if(data.config.log_debug == null) data.config.log_debug = false;
-    if(data.config.log_verbose == null) data.config.log_verbose = false;
-    if(data.config.log_silly == null) data.config.log_silly = false;
+  datacomponent.parsesettings(data.settings);
+  let dataconfig: any = {};
+  if (data.entities.length > 0) {
+    dataconfig = data.entities[0];
+    if (dataconfig != null) {
+      if (dataconfig.log_to_exchange == null) dataconfig.log_to_exchange = false;
+      if (dataconfig.log_cache == null) dataconfig.log_cache = false;
+      if (dataconfig.log_amqp == null) dataconfig.log_amqp = false;
+      if (dataconfig.log_websocket == null) dataconfig.log_websocket = false;
+      if (dataconfig.log_webserver == null) dataconfig.log_webserver = false;
+      if (dataconfig.log_oauth == null) dataconfig.log_oauth = false;
+      if (dataconfig.log_database == null) dataconfig.log_database = false;
+      if (dataconfig.log_grafana == null) dataconfig.log_grafana = false;
+      if (dataconfig.log_housekeeping == null) dataconfig.log_housekeeping = false;
+      if (dataconfig.log_git == null) dataconfig.log_git = false;
+      if (dataconfig.log_login_provider == null) dataconfig.log_login_provider = false;
+      if (dataconfig.log_otel == null) dataconfig.log_otel = false;
+      if (dataconfig.log_blocked_ips == null) dataconfig.log_blocked_ips = false;
+      if (dataconfig.log_openapi == null) dataconfig.log_openapi = false;
+      if (dataconfig.log_database_queries == null) dataconfig.log_database_queries = false;
+      if (dataconfig.log_database_queries_ms == null) dataconfig.log_database_queries_ms = 100;
+      if (dataconfig.log_all_watches == null) dataconfig.log_all_watches = false;
+      if (dataconfig.log_debug == null) dataconfig.log_debug = false;
+      if (dataconfig.log_verbose == null) dataconfig.log_verbose = false;
+      if (dataconfig.log_silly == null) dataconfig.log_silly = false;
+    }
   }
-  let config = $state(data.config);
+
+  let config = $state(dataconfig);
   let showdebug = $state(false);
   let messages: any[] = $state([]);
   let pause = $state(false);
   let lines = $state(500);
 
-
   if (browser) {
     auth.client.RegisterExchange(
       { exchangename: "openflow_logs", algorithm: "fanout" },
-      (msg:any, payload:any, user:any, jwt:string) => {
+      (msg: any, payload: any, user: any, jwt: string) => {
         if (pause == true) return;
         if (payload.lvl == 0) payload.lvl = "inf";
         if (payload.lvl == 1) payload.lvl = "err";
@@ -68,17 +74,17 @@
           }
         },
       )
-      .then((watchid: any) => {
-      });
+      .then((watchid: any) => {});
   }
   function saveconfig(e: any) {
     setTimeout(() => {
-      auth.client.UpdateOne({
-        collectionname: "config",
-        item: $state.snapshot(config),
-        jwt: auth.access_token,
-      }).then((result:any) => {
-      });
+      auth.client
+        .UpdateOne({
+          collectionname: "config",
+          item: $state.snapshot(config),
+          jwt: auth.access_token,
+        })
+        .then((result: any) => {});
     }, 250);
   }
 </script>
@@ -87,8 +93,12 @@
   <div class="flex flex-col h-screen p-4 gap-4">
     <h1 class="text-2xl font-bold">Console</h1>
     <div class="flex flex-wrap gap-4">
-      <div class="flex items-center space-x-2" >
-        <Switch id="stream-logs" bind:checked={config.log_to_exchange} onclick={saveconfig} />
+      <div class="flex items-center space-x-2">
+        <Switch
+          id="stream-logs"
+          bind:checked={config.log_to_exchange}
+          onclick={saveconfig}
+        />
         <Label for="stream-logs" onclick={saveconfig}>Stream logs</Label>
       </div>
       <div class="flex items-center space-x-2">
@@ -107,10 +117,7 @@
         />
       </div>
       <div class="flex items-center space-x-2">
-        <Switch
-          id="cache"
-          bind:checked={config.log_cache}
-        />
+        <Switch id="cache" bind:checked={config.log_cache} />
         <Label for="cache">Cache</Label>
       </div>
       <div class="flex items-center space-x-2">
@@ -118,27 +125,51 @@
         <Label for="amqp" onclick={saveconfig}>AMQP</Label>
       </div>
       <div class="flex items-center space-x-2">
-        <Switch id="websocket" bind:checked={config.log_websocket} onclick={saveconfig} />
+        <Switch
+          id="websocket"
+          bind:checked={config.log_websocket}
+          onclick={saveconfig}
+        />
         <Label for="websocket" onclick={saveconfig}>WebSocket</Label>
       </div>
       <div class="flex items-center space-x-2">
-        <Switch id="webserver" bind:checked={config.log_webserver} onclick={saveconfig} />
+        <Switch
+          id="webserver"
+          bind:checked={config.log_webserver}
+          onclick={saveconfig}
+        />
         <Label for="webserver" onclick={saveconfig}>Web server</Label>
       </div>
       <div class="flex items-center space-x-2">
-        <Switch id="oauth" bind:checked={config.log_oauth} onclick={saveconfig} />
+        <Switch
+          id="oauth"
+          bind:checked={config.log_oauth}
+          onclick={saveconfig}
+        />
         <Label for="oauth" onclick={saveconfig}>OAth</Label>
       </div>
       <div class="flex items-center space-x-2">
-        <Switch id="database" bind:checked={config.log_database} onclick={saveconfig} />
+        <Switch
+          id="database"
+          bind:checked={config.log_database}
+          onclick={saveconfig}
+        />
         <Label for="database" onclick={saveconfig}>Database</Label>
       </div>
       <div class="flex items-center space-x-2">
-        <Switch id="grafana" bind:checked={config.log_grafana} onclick={saveconfig} />
+        <Switch
+          id="grafana"
+          bind:checked={config.log_grafana}
+          onclick={saveconfig}
+        />
         <Label for="grafana" onclick={saveconfig}>Grafana</Label>
       </div>
       <div class="flex items-center space-x-2">
-        <Switch id="housekeeping" bind:checked={config.log_housekeeping} onclick={saveconfig} />
+        <Switch
+          id="housekeeping"
+          bind:checked={config.log_housekeeping}
+          onclick={saveconfig}
+        />
         <Label for="housekeeping" onclick={saveconfig}>House keeping</Label>
       </div>
       <div class="flex items-center space-x-2">
@@ -146,7 +177,11 @@
         <Label for="git" onclick={saveconfig}>git</Label>
       </div>
       <div class="flex items-center space-x-2">
-        <Switch id="login-provider" bind:checked={config.log_login_provider} onclick={saveconfig} />
+        <Switch
+          id="login-provider"
+          bind:checked={config.log_login_provider}
+          onclick={saveconfig}
+        />
         <Label for="login-provider" onclick={saveconfig}>Login provider</Label>
       </div>
       <div class="flex items-center space-x-2">
@@ -154,19 +189,30 @@
         <Label for="otel" onclick={saveconfig}>Otel</Label>
       </div>
       <div class="flex items-center space-x-2">
-        <Switch id="blocked-ips" bind:checked={config.log_blocked_ips} onclick={saveconfig} />
+        <Switch
+          id="blocked-ips"
+          bind:checked={config.log_blocked_ips}
+          onclick={saveconfig}
+        />
         <Label for="blocked-ips" onclick={saveconfig}>Blocked ips</Label>
       </div>
       <div class="flex items-center space-x-2">
-        <Switch id="openapi" bind:checked={config.log_openapi} onclick={saveconfig} />
+        <Switch
+          id="openapi"
+          bind:checked={config.log_openapi}
+          onclick={saveconfig}
+        />
         <Label for="openapi" onclick={saveconfig}>Open API</Label>
       </div>
       <div class="flex items-center space-x-2">
         <Switch
           id="database-queries"
-          bind:checked={config.log_database_queries} onclick={saveconfig}
+          bind:checked={config.log_database_queries}
+          onclick={saveconfig}
         />
-        <Label for="database-queries" onclick={saveconfig}>Database queries</Label>
+        <Label for="database-queries" onclick={saveconfig}
+          >Database queries</Label
+        >
       </div>
       <div class="flex items-center space-x-2">
         <Input
@@ -181,19 +227,35 @@
         <Label for="database-queries-ms">Database queries ms</Label>
       </div>
       <div class="flex items-center space-x-2">
-        <Switch id="all-watches" bind:checked={config.log_all_watches} onclick={saveconfig} />
+        <Switch
+          id="all-watches"
+          bind:checked={config.log_all_watches}
+          onclick={saveconfig}
+        />
         <Label for="all-watches" onclick={saveconfig}>Watches</Label>
       </div>
       <div class="flex items-center space-x-2">
-        <Switch id="debug" bind:checked={config.log_debug} onclick={saveconfig} />
+        <Switch
+          id="debug"
+          bind:checked={config.log_debug}
+          onclick={saveconfig}
+        />
         <Label for="debug" onclick={saveconfig}>Debug</Label>
       </div>
       <div class="flex items-center space-x-2">
-        <Switch id="verbose" bind:checked={config.log_verbose} onclick={saveconfig} />
+        <Switch
+          id="verbose"
+          bind:checked={config.log_verbose}
+          onclick={saveconfig}
+        />
         <Label for="verbose" onclick={saveconfig}>Verbose</Label>
       </div>
       <div class="flex items-center space-x-2">
-        <Switch id="silly" bind:checked={config.log_silly} onclick={saveconfig} />
+        <Switch
+          id="silly"
+          bind:checked={config.log_silly}
+          onclick={saveconfig}
+        />
         <Label for="silly" onclick={saveconfig}>Silly</Label>
       </div>
     </div>

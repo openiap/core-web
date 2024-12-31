@@ -79,14 +79,22 @@ class _usersettings implements userSettings {
                 return $state.snapshot(this);
             }
         }
-        let settings = await auth.client.FindOne<userSettings>({ collectionname: "users", query: { userid: userid, "_type": "usersettings" }, jwt: auth.access_token });
-        if (settings == null) {
+        if(auth.client != null && auth.client.connected) {
+            let settings = await auth.client.FindOne<userSettings>({ collectionname: "users", query: { userid: userid, "_type": "usersettings" }, jwt: auth.access_token });
+            if (settings == null) {
+                this._id = "";
+                this.userid = userid;
+                this.name = "Settings for " + auth.profile.name;
+                return $state.snapshot(this);
+            }
+            this.stateload(settings);
+        } else {
+            console.error("usersettings.dbload.error, ", auth.client?.connected);
             this._id = "";
             this.userid = userid;
             this.name = "Settings for " + auth.profile.name;
             return $state.snapshot(this);
         }
-        this.stateload(settings);
         return $state.snapshot(this);
     }
     async reset() {

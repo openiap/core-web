@@ -5,20 +5,17 @@
 </script>
 
 <script lang="ts">
-  import { Entities } from "$lib/entities/index.js";
-  import { Eye, Pencil } from "lucide-svelte";
-
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import Button from "$lib/components/ui/button/button.svelte";
+  import { data as datacomponent } from "$lib/entities/data.svelte.js";
+  import { Entities } from "$lib/entities/index.js";
   import Searchinput from "$lib/searchinput/searchinput.svelte";
-  import { auth } from "$lib/stores/auth.svelte.js";
-  import { toast } from "svelte-sonner";
+  import { Eye, Pencil } from "lucide-svelte";
 
   let { data } = $props();
-  const title = "Mail History";
-  let collectionname = "mailhist";
-  let searchstring = $state(data.searchstring);
+  datacomponent.parsesettings(data.settings);
+  let searchstring = $state(datacomponent.settings.searchstring);
   let selected_items = $state([]);
   let entities = $state(data.entities);
 
@@ -27,7 +24,6 @@
   }
 </script>
 
-<div class="mb-4 font-bold">All {title}</div>
 <Searchinput bind:searchstring />
 <Entities
   {collectionname}

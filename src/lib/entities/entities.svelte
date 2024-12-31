@@ -38,7 +38,6 @@
 		...rest
 	} = $props();
 
-	data.loadsettings(page);
 	let _searchstring = $state.snapshot(data.settings.searchstring);
 	let _collectionname = $state.snapshot(collectionname);
 	let multi_sort = $state(false);

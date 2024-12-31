@@ -3,19 +3,22 @@
   export let collectionname = "config";
   export let query = { _type: "resource" };
 </script>
+
 <script lang="ts">
-  import { HotkeyInput } from "$lib/components/ui/hotkeyinput/index.js";
-  import { Label } from "$lib/components/ui/label/index.js";
-  import { Entities } from "$lib/entities/index.js";
-  import { Trash2 } from "lucide-svelte";
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import Button from "$lib/components/ui/button/button.svelte";
+  import { HotkeyInput } from "$lib/components/ui/hotkeyinput/index.js";
+  import { Label } from "$lib/components/ui/label/index.js";
+  import { data as datacomponent } from "$lib/entities/data.svelte.js";
+  import { Entities } from "$lib/entities/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
+  import { Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
-  let searchstring = $state(data.searchstring);
+  datacomponent.parsesettings(data.settings);
+  let searchstring = $state(datacomponent.settings.searchstring);
   let selected_items = $state([]);
   let entities = $state(data.entities);
 
@@ -34,14 +37,12 @@
       });
     }
   }
-  function deleteitems(ids: string[]) {
-  }
+  function deleteitems(ids: string[]) {}
   function single_item_click(item: any) {
     goto(base + `/${page}/${item._id}`);
   }
 </script>
 
-<h1>All {page}s</h1>
 <div class="flex w-full max-w-sm flex-col gap-1.5">
   <Label for="email">Search</Label>
   <div class="flex gap-1.5">

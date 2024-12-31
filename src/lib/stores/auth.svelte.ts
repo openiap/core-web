@@ -133,12 +133,23 @@ class authState {
         } else {
             auth.isAuthenticated = true;
         }
-        await this.connect(this.access_token);
-        let _workspace = await auth.client.FindOne<Workspace>({ collectionname: "users", query: { _type: "workspace" }, jwt: auth.access_token });
-        if (_workspace == null) {
-            this.workspace = new Workspace();
-        } else {
-            this.workspace = _workspace;
+        if(browser) {
+            await this.connect(this.access_token);
+        }
+        try {
+            if(this.client == null) return;
+            if(!this.client.connected) {
+                console.error("clientinit.client.connected", this.client.connected);
+                return;
+            }
+            let _workspace = await this.client.FindOne<Workspace>({ collectionname: "users", query: { _type: "workspace" }, jwt: auth.access_token });
+            if (_workspace == null) {
+                this.workspace = new Workspace();
+            } else {
+                this.workspace = _workspace;
+            }
+        } catch (error) {
+            console.log("clientinit.FindOne.error", error);
         }
     }
     async login() {
@@ -171,19 +182,24 @@ class authState {
         }
         if (this.client == null) {
             this.client = new openiap(this.wsurl, access_token);
-            await this.client.connect(true);
+            const user = await this.client.connect(true);
+            console.log("clientinit.connect", user?.name, user?.email, user?.username);
             this.isConnected = true;
             this.connectWaitingPromisses.forEach((resolve: any) => {
                 resolve();
             });
             if (browser) {
-                this.client.Watch({ collectionname: "users", paths: [], jwt: access_token }, async (operation: any, document: any) => {
+                this.client.Watch({ collectionname: "users", paths: ["$.[?(@ && @._type == 'workspace')]"], jwt: access_token }, async (operation: any, document: any) => {
                     if (document._type == "workspace") {
-                        let _workspace = await auth.client.FindOne<Workspace>({ collectionname: "users", query: { _type: "workspace" } });
-                        if (_workspace == null) {
-                            this.workspace = new Workspace();
-                        } else {
-                            this.workspace = _workspace;
+                        try {
+                            let _workspace = await this.client.FindOne<Workspace>({ collectionname: "users", query: { _type: "workspace" } });
+                            if (_workspace == null) {
+                                this.workspace = new Workspace();
+                            } else {
+                                this.workspace = _workspace;
+                            }
+                        } catch (error) {
+                            console.log("clientinit.Watch.error", error);
                         }
                     }
                 });

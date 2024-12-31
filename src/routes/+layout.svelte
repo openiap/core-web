@@ -7,13 +7,11 @@
 	import { Toaster } from "$lib/components/ui/sonner/index.js";
 	import AppSidebar from "$lib/sidebar/app-sidebar.svelte";
 	import { auth } from "$lib/stores/auth.svelte";
-	import { usersettings } from "$lib/stores/usersettings.svelte.js";
 	import { ModeWatcher } from "mode-watcher";
 	import "../app.css";
 	import Header from "./Header.svelte";
 
-	let { children, data } = $props();
-	// usersettings.stateload(data.usersettings);
+	let { children } = $props();
 	let pagename = $derived(() =>
 		$page.url.pathname.replace(base, "").replace("/", ""),
 	);

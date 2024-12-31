@@ -4,30 +4,28 @@
 </script>
 
 <script lang="ts">
-  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
-  import { Label } from "$lib/components/ui/label/index.js";
-  import { Entities } from "$lib/entities/index.js";
-  import { Pencil, Trash2 } from "lucide-svelte";
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import Button from "$lib/components/ui/button/button.svelte";
-  import { data as data1 } from "$lib/entities/data.svelte.js";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
+  import { Label } from "$lib/components/ui/label/index.js";
+  import { data as datacomponent } from "$lib/entities/data.svelte.js";
+  import { Entities } from "$lib/entities/index.js";
   import Searchinput from "$lib/searchinput/searchinput.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
-  import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
+  import { Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
+  datacomponent.parsesettings(data.settings);
+  let searchstring = $state(datacomponent.settings?.searchstring);
   let query = {
     _type: "member",
     workspaceid: data.id,
     status: { $ne: "rejected" },
   };
 
-  usersettings.loadpage(data.settings);
-
-  let searchstring = $state(data.searchstring);
   let selected_items = $state([]);
   let entities = $state(data.entities);
   let showWarning = $state(false);
@@ -43,7 +41,7 @@
       toast.success("Deleted successfully", {
         description: "",
       });
-      entities = await data1.GetData(page, collectionname, query);
+      entities = await datacomponent.GetData(page, collectionname, query);
     } catch (error: any) {
       toast.error("Error while deleting", {
         description: error.message,
@@ -54,13 +52,13 @@
     try {
       for (let id of ids) {
         await auth.client.CustomCommand({ command: "removemember", id });
-        entities = await data1.GetData(page, collectionname, query);
+        entities = await datacomponent.GetData(page, collectionname, query);
       }
       selected_items = [];
       toast.success("Deleted successfully", {
         description: "",
       });
-    } catch (error:any) {
+    } catch (error: any) {
       toast.error("Error while deleting", {
         description: error.message,
       });
@@ -123,27 +121,28 @@
   {/snippet}
   {#snippet role(item: any)}
     <select
-    bind:value={item.role}
-    onchange={async () => {
-      try {
-        await auth.client.CustomCommand({
-          command: "updatemember",
-          data: JSON.stringify(item),
-        });
-        toast.success("Updated successfully", {
-          description: "",
-        });
-      } catch (error:any) {
-        toast.error("Error while updating", {
-          description: error.message,
-        });        
-      }
-      // Run again to "reset"
-      entities = await data1.GetData(page, collectionname, query);
-    }}>
-    <option value="member">Member</option>
-    <option value="admin">Admin</option>
-  </select>
+      bind:value={item.role}
+      onchange={async () => {
+        try {
+          await auth.client.CustomCommand({
+            command: "updatemember",
+            data: JSON.stringify(item),
+          });
+          toast.success("Updated successfully", {
+            description: "",
+          });
+        } catch (error: any) {
+          toast.error("Error while updating", {
+            description: error.message,
+          });
+        }
+        // Run again to "reset"
+        entities = await datacomponent.GetData(page, collectionname, query);
+      }}
+    >
+      <option value="member">Member</option>
+      <option value="admin">Admin</option>
+    </select>
   {/snippet}
   {#snippet action(item: any)}
     <Button

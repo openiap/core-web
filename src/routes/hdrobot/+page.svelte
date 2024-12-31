@@ -10,15 +10,16 @@
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import Button from "$lib/components/ui/button/button.svelte";
+  import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import Switch from "$lib/components/ui/switch/switch.svelte";
-  import { data as data1 } from "$lib/entities/data.svelte.js";
   import Searchinput from "$lib/searchinput/searchinput.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
-  let searchstring = $state(data.searchstring);
+  datacomponent.parsesettings(data.settings);
+  let searchstring = $state(datacomponent.settings.searchstring);
   let selected_items = $state([]);
   let entities = $state(data.entities);
   let showWarning = $state(false);
@@ -51,7 +52,7 @@
       toast.success("Deleted successfully", {
         description: "",
       });
-      entities = await data1.GetData(page, collectionname, query);
+      entities = await datacomponent.GetData(page, collectionname, query);
     } catch (error: any) {
       toast.error("Error while deleting", {
         description: error.message,
@@ -74,7 +75,7 @@
       toast.success("Updated successfully", {
         description: "",
       });
-      entities = await data1.GetData(page, collectionname, query);
+      entities = await datacomponent.GetData(page, collectionname, query);
     } catch (error: any) {
       undoToggle();
       toast.error("Error while updating", {
@@ -92,7 +93,6 @@
   }
 </script>
 
-<div class="mb-4 font-bold">All {page}s</div>
 <Searchinput bind:searchstring />
 <Entities
   {collectionname}

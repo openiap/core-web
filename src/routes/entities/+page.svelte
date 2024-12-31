@@ -1,17 +1,14 @@
 <script lang="ts">
-  import { Entities } from "$lib/entities/index.js";
-  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import Button from "$lib/components/ui/button/button.svelte";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
   import { Separator } from "$lib/components/ui/separator/index.js";
-
-  import { HotkeyInput } from "$lib/components/ui/hotkeyinput/index.js";
-  import { Label } from "$lib/components/ui/label/index.js";
-
-  import { auth } from "$lib/stores/auth.svelte";
+  import { Entities } from "$lib/entities/index.js";
   import Searchinput from "$lib/searchinput/searchinput.svelte";
+  import { data as datacomponent } from "$lib/entities/data.svelte.js";
+  import { auth } from "$lib/stores/auth.svelte";
   import { Folder } from "lucide-svelte";
-    import { toast } from "svelte-sonner";
+  import { toast } from "svelte-sonner";
   let { data } = $props();
 
   let collectionname = $state("");
@@ -43,6 +40,7 @@
   }
   function selectcollection(name: string) {
     collectionname = name;
+    datacomponent.persist();
   }
 </script>
 
@@ -88,8 +86,7 @@
       delete_selected={deleteitems}
       bind:selected_items
       bind:entities
-    >
-    </Entities>
+    ></Entities>
   </div>
 </div>
 

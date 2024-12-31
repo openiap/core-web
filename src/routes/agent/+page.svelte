@@ -25,8 +25,7 @@
 
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
-  import { data as data1 } from "$lib/entities/data.svelte.js";
-
+  import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import Button from "$lib/components/ui/button/button.svelte";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
   import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
@@ -37,7 +36,8 @@
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
-  let searchstring = $state(data.searchstring);
+  datacomponent.parsesettings(data.settings);
+  let searchstring = $state(datacomponent.settings.searchstring);
   let selected_items = $state([]);
   let entities = $state(data.entities);
   let showWarning = $state(false);
@@ -159,7 +159,7 @@
       toast.success("Deleted successfully", {
         description: "",
       });
-      entities = await data1.GetData(page, collectionname, query);
+      entities = await datacomponent.GetData(page, collectionname, query);
     } catch (error: any) {
       toast.error("Error while deleting", {
         description: error.message,
@@ -168,8 +168,6 @@
   }
   getPods();
 </script>
-
-<div class="font-bold mb-4">All {page}s</div>
 
 <div
   class="mb-4 border-b border-gray-300 flex justify-start pb-4 space-x-4 max-w-min"
@@ -197,7 +195,7 @@
     title="reload"
     variant="default"
     onclick={async () => {
-      entities = await data1.GetData(page, collectionname, query);
+      entities = await datacomponent.GetData(page, collectionname, query);
       await getPods();
     }}
   >
@@ -213,7 +211,7 @@
         value="All"
         id="r1"
         onclick={async () => {
-          entities = await data1.GetData(page, collectionname, query);
+          entities = await datacomponent.GetData(page, collectionname, query);
           getPods();
         }}
       />
@@ -224,7 +222,7 @@
         value="Daemon"
         id="r2"
         onclick={async () => {
-          entities = await data1.GetData(page, collectionname, {
+          entities = await datacomponent.GetData(page, collectionname, {
             _type: "agent",
             daemon: true,
           });
@@ -238,7 +236,7 @@
         value="Pods"
         id="r3"
         onclick={async () => {
-          const result = await data1.GetData(page, collectionname, query);
+          const result = await datacomponent.GetData(page, collectionname, query);
           entities = result.filter((x: any) =>
             knownpods.some((y: any) => x._id === y.metadata.labels.agentid),
           );
@@ -252,7 +250,7 @@
         value="Docker"
         id="r4"
         onclick={async () => {
-          entities = await data1.GetData(page, collectionname, {
+          entities = await datacomponent.GetData(page, collectionname, {
             _type: "agent",
             docker: true,
           });
@@ -266,7 +264,7 @@
         value="Assistant"
         id="r5"
         onclick={async () => {
-          entities = await data1.GetData(page, collectionname, {
+          entities = await datacomponent.GetData(page, collectionname, {
             _type: "agent",
             assistant: true,
           });

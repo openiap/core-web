@@ -17,6 +17,7 @@
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
+  datacomponent.parsesettings(data.settings);
   let searchstring = $state(datacomponent.settings.searchstring);
   let selected_items = $state([]);
   let entities = $state(data.entities);
@@ -41,7 +42,6 @@
   }
 </script>
 
-<div class="font-bold mb-4">All {page}s</div>
 <Hotkeybutton
   class="mb-4"
   aria-label="add"

@@ -1,19 +1,20 @@
 <script lang="ts" module>
   export let page = "client";
-  export let collectionname = "credential";
-  export let query = { _type: "credential" };
 </script>
 
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
+  import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import Button from "$lib/components/ui/button/button.svelte";
   import { Entities } from "$lib/entities/index.js";
   import Searchinput from "$lib/searchinput/searchinput.svelte";
   import { MapPinHouse, User } from "lucide-svelte";
 
   let { data } = $props();
-  let searchstring = $state(data.searchstring);
+  datacomponent.parsesettings(data.settings);
+  console.log("client", datacomponent.settings.total_count);
+  let searchstring = $state(datacomponent.settings.searchstring);
   let entities = $state(data.entities);
 
   function single_item_click(item: any) {
@@ -21,13 +22,9 @@
   }
 </script>
 
-<h1 class="font-bold mb-4">All {page}s</h1>
-
 <Searchinput bind:searchstring />
 
 <Entities
-  {collectionname}
-  {query}
   bind:searchstring
   {page}
   {single_item_click}
