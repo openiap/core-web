@@ -11,7 +11,8 @@ export const handle: Handle = async ({ event, resolve }) => {
     if (client_id == null || client_id == "") client_id = web_client_id;
     const { url, cookies } = event;
     try {
-        await auth.serverinit(protocol, domain, client_id, url.origin, fetch, cookies);
+        await auth.serverinit(protocol, domain);
+        await auth.serverloaduser(client_id, url.origin, cookies);
     } catch (error) {
         console.error(error);        
     }

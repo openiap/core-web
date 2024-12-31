@@ -76,7 +76,7 @@ class authState {
         this.baseurl = protocol + '://' + domain;
         this.wsurl = this.baseurl.replace("https://", "wss://").replace("http://", "ws://") + "/ws/v2";
     }
-    async serverinit(protocol: string, domain: string, client_id: string, origin: string, fetch: any, cookies: any) {
+    async serverinit(protocol: string, domain: string) {
         if (this.config == null) {
             await this.getConfig(protocol, domain, fetch);
         }
@@ -98,32 +98,14 @@ class authState {
             }
             this.isConnected = true;
         }
-        const settings = {
-            authority: this.baseurl + "/oidc",
-            client_id: client_id,
-            redirect_uri: origin + base + "/",
-            response_type: "code",
-            scope: "openid profile email",
-            post_logout_redirect_uri: origin + base + "/",
-            // userStore: new WebStorageStateStore({ store: window.localStorage }),
-            userStore: new WebStorageStateStore({ store: new SvelteStorage(cookies) }),
-        };
-        this.userManager = new UserManager(settings) as any;
+    }
+    async serverloaduser(client_id: string, origin: string, cookies: any) {
+        this.createuserManager(client_id, origin, cookies);
         await this.loadUser();
     }
     async clientinit(protocol: string, domain: string, client_id: string, origin: string, access_token: string, profile: any, fetch: any, cookies: any) {
         if (this.config == null) await this.getConfig(protocol, domain, fetch);
-        const settings = {
-            authority: this.baseurl + "/oidc",
-            client_id: client_id,
-            redirect_uri: origin + base + "/",
-            response_type: "code",
-            scope: "openid profile email",
-            post_logout_redirect_uri: origin + base + "/",
-            // userStore: new WebStorageStateStore({ store: window.localStorage }),
-            userStore: new WebStorageStateStore({ store: new SvelteStorage(cookies) }),
-        };
-        this.userManager = new UserManager(settings) as any;
+        this.createuserManager(client_id, origin, cookies);
         if (access_token != null && access_token != "" && auth.access_token != access_token) {
             this.access_token = access_token;
             this.profile = profile;
@@ -159,6 +141,28 @@ class authState {
     async logout() {
         if (this.userManager == null) throw new Error("UserManager not initialized");
         await this.userManager.signoutRedirect();
+    }
+    async signinRedirectCallback() {
+        try {
+            const user = await auth.userManager.signinRedirectCallback();
+            return true;
+        } catch (error) {
+            console.error("signinRedirectCallback.error", error);
+        }
+        return true;
+    }
+    async createuserManager(client_id: string, origin: string, cookies: any) {
+        const settings = {
+            authority: this.baseurl + "/oidc",
+            client_id: client_id,
+            redirect_uri: origin + base + "/",
+            response_type: "code",
+            scope: "openid profile email",
+            post_logout_redirect_uri: origin + base + "/",
+            // userStore: new WebStorageStateStore({ store: window.localStorage }),
+            userStore: new WebStorageStateStore({ store: new SvelteStorage(cookies) }),
+        };
+        this.userManager = new UserManager(settings) as any;
     }
     async loadUser() {
         this.isAuthenticated = false;

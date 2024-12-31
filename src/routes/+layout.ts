@@ -14,12 +14,7 @@ export const load: LayoutLoad = async ({ data, fetch, url, route, params }) => {
 		if (browser) {
 			let code = url.searchParams.get("code");
 			if (code != null && code != "") {
-				try {
-					const user = await auth.userManager.signinRedirectCallback();
-					redirect = true;
-				} catch (error) {
-					redirect = true;
-				}
+				redirect = await auth.signinRedirectCallback();
 			}
 		}
 	
