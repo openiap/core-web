@@ -13,7 +13,6 @@ export const load: PageServerLoad = async ({ fetch, url, cookies, locals, params
         const collections = await auth.client.ListCollections({jwt: auth.access_token});
         return { entities, collections, collectionname, searchstring };
     } catch (error) {
-        console.error("error", error);
         return { entities: [], collections: [], collectionname, searchstring };
     }
 };

@@ -1,23 +1,14 @@
-import { browser } from "$app/environment";
 import { base } from "$app/paths";
 import { data as datacomponent } from "$lib/entities/data.svelte.js";
 import { auth } from "$lib/stores/auth.svelte.js";
-import type { userSettings } from "$lib/stores/usersettings.svelte.js";
 import { usersettings } from "$lib/stores/usersettings.svelte.js";
 import type { LayoutLoad } from "./$types.js";
 
 export const load: LayoutLoad = async ({ data, fetch, url, route, params }) => {
+	const { protocol, domain, client_id, access_token, profile } = data;
+	let code = url?.searchParams?.get("code");
 	try {
-		const { protocol, domain, client_id, access_token, profile } = data;
-		let redirect = false;
 		await auth.clientinit(protocol, domain, client_id, url.origin, access_token, profile, fetch, null);
-		if (browser) {
-			let code = url.searchParams.get("code");
-			if (code != null && code != "") {
-				redirect = await auth.signinRedirectCallback();
-			}
-		}
-	
 		await usersettings.dbload();
 		const shortpage = (route.id != null && route.id.indexOf("/") > -1 ? route.id.split("/")[1] : "");
 		const page = url.pathname;
@@ -49,29 +40,29 @@ export const load: LayoutLoad = async ({ data, fetch, url, route, params }) => {
 				entities = await datacomponent.GetData(page, "users", { _type: "customer" });
 				break;
 			case base + "/files":
-				entities = await datacomponent.GetData(page, "fs.files", { });
+				entities = await datacomponent.GetData(page, "fs.files", {});
 				break;
 			case base + "/form":
 				entities = await datacomponent.GetData(page, "forms", { _type: "form" });
 				break;
 			case base + "/formresource":
 				entities = await datacomponent.GetData(page, "forms", { _type: "resource" });
-				break;				
+				break;
 			case base + "/hdrobot":
 				entities = await datacomponent.GetData(page, "openrpa", { _type: "unattendedclient" });
-				break;				
+				break;
 			case base + "/mailhistory":
-				entities = await datacomponent.GetData(page, "mailhist", { });
-				break;				
+				entities = await datacomponent.GetData(page, "mailhist", {});
+				break;
 			case base + "/package":
 				entities = await datacomponent.GetData(page, "agents", { _type: "package" });
-				break;				
+				break;
 			case base + "/provider":
 				entities = await datacomponent.GetData(page, "config", { _type: "provider" });
-				break;				
+				break;
 			case base + "/resource":
 				entities = await datacomponent.GetData(page, "config", { _type: "resource" });
-				break;				
+				break;
 			case base + "/role":
 				entities = await datacomponent.GetData(page, "users", { _type: "role" });
 				break;
@@ -82,22 +73,22 @@ export const load: LayoutLoad = async ({ data, fetch, url, route, params }) => {
 				entities = await datacomponent.GetData(page, "users", { _type: "workspace" });
 				break;
 			case base + `/workspace/${params.id}/member`:
-				entities = await datacomponent.GetData(page, "users", {_type: "member", workspaceid: params.id, status: {"$ne": "rejected"}});
+				entities = await datacomponent.GetData(page, "users", { _type: "member", workspaceid: params.id, status: { "$ne": "rejected" } });
 				break;
 			case base + "/workspace/invites":
 				const userid = auth.profile.sub;
 				const email = auth.profile.email;
-				const basequery = { _type: "member", "status": {"$in": ["pending", "rejected" ] } };
-				let query:any = {...basequery, ...{"$or": [{"userid": userid}, {"email": email}]}};
+				const basequery = { _type: "member", "status": { "$in": ["pending", "rejected"] } };
+				let query: any = { ...basequery, ...{ "$or": [{ "userid": userid }, { "email": email }] } };
 				entities = await datacomponent.GetData(page, "users", query);
 				break;
 			default:
 				break;
 		}
 		console.log(page, entities.length);
-		return { ...data, redirect, entities, id, settings };
+		return { ...data, code, entities, id, settings };
 	} catch (error) {
 		console.error(error);
-		return { ...data, redirect: false, entities: [], id: "", settings: {} };
+		return { ...data, code, entities: [], id: "", settings: {} };
 	}
 };

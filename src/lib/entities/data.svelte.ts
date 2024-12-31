@@ -58,8 +58,6 @@ class entitiesdata {
 		usersettings.loadpage(raw);
 		if(raw.page != null) {
 			this.settings = usersettings.getpagesettings(raw.page);
-		} else {
-			console.error("error.parsesettings", raw);
 		}
 	}
 	loadsettings(page: string) {

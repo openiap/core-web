@@ -1,22 +1,18 @@
 <script lang="ts">
-	import Sun from "lucide-svelte/icons/sun";
-	import Moon from "lucide-svelte/icons/moon";
-	import { toggleMode } from "mode-watcher";
-	import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
-	import { auth } from "$lib/stores/auth.svelte";
-	import { Github, Trash2 } from "lucide-svelte";
-	import { Button } from "$lib/components/ui/button";
-	import Search from "$lib/search/search.svelte";
-
 	import { goto } from "$app/navigation";
 	import { base } from "$app/paths";
+	import { Button } from "$lib/components/ui/button";
+	import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
+	import Search from "$lib/search/search.svelte";
+	import { auth } from "$lib/stores/auth.svelte";
 	import { usersettings } from "$lib/stores/usersettings.svelte.js";
-	import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
-	import { toast } from "svelte-sonner";
-
-	let showWarning = $state(false);
+	import { Github, Trash2 } from "lucide-svelte";
+	import Moon from "lucide-svelte/icons/moon";
+	import Sun from "lucide-svelte/icons/sun";
+	import { toggleMode } from "mode-watcher";
 
 	function login() {
+		window.localStorage.setItem("redirect", window.location.pathname);
 		auth.login();
 	}
 	async function logout() {
@@ -25,19 +21,6 @@
 	function reset() {
 		usersettings.reset();
 		goto(base + `/`);
-	}
-
-	async function handleAccept() {
-		try {
-			await logout();
-			toast.success("Logout successful", {
-				description: "",
-			});
-		} catch (error: any) {
-			toast.error("Error while logout", {
-				description: error.message,
-			});
-		}
 	}
 </script>
 
@@ -82,7 +65,7 @@
 			{#if auth.isAuthenticated == true}
 				<HotkeyButton
 					aria-label="Signout"
-					onclick={() => (handleAccept())}
+					onclick={() => logout()}
 					data-shortcut={"Control+q,Meta+q"}>Signout</HotkeyButton
 				>
 			{:else}
@@ -95,8 +78,6 @@
 		</div>
 	</div>
 </header>
-
-<Warningdialogue bind:showWarning type="logout" onaccept={handleAccept} />
 
 <style>
 	header {

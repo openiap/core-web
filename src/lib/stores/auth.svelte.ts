@@ -3,7 +3,7 @@ import pkg from "oidc-client";
 import { browser } from '$app/environment';
 import { base } from "$app/paths";
 import { openiap } from "@openiap/jsapi";
-import { SvelteStorage } from "./SvelteStorage";
+import { SvelteStorage } from "./SvelteStorage.svelte";
 const { UserManager, WebStorageStateStore } = pkg;
 // @ts-ignore
 import ws from 'ws';
@@ -106,6 +106,7 @@ class authState {
     async clientinit(protocol: string, domain: string, client_id: string, origin: string, access_token: string, profile: any, fetch: any, cookies: any) {
         if (this.config == null) await this.getConfig(protocol, domain, fetch);
         this.createuserManager(client_id, origin, cookies);
+
         if (access_token != null && access_token != "" && auth.access_token != access_token) {
             this.access_token = access_token;
             this.profile = profile;
@@ -115,13 +116,12 @@ class authState {
         } else {
             auth.isAuthenticated = true;
         }
-        if(browser) {
+        if (browser) {
             await this.connect(this.access_token);
         }
         try {
-            if(this.client == null) return;
-            if(!this.client.connected) {
-                console.error("clientinit.client.connected", this.client.connected);
+            if (this.client == null) return;
+            if (!this.client.connected) {
                 return;
             }
             let _workspace = await this.client.FindOne<Workspace>({ collectionname: "users", query: { _type: "workspace" }, jwt: auth.access_token });
@@ -131,7 +131,7 @@ class authState {
                 this.workspace = _workspace;
             }
         } catch (error) {
-            console.log("clientinit.FindOne.error", error);
+            console.error("clientinit.FindOne.error", error);
         }
     }
     async login() {
@@ -187,7 +187,6 @@ class authState {
         if (this.client == null) {
             this.client = new openiap(this.wsurl, access_token);
             const user = await this.client.connect(true);
-            console.log("clientinit.connect", user?.name, user?.email, user?.username);
             this.isConnected = true;
             this.connectWaitingPromisses.forEach((resolve: any) => {
                 resolve();
@@ -203,7 +202,7 @@ class authState {
                                 this.workspace = _workspace;
                             }
                         } catch (error) {
-                            console.log("clientinit.Watch.error", error);
+                            console.error("clientinit.Watch.error", error);
                         }
                     }
                 });

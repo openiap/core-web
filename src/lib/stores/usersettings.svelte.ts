@@ -89,7 +89,6 @@ class _usersettings implements userSettings {
             }
             this.stateload(settings);
         } else {
-            console.error("usersettings.dbload.error, ", auth.client?.connected);
             this._id = "";
             this.userid = userid;
             this.name = "Settings for " + auth.profile.name;

@@ -14,7 +14,7 @@ export const handle: Handle = async ({ event, resolve }) => {
         await auth.serverinit(protocol, domain);
         await auth.serverloaduser(client_id, url.origin, cookies);
     } catch (error) {
-        console.error(error);        
+        console.error(error);
     }
     event.locals = event.locals || {};
     // @ts-ignore

@@ -13,7 +13,6 @@
 
   let { data } = $props();
   datacomponent.parsesettings(data.settings);
-  console.log("client", datacomponent.settings.total_count);
   let searchstring = $state(datacomponent.settings.searchstring);
   let entities = $state(data.entities);
 
