@@ -8,10 +8,10 @@
   import { Input } from "$lib/components/ui/input/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { Trash2 } from "lucide-svelte";
+  import { toast } from "svelte-sonner";
   import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newFormSchema } from "../schema.js";
-    import { toast } from "svelte-sonner";
 
   const key = "user";
   let showdebug = $state(false);

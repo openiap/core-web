@@ -1,13 +1,14 @@
 <script lang="ts">
+  import { goto } from "$app/navigation";
+  import { base } from "$app/paths";
   import { CollectionSelector } from "$lib/collectionselector/index.js";
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
   import { ObjectInput } from "$lib/objectinput/index.js";
-  import SuperDebug, { superForm } from "sveltekit-superforms";
-  
-  import { goto } from "$app/navigation";
-  import { base } from "$app/paths";
+  import { auth } from "$lib/stores/auth.svelte.js";
+  import { toast } from "svelte-sonner";
+  import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newFormSchema } from "../schema.js";
 
@@ -15,10 +16,36 @@
   const key = "formresource";
   let showdebug = $state(false);
   const { data } = $props();
+  let loading = $state(false);
   let errormessage = $state("");
-  const form = superForm(data.form, {
+  const form = superForm(defaults(zod(newFormSchema)), {
     dataType: "json",
     validators: zod(newFormSchema),
+    SPA: true,
+    onUpdate: async ({ form, cancel }) => {
+      if (form.valid) {
+        loading = true;
+        try {
+          await auth.client.InsertOne({
+            collectionname: "forms",
+            item: { ...form.data, _type: "resource" },
+            jwt: auth.access_token,
+          });
+          toast.success("form resource added");
+          goto(base + `/${key}`);
+        } catch (error: any) {
+          errormessage = error.message;
+          toast.error("Error", {
+            description: error.message,
+          });
+          cancel();
+        } finally {
+          loading = false;
+        }
+      } else {
+        errormessage = "Form is invalid";
+      }
+    },
   });
   const { form: formData, enhance, message } = form;
 </script>
@@ -38,7 +65,7 @@
 <form method="POST" use:enhance>
   <Form.Button aria-label="submit">Submit</Form.Button>
   <HotkeyButton onclick={() => goto(base + `/${key}`)}>Back</HotkeyButton>
-  
+
   <Form.Field {form} name="collection">
     <Form.Control>
       {#snippet children({ props })}
