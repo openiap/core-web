@@ -11,11 +11,10 @@
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
-
+  import { toast } from "svelte-sonner";
   import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../schema.js";
-    import { toast } from "svelte-sonner";
 
   const key = "user";
   let loading = $state(false);
