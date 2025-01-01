@@ -44,6 +44,7 @@
             item: { ...form.data, _type: "role" },
             jwt: auth.access_token,
           });
+          toast.success("Role added");
           goto(base + `/${key}`);
         } catch (error: any) {
           errormessage = error.message;

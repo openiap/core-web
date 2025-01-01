@@ -35,6 +35,7 @@
             item: { ...form.data, _type: "user" },
             jwt: auth.access_token,
           });
+          toast.success("User updated");
           goto(base + `/${key}`);
         } catch (error: any) {
           errormessage = error.message;

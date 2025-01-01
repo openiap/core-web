@@ -22,8 +22,11 @@
       if (form.valid) {
         try {
           await auth.client.CustomCommand({ command: "ensureworkspace", data: JSON.stringify(form.data), jwt: auth.access_token });
+          toast.success("Workspace updated");
         } catch (error:any) {
-          toast.error(error.message);
+          toast.error("Error", {
+            description: error.message,
+          });
           cancel();
         }
       }

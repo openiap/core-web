@@ -37,6 +37,7 @@
             item: { ...form.data, _type: "agent" },
             jwt: auth.access_token,
           });
+          toast.success("Agent updated");
           goto(base + `/${key}`);
         } catch (error: any) {
           errormessage = error.message;

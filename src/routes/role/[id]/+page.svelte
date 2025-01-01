@@ -46,6 +46,7 @@
             item: form.data,
             jwt: auth.access_token,
           });
+          toast.success("Role updated");
           goto(base + `/${key}`);
         } catch (error: any) {
           errormessage = error.message;

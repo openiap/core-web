@@ -59,6 +59,7 @@
             item: { ...form.data },
             jwt: auth.access_token,
           });
+          toast.success("Agent updated");
           goto(base + `/${page}`);
         } catch (error: any) {
           errormessage = error.message;
