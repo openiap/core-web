@@ -76,14 +76,15 @@
 		workspace.hidden = !(
 			auth.config != null && auth.config.workspace_enabled
 		);
-		if (auth.profile?.role == "Admin") {
+		if (auth.profile?.roles?.indexOf("admins") > -1) {
 			for (let item of mamagement.items) {
 				item.hidden = false;
 			}
 		}
 		// mamagement.items.find((x:any) => x.title == "Users").hidden = !workspace.hidden;
 		// mamagement.items.find((x:any) => x.title == "Roles").hidden = !workspace.hidden;
-
+		console.log(auth.workspace);
+		console.log(auth.isAuthenticated);
 		if (!workspace.hidden && auth.isAuthenticated) {
 			workspace.items.find((x: any) => x.title == "Members").url =
 				`${base}/workspace/${auth.workspace._id}/member`;
