@@ -12,9 +12,13 @@ export const load: PageServerLoad = async ({ parent, params }) => {
   const { access_token } = await parent();
   let data: any = {};
   let id = params.id;
-  let item = await auth.client.FindOne<any>({ collectionname: "openrpa", query: { _id: id }, jwt: access_token });
-  data.form = await superValidate(item, zod(editFormSchema));
-  return data;
+  try {
+    let item = await auth.client.FindOne<any>({ collectionname: "openrpa", query: { _id: id }, jwt: access_token });
+    data.form = await superValidate(item, zod(editFormSchema));
+    return data;
+  } catch (error) {
+    return { form: await superValidate(zod(editFormSchema)) };
+  }
 };
 
 export const actions: Actions = {

@@ -9,14 +9,21 @@ import { editFormSchema } from "./schema.js";
 export const load: PageServerLoad = async ({ parent }) => {
   const { access_token } = await parent();
   let data: any = {};
-  let currentSettings = await auth.client.FindOne<any>({ collectionname: "config", query: { "_type": "config" }, jwt: access_token });
-  let combinedSettings = { ...defaultSettings, ...currentSettings }
-  data.form = await superValidate(combinedSettings, zod(editFormSchema));
+try {
+    let currentSettings = await auth.client.FindOne<any>({ collectionname: "config", query: { "_type": "config" }, jwt: access_token });
+    let combinedSettings = { ...defaultSettings, ...currentSettings }
+    data.form = await superValidate(combinedSettings, zod(editFormSchema));
+      
+  } catch (error) {
+    
+  }
   return data;
 };
 
 export const actions: Actions = {
   default: async (event: any) => {
+    debugger;
+    console.log("auth.access_token", auth.access_token);
     const form = await superValidate(event, zod(editFormSchema));
     if (!form.valid) {
       return fail(400, {
