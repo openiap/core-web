@@ -4,17 +4,43 @@
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
-  import SuperDebug, { superForm } from "sveltekit-superforms";
+  import { auth } from "$lib/stores/auth.svelte.js";
+  import { toast } from "svelte-sonner";
+  import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newMemberSchema } from "../../schema.js";
-  
+
   const key = "workspace";
   let showdebug = $state(false);
   const { data } = $props();
+  let loading = $state(false);
   let errormessage = $state("");
-  const form = superForm(data.form, {
+  const form = superForm(defaults(zod(newMemberSchema)), {
     dataType: "json",
     validators: zod(newMemberSchema),
+    SPA: true,
+    onUpdate: async ({ form, cancel }) => {
+      if (form.valid) {
+        loading = true;
+        try {
+          await auth.client.CustomCommand({
+            command: "inviteuser",
+            data: JSON.stringify(form.data),
+            jwt: auth.access_token,
+          });
+          toast.success("Invitation sent");
+          goto(base + `/${key}`);
+        } catch (error: any) {
+          errormessage = error.message;
+          toast.error(errormessage);
+          cancel();
+        } finally {
+          loading = false;
+        }
+      } else {
+        errormessage = "Form is invalid";
+      }
+    },
   });
 
   const { form: formData, enhance, message } = form;
@@ -40,7 +66,11 @@
   </Form.Field>
 
   <Form.Button aria-label="Create workspace">Create Invitation</Form.Button>
-  <HotkeyButton aria-label="Cancel" onclick={() => goto(base + `/${key}/${$formData.workspaceid}`)}>Cancel</HotkeyButton>
+  <HotkeyButton
+    aria-label="Cancel"
+    onclick={() => goto(base + `/${key}/${$formData.workspaceid}`)}
+    >Cancel</HotkeyButton
+  >
 </form>
 
 {#if formData != null && showdebug == true}
