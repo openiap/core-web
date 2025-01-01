@@ -4,11 +4,11 @@
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
-  import SuperDebug, { superForm, defaults } from "sveltekit-superforms";
+  import { auth } from "$lib/stores/auth.svelte.js";
+  import { toast } from "svelte-sonner";
+  import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newFormSchema } from "../schema.js";
-  import { auth } from "$lib/stores/auth.svelte.js";
-    import { toast } from "svelte-sonner";
 
   const key = "workspace";
   let showdebug = $state(false);
