@@ -5,15 +5,45 @@
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
-  import SuperDebug, { superForm } from "sveltekit-superforms";
+  import SuperDebug, { superForm, defaults } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
-  import { newFormSchema } from "../schema.js";
+  import { editFormSchema } from "../schema.js";
+  import { auth } from "$lib/stores/auth.svelte.js";
+  import { toast } from "svelte-sonner";
+
   const key = "credential";
   let showdebug = $state(false);
   const { data } = $props();
-  const form = superForm(data.form, {
+  let loading = $state(false);
+  let errormessage = $state("");
+  const form = superForm(defaults(zod(editFormSchema)), {
     dataType: "json",
-    validators: zod(newFormSchema),
+    validators: zod(editFormSchema),
+    SPA: true,
+    onUpdate: async ({ form, cancel }) => {
+      if (form.valid) {
+        loading = true;
+        try {
+          await auth.client.UpdateOne({
+            collectionname: "openrpa",
+            item: form.data,
+            jwt: auth.access_token,
+          });
+          toast.success("Credential updated");
+          goto(base + `/${key}`);
+        } catch (error: any) {
+          errormessage = error.message;
+          toast.error("Error", {
+            description: error.message,
+          });
+          cancel();
+        } finally {
+          loading = false;
+        }
+      } else {
+        errormessage = "Form is invalid";
+      }
+    },
   });
   const { form: formData, enhance, message } = form;
 </script>

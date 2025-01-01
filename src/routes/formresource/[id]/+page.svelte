@@ -11,16 +11,16 @@
   import { toast } from "svelte-sonner";
   import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
-  import { newFormSchema } from "../schema.js";
+  import { editFormSchema } from "../schema.js";
 
   const key = "formresource";
   let showdebug = $state(false);
   const { data } = $props();
   let loading = $state(false);
   let errormessage = $state("");
-  const form = superForm(defaults(zod(newFormSchema)), {
+  const form = superForm(defaults(zod(editFormSchema)), {
     dataType: "json",
-    validators: zod(newFormSchema),
+    validators: zod(editFormSchema),
     SPA: true,
     onUpdate: async ({ form, cancel }) => {
       if (form.valid) {
