@@ -15,7 +15,6 @@
   const title = "Form Resource";
   const key = "formresource";
   let showdebug = $state(false);
-  const { data } = $props();
   let loading = $state(false);
   let errormessage = $state("");
   const form = superForm(defaults(zod(newFormSchema)), {
