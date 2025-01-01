@@ -16,24 +16,3 @@ export const load: PageServerLoad = async ({ fetch, url, cookies, locals }) => {
     form: await superValidate(defaultValues, zod(newFormSchema)),
   };
 };
-
-export const actions: Actions = {
-  default: async (event: any) => {
-    const form = await superValidate(event, zod(newFormSchema));
-
-    if (!form.valid) {
-      return fail(400, {
-        form,
-      });
-    }
-    try {
-      await auth.client.CustomCommand({ command: "ensureworkspace", data: JSON.stringify(form.data), jwt: auth.access_token });
-    } catch (err: any) {
-      setError(form, 'name', err.message);
-      return {
-        form,
-      };
-    }
-    throw redirect(303, base + `/${key}`);
-  },
-};

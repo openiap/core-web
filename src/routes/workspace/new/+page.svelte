@@ -4,17 +4,43 @@
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
-  import SuperDebug, { superForm } from "sveltekit-superforms";
+  import SuperDebug, { superForm, defaults } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newFormSchema } from "../schema.js";
-  
+  import { auth } from "$lib/stores/auth.svelte.js";
+    import { toast } from "svelte-sonner";
+
   const key = "workspace";
   let showdebug = $state(false);
+  let loading = $state(false);
+
   const { data } = $props();
   let errormessage = $state("");
-  const form = superForm(data.form, {
+  const form = superForm(defaults(zod(newFormSchema)), {
     dataType: "json",
     validators: zod(newFormSchema),
+    SPA: true,
+    onUpdate: async ({ form, cancel }) => {
+      if (form.valid) {
+        loading = true;
+        try {
+          await auth.client.CustomCommand({
+            command: "ensureworkspace",
+            data: JSON.stringify(form.data),
+            jwt: auth.access_token,
+          });
+          goto(base + `/${key}`);
+        } catch (error: any) {
+          errormessage = error.message;
+          toast.error(errormessage);
+          cancel();
+        } finally {
+          loading = false;
+        }
+      } else {
+        errormessage = "Form is invalid";
+      }
+    },
   });
 
   const { form: formData, enhance, message } = form;
@@ -40,7 +66,9 @@
   </Form.Field>
 
   <Form.Button aria-label="Create workspace">Create workspace</Form.Button>
-  <HotkeyButton aria-label="Cancel" onclick={() => goto(base + `/${key}`)}>Cancel</HotkeyButton>
+  <HotkeyButton aria-label="Cancel" onclick={() => goto(base + `/${key}`)}
+    >Cancel</HotkeyButton
+  >
 </form>
 
 {#if formData != null && showdebug == true}
