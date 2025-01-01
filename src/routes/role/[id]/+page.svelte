@@ -10,10 +10,10 @@
   import { EntitySelector } from "$lib/entityselector/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { ArrowLeft, Check, Plus, Trash2 } from "lucide-svelte";
+  import { toast } from "svelte-sonner";
   import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../schema.js";
-    import { toast } from "svelte-sonner";
 
   const key = "role";
   let showdebug = $state(false);

@@ -7,18 +7,48 @@
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
   import { ObjectInput } from "$lib/objectinput/index.js";
-  import SuperDebug, { superForm } from "sveltekit-superforms";
+  import { auth } from "$lib/stores/auth.svelte.js";
+  import { toast } from "svelte-sonner";
+  import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
-  import { settings } from "./helper.js";
+  import { cleanMatchingKeys, settings } from "./helper.js";
   import { editFormSchema } from "./schema.js";
 
-  const key = "user";
+  const key = "configuration";
   let showdebug = $state(false);
   let screen = $state("set");
   const { data } = $props();
-  const form = superForm(data.form, {
+  let loading = $state(false);
+  let errormessage = $state("");
+  const form = superForm(defaults(zod(editFormSchema)), {
     dataType: "json",
     validators: zod(editFormSchema),
+    SPA: true,
+    onUpdate: async ({ form, cancel }) => {
+      if (form.valid) {
+        loading = true;
+        try {
+          const cleanData = cleanMatchingKeys(form.data);
+          await auth.client.UpdateOne({
+            collectionname: "config",
+            item: cleanData,
+            jwt: auth.access_token,
+          });
+          toast.success("Configuration updated");
+          goto(base + `/${key}`);
+        } catch (error: any) {
+          errormessage = error.message;
+          toast.error("Error", {
+            description: error.message,
+          });
+          cancel();
+        } finally {
+          loading = false;
+        }
+      } else {
+        errormessage = "Form is invalid";
+      }
+    },
   });
   const { form: formData, enhance, message } = form;
 </script>
@@ -27,9 +57,7 @@
   {$message}
 {/if}
 
-<div class="mb-4 font-bold">
-  Edit Configuration
-</div>
+<div class="mb-4 font-bold">Edit Configuration</div>
 <div class="flex items-center space-x-2 mb-4">
   <Button
     onclick={() => (screen = "all")}
@@ -52,9 +80,6 @@
 </div>
 <form method="POST" use:enhance>
   <Form.Button aria-label="submit">Save</Form.Button>
-  <HotkeyButton aria-label="back" onclick={() => goto(base + `/${key}`)}
-    >Back</HotkeyButton
-  >
 
   {#each settings as setting}
     {#if setting.type === "boolean"}
@@ -70,7 +95,10 @@
         >
           <Form.Control>
             {#snippet children({ props })}
-              <Checkbox {...props} bind:checked={$formData[setting.name]} />
+              <Checkbox
+                {...props}
+                bind:checked={$formData[setting.name] as boolean}
+              />
               <Form.Label
                 >{setting.name}
                 <span class="text-gray-500">(Default: {setting.default})</span>

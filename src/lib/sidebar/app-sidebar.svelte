@@ -32,8 +32,8 @@
 			new SidebarItem("Invites", `${base}/workspace/invites`, false),
 		],
 	};
-	const mamagement: any = {
-		title: "Mamagement",
+	const management: any = {
+		title: "Management",
 		hidden: false,
 		items: [
 			new SidebarItem("Entities", `${base}/entities`, false),
@@ -77,12 +77,12 @@
 			auth.config != null && auth.config.workspace_enabled
 		);
 		if (auth.profile?.roles?.indexOf("admins") > -1) {
-			for (let item of mamagement.items) {
+			for (let item of management.items) {
 				item.hidden = false;
 			}
 		}
-		// mamagement.items.find((x:any) => x.title == "Users").hidden = !workspace.hidden;
-		// mamagement.items.find((x:any) => x.title == "Roles").hidden = !workspace.hidden;
+		// management.items.find((x:any) => x.title == "Users").hidden = !workspace.hidden;
+		// management.items.find((x:any) => x.title == "Roles").hidden = !workspace.hidden;
 		if (!workspace.hidden && auth.isAuthenticated) {
 			workspace.items.find((x: any) => x.title == "Members").url =
 				`${base}/workspace/${auth.workspace._id}/member`;
@@ -96,7 +96,7 @@
 		if (data.navMain.length == 0) {
 			data.navMain.push(actions);
 			data.navMain.push(workspace);
-			data.navMain.push(mamagement);
+			data.navMain.push(management);
 		}
 	}
 	loadmenu();
