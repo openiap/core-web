@@ -31,7 +31,9 @@
           goto(base + `/${key}`);
         } catch (error: any) {
           errormessage = error.message;
-          toast.error(errormessage);
+          toast.error("Error", {
+            description: error.message,
+          });
           cancel();
         } finally {
           loading = false;

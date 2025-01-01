@@ -5,9 +5,11 @@
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
-  import SuperDebug, { superForm } from "sveltekit-superforms";
+  import SuperDebug, { superForm, superValidate } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newFormSchema } from "../schema.js";
+    import { auth } from "$lib/stores/auth.svelte.js";
+    import { toast } from "svelte-sonner";
 
   const key = "workspace";
   let showdebug = $state(false);
@@ -15,6 +17,17 @@
   const form = superForm(data.form, {
     dataType: "json",
     validators: zod(newFormSchema),
+    SPA: true,
+    onUpdate: async ({ form, cancel }) => {
+      if (form.valid) {
+        try {
+          await auth.client.CustomCommand({ command: "ensureworkspace", data: JSON.stringify(form.data), jwt: auth.access_token });
+        } catch (error:any) {
+          toast.error(error.message);
+          cancel();
+        }
+      }
+    },
   });
   const { form: formData, enhance, message } = form;
 </script>

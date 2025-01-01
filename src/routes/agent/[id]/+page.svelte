@@ -62,6 +62,9 @@
           goto(base + `/${page}`);
         } catch (error: any) {
           errormessage = error.message;
+          toast.error("Error", {
+            description: error.message,
+          });
           cancel();
         } finally {
           loading = false;

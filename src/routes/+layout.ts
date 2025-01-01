@@ -88,7 +88,7 @@ export const load: LayoutLoad = async ({ data, fetch, url, route, params }) => {
 		console.log(page, entities.length);
 		return { ...data, access_token, code, entities, id, settings };
 	} catch (error) {
-		console.error(error);
-		return { ...data, access_token, code, entities: [], id: "", settings: {} };
+		console.error("layout.ts", error);
+		return { ...data, access_token, code, entities: [], item: null, id: "", settings: {} };
 	}
 };

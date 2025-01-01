@@ -83,8 +83,6 @@
 		}
 		// mamagement.items.find((x:any) => x.title == "Users").hidden = !workspace.hidden;
 		// mamagement.items.find((x:any) => x.title == "Roles").hidden = !workspace.hidden;
-		console.log(auth.workspace);
-		console.log(auth.isAuthenticated);
 		if (!workspace.hidden && auth.isAuthenticated) {
 			workspace.items.find((x: any) => x.title == "Members").url =
 				`${base}/workspace/${auth.workspace._id}/member`;

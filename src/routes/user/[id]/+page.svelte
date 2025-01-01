@@ -15,6 +15,7 @@
   import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../schema.js";
+    import { toast } from "svelte-sonner";
 
   const key = "user";
   let loading = $state(false);
@@ -37,6 +38,9 @@
           goto(base + `/${key}`);
         } catch (error: any) {
           errormessage = error.message;
+          toast.error("Error", {
+            description: error.message,
+          });
           cancel();
         } finally {
           loading = false;
