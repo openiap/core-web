@@ -84,7 +84,7 @@ class _usersettings implements userSettings {
         this.userid = auth.profile.sub;
         this.name = "Settings for " + auth.profile.name;
         if(auth.client != null && auth.client.connected) {
-            console.log("usersettings.dbload", auth.access_token);
+            console.log("usersettings.dbload", auth.access_token?.substring(0, 10));
             let settings = await auth.client.FindOne<userSettings>({ collectionname: "users", query: { userid: this.userid, "_type": "usersettings" }, jwt: access_token });
             if (settings != null) {
                 this.stateload(settings);
