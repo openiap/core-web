@@ -14,7 +14,6 @@
   let showdebug = $state(false);
   let loading = $state(false);
 
-  const { data } = $props();
   let errormessage = $state("");
   const form = superForm(defaults(zod(newFormSchema)), {
     dataType: "json",

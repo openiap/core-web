@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const newFormSchema = z.object({
-  name: z.string().min(2),
+  name: z.string().min(2).default("Lemonify"),
   billingid: z.string().optional()
 });
 export type NewFormSchema = typeof newFormSchema;
