@@ -4,11 +4,11 @@ import { redirect } from "@sveltejs/kit";
 import { setMessage, superValidate } from "sveltekit-superforms";
 import { zod } from "sveltekit-superforms/adapters";
 import { memberSchema } from "../../../schema.js";
-import type { PageServerLoad } from "./$types.js";
+import type { PageLoad } from "./$types.js";
 
 const key = "workspace"
 
-export const load: PageServerLoad = async ({ parent, params }) => {
+export const load: PageLoad = async ({ parent, params }) => {
   const { access_token } = await parent();
   let workspaceid = params.id;
   let token = params.token;

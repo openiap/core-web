@@ -11,6 +11,7 @@
   import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newFormSchema } from "../schema.js";
+    import { toast } from "svelte-sonner";
 
   const key = "user";
   let showdebug = $state(false);
@@ -29,9 +30,13 @@
             item: { ...form.data, _type: "user" },
             jwt: auth.access_token,
           });
+          toast.success("User added");
           goto(base + `/${key}`);
         } catch (error: any) {
           errormessage = error.message;
+          toast.error("Error", {
+            description: error.message,
+          });
           cancel();
         } finally {
           loading = false;

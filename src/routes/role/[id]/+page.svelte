@@ -13,6 +13,7 @@
   import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../schema.js";
+    import { toast } from "svelte-sonner";
 
   const key = "role";
   let showdebug = $state(false);
@@ -45,9 +46,13 @@
             item: form.data,
             jwt: auth.access_token,
           });
+          toast.success("Role updated");
           goto(base + `/${key}`);
         } catch (error: any) {
           errormessage = error.message;
+          toast.error("Error", {
+            description: error.message,
+          });
           cancel();
         } finally {
           loading = false;

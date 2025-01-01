@@ -36,6 +36,7 @@
             item: { ...form.data, _type: "package" },
             jwt: auth.access_token,
           });
+          toast.success("Package updated");
           goto(base + `/${page}`);
         } catch (error: any) {
           toast.error("Error", {
