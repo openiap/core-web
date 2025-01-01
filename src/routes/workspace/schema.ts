@@ -17,6 +17,7 @@ export type EditFormSchema = typeof editFormSchema;
 
 export const newMemberSchema = z.object({
   email: z.string().min(2).default("hello@world.com"),
+  role: z.enum(["member", "admin"]).default("member"),
   workspaceid: z.string().optional(),
 });
 export type NewMemberSchema = typeof newFormSchema;
