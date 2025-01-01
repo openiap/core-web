@@ -6,9 +6,16 @@
   if (data.code != null && data.code != "") {
     if (browser) {
       auth.signinRedirectCallback();
+      goto("/");
+    }
+  } else {
+    if (browser) {
       const redirect = window.localStorage.getItem("redirect");
       window.localStorage.removeItem("redirect");
-      goto(redirect || "/");
+      if(redirect) {
+        goto(redirect);
+      }
+      
     }
   }
   let name = auth.profile?.name || "World";

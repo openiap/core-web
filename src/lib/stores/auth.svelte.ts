@@ -101,7 +101,7 @@ class authState {
     }
     async serverloaduser(client_id: string, origin: string, cookies: any) {
         this.createuserManager(client_id, origin, cookies);
-        return await this.loadUser(false);
+        return await this.loadUser();
     }
     async clientinit(protocol: string, domain: string, client_id: string, origin: string, access_token: string, profile: any, fetch: any, cookies: any) {
         if (this.config == null) await this.getConfig(protocol, domain, fetch);
@@ -112,7 +112,7 @@ class authState {
             this.profile = profile;
             auth.isAuthenticated = true;
         } else if (auth.access_token == null || auth.access_token == "") {
-            await this.loadUser(browser);
+            await this.loadUser();
         } else {
             auth.isAuthenticated = true;
         }
@@ -164,14 +164,14 @@ class authState {
         };
         this.userManager = new UserManager(settings) as any;
     }
-    async loadUser(persist: boolean) {
+    async loadUser() {
         this.isAuthenticated = false;
         const result = await this.userManager.getUser();
         let access_token = "";
         if (result != null) {
             auth.profile = result.profile;
             access_token = result.access_token;
-            if(persist) auth.access_token = result.access_token;
+            if(browser) auth.access_token = result.access_token;
             auth.isAuthenticated = true;
         } else {
             auth.profile = {} as any;

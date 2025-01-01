@@ -18,7 +18,7 @@
 		"@github/hotkey": "^3.1.1",
 		"@openiap/jsapi": "github:openiap/jsapi#esm",
 		"@sveltejs/adapter-node": "^5.2.9",
-		"@sveltejs/kit": "^2.0.0",
+		"@sveltejs/kit": "^2.15.1",
 		"@sveltejs/vite-plugin-svelte": "^4.0.0",
 		"autoprefixer": "^10.4.20",
 		"bits-ui": "^1.0.0-next.74",

@@ -22,8 +22,6 @@ try {
 
 export const actions: Actions = {
   default: async (event: any) => {
-    debugger;
-    console.log("auth.access_token", auth.access_token);
     const form = await superValidate(event, zod(editFormSchema));
     if (!form.valid) {
       return fail(400, {

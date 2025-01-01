@@ -1,7 +1,19 @@
 import { web_client_id, web_domain, web_protocol } from '$env/static/private';
 import { auth } from '$lib/stores/auth.svelte';
-import type { Handle } from '@sveltejs/kit';
+import type { Handle, ServerInit } from '@sveltejs/kit';
 
+export const init: ServerInit = async () => {
+    console.log("************ serverinit begin ************");
+    let protocol = process.env.web_protocol;
+    if (protocol == null || protocol == "") protocol = web_protocol;
+    let domain = process.env.web_domain;
+    if (domain == null || domain == "") domain = web_domain;
+    try {
+        await auth.serverinit(protocol, domain);
+    } catch (error) {
+    }
+    console.log("************ serverinit end ************");
+}
 export const handle: Handle = async ({ event, resolve }) => {
     let protocol = process.env.web_protocol;
     if (protocol == null || protocol == "") protocol = web_protocol;
@@ -12,7 +24,6 @@ export const handle: Handle = async ({ event, resolve }) => {
     const { url, cookies } = event;
     let access_token = "";
     try {
-        await auth.serverinit(protocol, domain);
         access_token = await auth.serverloaduser(client_id, url.origin, cookies);
     } catch (error) {
     }
