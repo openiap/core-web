@@ -159,7 +159,7 @@
       toast.success("Deleted successfully", {
         description: "",
       });
-      entities = await datacomponent.GetData(page, collectionname, query);
+      entities = await datacomponent.GetData(page, collectionname, query, auth.access_token);
     } catch (error: any) {
       toast.error("Error while deleting", {
         description: error.message,
@@ -195,7 +195,7 @@
     title="reload"
     variant="default"
     onclick={async () => {
-      entities = await datacomponent.GetData(page, collectionname, query);
+      entities = await datacomponent.GetData(page, collectionname, query, auth.access_token);
       await getPods();
     }}
   >
@@ -211,7 +211,7 @@
         value="All"
         id="r1"
         onclick={async () => {
-          entities = await datacomponent.GetData(page, collectionname, query);
+          entities = await datacomponent.GetData(page, collectionname, query, auth.access_token);
           getPods();
         }}
       />
@@ -225,7 +225,7 @@
           entities = await datacomponent.GetData(page, collectionname, {
             _type: "agent",
             daemon: true,
-          });
+          }, auth.access_token);
           getPods();
         }}
       />
@@ -236,7 +236,7 @@
         value="Pods"
         id="r3"
         onclick={async () => {
-          const result = await datacomponent.GetData(page, collectionname, query);
+          const result = await datacomponent.GetData(page, collectionname, query, auth.access_token);
           entities = result.filter((x: any) =>
             knownpods.some((y: any) => x._id === y.metadata.labels.agentid),
           );
@@ -253,7 +253,7 @@
           entities = await datacomponent.GetData(page, collectionname, {
             _type: "agent",
             docker: true,
-          });
+          }, auth.access_token);
           getPods();
         }}
       />
@@ -267,7 +267,7 @@
           entities = await datacomponent.GetData(page, collectionname, {
             _type: "agent",
             assistant: true,
-          });
+          }, auth.access_token);
           getPods();
         }}
       />

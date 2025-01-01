@@ -23,6 +23,7 @@
 	import { toast } from "svelte-sonner";
 	import { data } from "./data.svelte.js";
     import { browser } from "$app/environment";
+    import { auth } from "$lib/stores/auth.svelte.js";
 
 	let {
 		page = "entities",
@@ -52,7 +53,7 @@
 	selected_items = data.settings.selected_items;
 
 	async function GetData() {
-		const _entities = await data.GetData(page, collectionname, query);
+		const _entities = await data.GetData(page, collectionname, query, auth.access_token);
 		entities = _entities;
 		total_count = data.settings.total_count;
 

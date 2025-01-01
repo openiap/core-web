@@ -33,7 +33,7 @@ class Config {
     validate_emails: boolean = false;
     forgot_pass_emails: boolean = false;
     supports_watch: boolean = false;
-    agent_images: string[] = [];
+    agent_images: any[] = [];
     amqp_enabled_exchange: string = "";
     multi_tenant: boolean = false;
     workspace_enabled: boolean = false;
@@ -51,19 +51,19 @@ class Config {
     enable_gitserver: boolean = false;
 }
 class authState {
-    isAuthenticated: boolean = $state(false);
+    isAuthenticated: boolean = false;
     profile: pkg.Profile = {} as any;
     access_token: string = "";
     client: openiap = null as any;
     userManager: any;
-    isConnected: boolean = $state(false);
-    config: Config = $state(null) as any;
-    workspace: Workspace = $state(new Workspace());
-    baseurl = $state("");
-    wsurl = $state("");
-    domain = $state("");
-    client_id = $state("");
-    protocol = $state("");
+    isConnected: boolean = false;
+    config: Config = null as any;
+    workspace: Workspace = new Workspace();
+    baseurl = "";
+    wsurl = "";
+    domain = "";
+    client_id = "";
+    protocol = "";
     constructor() {
     }
     async getConfig(protocol: string, domain: string, fetch: any) {
@@ -101,7 +101,7 @@ class authState {
     }
     async serverloaduser(client_id: string, origin: string, cookies: any) {
         this.createuserManager(client_id, origin, cookies);
-        await this.loadUser();
+        return await this.loadUser(false);
     }
     async clientinit(protocol: string, domain: string, client_id: string, origin: string, access_token: string, profile: any, fetch: any, cookies: any) {
         if (this.config == null) await this.getConfig(protocol, domain, fetch);
@@ -112,7 +112,7 @@ class authState {
             this.profile = profile;
             auth.isAuthenticated = true;
         } else if (auth.access_token == null || auth.access_token == "") {
-            await this.loadUser();
+            await this.loadUser(browser);
         } else {
             auth.isAuthenticated = true;
         }
@@ -164,12 +164,14 @@ class authState {
         };
         this.userManager = new UserManager(settings) as any;
     }
-    async loadUser() {
+    async loadUser(persist: boolean) {
         this.isAuthenticated = false;
         const result = await this.userManager.getUser();
+        let access_token = "";
         if (result != null) {
             auth.profile = result.profile;
-            auth.access_token = result.access_token;
+            access_token = result.access_token;
+            if(persist) auth.access_token = result.access_token;
             auth.isAuthenticated = true;
         } else {
             auth.profile = {} as any;
@@ -178,6 +180,7 @@ class authState {
         if (!browser) {
             global.WebSocket = ws;
         }
+        return access_token;
     }
     connectWaitingPromisses: any[] = [];
     async connect(access_token: string) {

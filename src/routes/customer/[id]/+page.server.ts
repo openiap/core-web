@@ -8,10 +8,11 @@ import type { Actions, PageServerLoad } from "./$types.js";
 
 const key = "customer"
 
-export const load: PageServerLoad = async ({ fetch, url, cookies, locals, params }) => {
+export const load: PageServerLoad = async ({ params, parent }) => {
+  const { access_token } = await parent();
   let data:any = {};
   let id = params.id;
-  let item = await auth.client.FindOne<any>({ collectionname: "users", query: { _id: id }, jwt: auth.access_token });
+  let item = await auth.client.FindOne<any>({ collectionname: "users", query: { _id: id }, jwt: access_token });
   data.form = await superValidate(item, zod(editFormSchema));
   return data;
 };

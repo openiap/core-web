@@ -26,7 +26,7 @@ class entitiesdata {
 	settings: pageSettings = null as any;
 	hide_empty_on_sort = true;
 	errormessage = "";
-	async GetData(page: string, collectionname: string, query: any) {
+	async GetData(page: string, collectionname: string, query: any, access_token: string) {
 		let orderby = this.getOrderBy();
 		let usequery = this.createQuery(this.settings.searchstring, query);
 		let top = 5;
@@ -41,14 +41,15 @@ class entitiesdata {
 			orderby: orderby,
 			skip: skip,
 			top: 5,
-			jwt: auth.access_token,
+			jwt: access_token,
 		});
 		this.settings.total_count = await auth.client.Count({
 			collectionname,
 			query: usequery,
-			jwt: auth.access_token,
+			jwt: access_token,
 		});
-		console.log("GetData", collectionname, usequery, orderby, this.settings.page, this.settings.page_index, this.settings.total_count);
+		// console.log("GetData", collectionname, usequery, orderby, this.settings.page, this.settings.page_index, entities.length, this.settings.total_count, access_token?.substring(0, 10));
+		console.log("GetData", collectionname, "page:", this.settings.page, "idx:", this.settings.page_index, "res:", entities.length, "skip:", skip, "total:", this.settings.total_count, "token:", access_token?.substring(0, 10));
 		return entities;
 	}
 	persist() {

@@ -6,9 +6,10 @@ import type { Actions, PageServerLoad } from "./$types.js";
 import { cleanMatchingKeys, defaultSettings } from "./helper.js";
 import { editFormSchema } from "./schema.js";
 
-export const load: PageServerLoad = async ({ fetch, url, cookies, locals, params }) => {
+export const load: PageServerLoad = async ({ parent }) => {
+  const { access_token } = await parent();
   let data: any = {};
-  let currentSettings = await auth.client.FindOne<any>({ collectionname: "config", query: { "_type": "config" }, jwt: auth.access_token });
+  let currentSettings = await auth.client.FindOne<any>({ collectionname: "config", query: { "_type": "config" }, jwt: access_token });
   let combinedSettings = { ...defaultSettings, ...currentSettings }
   data.form = await superValidate(combinedSettings, zod(editFormSchema));
   return data;

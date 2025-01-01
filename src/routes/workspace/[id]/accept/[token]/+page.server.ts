@@ -8,11 +8,12 @@ import type { PageServerLoad } from "./$types.js";
 
 const key = "workspace"
 
-export const load: PageServerLoad = async ({ fetch, url, cookies, locals, params }) => {
+export const load: PageServerLoad = async ({ parent, params }) => {
+  const { access_token } = await parent();
   let workspaceid = params.id;
   let token = params.token;
   try {
-    let item = JSON.parse(await auth.client.CustomCommand({ command: "getinvite", data: JSON.stringify({ workspaceid, token }), jwt: auth.access_token }))
+    let item = JSON.parse(await auth.client.CustomCommand({ command: "getinvite", data: JSON.stringify({ workspaceid, token }), jwt: access_token }))
     if(item == null) {
       throw redirect (303, base + `/${key}`);
     }

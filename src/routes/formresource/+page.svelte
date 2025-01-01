@@ -49,7 +49,7 @@
       toast.success("Deleted successfully", {
         description: "",
       });
-      entities = await datacomponent.GetData(page, collectionname, query);
+      entities = await datacomponent.GetData(page, collectionname, query, auth.access_token);
     } catch (error: any) {
       toast.error("Error while deleting", {
         description: error.message,

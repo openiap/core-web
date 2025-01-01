@@ -70,29 +70,25 @@ class _usersettings implements userSettings {
     getpage() {
         return this.getpagesettings(this.currentpage);
     }
-    async dbload() {
-        let userid = auth.profile.sub;
-        if (userid == null || userid == "") {
+    async dbload(access_token: string) {
+        this._id = "";
+        this._type = "";
+        this.userid = "";
+        this.name = "";
+        this.entities_collectionname = "";
+        this.pagesettings = [];
+        this.currentpage = "";
+        if (auth.profile.sub == null || auth.profile.sub == "") {
             return $state.snapshot(this);
-        } else if (this.userid == userid) {
-            if (browser) {
-                return $state.snapshot(this);
-            }
         }
+        this.userid = auth.profile.sub;
+        this.name = "Settings for " + auth.profile.name;
         if(auth.client != null && auth.client.connected) {
-            let settings = await auth.client.FindOne<userSettings>({ collectionname: "users", query: { userid: userid, "_type": "usersettings" }, jwt: auth.access_token });
-            if (settings == null) {
-                this._id = "";
-                this.userid = userid;
-                this.name = "Settings for " + auth.profile.name;
-                return $state.snapshot(this);
+            console.log("usersettings.dbload", auth.access_token);
+            let settings = await auth.client.FindOne<userSettings>({ collectionname: "users", query: { userid: this.userid, "_type": "usersettings" }, jwt: access_token });
+            if (settings != null) {
+                this.stateload(settings);
             }
-            this.stateload(settings);
-        } else {
-            this._id = "";
-            this.userid = userid;
-            this.name = "Settings for " + auth.profile.name;
-            return $state.snapshot(this);
         }
         return $state.snapshot(this);
     }

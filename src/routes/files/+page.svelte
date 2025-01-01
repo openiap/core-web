@@ -71,7 +71,7 @@
             auth.access_token,
           );
           fileData = null;
-          entities = await data1.GetData(page, collectionname, query);
+          entities = await data1.GetData(page, collectionname, query, auth.access_token);
           loading = false;
         }
       };
@@ -103,7 +103,7 @@
       toast.success("Deleted successfully", {
         description: "",
       });
-      entities = await data1.GetData(page, collectionname, query);
+      entities = await data1.GetData(page, collectionname, query, auth.access_token);
     } catch (error: any) {
       toast.error("Error while deleting", {
         description: error.message,

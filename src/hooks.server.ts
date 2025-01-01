@@ -10,11 +10,11 @@ export const handle: Handle = async ({ event, resolve }) => {
     let client_id = process.env.web_client_id;
     if (client_id == null || client_id == "") client_id = web_client_id;
     const { url, cookies } = event;
+    let access_token = "";
     try {
         await auth.serverinit(protocol, domain);
-        await auth.serverloaduser(client_id, url.origin, cookies);
+        access_token = await auth.serverloaduser(client_id, url.origin, cookies);
     } catch (error) {
-        console.error(error);
     }
     event.locals = event.locals || {};
     // @ts-ignore
@@ -24,7 +24,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     // @ts-ignore
     event.locals.client_id = client_id;
     // @ts-ignore
-    event.locals.access_token = auth.access_token;
+    event.locals.access_token = access_token;
     // @ts-ignore
     event.locals.profile = auth.profile;
     return await resolve(event);
