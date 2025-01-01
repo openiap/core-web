@@ -7,15 +7,45 @@
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
   import { ObjectInput } from "$lib/objectinput/index.js";
-  import SuperDebug, { superForm } from "sveltekit-superforms";
+  import { auth } from "$lib/stores/auth.svelte.js";
+  import { toast } from "svelte-sonner";
+  import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newFormSchema } from "../schema.js";
+
   const key = "formresource";
   let showdebug = $state(false);
   const { data } = $props();
-  const form = superForm(data.form, {
+  let loading = $state(false);
+  let errormessage = $state("");
+  const form = superForm(defaults(zod(newFormSchema)), {
     dataType: "json",
     validators: zod(newFormSchema),
+    SPA: true,
+    onUpdate: async ({ form, cancel }) => {
+      if (form.valid) {
+        loading = true;
+        try {
+          await auth.client.UpdateOne({
+            collectionname: "forms",
+            item: form.data,
+            jwt: auth.access_token,
+          });
+          toast.success("Form resource edited");
+          goto(base + `/${key}`);
+        } catch (error: any) {
+          errormessage = error.message;
+          toast.error("Error", {
+            description: error.message,
+          });
+          cancel();
+        } finally {
+          loading = false;
+        }
+      } else {
+        errormessage = "Form is invalid";
+      }
+    },
   });
   const { form: formData, enhance, message } = form;
 </script>
