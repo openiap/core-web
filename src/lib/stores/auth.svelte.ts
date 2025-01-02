@@ -51,14 +51,14 @@ class Config {
     enable_gitserver: boolean = false;
 }
 class authState {
-    isAuthenticated: boolean = false;
-    profile: pkg.Profile = {} as any;
-    access_token: string = "";
+    isAuthenticated: boolean = $state(false);
+    profile: pkg.Profile = $state({}) as any;
+    access_token: string = $state("");
     client: openiap = null as any;
     userManager: any;
-    isConnected: boolean = false;
+    isConnected: boolean = $state(false);
     config: Config = null as any;
-    workspace: Workspace = new Workspace();
+    workspace: Workspace = $state(new Workspace());
     baseurl = "";
     wsurl = "";
     domain = "";
@@ -108,11 +108,11 @@ class authState {
         this.createuserManager(client_id, origin, cookies);
 
         if (access_token != null && access_token != "" && auth.access_token != access_token) {
-            this.access_token = access_token;
+            if(browser) this.access_token = access_token;
             this.profile = profile;
             auth.isAuthenticated = true;
         } else if (auth.access_token == null || auth.access_token == "") {
-            await this.loadUser();
+            access_token = await this.loadUser();
         } else {
             auth.isAuthenticated = true;
         }
@@ -120,9 +120,9 @@ class authState {
             await this.connect(this.access_token);
         }
         try {
-            if (this.client == null) return;
+            if (this.client == null) return access_token;
             if (!this.client.connected) {
-                return;
+                return access_token;
             }
             let _workspace = await this.client.FindOne<Workspace>({ collectionname: "users", query: { _type: "workspace" }, jwt: auth.access_token });
             if (_workspace == null) {
@@ -133,6 +133,7 @@ class authState {
         } catch (error) {
             console.error("clientinit.FindOne.error", error);
         }
+        return access_token;
     }
     async login() {
         if (this.userManager == null) throw new Error("UserManager not initialized");

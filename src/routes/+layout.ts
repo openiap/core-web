@@ -5,10 +5,12 @@ import { usersettings } from "$lib/stores/usersettings.svelte.js";
 import type { LayoutLoad } from "./$types.js";
 
 export const load: LayoutLoad = async ({ data, fetch, url, route, params }) => {
-	const { protocol, domain, client_id, access_token, profile } = data;
+	const { protocol, domain, client_id, profile } = data;
+	let access_token = data.access_token || auth.access_token;
+	const { origin } = url;
 	let code = url?.searchParams?.get("code");
 	try {
-		await auth.clientinit(protocol, domain, client_id, url.origin, access_token, profile, fetch, null);
+		access_token = await auth.clientinit(protocol, domain, client_id, origin, access_token, profile, fetch, null);
 		await usersettings.dbload(access_token);
 		const shortpage = (route.id != null && route.id.indexOf("/") > -1 ? route.id.split("/")[1] : "");
 		const page = url.pathname;
@@ -86,9 +88,9 @@ export const load: LayoutLoad = async ({ data, fetch, url, route, params }) => {
 				break;
 		}
 		console.log(page, entities.length);
-		return { ...data, access_token, code, entities, id, settings };
+		return { ...data, access_token, origin, code, entities, id, settings };
 	} catch (error) {
 		console.error("layout.ts", error);
-		return { ...data, access_token, code, entities: [], item: null, id: "", settings: {} };
+		return { ...data, access_token, origin, code, entities: [], item: null, id: "", settings: {} };
 	}
 };
