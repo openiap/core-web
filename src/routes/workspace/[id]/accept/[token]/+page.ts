@@ -13,6 +13,8 @@ export const load: PageLoad = async ({ parent, params }) => {
   let workspaceid = params.id;
   let token = params.token;
   let form = await superValidate({ workspaceid, token }, zod(memberSchema));
+  if (workspaceid == null || workspaceid == "") { goto(base + `/${key}`); return { form }; }
+  if (token == null || token == "") { goto(base + `/${key}`); return { form }; }
   try {
     let item = JSON.parse(await auth.client.CustomCommand({ command: "getinvite", data: JSON.stringify({ workspaceid, token }), jwt: access_token }))
     if (item == null) { goto(base + `/${key}`); return { form }; }
@@ -21,6 +23,6 @@ export const load: PageLoad = async ({ parent, params }) => {
     };
   } catch (error: any) {
     setMessage(form, error.message, { status: 403 });
-    return { form };
   }
+  return { form };
 };
