@@ -32,7 +32,7 @@
 			<AppSidebar />
 			<div class="flex flex-col w-full">
 				<header
-					class="flex h-16 shrink-0 items-center justify-between gap-2 px-4 bg-gradient-to-b from-lightgradident1 to-lightgradident2 dark:bg-gradient-to-b dark:from-darkgradident1 dark:to-darkgradident2 rounded mx-2.5 my-2.5"
+					class="flex h-16 shrink-0 items-center justify-between px-4 bg-gradient-to-b from-lightgradident1 to-lightgradident2 dark:bg-gradient-to-b dark:from-darkgradident1 dark:to-darkgradident2 rounded mx-2.5 my-2.5"
 				>
 					<div class="flex items-center">
 						<Sidebar.Trigger class="-ml-1" />
