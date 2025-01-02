@@ -22,6 +22,7 @@
             return `${page_index * perPage + 1} to ${page_index * perPage + 5 < total_count ? page_index * perPage + 5 : total_count}`;
         }
     };
+	const buttonClass= "bg-black text-white  dark:bg-neutral-400 dark:text-black  ";
 </script>
 
 <Pagination.Root count={total_count} perPage={5} {...restProps} >
@@ -29,11 +30,11 @@
 	<div class="my-8 flex items-center">
 	  <Pagination.Content>
 		<Pagination.Item>
-		  <Pagination.PrevButton >
+		  <Pagination.PrevButton class={buttonClass}>
 			<HotkeyButton
 				href="#"
 				data-shortcut="ArrowLeft"
-				variant="ghost"
+				variant="ghostfull"
 				disabled={!total_count || page_index + 1 === 1}
 				>
 				<ChevronLeft class="size-4" />
@@ -55,11 +56,11 @@
 		  {/if}
 		{/each}
 		<Pagination.Item>
-		  <Pagination.NextButton >
+		  <Pagination.NextButton class={buttonClass}>
 			<HotkeyButton
 				href="#"
 				data-shortcut="ArrowRight"
-				variant="ghost"
+				variant="ghostfull"
 				disabled={!total_count || currentPage === Math.ceil(total_count / 5)}
                 >
                     <span class="hidden sm:block">Next</span>

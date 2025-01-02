@@ -21,6 +21,11 @@
 			new SidebarItem("Workitems", `${base}/workitem`, false),
 			new SidebarItem("Form workflows", `${base}/workflow`, false),
 			new SidebarItem("RPA Workflows", `${base}/rpaworkflow`, false),
+			new SidebarItem(
+				"Grafana",
+				`https://grafana.dev.openiap.io/`,
+				false,
+			),
 		],
 	};
 	const workspace: any = {

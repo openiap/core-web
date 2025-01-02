@@ -1,7 +1,7 @@
 <script lang="ts" module>
-  export let page = "form";
-  export let collectionname = "forms";
-  export let query = { _type: "form" };
+  export let page = "workflow";
+  export let collectionname = "workflow";
+  export let query = { _type: "workflow", web: true };
 </script>
 
 <script lang="ts">
@@ -103,7 +103,7 @@
 </script>
 
 <Searchinput bind:searchstring />
-<Hotkeybutton
+<!-- <Hotkeybutton
   class="mb-4"
   aria-label="Add workspace"
   variant="default"
@@ -111,7 +111,7 @@
 >
   <Plus />
   Add {page}</Hotkeybutton
->
+> -->
 <Entities
   {collectionname}
   {query}

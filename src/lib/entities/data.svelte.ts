@@ -55,9 +55,9 @@ class entitiesdata {
 	persist() {
 		usersettings.persist();
 	}
-	parsesettings(raw:any) {
+	parsesettings(raw: any) {
 		usersettings.loadpage(raw);
-		if(raw.page != null) {
+		if (raw.page != null) {
 			this.settings = usersettings.getpagesettings(raw.page);
 		}
 	}
@@ -178,7 +178,8 @@ class entitiesdata {
 			case "role":
 				return ["_id", "name", "members", "_created"];
 			case "workitem":
-				return ["_id", "name", "wiq", "_created"];
+				// return ["_id", "name", "wiq", "_created"];
+				return ["name", "state", "retries", "priority", "queue", "lastrun", "_created"];
 			case "resource":
 				return ["name", "_created", "_modified"];
 			case "provider":
@@ -216,6 +217,11 @@ class entitiesdata {
 				return ["name", "status", "role", "_modified"];
 			case "invites":
 				return ["name", "status", "role", "_modified"];
+			case "workflow":
+				return ["name", "_created"];
+			case "rpaworkflow":
+				return ["name", "_createdby", "_modified", "runtime"];
+			// return ["Project and name", "Who", "_modified", "Run last 5 days"];
 			default:
 				return ["_id", "name", "_type", "_createdby", "_created"];
 		}
