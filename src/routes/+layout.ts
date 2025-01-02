@@ -1,3 +1,4 @@
+import { browser } from "$app/environment";
 import { base } from "$app/paths";
 import { data as datacomponent } from "$lib/entities/data.svelte.js";
 import { auth } from "$lib/stores/auth.svelte.js";
@@ -8,7 +9,11 @@ export const load: LayoutLoad = async ({ data, fetch, url, route, params }) => {
 	const { protocol, domain, client_id, profile } = data;
 	let access_token = data.access_token || auth.access_token;
 	const { origin } = url;
-	let code = url?.searchParams?.get("code");
+	const searchParams = browser && url.searchParams
+	let code = "";
+	if(searchParams) {
+		code = searchParams.get("code") || "";
+	}
 	try {
 		access_token = await auth.clientinit(protocol, domain, client_id, origin, access_token, profile, fetch, null);
 		await usersettings.dbload(access_token);
