@@ -215,8 +215,9 @@ class entitiesdata {
 				return ["name", "_created", "_modified"];
 			case "member":
 				return ["name", "status", "role", "_modified"];
+			case "/workspace/invites":
 			case "invites":
-				return ["name", "status", "role", "_modified"];
+				return ["name", "workspacename", "status", "role"];
 			case "workflow":
 				return ["name", "_created"];
 			case "rpaworkflow":
