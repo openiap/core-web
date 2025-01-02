@@ -4,6 +4,7 @@
 	import { Button } from "$lib/components/ui/button";
 	import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
 	import Search from "$lib/search/search.svelte";
+	import NavUser from "$lib/sidebar/nav-user.svelte";
 	import { auth } from "$lib/stores/auth.svelte";
 	import { usersettings } from "$lib/stores/usersettings.svelte.js";
 	import { Github, Trash2 } from "lucide-svelte";
@@ -26,7 +27,7 @@
 
 <header>
 	<div class="flex items-center justify-center">
-		<div class="flex gap-1.5">
+		<div class="flex space-x-2 items-center">
 			<Search />
 			<a href="https://github.com/openiap">
 				<Button
@@ -40,7 +41,6 @@
 			</a>
 			<Button
 				variant="outline"
-				size="icon"
 				aria-label="Clear cookies"
 				onclick={reset}
 				class="bg-indigo-600 hover:opacity-80 text-white"
@@ -50,7 +50,6 @@
 			<HotkeyButton
 				onclick={toggleMode}
 				variant="outline"
-				size="icon"
 				aria-label="Toggle darkmode"
 				class="bg-indigo-600 hover:opacity-80 text-white"
 			>
@@ -62,12 +61,15 @@
 				/>
 				<span class="sr-only">Toggle theme</span>
 			</HotkeyButton>
+
 			{#if auth.isAuthenticated == true}
-				<HotkeyButton
-					aria-label="Signout"
-					onclick={() => logout()}
-					data-shortcut={"Control+q,Meta+q"}>Signout</HotkeyButton
-				>
+				<NavUser
+					user={{
+						name: auth.profile.name as string,
+						email: auth.profile.email as string,
+						avatar: "",
+					}}
+				/>
 			{:else}
 				<HotkeyButton
 					aria-label="Signin"

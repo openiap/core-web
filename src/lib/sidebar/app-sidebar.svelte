@@ -1,16 +1,23 @@
 <script lang="ts" module>
 	import { base } from "$app/paths";
 	import { page } from "$app/stores";
-	import { Volleyball } from "lucide-svelte";
+	// import { Volleyball } from "lucide-svelte";
 
 	class SidebarItem {
 		title: string = $state("");
 		url: string = $state("");
 		hidden: boolean = $state(false);
-		constructor(title: string, url: string, hidden: boolean) {
+		external: boolean = $state(false);
+		constructor(
+			title: string,
+			url: string,
+			hidden: boolean,
+			external: boolean = false,
+		) {
 			this.title = title;
 			this.url = url;
 			this.hidden = hidden;
+			this.external = external;
 		}
 	}
 	const actions: any = {
@@ -25,6 +32,7 @@
 				"Grafana",
 				`https://grafana.dev.openiap.io/`,
 				false,
+				true,
 			),
 		],
 	};
@@ -34,7 +42,11 @@
 		items: [
 			new SidebarItem("Workspaces", `${base}/workspace`, false),
 			new SidebarItem("Members", `${base}/workspace/member`, false),
-			new SidebarItem("Invites/member of", `${base}/workspace/invites`, false),
+			new SidebarItem(
+				"Invites/member of",
+				`${base}/workspace/invites`,
+				false,
+			),
 		],
 	};
 	const management: any = {
@@ -62,10 +74,12 @@
 </script>
 
 <script lang="ts">
-	import { goto } from "$app/navigation";
+	// import { goto } from "$app/navigation";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import { auth } from "$lib/stores/auth.svelte";
 	import type { ComponentProps } from "svelte";
+	// import NavUser from "./nav-user.svelte";
+	import NavWorkspace from "./nav-workspace.svelte";
 
 	let {
 		ref = $bindable(null),
@@ -114,7 +128,7 @@
 	<div
 		class="bg-gradient-to-b from-lightgradident1 to-lightgradident2 dark:bg-gradient-to-b dark:from-darkgradident1 dark:to-darkgradident2 rounded my-2.5 mx-3 h-full overflow-auto"
 	>
-		<Sidebar.Header>
+		<!-- <Sidebar.Header>
 			<button
 				onclick={() => goto(base)}
 				onkeydown={(event) => event.key === "Enter" && goto(base)}
@@ -132,8 +146,23 @@
 					</div>
 				</div>
 			</button>
+		</Sidebar.Header> -->
+		<Sidebar.Header class="border-sidebar-border h-16 border-b">
+			<NavWorkspace
+				teams={[
+					{
+						name: "Company 1",
+						plan: "plan 1",
+						logo: "",
+					},
+					{
+						name: "Company 2",
+						plan: "plan 2",
+						logo: "",
+					},
+				]}
+			/>
 		</Sidebar.Header>
-
 		<Sidebar.Content>
 			{#each data.navMain as group (group.title)}
 				{#if !group.hidden}
@@ -154,11 +183,21 @@
 													item.url}
 											>
 												{#snippet child({ props })}
-													<a
-														href={item.url}
-														{...props}
-														>{item.title}</a
-													>
+													{#if item.external}
+														<a
+															href={item.url}
+															{...props}
+															target="_blank"
+															rel="noopener noreferrer"
+															>{item.title}</a
+														>
+													{:else}
+														<a
+															href={item.url}
+															{...props}
+															>{item.title}</a
+														>
+													{/if}
 												{/snippet}
 											</Sidebar.MenuButton>
 										</Sidebar.MenuItem>
