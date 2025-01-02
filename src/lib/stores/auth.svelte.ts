@@ -108,7 +108,7 @@ class authState {
         this.createuserManager(client_id, origin, cookies);
 
         if (access_token != null && access_token != "" && auth.access_token != access_token) {
-            if(browser) this.access_token = access_token;
+            if (browser) this.access_token = access_token;
             this.profile = profile;
             auth.isAuthenticated = true;
         } else if (auth.access_token == null || auth.access_token == "") {
@@ -172,7 +172,7 @@ class authState {
         if (result != null) {
             auth.profile = result.profile;
             access_token = result.access_token;
-            if(browser) auth.access_token = result.access_token;
+            if (browser) auth.access_token = result.access_token;
             auth.isAuthenticated = true;
         } else {
             auth.profile = {} as any;
