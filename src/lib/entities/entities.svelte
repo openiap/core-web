@@ -9,7 +9,7 @@
 	import { type sort } from "$lib/stores/usersettings.svelte";
 	import ArrowDown from "lucide-svelte/icons/arrow-down";
 	import ArrowUp from "lucide-svelte/icons/arrow-up";
-	import { MediaQuery } from "runed";
+	// import { MediaQuery } from "runed";
 	import SuperDebug from "sveltekit-superforms";
 	import { TableHeader, type TTableHeader } from "./data.svelte.js";
 </script>

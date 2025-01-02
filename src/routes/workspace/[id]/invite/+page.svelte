@@ -33,7 +33,6 @@
           cancel();
         }
       } else{
-        console.log(form.errors);
         errormessage = "Form is not valid" + form.errors;
         toast.error("Error", {
             description: "Form is not valid ",

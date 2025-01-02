@@ -126,7 +126,7 @@
     <div class="flex items-center space-x-2">
       <Button
         aria-label="edit"
-        onclick={() => goto(base + `/entities/hdrobots/edit/${item._id}`)}
+        onclick={() => goto(base + `/form/${item._id}`)}
         size="icon"
         variant="secondary"
       >
