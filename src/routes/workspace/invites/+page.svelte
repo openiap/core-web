@@ -11,13 +11,12 @@
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import Button from "$lib/components/ui/button/button.svelte";
-  import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
   import Searchinput from "$lib/searchinput/searchinput.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
-  import { Plus, Trash2 } from "lucide-svelte";
+  import { Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
@@ -72,15 +71,6 @@
   }
 </script>
 
-<Hotkeybutton
-  class="mb-4"
-  aria-label="Add workspace"
-  variant="default"
-  onclick={() => goto(base + `/${page}/new`)}
->
-  <Plus />
-  Add {page}</Hotkeybutton
->
 <Searchinput bind:searchstring />
 
 <Entities
