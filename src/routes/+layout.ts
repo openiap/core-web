@@ -75,13 +75,13 @@ export const load: LayoutLoad = async ({ data, fetch, url, route, params }) => {
 				entities = await datacomponent.GetData(page, "users", { _type: "workspace" }, access_token);
 				break;
 			case base + `/workspace/${params.id}/member`:
-				// entities = await datacomponent.GetData(page, "users", { _type: "member", workspaceid: params.id, status: { "$ne": "rejected" } }, access_token);
-				entities = await datacomponent.GetData(page, "users", { _type: "member", workspaceid: params.id }, access_token);
+				entities = await datacomponent.GetData(page, "users", { _type: "member", workspaceid: params.id, status: { "$ne": "rejected" } }, access_token);
 				break;
 			case base + "/workspace/invites":
 				const userid = auth.profile.sub;
 				const email = auth.profile.email;
-				const basequery = { _type: "member", "status": { "$in": ["pending", "rejected"] } };
+				// const basequery = { _type: "member", "status": { "$in": ["pending", "rejected"] } };
+				const basequery = { _type: "member" };
 				let query: any = { ...basequery, ...{ "$or": [{ "userid": userid }, { "email": email }] } };
 				entities = await datacomponent.GetData(page, "users", query, access_token);
 				break;
