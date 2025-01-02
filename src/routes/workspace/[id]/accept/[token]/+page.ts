@@ -12,14 +12,14 @@ export const load: PageLoad = async ({ parent, params }) => {
   const { access_token } = await parent();
   let workspaceid = params.id;
   let token = params.token;
+  let form = await superValidate({ workspaceid, token }, zod(memberSchema));
   try {
     let item = JSON.parse(await auth.client.CustomCommand({ command: "getinvite", data: JSON.stringify({ workspaceid, token }), jwt: access_token }))
-    if (item == null) { return goto(base + `/${key}`); }
+    if (item == null) { goto(base + `/${key}`); return { form }; }
     return {
       form: await superValidate(item, zod(memberSchema)),
     };
   } catch (error: any) {
-    let form = await superValidate({ workspaceid, token }, zod(memberSchema));
     setMessage(form, error.message, { status: 403 });
     return { form };
   }
