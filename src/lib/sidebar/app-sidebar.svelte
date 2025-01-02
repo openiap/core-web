@@ -34,7 +34,7 @@
 		items: [
 			new SidebarItem("Workspaces", `${base}/workspace`, false),
 			new SidebarItem("Members", `${base}/workspace/member`, false),
-			new SidebarItem("Invites", `${base}/workspace/invites`, false),
+			new SidebarItem("Invites/member of", `${base}/workspace/invites`, false),
 		],
 	};
 	const management: any = {

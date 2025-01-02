@@ -3,7 +3,7 @@
   export let collectionname = "users";
   export let basequery = {
     _type: "member",
-    status: { $in: ["pending", "rejected"] },
+    // status: { $in: ["pending", "rejected"] },
   };
 </script>
 

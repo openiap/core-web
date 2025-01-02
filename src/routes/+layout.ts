@@ -75,7 +75,8 @@ export const load: LayoutLoad = async ({ data, fetch, url, route, params }) => {
 				entities = await datacomponent.GetData(page, "users", { _type: "workspace" }, access_token);
 				break;
 			case base + `/workspace/${params.id}/member`:
-				entities = await datacomponent.GetData(page, "users", { _type: "member", workspaceid: params.id, status: { "$ne": "rejected" } }, access_token);
+				// entities = await datacomponent.GetData(page, "users", { _type: "member", workspaceid: params.id, status: { "$ne": "rejected" } }, access_token);
+				entities = await datacomponent.GetData(page, "users", { _type: "member", workspaceid: params.id }, access_token);
 				break;
 			case base + "/workspace/invites":
 				const userid = auth.profile.sub;
