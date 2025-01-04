@@ -3,18 +3,12 @@
     import * as Pagination from "$lib/components/ui/pagination/index.js";
     import ChevronLeft from "lucide-svelte/icons/chevron-left";
     import ChevronRight from "lucide-svelte/icons/chevron-right";
-    // import { MediaQuery } from "runed";
-
-    // const isDesktop = new MediaQuery("(min-width: 768px)");
-
     let {
         total_count = 0,
         page_index = 0,
         ...restProps
     } = $props();
     const perPage = 5;
-    // const siblingCount = $derived(isDesktop.matches ? 3 : 0);
-
     const calculateitems = () => {
         if (page_index === 0) {
             return `${1} to ${page_index * perPage + 5}`;

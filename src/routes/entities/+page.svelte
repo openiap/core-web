@@ -4,13 +4,15 @@
   import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
   import { Separator } from "$lib/components/ui/separator/index.js";
   import { Entities } from "$lib/entities/index.js";
+  import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import Searchinput from "$lib/searchinput/searchinput.svelte";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { auth } from "$lib/stores/auth.svelte";
   import { Folder } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   let { data } = $props();
-
+  datacomponent.parsesettings(data.settings);
+  
   let collectionname = $state("");
   collectionname = data.collectionname;
   let page = $derived(() => "entities-" + collectionname);
@@ -40,6 +42,7 @@
   }
   function selectcollection(name: string) {
     collectionname = name;
+    usersettings.entities_collectionname = name;
     datacomponent.persist();
   }
 </script>
@@ -49,25 +52,19 @@
     id="div1"
     class="w-full max-w-max flex-shrink-0 hidden sm:block p-6 border-r border-gray-400"
   >
-    <div class="ms-4 mb-4">
-      <b> Collection Name: </b>
-      <br />
-      {collectionname}<br />
-    </div>
-    <h4 class="mb-4 text-sm font-medium leading-none ms-4">Collections:</h4>
     <ScrollArea class="max-h-screen sm:max-h-[calc(100vh-8rem)] overflow-auto">
       <div class="p-4">
-        {#each collections as tag}
+        {#each collections as collection}
           <div class="text-sm">
             <Button
               class="w-full"
-              variant={collectionvariant(tag.name)}
+              variant={collectionvariant(collection.name)}
               onclick={(e) => {
-                selectcollection(tag.name);
+                selectcollection(collection.name);
               }}
             >
               <Folder class="size-4" />
-              {tag.name}</Button
+              {collection.name}</Button
             >
           </div>
           <Separator class="my-2" />
@@ -80,10 +77,9 @@
     <Entities
       {collectionname}
       {query}
-      bind:searchstring
-      key={page()}
       page={page()}
       delete_selected={deleteitems}
+      bind:searchstring
       bind:selected_items
       bind:entities
     ></Entities>

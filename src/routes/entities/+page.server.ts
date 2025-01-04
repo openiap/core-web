@@ -5,7 +5,11 @@ import type { PageServerLoad } from "./$types.js";
 
 export const load: PageServerLoad = async ({ parent }) => {
     const { access_token } = await parent();
+    await usersettings.dbload(access_token);
     let collectionname = usersettings.entities_collectionname;
+    if( collectionname == null || collectionname == "" ) {
+        collectionname = "entities";
+    }
     let page = "entities-" + collectionname;
 	data.loadsettings(page);
     let searchstring = data.settings.searchstring;

@@ -49,6 +49,7 @@ class Config {
     llmchat_queue: string = "";
     enable_analytics: boolean = false;
     enable_gitserver: boolean = false;
+    loginproviders: any[] = [];
 }
 class authState {
     isAuthenticated: boolean = $state(false);
@@ -58,42 +59,39 @@ class authState {
     userManager: any;
     isConnected: boolean = $state(false);
     config: Config = null as any;
-    workspace: Workspace = $state(new Workspace());
     baseurl = "";
-    wsurl = "";
     domain = "";
     client_id = "";
     protocol = "";
     constructor() {
     }
-    async getConfig(protocol: string, domain: string, fetch: any) {
-        const configurl = protocol + '://' + domain + "/config";
+    async getConfig(wsurl: string, fetch: any) {
+        let url = new URL(wsurl);
+        if(url.protocol == "wss:") url.protocol = "https:";
+        if(url.protocol == "ws:") url.protocol = "http:";
+        url.pathname = "/config";
+        let configurl = url.toString();
         let f = await fetch(configurl);
         if (f.status !== 200) {
             throw new Error(`Failed to load config from ${configurl}`);
         }
         this.config = await f.json();
-        this.baseurl = protocol + '://' + domain;
-        this.wsurl = this.baseurl.replace("https://", "wss://").replace("http://", "ws://") + "/ws/v2";
     }
-    async serverinit(protocol: string, domain: string) {
+    async serverinit(wsurl: string, protocol: string, domain: string) {
+        this.baseurl = protocol + '://' + domain;
         if (this.config == null) {
-            await this.getConfig(protocol, domain, fetch);
+            await this.getConfig(wsurl, fetch);
         }
         if (this.client == null) {
             global.WebSocket = ws;
-            this.client = new openiap(this.wsurl, "");
+            this.client = new openiap(wsurl, "");
             await this.client.connect(true);
             this.client.onDisconnected = async () => {
-                console.log("*********************************")
-                console.log("serverinint.onDisconnected");
-                console.log("*********************************")
+                console.log("serverinit.onDisconnected");
                 this.isConnected = false;
             }
             this.client.onConnected = async () => {
-                console.log("*********************************")
-                console.log("serverinint.onConnected");
-                console.log("*********************************")
+                console.log("serverinit.onConnected");
                 this.isConnected = true;
             }
             this.isConnected = true;
@@ -103,8 +101,9 @@ class authState {
         this.createuserManager(client_id, origin, cookies);
         return await this.loadUser();
     }
-    async clientinit(protocol: string, domain: string, client_id: string, origin: string, access_token: string, profile: any, fetch: any, cookies: any) {
-        if (this.config == null) await this.getConfig(protocol, domain, fetch);
+    async clientinit(wsurl: string, protocol: string, domain: string, client_id: string, origin: string, access_token: string, profile: any, fetch: any, cookies: any) {
+        if (this.config == null) await this.getConfig(wsurl, fetch);
+        this.baseurl = protocol + '://' + domain;
         this.createuserManager(client_id, origin, cookies);
 
         if (access_token != null && access_token != "" && auth.access_token != access_token) {
@@ -117,21 +116,11 @@ class authState {
             auth.isAuthenticated = true;
         }
         if (browser) {
-            await this.connect(this.access_token);
+            await this.connect(wsurl, this.access_token);
         }
-        try {
-            if (this.client == null) return access_token;
-            if (!this.client.connected) {
-                return access_token;
-            }
-            let _workspace = await this.client.FindOne<Workspace>({ collectionname: "users", query: { _type: "workspace" }, jwt: auth.access_token });
-            if (_workspace == null) {
-                this.workspace = new Workspace();
-            } else {
-                this.workspace = _workspace;
-            }
-        } catch (error) {
-            console.error("clientinit.FindOne.error", error);
+        if (this.client == null) return access_token;
+        if (!this.client.connected) {
+            return access_token;
         }
         return access_token;
     }
@@ -184,33 +173,17 @@ class authState {
         return access_token;
     }
     connectWaitingPromisses: any[] = [];
-    async connect(access_token: string) {
+    async connect(wsurl: string, access_token: string) {
         if (this.client != null && this.client.connected) {
             return;
         }
         if (this.client == null) {
-            this.client = new openiap(this.wsurl, access_token);
+            this.client = new openiap(wsurl, access_token);
             const user = await this.client.connect(true);
             this.isConnected = true;
             this.connectWaitingPromisses.forEach((resolve: any) => {
                 resolve();
             });
-            if (browser) {
-                this.client.Watch({ collectionname: "users", paths: ["$.[?(@ && @._type == 'workspace')]"], jwt: access_token }, async (operation: any, document: any) => {
-                    if (document._type == "workspace") {
-                        try {
-                            let _workspace = await this.client.FindOne<Workspace>({ collectionname: "users", query: { _type: "workspace" } });
-                            if (_workspace == null) {
-                                this.workspace = new Workspace();
-                            } else {
-                                this.workspace = _workspace;
-                            }
-                        } catch (error) {
-                            console.error("clientinit.Watch.error", error);
-                        }
-                    }
-                });
-            }
         } else {
             await new Promise((resolve) => {
                 this.connectWaitingPromisses.push(resolve);

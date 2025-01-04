@@ -41,20 +41,10 @@
                         class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground m-2"
                     >
                         <Avatar.Root class="rounded-lg h-full w-full">
-                            <!-- <Avatar.Image src={user.avatar} alt={user.name} /> -->
                             <Avatar.Fallback class="rounded-lg"
                                 >{user.avatar}</Avatar.Fallback
                             >
                         </Avatar.Root>
-                        <!-- <div
-                            class="grid flex-1 text-left text-sm leading-tight"
-                        >
-                            <span class="truncate font-semibold"
-                                >{user.name}</span
-                            >
-                            <span class="truncate text-xs">{user.email}</span>
-                        </div> -->
-                        <!-- <ChevronsUpDown class="ml-auto size-4" /> -->
                     </Sidebar.MenuButton>
                 {/snippet}
             </DropdownMenu.Trigger>
@@ -69,7 +59,6 @@
                         class="flex items-center gap-2 px-1 py-1.5 text-left text-sm"
                     >
                         <Avatar.Root class="h-8 w-8 rounded-lg">
-                            <!-- <Avatar.Image src={user.avatar} alt={user.name} /> -->
                             <Avatar.Fallback class="rounded-lg"
                                 >{user.avatar}</Avatar.Fallback
                             >
@@ -106,8 +95,6 @@
                         onclick={() => logout()}
                         data-shortcut={"Control+q,Meta+q"}>Signout</HotkeyButton
                     >
-                    <!-- <LogOut />
-                    Log out -->
                 </DropdownMenu.Item>
             </DropdownMenu.Content>
         </DropdownMenu.Root>

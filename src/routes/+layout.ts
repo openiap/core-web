@@ -4,20 +4,30 @@ import { data as datacomponent } from "$lib/entities/data.svelte.js";
 import { auth } from "$lib/stores/auth.svelte.js";
 import { usersettings } from "$lib/stores/usersettings.svelte.js";
 import type { LayoutLoad } from "./$types.js";
+import type { Workspace } from "./workspace/schema.js";
 
 export const load: LayoutLoad = async ({ data, fetch, url, route, params }) => {
 	const { protocol, domain, client_id, profile } = data;
+	let { wsurl } = data;
+	if(browser) {
+		const baseurl = protocol + '://' + domain;
+		wsurl = baseurl.replace("https://", "wss://").replace("http://", "ws://") + "/ws/v2";
+	}
 	let access_token = data.access_token || auth.access_token;
 	const { origin } = url;
 	const searchParams = browser && url.searchParams
 	let code = "";
+	let workspaces:Workspace[] = [];
+	let currentworkspace = "";
 	if(searchParams) {
 		code = searchParams.get("code") || "";
 	}
 	try {
-		access_token = await auth.clientinit(protocol, domain, client_id, origin, access_token, profile, fetch, null);
+		access_token = await auth.clientinit(wsurl, protocol, domain, client_id, origin, access_token, profile, fetch, null);
 		await usersettings.dbload(access_token);
 		const shortpage = (route.id != null && route.id.indexOf("/") > -1 ? route.id.split("/")[1] : "");
+		workspaces = await auth.client.Query<Workspace>({ collectionname: "users", query: { _type: "workspace" }, jwt: access_token, top: 5 });
+		currentworkspace = workspaces.length > 0 ? workspaces[0]._id : "";
 		const page = url.pathname;
 		let entities: any[] = [];
 		const id = params.id;
@@ -93,10 +103,10 @@ export const load: LayoutLoad = async ({ data, fetch, url, route, params }) => {
 			default:
 				break;
 		}
-		console.log(page, entities.length);
-		return { ...data, access_token, origin, code, entities, id, settings };
+		console.log(page, entities.length, workspaces.length);
+		return { ...data, wsurl, access_token, origin, code, entities, workspaces, currentworkspace, id, settings };
 	} catch (error) {
 		console.error("layout.ts", error);
-		return { ...data, access_token, origin, code, entities: [], item: null, id: "", settings: {} };
+		return { ...data, wsurl, access_token, origin, code, entities: [], workspaces: [], currentworkspace: "", item: null, id: "", settings: {} };
 	}
 };

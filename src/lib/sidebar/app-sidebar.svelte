@@ -42,11 +42,7 @@
 		items: [
 			new SidebarItem("Workspaces", `${base}/workspace`, false),
 			new SidebarItem("Members", `${base}/workspace/member`, false),
-			new SidebarItem(
-				"Invites/member of",
-				`${base}/workspace/invites`,
-				false,
-			),
+			new SidebarItem("Memberships", `${base}/workspace/invites`, false),
 		],
 	};
 	const management: any = {
@@ -74,40 +70,51 @@
 </script>
 
 <script lang="ts">
-	// import { goto } from "$app/navigation";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import { auth } from "$lib/stores/auth.svelte";
 	import type { ComponentProps } from "svelte";
-	// import NavUser from "./nav-user.svelte";
+	import type { Workspace } from "../../routes/workspace/schema";
 	import NavWorkspace from "./nav-workspace.svelte";
-
+	// Extend the ComponentProps type to include the workspaces property
+	type ExtendedComponentProps = ComponentProps<typeof Sidebar.Root> & {
+		currentworkspace: string;
+		workspaces?: Workspace[];
+	};
 	let {
 		ref = $bindable(null),
+		workspaces = [],
+		currentworkspace = "",
 		...restProps
-	}: ComponentProps<typeof Sidebar.Root> = $props();
+	}: ExtendedComponentProps = $props();
 
 	const navMain = $state([]) as any[];
 	const data = $state({
-		versions: ["1.0.1", "1.1.0-alpha", "2.0.0-beta1"],
 		navMain,
 	});
 	function loadmenu() {
 		workspace.hidden = !(
 			auth.config != null && auth.config.workspace_enabled
 		);
-		if (auth.profile?.roles?.indexOf("admins") > -1) {
-			for (let item of management.items) {
-				item.hidden = false;
-			}
+		if (workspaces.length == 0) {
+			workspace.hidden = false;
 		}
-		// management.items.find((x:any) => x.title == "Users").hidden = !workspace.hidden;
-		// management.items.find((x:any) => x.title == "Roles").hidden = !workspace.hidden;
-		if (!workspace.hidden && auth.isAuthenticated) {
-			workspace.items.find((x: any) => x.title == "Members").url =
-				`${base}/workspace/${auth.workspace._id}/member`;
-			for (let i = 1; i < workspace.items.length; i++) {
-				workspace.items[i].hidden =
-					auth.workspace.name == null || auth.workspace.name == "";
+
+		management.items.find((x: any) => x.title == "Users").hidden =
+			!workspace.hidden;
+		if (!workspace.hidden) {
+			management.items.find((x: any) => x.title == "Roles").hidden =
+				currentworkspace == null || currentworkspace == "";
+			const member = workspace.items.find(
+				(x: any) => x.title == "Members",
+			);
+			if (
+				currentworkspace != null &&
+				currentworkspace != ""
+			) {
+				member.hidden = false;
+				member.url = `${base}/workspace/${currentworkspace}/member`;
+			} else {
+				member.hidden = true;
 			}
 			workspace.items = workspace.items;
 			data.navMain = data.navMain;
@@ -118,7 +125,9 @@
 			data.navMain.push(management);
 		}
 	}
+
 	loadmenu();
+
 	$effect(() => {
 		loadmenu();
 	});
@@ -128,40 +137,8 @@
 	<div
 		class="bg-gradient-to-b from-lightgradident1 to-lightgradident2 dark:bg-gradient-to-b dark:from-darkgradident1 dark:to-darkgradident2 rounded my-2.5 mx-3 h-full overflow-auto"
 	>
-		<!-- <Sidebar.Header>
-			<button
-				onclick={() => goto(base)}
-				onkeydown={(event) => event.key === "Enter" && goto(base)}
-				class=" hover:opacity-80"
-			>
-				<div class="flex space-x-2 mt-2 ms-2 p-2">
-					<div
-						class="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg hover"
-					>
-						<Volleyball class="size-4" />
-					</div>
-					<div class="flex flex-col gap-0.5 leading-none items-start">
-						<span class="font-semibold">OpenIAP Core</span>
-						<span class="text-gray-400">v. 1.0</span>
-					</div>
-				</div>
-			</button>
-		</Sidebar.Header> -->
 		<Sidebar.Header class="border-sidebar-border h-16 border-b">
-			<NavWorkspace
-				teams={[
-					{
-						name: "Company 1",
-						plan: "plan 1",
-						logo: "",
-					},
-					{
-						name: "Company 2",
-						plan: "plan 2",
-						logo: "",
-					},
-				]}
-			/>
+			<NavWorkspace {workspaces} currentworkspace={currentworkspace} />
 		</Sidebar.Header>
 		<Sidebar.Content>
 			{#each data.navMain as group (group.title)}

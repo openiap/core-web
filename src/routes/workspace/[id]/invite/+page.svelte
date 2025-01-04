@@ -4,12 +4,12 @@
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
-  import SuperDebug, { defaults,superForm } from "sveltekit-superforms";
+  import { auth } from "$lib/stores/auth.svelte.js";
+  import { toast } from "svelte-sonner";
+  import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newMemberSchema } from "../../schema.js";
-    import { auth } from "$lib/stores/auth.svelte.js";
-    import { toast } from "svelte-sonner";
-  
+
   const { data } = $props();
   const key = "workspace";
   let showdebug = $state(false);
@@ -22,7 +22,11 @@
       if (form.valid) {
         try {
           form.data.workspaceid = data.id;
-          await auth.client.CustomCommand({ command: "inviteuser", data: JSON.stringify(form.data), jwt: auth.access_token });
+          await auth.client.CustomCommand({
+            command: "inviteuser",
+            data: JSON.stringify(form.data),
+            jwt: auth.access_token,
+          });
           toast.success("User invited successfully");
           goto(base + `/${key}/${data.id}/member`);
         } catch (error: any) {
@@ -32,15 +36,14 @@
           });
           cancel();
         }
-      } else{
+      } else {
         errormessage = "Form is not valid" + form.errors;
         toast.error("Error", {
-            description: "Form is not valid ",
-          });
-
+          description: "Form is not valid ",
+        });
       }
-    }
-});
+    },
+  });
 
   const { form: formData, enhance, message } = form;
 </script>

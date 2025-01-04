@@ -103,15 +103,6 @@
 </script>
 
 <Searchinput bind:searchstring />
-<!-- <Hotkeybutton
-  class="mb-4"
-  aria-label="Add workspace"
-  variant="default"
-  onclick={() => goto(base + `/${page}/new`)}
->
-  <Plus />
-  Add {page}</Hotkeybutton
-> -->
 <Entities
   {collectionname}
   {query}

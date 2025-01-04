@@ -6,14 +6,13 @@
     import { useSidebar } from "$lib/components/ui/sidebar/index.js";
     import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
     import Plus from "lucide-svelte/icons/plus";
+    import type { Workspace } from "../../routes/workspace/schema";
 
-    // This should be `Component` after lucide-svelte updates types
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let { teams }: { teams: { name: string; logo: any; plan: string }[] } =
+    let { workspaces, currentworkspace }: { workspaces: Workspace[], currentworkspace: string } =
         $props();
     const sidebar = useSidebar();
 
-    let activeTeam = $state(teams[0]);
+    let activeWorkspace = $state(workspaces.find(x => x._id == currentworkspace));
 </script>
 
 <Sidebar.Menu>
@@ -29,16 +28,15 @@
                         <div
                             class="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg"
                         >
-                            <!-- <activeTeam.logo class="size-4" /> -->
                         </div>
                         <div
                             class="grid flex-1 text-left text-sm leading-tight"
                         >
                             <span class="truncate font-semibold">
-                                {activeTeam.name}
+                                {activeWorkspace?.name}
                             </span>
                             <span class="truncate text-xs"
-                                >{activeTeam.plan}</span
+                                >{activeWorkspace?.price}</span
                             >
                         </div>
                         <ChevronsUpDown class="ml-auto" />
@@ -54,17 +52,16 @@
                 <DropdownMenu.Label class="text-muted-foreground text-xs"
                     >Workspace</DropdownMenu.Label
                 >
-                {#each teams as team, index (team.name)}
+                {#each workspaces as workspace, index (workspace._id)}
                     <DropdownMenu.Item
-                        onSelect={() => (activeTeam = team)}
+                        onSelect={() => (activeWorkspace = workspace)}
                         class="gap-2 p-2"
                     >
                         <div
                             class="flex size-6 items-center justify-center rounded-sm border"
                         >
-                            <!-- <team.logo class="size-4 shrink-0" /> -->
                         </div>
-                        {team.name}
+                        {workspace.name}
                         <DropdownMenu.Shortcut
                             >⌘{index + 1}</DropdownMenu.Shortcut
                         >

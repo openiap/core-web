@@ -9,7 +9,6 @@
 	import { type sort } from "$lib/stores/usersettings.svelte";
 	import ArrowDown from "lucide-svelte/icons/arrow-down";
 	import ArrowUp from "lucide-svelte/icons/arrow-up";
-	// import { MediaQuery } from "runed";
 	import SuperDebug from "sveltekit-superforms";
 	import { TableHeader, type TTableHeader } from "./data.svelte.js";
 </script>
@@ -274,17 +273,6 @@
 	function ontouchmove(event: TouchEvent) {
 		event.preventDefault();
 	}
-	// finish adding move logic for touch
-	// https://www.horuskol.net/blog/2020-08-15/drag-and-drop-elements-on-touch-devices/
-	/**
-	 * ******************************************
-	 * Ordering columns
-	 */
-
-	/**
-	 * Sorting data
-	 * ******************************************
-	 */
 	function sortby(field: string): sort {
 		var exists = tableheaders.find((x) => x.field == field);
 		if (exists == null) {

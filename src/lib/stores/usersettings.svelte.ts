@@ -139,6 +139,7 @@ class _usersettings implements userSettings {
             return;
         }
         let item = { ...this };
+        item._type = "usersettings";
         // @ts-ignore
         delete item.pagesettings;
         item.pagesettings = [];
@@ -151,7 +152,6 @@ class _usersettings implements userSettings {
                 page_index: org.page_index,
                 headers: org.headers,
                 total_count: org.total_count
-                // page_index: $state.snapshot(org.page_index)
             };
             // @ts-ignore
             if(page.searchstring == "") delete page.searchstring;

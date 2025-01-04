@@ -7,7 +7,7 @@
   import { Input } from "$lib/components/ui/input/index.js";
   import SuperDebug, { superForm, superValidate } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
-  import { newFormSchema } from "../schema.js";
+  import { newWorkspaceSchema } from "../schema.js";
     import { auth } from "$lib/stores/auth.svelte.js";
     import { toast } from "svelte-sonner";
 
@@ -16,7 +16,7 @@
   const { data } = $props();
   const form = superForm(data.form, {
     dataType: "json",
-    validators: zod(newFormSchema),
+    validators: zod(newWorkspaceSchema),
     SPA: true,
     onUpdate: async ({ form, cancel }) => {
       if (form.valid) {

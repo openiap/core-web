@@ -35,6 +35,9 @@ class entitiesdata {
 		if (auth.isConnected == false) {
 			return [];
 		}
+		if(collectionname == null || collectionname == "") {
+			return [];
+		}
 		const entities = await auth.client.Query<any>({
 			collectionname: collectionname,
 			query: usequery,
@@ -178,7 +181,6 @@ class entitiesdata {
 			case "role":
 				return ["_id", "name", "members", "_created"];
 			case "workitem":
-				// return ["_id", "name", "wiq", "_created"];
 				return ["name", "state", "retries", "priority", "queue", "lastrun", "_created"];
 			case "resource":
 				return ["name", "_created", "_modified"];
@@ -222,7 +224,6 @@ class entitiesdata {
 				return ["name", "_created"];
 			case "rpaworkflow":
 				return ["name", "_createdby", "_modified", "runtime"];
-			// return ["Project and name", "Who", "_modified", "Run last 5 days"];
 			default:
 				return ["_id", "name", "_type", "_createdby", "_created"];
 		}

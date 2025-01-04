@@ -1,26 +1,42 @@
 import { z } from 'zod';
 
-export const newFormSchema = z.object({
+export class Workspace {
+  _id: string;
+  name: string;
+  billingid: string;
+  admins: string;
+  users: string;
+  price: string;
+  constructor() {
+    this._id = "";
+    this.name = "";
+    this.billingid = "";
+    this.admins = "";
+    this.users = "";
+    this.price = "";
+  }
+}
+export const newWorkspaceSchema = z.object({
   name: z.string().min(2).default("Lemonify"),
   billingid: z.string().optional()
 });
-export type NewFormSchema = typeof newFormSchema;
+export type NewWorkspaceSchema = typeof newWorkspaceSchema;
 
-export const editFormSchema = z.object({
+export const workspaceSchema = z.object({
   name: z.string().min(2),
   admins: z.string().min(2),
   users: z.string().min(2),
   billingid: z.string().optional(),
   price: z.string().optional(),
 }).passthrough();
-export type EditFormSchema = typeof editFormSchema;
+export type WorkspaceSchema = typeof workspaceSchema;
 
 export const newMemberSchema = z.object({
   email: z.string().min(2).default("hello@world.com"),
   role: z.enum(["member", "admin"]).default("member"),
   workspaceid: z.string().optional(),
 });
-export type NewMemberSchema = typeof newFormSchema;
+export type NewMemberSchema = typeof newWorkspaceSchema;
 
 export const memberSchema = z.object({
   email: z.string().min(2),
@@ -36,4 +52,4 @@ export const memberSchema = z.object({
   seen: z.boolean().optional(),
   seenon: z.string().optional(),
 });
-export type MemberSchema = typeof newFormSchema;
+export type MemberSchema = typeof newWorkspaceSchema;

@@ -3,13 +3,14 @@
   import { goto } from "$app/navigation";
   import { auth } from "$lib/stores/auth.svelte";
   let { data } = $props();
-  const { protocol, domain, client_id, access_token, profile, origin } = data;
+  const { wsurl, protocol, domain, client_id, access_token, profile, origin } = data;
   let name = $derived(() => auth.profile?.name || "World");
   if (data.code != null && data.code != "") {
     if (browser) {
       auth.signinRedirectCallback().then(async (res) => {
         if (res) {
           await auth.clientinit(
+            wsurl,
             protocol,
             domain,
             client_id,
