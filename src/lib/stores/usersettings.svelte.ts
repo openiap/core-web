@@ -79,7 +79,6 @@ class _usersettings implements userSettings {
         this.userid = "";
         this.name = "";
         this.entities_collectionname = "";
-        this.currentworkspace = "";
         this.pagesettings = [];
         this.currentpage = "";
         if (auth.profile.sub == null || auth.profile.sub == "") {
@@ -91,7 +90,11 @@ class _usersettings implements userSettings {
             let settings = await auth.client.FindOne<userSettings>({ collectionname: "users", query: { userid: this.userid, "_type": "usersettings" }, jwt: access_token });
             if (settings != null) {
                 this.stateload(settings);
+            } else {
+                this.currentworkspace = "";
             }
+        } else {
+            this.currentworkspace = "";
         }
         return $state.snapshot(this);
     }

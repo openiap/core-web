@@ -23,9 +23,6 @@
             null,
           );
           await usersettings.dbload(new_access_token);
-          usersettings.currentworkspace = usersettings.currentworkspace;
-          // datacomponent.loadsettings(page);
-          // usersettings.loadpage(raw);
           const redirect = window.localStorage.getItem("redirect");
           window.localStorage.removeItem("redirect");
           goto(redirect || "/");
