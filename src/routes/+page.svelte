@@ -11,7 +11,7 @@
     if (browser) {
       auth.signinRedirectCallback().then(async (res) => {
         if (res) {
-          await auth.clientinit(
+          let new_access_token = await auth.clientinit(
             wsurl,
             protocol,
             domain,
@@ -22,8 +22,8 @@
             fetch,
             null,
           );
-          usersettings.currentworkspace = "$@£@$@$@£$£$®€fergferg@££@£";
-          await usersettings.dbload(access_token);
+          await usersettings.dbload(new_access_token);
+          usersettings.currentworkspace = usersettings.currentworkspace;
           // datacomponent.loadsettings(page);
           // usersettings.loadpage(raw);
           const redirect = window.localStorage.getItem("redirect");

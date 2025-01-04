@@ -16,12 +16,13 @@
     }: { workspaces: Workspace[]; } = $props();
     const sidebar = useSidebar();
 
-    let activeWorkspace = $state(
-        workspaces.find((x) => x._id == usersettings.currentworkspace),
-    );
     async function loadWorkspaces() {
         workspaces = await auth.client.Query<Workspace>({ collectionname: "users", query: { _type: "workspace" }, jwt: auth.access_token, top: 5 });
     }
+    const activeWorkspace = $derived(() => {
+        return workspaces.find((x) => x._id == usersettings.currentworkspace);
+    });
+    const activeWorkspacename = $derived(() => activeWorkspace()?.name || "");
     $effect(() => {
         if(usersettings.currentworkspace && browser){
             loadWorkspaces();
@@ -30,7 +31,6 @@
         }
     });
     async function selectWorkspace(workspace: Workspace) {
-        activeWorkspace = workspace;
         usersettings.currentworkspace = workspace._id;
         await usersettings.dopersist();
         goto(base + "/workspace/" + workspace._id);
@@ -47,15 +47,15 @@
                         size="lg"
                         class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                     >
-                        {#if workspaces.length > 1}
+                        {#if activeWorkspacename() != ""}
                             <div
                                 class="grid flex-1 text-left text-sm leading-tight"
                             >
                                 <span class="truncate font-semibold">
-                                    {activeWorkspace?.name}
+                                    {activeWorkspacename()}
                                 </span>
                                 <span class="truncate text-xs"
-                                    >{activeWorkspace?.price}</span
+                                    >{activeWorkspace()?.price}</span
                                 >
                             </div>
                             <ChevronsUpDown class="ml-auto" />
