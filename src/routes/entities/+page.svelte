@@ -36,7 +36,30 @@
       });
     }
   }
-  function deleteitems(ids: string[]) {}
+  async function deleteitems(ids: string[]) {
+    console.log(ids);
+    try {
+      for (let id of ids) {
+        const deletecount = await auth.client.DeleteOne({
+          id: id,
+          collectionname,
+          jwt: auth.access_token,
+        });
+        if(deletecount > 1){
+          throw new Error("Error while deleting " + id + " deleted " + deletecount + " items");
+        }
+      }
+      entities = await datacomponent.GetData(page(), collectionname, query, auth.access_token);
+      selected_items = [];
+      toast.success("Deleted " + ids.length + " items successfully", {
+        description: "",
+      });
+    } catch (error: any) {
+      toast.error("Error while deleting", {
+        description: error.message,
+      });
+    }
+  }
   function collectionvariant(name: string): any {
     return name == collectionname ? "entitydefault" : "entityselected";
   }
