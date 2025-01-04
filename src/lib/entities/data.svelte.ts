@@ -1,3 +1,4 @@
+import { browser } from "$app/environment";
 import { auth } from "$lib/stores/auth.svelte";
 import { type sort } from "$lib/stores/usersettings.svelte";
 import { usersettings, type pageSettings, type SettingsTableHeader } from "$lib/stores/usersettings.svelte.js";
@@ -35,7 +36,7 @@ class entitiesdata {
 		if (auth.isConnected == false) {
 			return [];
 		}
-		if(collectionname == null || collectionname == "") {
+		if (collectionname == null || collectionname == "") {
 			return [];
 		}
 		const entities = await auth.client.Query<any>({
@@ -46,11 +47,21 @@ class entitiesdata {
 			top: 5,
 			jwt: access_token,
 		});
-		this.settings.total_count = await auth.client.Count({
-			collectionname,
-			query: usequery,
-			jwt: access_token,
-		});
+		if (["cvr", "cvrfinancial", "cvrperson"].indexOf(collectionname) == -1) {
+			this.settings.total_count = await auth.client.Count({
+				collectionname,
+				query: usequery,
+				jwt: access_token,
+			});
+		} else if (browser) {
+			auth.client.Count({
+				collectionname,
+				query: usequery,
+				jwt: access_token,
+			}).then((count) => {
+				this.settings.total_count = count;
+			});
+		}
 		// console.log("GetData", collectionname, usequery, orderby, this.settings.page, this.settings.page_index, entities.length, this.settings.total_count, access_token?.substring(0, 10));
 		console.log("GetData", collectionname, "page:", this.settings.page, "idx:", this.settings.page_index, "res:", entities.length, "skip:", skip, "total:", this.settings.total_count, "token:", access_token?.substring(0, 10));
 		return entities;
