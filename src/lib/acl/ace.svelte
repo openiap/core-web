@@ -37,6 +37,11 @@
                 tabindex="0"
                 class="flex space-x-2"
                 onclick={() => (value.rights = toogleBit(item.value))}
+                onkeydown={(e) => {
+                    if (e.key === "Enter") {
+                        value.rights = toogleBit(item.value);
+                    }
+                }}
             >
                 <Checkbox
                     checked={IsBitSet(item.value)}
