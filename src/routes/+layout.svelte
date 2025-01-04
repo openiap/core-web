@@ -12,7 +12,7 @@
 	import Header from "./Header.svelte";
 
 	let { children, data } = $props();
-	const { workspaces, currentworkspace } = data;
+	const { workspaces } = data;
 	let pagename = $derived(() =>
 		$page.url.pathname.replace(base, "").replace("/", ""),
 	);
@@ -30,7 +30,7 @@
 {#if $page.url.pathname != base + "/login" && $page.url.pathname != base + "/loginscreen"}
 	<div class="overflow-hidden flex flex-col w-full h-screen">
 		<Sidebar.Provider>
-			<AppSidebar {workspaces} {currentworkspace} />
+			<AppSidebar {workspaces} />
 			<div class="flex flex-col w-full">
 				<header
 					class="flex h-16 shrink-0 items-center justify-between px-4 bg-gradient-to-b from-lightgradident1 to-lightgradident2 dark:bg-gradient-to-b dark:from-darkgradident1 dark:to-darkgradident2 rounded mx-2.5 my-2.5"

@@ -20,6 +20,7 @@ export type userSettings = {
     name: string;
     userid: string;
     entities_collectionname: string;
+    currentworkspace: string;
     pagesettings: pageSettings[];
     currentpage: string;
 }
@@ -45,6 +46,7 @@ class _usersettings implements userSettings {
     userid: string;
     name: string;
     entities_collectionname: string;
+    currentworkspace: string = $state("");
     pagesettings: pageSettings[] = $state([]);
     currentpage: string = "";
     constructor() {
@@ -53,6 +55,7 @@ class _usersettings implements userSettings {
         this.userid = "";
         this.name = "Unknown";
         this.entities_collectionname = "entities";
+        this.currentworkspace = "";
     }
     getpagesettings(page: string) {
         let settings = this.pagesettings.find(x => x.page == page);
@@ -76,6 +79,7 @@ class _usersettings implements userSettings {
         this.userid = "";
         this.name = "";
         this.entities_collectionname = "";
+        this.currentworkspace = "";
         this.pagesettings = [];
         this.currentpage = "";
         if (auth.profile.sub == null || auth.profile.sub == "") {
@@ -94,6 +98,7 @@ class _usersettings implements userSettings {
     async reset() {
         this.name = "Settings for " + auth.profile.name;
         this.entities_collectionname = "entities";
+        this.currentworkspace = "";
         this.pagesettings = [];
         this.dopersist();
     }
@@ -124,22 +129,24 @@ class _usersettings implements userSettings {
             this.pagesettings[i] = newpage;
         }
         this.entities_collectionname = settings.entities_collectionname;
+        this.currentworkspace = settings.currentworkspace;
     }
     private persisttimer: NodeJS.Timeout | null = null;
-    async persist() {
+    persist() {
         if (!browser) return;
         if (this.persisttimer != null) {
             clearTimeout(this.persisttimer);
         }
         this.persisttimer = setTimeout(() => this.dopersist(), 1000);
     }
-    private async dopersist() {
+    async dopersist() {
         this.persisttimer = null;
         if (this.userid == null || this.userid == "") {
             return;
         }
         let item = { ...this };
         item._type = "usersettings";
+        item.currentworkspace = this.currentworkspace;
         // @ts-ignore
         delete item.pagesettings;
         item.pagesettings = [];

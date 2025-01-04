@@ -87,11 +87,11 @@ class authState {
             this.client = new openiap(wsurl, "");
             await this.client.connect(true);
             this.client.onDisconnected = async () => {
-                console.log("serverinit.onDisconnected");
+                console.log("**** serverinit.onDisconnected");
                 this.isConnected = false;
             }
             this.client.onConnected = async () => {
-                console.log("serverinit.onConnected");
+                console.log("**** serverinit.onConnected");
                 this.isConnected = true;
             }
             this.isConnected = true;

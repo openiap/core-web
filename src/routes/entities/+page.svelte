@@ -37,7 +37,6 @@
     }
   }
   async function deleteitems(ids: string[]) {
-    console.log(ids);
     try {
       for (let id of ids) {
         const deletecount = await auth.client.DeleteOne({
@@ -77,6 +76,8 @@
   >
     <ScrollArea class="max-h-screen sm:max-h-[calc(100vh-8rem)] overflow-auto">
       <div class="p-4">
+        {collectionname}
+
         {#each collections as collection}
           <div class="text-sm">
             <Button

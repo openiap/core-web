@@ -2,8 +2,10 @@
   import { browser } from "$app/environment";
   import { goto } from "$app/navigation";
   import { auth } from "$lib/stores/auth.svelte";
+  import { usersettings } from "$lib/stores/usersettings.svelte.js";
   let { data } = $props();
-  const { wsurl, protocol, domain, client_id, access_token, profile, origin } = data;
+  const { wsurl, protocol, domain, client_id, access_token, profile, origin } =
+    data;
   let name = $derived(() => auth.profile?.name || "World");
   if (data.code != null && data.code != "") {
     if (browser) {
@@ -20,6 +22,10 @@
             fetch,
             null,
           );
+          usersettings.currentworkspace = "$@£@$@$@£$£$®€fergferg@££@£";
+          await usersettings.dbload(access_token);
+          // datacomponent.loadsettings(page);
+          // usersettings.loadpage(raw);
           const redirect = window.localStorage.getItem("redirect");
           window.localStorage.removeItem("redirect");
           goto(redirect || "/");

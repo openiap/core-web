@@ -7,12 +7,34 @@
     import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
     import Plus from "lucide-svelte/icons/plus";
     import type { Workspace } from "../../routes/workspace/schema";
+    import { usersettings } from "$lib/stores/usersettings.svelte.js";
+    import { auth } from "$lib/stores/auth.svelte";
+    import { browser } from "$app/environment";
 
-    let { workspaces, currentworkspace }: { workspaces: Workspace[], currentworkspace: string } =
-        $props();
+    let {
+        workspaces,
+    }: { workspaces: Workspace[]; } = $props();
     const sidebar = useSidebar();
 
-    let activeWorkspace = $state(workspaces.find(x => x._id == currentworkspace));
+    let activeWorkspace = $state(
+        workspaces.find((x) => x._id == usersettings.currentworkspace),
+    );
+    async function loadWorkspaces() {
+        workspaces = await auth.client.Query<Workspace>({ collectionname: "users", query: { _type: "workspace" }, jwt: auth.access_token, top: 5 });
+    }
+    $effect(() => {
+        if(usersettings.currentworkspace && browser){
+            loadWorkspaces();
+        } else {
+            loadWorkspaces();
+        }
+    });
+    async function selectWorkspace(workspace: Workspace) {
+        activeWorkspace = workspace;
+        usersettings.currentworkspace = workspace._id;
+        await usersettings.dopersist();
+        goto(base + "/workspace/" + workspace._id);
+    }
 </script>
 
 <Sidebar.Menu>
@@ -25,21 +47,21 @@
                         size="lg"
                         class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                     >
-                        <div
-                            class="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg"
-                        >
-                        </div>
-                        <div
-                            class="grid flex-1 text-left text-sm leading-tight"
-                        >
-                            <span class="truncate font-semibold">
-                                {activeWorkspace?.name}
-                            </span>
-                            <span class="truncate text-xs"
-                                >{activeWorkspace?.price}</span
+                        {#if workspaces.length > 1}
+                            <div
+                                class="grid flex-1 text-left text-sm leading-tight"
                             >
-                        </div>
-                        <ChevronsUpDown class="ml-auto" />
+                                <span class="truncate font-semibold">
+                                    {activeWorkspace?.name}
+                                </span>
+                                <span class="truncate text-xs"
+                                    >{activeWorkspace?.price}</span
+                                >
+                            </div>
+                            <ChevronsUpDown class="ml-auto" />
+                        {:else}
+                            <span class="truncate font-semibold">Create workspace</span>
+                        {/if}
                     </Sidebar.MenuButton>
                 {/snippet}
             </DropdownMenu.Trigger>
@@ -54,13 +76,10 @@
                 >
                 {#each workspaces as workspace, index (workspace._id)}
                     <DropdownMenu.Item
-                        onSelect={() => (activeWorkspace = workspace)}
+                        onSelect={() => selectWorkspace(workspace)}
                         class="gap-2 p-2"
                     >
-                        <div
-                            class="flex size-6 items-center justify-center rounded-sm border"
-                        >
-                        </div>
+                        
                         {workspace.name}
                         <DropdownMenu.Shortcut
                             >⌘{index + 1}</DropdownMenu.Shortcut
@@ -78,7 +97,7 @@
                         <Plus class="size-4" />
                     </div>
                     <div class="text-muted-foreground font-medium">
-                        Add Workspace
+                        Create Workspace
                     </div>
                 </DropdownMenu.Item>
             </DropdownMenu.Content>

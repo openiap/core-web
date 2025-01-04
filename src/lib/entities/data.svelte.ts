@@ -47,7 +47,7 @@ class entitiesdata {
 			top: 5,
 			jwt: access_token,
 		});
-		if (["cvr", "cvrfinancial", "cvrperson"].indexOf(collectionname) == -1) {
+		if (["cvr", "cvrfinancial", "cvrperson", "dbusage"].indexOf(collectionname) == -1) {
 			this.settings.total_count = await auth.client.Count({
 				collectionname,
 				query: usequery,
