@@ -43,11 +43,20 @@
     }
   }
   async function deleteitems(ids: string[]) {
-    for (let id of ids) {
-      await deleteitem({ _id: id });
+    try {
+      for (let id of ids) {
+        await deleteitem({ _id: id });
+      }
       entities = await datacomponent.GetData(page, collectionname, query, auth.access_token);
+      selected_items = [];
+      toast.success("Deleted " + ids.length + " items successfully", {
+        description: "",
+      });
+    } catch (error: any) {
+      toast.error("Error while deleting", {
+        description: error.message,
+      });
     }
-    selected_items = [];
   }
   function single_item_click(item: any) {
     goto(base + `/${page}/${item._id}`);

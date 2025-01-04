@@ -52,10 +52,10 @@
     try {
       for (let id of ids) {
         await auth.client.CustomCommand({ command: "removemember", id });
-        entities = await datacomponent.GetData(page, collectionname, query, auth.access_token);
       }
+      entities = await datacomponent.GetData(page, collectionname, query, auth.access_token);
       selected_items = [];
-      toast.success("Deleted successfully", {
+      toast.success("Deleted " + ids.length + " items successfully", {
         description: "",
       });
     } catch (error: any) {
