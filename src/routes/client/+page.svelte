@@ -27,6 +27,7 @@
   bind:searchstring
   {page}
   {single_item_click}
+  total_count={data.total_count}
   bind:entities
 >
   {#snippet action(item: any)}

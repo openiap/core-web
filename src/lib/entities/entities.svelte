@@ -31,6 +31,7 @@
 		searchstring = $bindable(""),
 		collectionname = "entities",
 		selected_items = $bindable([]),
+		total_count,
 		caption = "",
 		delete_selected = (items: string[]) => {},
 		single_item_click = (item: any) => {},
@@ -43,7 +44,6 @@
 	let multi_sort = $state(false);
 	let showdebug = $state(false);
 	let page_index = $state(data.settings.page_index);
-	let total_count = $state(data.settings.total_count);
 	let tableheaders = $state([]) as TTableHeader[];
 	let showWarning = $state(false);
 
@@ -54,7 +54,6 @@
 	async function GetData() {
 		const _entities = await data.GetData(page, collectionname, query, auth.access_token);
 		entities = _entities;
-		total_count = data.settings.total_count;
 
 		if (entities.length > 0) {
 			let keys = [];
@@ -78,13 +77,19 @@
 					tableheaders.push(header);
 				}
 			}
-			total_count = data.settings.total_count;
 		}
 		return entities;
 	}
-	if (browser && data.settings.total_count == 99999) {
-		GetData();
+	async function GetCount() {
+		total_count = await data.GetCount(page, collectionname, query, auth.access_token);
+	};
+	if (browser && total_count == 99999) {
+		GetCount();
 	}
+	// if (browser && data.settings.total_count == 99999) {
+	// 	console.log("GetData: first load, and total_count == 99999");
+	// 	GetData();
+	// }
 
 	function EnsureDefaultHeaders(page: string) {
 		if (tableheaders.length == 0) {
@@ -209,6 +214,7 @@
 			data.settings.page_index = 0;
 			page_index = 0;
 			data.persist();
+			console.log("GetData: searchstring was changed");
 			GetData();
 		} else if (_collectionname != collectionname) {
 			usersettings.entities_collectionname = collectionname;
@@ -220,6 +226,7 @@
 			searchstring = data.settings.searchstring;
 			selected_items = data.settings.selected_items;
 			page_index = data.settings.page_index;
+			console.log("GetData: collectionname was changed");
 			GetData();
 		}
 		data.settings.searchstring = $state.snapshot(searchstring);

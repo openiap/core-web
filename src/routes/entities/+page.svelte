@@ -103,6 +103,7 @@
       {query}
       page={page()}
       delete_selected={deleteitems}
+      total_count={data.total_count}
       bind:searchstring
       bind:selected_items
       bind:entities

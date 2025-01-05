@@ -7,33 +7,22 @@
     import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
     import Plus from "lucide-svelte/icons/plus";
     import type { Workspace } from "../../routes/workspace/schema";
-    import { usersettings } from "$lib/stores/usersettings.svelte.js";
-    import { auth } from "$lib/stores/auth.svelte";
-    import { browser } from "$app/environment";
-
     let {
         workspaces,
-    }: { workspaces: Workspace[]; } = $props();
+        currentworkspace = $bindable(""),
+    }: { workspaces: Workspace[]; currentworkspace: string; } = $props();
     const sidebar = useSidebar();
 
-    async function loadWorkspaces() {
-        workspaces = await auth.client.Query<Workspace>({ collectionname: "users", query: { _type: "workspace" }, jwt: auth.access_token, top: 5 });
-    }
     const activeWorkspace = $derived(() => {
-        return workspaces.find((x) => x._id == usersettings.currentworkspace);
+        return workspaces.find((x) => x._id == currentworkspace);
     });
     const activeWorkspacename = $derived(() => activeWorkspace()?.name || "");
-    $effect(() => {
-        if(usersettings.currentworkspace && browser){
-            loadWorkspaces();
-        } else {
-            loadWorkspaces();
-        }
-    });
     async function selectWorkspace(workspace: Workspace) {
-        usersettings.currentworkspace = workspace._id;
-        await usersettings.dopersist();
-        goto(base + "/workspace/" + workspace._id);
+        currentworkspace = workspace._id;
+        // usersettings.currentworkspace = workspace._id;
+        // currentworkspace = workspace._id;
+        // await usersettings.dopersist();
+        // goto(base + "/workspace/" + workspace._id);
     }
 </script>
 

@@ -10,12 +10,23 @@
 	import { ModeWatcher } from "mode-watcher";
 	import "../app.css";
 	import Header from "./Header.svelte";
+	import type { Workspace } from "./workspace/schema.js";
 
 	let { children, data } = $props();
-	const { workspaces } = data;
+	const { currentworkspace, profile, access_token } = data;
+	let _workspaces = data.workspaces;
+	let workspaces = $state(_workspaces);
 	let pagename = $derived(() =>
 		$page.url.pathname.replace(base, "").replace("/", ""),
 	);
+	async function loadWorkspaces() {
+		workspaces = await auth.client.Query<Workspace>({ collectionname: "users", query: { _type: "workspace" }, jwt: access_token, top: 5 });
+	}
+	$effect(() => {
+		console.log("layout effect, loadWorkspaces()");
+		loadWorkspaces()
+	});
+
 </script>
 
 <svelte:head>
@@ -30,7 +41,7 @@
 {#if $page.url.pathname != base + "/login" && $page.url.pathname != base + "/loginscreen"}
 	<div class="overflow-hidden flex flex-col w-full h-screen">
 		<Sidebar.Provider>
-			<AppSidebar {workspaces} />
+			<AppSidebar {workspaces} {currentworkspace} {profile} />
 			<div class="flex flex-col w-full">
 				<header
 					class="flex h-16 shrink-0 items-center justify-between px-4 bg-gradient-to-b from-lightgradident1 to-lightgradident2 dark:bg-gradient-to-b dark:from-darkgradident1 dark:to-darkgradident2 rounded mx-2.5 my-2.5"

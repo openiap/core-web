@@ -59,6 +59,7 @@
   {page}
   delete_selected={deleteitems}
   {single_item_click}
+  total_count={data.total_count}
   bind:selected_items
   bind:entities
 >

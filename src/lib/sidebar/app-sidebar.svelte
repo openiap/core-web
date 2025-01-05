@@ -1,6 +1,7 @@
 <script lang="ts" module>
 	import { base } from "$app/paths";
 	import { page } from "$app/stores";
+	import pkg from "oidc-client";
 	// import { Volleyball } from "lucide-svelte";
 
 	class SidebarItem {
@@ -80,10 +81,13 @@
 	// Extend the ComponentProps type to include the workspaces property
 	type ExtendedComponentProps = ComponentProps<typeof Sidebar.Root> & {
 		workspaces?: Workspace[];
+		currentworkspace: string;
+		profile: pkg.Profile;
 	};
 	let {
 		ref = $bindable(null),
 		workspaces = [],
+		currentworkspace = $bindable(""),
 		...restProps
 	}: ExtendedComponentProps = $props();
 
@@ -103,16 +107,16 @@
 			!workspace.hidden;
 		if (!workspace.hidden) {
 			management.items.find((x: any) => x.title == "Roles").hidden =
-			usersettings.currentworkspace == null || usersettings.currentworkspace == "";
+			currentworkspace == null || currentworkspace == "";
 			const member = workspace.items.find(
 				(x: any) => x.title == "Members",
 			);
 			if (
-				usersettings.currentworkspace != null &&
-				usersettings.currentworkspace != ""
+				currentworkspace != null &&
+				currentworkspace != ""
 			) {
 				member.hidden = false;
-				member.url = `${base}/workspace/${usersettings.currentworkspace}/member`;
+				member.url = `${base}/workspace/${currentworkspace}/member`;
 			} else {
 				member.hidden = true;
 			}
@@ -138,7 +142,7 @@
 		class="bg-gradient-to-b from-lightgradident1 to-lightgradident2 dark:bg-gradient-to-b dark:from-darkgradident1 dark:to-darkgradident2 rounded my-2.5 mx-3 h-full overflow-auto"
 	>
 		<Sidebar.Header class="border-sidebar-border h-16 border-b">
-			<NavWorkspace {workspaces} />
+			<NavWorkspace {workspaces} {currentworkspace} />
 		</Sidebar.Header>
 		<Sidebar.Content>
 			{#each data.navMain as group (group.title)}
