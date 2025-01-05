@@ -1,7 +1,7 @@
 <script lang="ts">
-    // import { Formio, FormBuilder } from 'formiojs';
+    import { Formio, FormBuilder } from 'formiojs';
     import { base } from "$app/paths";
-    // import 'formiojs/dist/formio.builder.min.css';
+    import 'formiojs/dist/formio.builder.min.css';
     import { onDestroy } from "svelte";
     import { browser } from "$app/environment";
     import { Input } from "$lib/components/ui/input";
@@ -38,8 +38,6 @@
             // @ts-ignore
             builder = await Formio.builder(ref, data.item.schema, {
                 builder: {
-                    basic: false,
-                    advanced: false,
                     data: {
                         display: "form",
                         components: [],
@@ -97,8 +95,8 @@
 </script>
 
 <svelte:head>
-    <script src="{base}/formio.full.min.js"></script>
-    <link rel="stylesheet" href="{base}/formio.form.min.css" />
+    <!-- <script src="{base}/formio.full.min.js"></script>
+    <link rel="stylesheet" href="{base}/formio.form.min.css" /> -->
     <link rel="stylesheet" href="{base}/bootstrap-scope.css" />
 </svelte:head>
 <div>
