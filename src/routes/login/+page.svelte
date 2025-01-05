@@ -12,7 +12,7 @@
 
 <div class="grid md:grid-cols-2 min-h-screen items-center justify-center">
   <div class="md:p-20 lg:p-40 md:grid-span-1">
-    <Card.Root class="mx-auto max-w-sm">
+    <Card.Root class="mx-auto max-w-sm dark:text-gray-300">
       <Card.Header>
         <Card.Title class="text-2xl">Login</Card.Title>
         <Card.Description>Enter your email below to login to your account</Card.Description>
@@ -33,7 +33,7 @@
               </div>
               <Input id="password" name="password" type="password" required autocomplete="current-password" />
             </div>
-            <Button type="submit" class="w-full">Login</Button>
+            <Button variant="outline" type="submit" class="w-full">Login</Button>
             {#if auth.config != null && auth.config.loginproviders != null}
               {#each auth.config.loginproviders.filter((x:any) => x.provider != "local") as lp }
                 <Button variant="outline" class="w-full" onclick={() => goto('/' + lp.id)}>{lp.name}</Button>
