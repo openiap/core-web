@@ -79,6 +79,7 @@ class _usersettings implements userSettings {
         this.pagesettings = [];
         this.currentpage = "";
         if (auth.profile.sub == null || auth.profile.sub == "") {
+            this.currentworkspace = "";
             return $state.snapshot(this);
         }
         this.userid = auth.profile.sub;

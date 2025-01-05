@@ -13,6 +13,7 @@
   import { Entities } from "$lib/entities/index.js";
   import Searchinput from "$lib/searchinput/searchinput.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
+    import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import { Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
@@ -20,16 +21,22 @@
   let { data } = $props();
   datacomponent.parsesettings(data.settings);
   let searchstring = $state(datacomponent.settings?.searchstring);
-  let query = {
+  let query = $derived(() => ({
     _type: "member",
-    workspaceid: data.id,
+    workspaceid: usersettings.currentworkspace,
     status: { $ne: "rejected" },
-  };
+  }));
 
   let selected_items = $state([]);
   let entities = $state(data.entities);
   let showWarning = $state(false);
   let deleteData: any = $state({});
+
+  $effect(() => {    
+      datacomponent.GetData(page, collectionname, query(), auth.access_token).then((d) => {
+        entities = d;
+      });
+  });
 
   async function deleteitem(item: any) {
     try {
@@ -41,7 +48,7 @@
       toast.success("Deleted successfully", {
         description: "",
       });
-      entities = await datacomponent.GetData(page, collectionname, query, auth.access_token);
+      entities = await datacomponent.GetData(page, collectionname, query(), auth.access_token);
     } catch (error: any) {
       toast.error("Error while deleting", {
         description: error.message,
@@ -53,7 +60,7 @@
       for (let id of ids) {
         await auth.client.CustomCommand({ command: "removemember", id });
       }
-      entities = await datacomponent.GetData(page, collectionname, query, auth.access_token);
+      entities = await datacomponent.GetData(page, collectionname, query(), auth.access_token);
       selected_items = [];
       toast.success("Deleted " + ids.length + " items successfully", {
         description: "",
@@ -98,7 +105,7 @@
 >
 <Entities
   {collectionname}
-  {query}
+  query={query()}
   bind:searchstring
   {page}
   delete_selected={deleteitems}
@@ -138,7 +145,7 @@
           });
         }
         // Run again to "reset"
-        entities = await datacomponent.GetData(page, collectionname, query, auth.access_token);
+        entities = await datacomponent.GetData(page, collectionname, query(), auth.access_token);
       }}
     >
       <option value="member">Member</option>

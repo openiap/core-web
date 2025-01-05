@@ -9,6 +9,7 @@
   import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newWorkspaceSchema } from "../schema.js";
+    import { usersettings } from "$lib/stores/usersettings.svelte.js";
 
   const key = "workspace";
   let showdebug = $state(false);
@@ -23,12 +24,14 @@
       if (form.valid) {
         loading = true;
         try {
-          await auth.client.CustomCommand({
+          const workspace = JSON.parse(await auth.client.CustomCommand({
             command: "ensureworkspace",
             data: JSON.stringify(form.data),
             jwt: auth.access_token,
-          });
+          }));
           toast.success("Workspace added");
+          usersettings.currentworkspace = workspace._id;
+          await usersettings.dopersist();
           goto(base + `/${key}`);
         } catch (error: any) {
           errormessage = error.message;

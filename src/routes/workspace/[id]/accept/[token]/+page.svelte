@@ -9,6 +9,7 @@
   import SuperDebug, { superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { memberSchema } from "../../../schema.js";
+    import { usersettings } from "$lib/stores/usersettings.svelte.js";
 
   const key = "workspace";
   let showdebug = $state(false);
@@ -29,6 +30,8 @@
       toast.success("Accepted successfully", {
         description: "",
       });
+      usersettings.currentworkspace = $formData.workspaceid;
+      await usersettings.dopersist();
       goto(base + `/${key}/${$formData.workspaceid}/member`);
     } catch (error: any) {
       toast.error("Error while accepting", {

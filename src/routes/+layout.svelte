@@ -11,20 +11,32 @@
 	import "../app.css";
 	import Header from "./Header.svelte";
 	import type { Workspace } from "./workspace/schema.js";
+    import { usersettings } from "$lib/stores/usersettings.svelte";
+	import { data as datacomponent } from "$lib/entities/data.svelte.js";
 
 	let { children, data } = $props();
-	const { currentworkspace, profile, access_token } = data;
+	datacomponent.parsesettings(data.settings);
+	const { profile, access_token } = data;
 	let _workspaces = data.workspaces;
 	let workspaces = $state(_workspaces);
+	let currentworkspace = $state(usersettings.currentworkspace);
 	let pagename = $derived(() =>
 		$page.url.pathname.replace(base, "").replace("/", ""),
 	);
 	async function loadWorkspaces() {
 		workspaces = await auth.client.Query<Workspace>({ collectionname: "users", query: { _type: "workspace" }, jwt: access_token, top: 5 });
 	}
+	async function update_currentworkspace(workspaceid: string) {
+		usersettings.currentworkspace = workspaceid;
+		currentworkspace = workspaceid;
+		await loadWorkspaces();
+        await usersettings.dopersist();
+        // goto(base + "/workspace/" + workspace._id);
+	}
 	$effect(() => {
-		console.log("layout effect, loadWorkspaces()");
-		loadWorkspaces()
+		if(usersettings.currentworkspace != currentworkspace) {
+			update_currentworkspace(usersettings.currentworkspace);
+		}
 	});
 
 </script>
@@ -41,7 +53,7 @@
 {#if $page.url.pathname != base + "/login" && $page.url.pathname != base + "/loginscreen"}
 	<div class="overflow-hidden flex flex-col w-full h-screen">
 		<Sidebar.Provider>
-			<AppSidebar {workspaces} {currentworkspace} {profile} />
+			<AppSidebar {workspaces} {currentworkspace} {profile} {update_currentworkspace}/>
 			<div class="flex flex-col w-full">
 				<header
 					class="flex h-16 shrink-0 items-center justify-between px-4 bg-gradient-to-b from-lightgradident1 to-lightgradident2 dark:bg-gradient-to-b dark:from-darkgradident1 dark:to-darkgradident2 rounded mx-2.5 my-2.5"

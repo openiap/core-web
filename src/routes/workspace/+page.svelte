@@ -13,6 +13,7 @@
   import { Entities } from "$lib/entities/index.js";
   import Searchinput from "$lib/searchinput/searchinput.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
+    import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import { Pencil, Plus, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
@@ -32,10 +33,17 @@
         id: item._id,
         jwt: auth.access_token,
       });
+      if(usersettings.currentworkspace === item._id){
+          usersettings.currentworkspace = "";
+          await usersettings.dopersist();
+        }
+
       selected_items = selected_items.filter((i) => i !== item._id);
+      entities = await datacomponent.GetData(page, collectionname, query, auth.access_token);
       toast.success("Deleted successfully", {
         description: "",
       });
+      datacomponent.persist();
     } catch (error: any) {
       toast.error("Error while deleting", {
         description: error.message,
@@ -45,13 +53,22 @@
   async function deleteitems(ids: string[]) {
     try {
       for (let id of ids) {
-        await deleteitem({ _id: id });
+        await auth.client.CustomCommand({
+          command: "deleteworkspace",
+          id: id,
+          jwt: auth.access_token,
+        });
+        if(usersettings.currentworkspace === id){
+          usersettings.currentworkspace = "";
+          await usersettings.dopersist();
+        }
       }
       entities = await datacomponent.GetData(page, collectionname, query, auth.access_token);
       selected_items = [];
       toast.success("Deleted " + ids.length + " items successfully", {
         description: "",
       });
+      datacomponent.persist();
     } catch (error: any) {
       toast.error("Error while deleting", {
         description: error.message,
@@ -64,10 +81,6 @@
   async function handleAccept() {
     try {
       await deleteitem(deleteData);
-      toast.success("Deleted successfully", {
-        description: "",
-      });
-      entities = await datacomponent.GetData(page, collectionname, query, auth.access_token);
     } catch (error: any) {
       toast.error("Error while deleting", {
         description: error.message,

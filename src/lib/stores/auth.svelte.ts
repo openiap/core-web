@@ -137,7 +137,6 @@ class authState {
             const user = await auth.userManager.signinRedirectCallback();
             return true;
         } catch (error) {
-            console.error("signinRedirectCallback.error", error);
         }
         return true;
     }

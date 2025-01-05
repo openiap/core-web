@@ -82,12 +82,14 @@
 	type ExtendedComponentProps = ComponentProps<typeof Sidebar.Root> & {
 		workspaces?: Workspace[];
 		currentworkspace: string;
+		update_currentworkspace: (workspaceid: string) => void;
 		profile: pkg.Profile;
 	};
 	let {
 		ref = $bindable(null),
 		workspaces = [],
-		currentworkspace = $bindable(""),
+		currentworkspace,
+		update_currentworkspace = (workspaceid: string) => {},
 		...restProps
 	}: ExtendedComponentProps = $props();
 
@@ -102,15 +104,15 @@
 		if (workspaces.length == 0) {
 			workspace.hidden = false;
 		}
+		const member = workspace.items.find(
+				(x: any) => x.title == "Members",
+			);
 
 		management.items.find((x: any) => x.title == "Users").hidden =
 			!workspace.hidden;
 		if (!workspace.hidden) {
 			management.items.find((x: any) => x.title == "Roles").hidden =
 			currentworkspace == null || currentworkspace == "";
-			const member = workspace.items.find(
-				(x: any) => x.title == "Members",
-			);
 			if (
 				currentworkspace != null &&
 				currentworkspace != ""
@@ -142,7 +144,7 @@
 		class="bg-gradient-to-b from-lightgradident1 to-lightgradident2 dark:bg-gradient-to-b dark:from-darkgradident1 dark:to-darkgradident2 rounded my-2.5 mx-3 h-full overflow-auto"
 	>
 		<Sidebar.Header class="border-sidebar-border h-16 border-b">
-			<NavWorkspace {workspaces} {currentworkspace} />
+			<NavWorkspace {workspaces} {currentworkspace} {update_currentworkspace} />
 		</Sidebar.Header>
 		<Sidebar.Content>
 			{#each data.navMain as group (group.title)}

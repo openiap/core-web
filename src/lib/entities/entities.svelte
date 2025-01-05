@@ -86,10 +86,6 @@
 	if (browser && total_count == 99999) {
 		GetCount();
 	}
-	// if (browser && data.settings.total_count == 99999) {
-	// 	console.log("GetData: first load, and total_count == 99999");
-	// 	GetData();
-	// }
 
 	function EnsureDefaultHeaders(page: string) {
 		if (tableheaders.length == 0) {
@@ -214,7 +210,6 @@
 			data.settings.page_index = 0;
 			page_index = 0;
 			data.persist();
-			console.log("GetData: searchstring was changed");
 			GetData();
 		} else if (_collectionname != collectionname) {
 			usersettings.entities_collectionname = collectionname;
@@ -226,7 +221,6 @@
 			searchstring = data.settings.searchstring;
 			selected_items = data.settings.selected_items;
 			page_index = data.settings.page_index;
-			console.log("GetData: collectionname was changed");
 			GetData();
 		}
 		data.settings.searchstring = $state.snapshot(searchstring);

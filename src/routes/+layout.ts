@@ -15,7 +15,6 @@ export const load: LayoutLoad = async ({ data, fetch, url, route, params }) => {
 			access_token = await auth.clientinit(wsurl, protocol, domain, client_id, origin, access_token, profile, fetch, null);
 			await usersettings.dbload(access_token);
 		} catch (error) {
-			console.error("layout.ts", error);
 		}
 	}
 	return { ...data };

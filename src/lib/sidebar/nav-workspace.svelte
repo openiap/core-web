@@ -9,8 +9,11 @@
     import type { Workspace } from "../../routes/workspace/schema";
     let {
         workspaces,
-        currentworkspace = $bindable(""),
-    }: { workspaces: Workspace[]; currentworkspace: string; } = $props();
+        currentworkspace,
+        update_currentworkspace = (workspaceid: string) => {},
+    }: { 
+        workspaces: Workspace[]; currentworkspace: string; update_currentworkspace: (workspaceid: string) => void
+    } = $props();
     const sidebar = useSidebar();
 
     const activeWorkspace = $derived(() => {
@@ -18,11 +21,7 @@
     });
     const activeWorkspacename = $derived(() => activeWorkspace()?.name || "");
     async function selectWorkspace(workspace: Workspace) {
-        currentworkspace = workspace._id;
-        // usersettings.currentworkspace = workspace._id;
-        // currentworkspace = workspace._id;
-        // await usersettings.dopersist();
-        // goto(base + "/workspace/" + workspace._id);
+        update_currentworkspace(workspace._id);
     }
 </script>
 

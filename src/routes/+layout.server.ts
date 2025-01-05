@@ -13,7 +13,6 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 	const searchParams = url.searchParams
 	let code = "";
 	let workspaces:Workspace[] = [];
-	let currentworkspace = "";
 	let total_count = 99999;
 	if(searchParams) {
 		code = searchParams.get("code") || "";
@@ -22,7 +21,6 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 		await usersettings.dbload(access_token);
 		const shortpage = (route.id != null && route.id.indexOf("/") > -1 ? route.id.split("/")[1] : "");
 		workspaces = await auth.client.Query<Workspace>({ collectionname: "users", query: { _type: "workspace" }, jwt: access_token, top: 5 });
-		currentworkspace = (workspaces.length > 0 ? workspaces[0]._id : "");
 		const page = url.pathname;
 		let entities: any[] = [];
 		const id = params.id;
@@ -118,9 +116,8 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 				break;
 		}
 		console.log(page, entities.length, workspaces.length);
-		return { protocol, domain, client_id, profile, access_token, wsurl, origin, code, entities, workspaces, currentworkspace, id, settings, total_count };
+		return { protocol, domain, client_id, profile, access_token, wsurl, origin, code, entities, workspaces, id, settings, total_count };
 	} catch (error) {
-		console.error("layout.ts", error);
-		return { protocol, domain, client_id, profile, access_token, wsurl, origin, code, entities: [], workspaces: [], currentworkspace, item: null, id: "", settings: {}, total_count };
+		return { protocol, domain, client_id, profile, access_token, wsurl, origin, code, entities: [], workspaces: [], item: null, id: "", settings: {}, total_count };
 	}
 };

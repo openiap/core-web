@@ -34,11 +34,9 @@ class entitiesdata {
 		let skip = this.settings.page_index * top;
 
 		if (auth.isConnected == false) {
-			console.log("GetData", "not connected, return empty array");
 			return [];
 		}
 		if (collectionname == null || collectionname == "") {
-			console.log("GetData", "collectionname is null, return empty array");
 			return [];
 		}
 		const entities = await auth.client.Query<any>({
@@ -49,18 +47,15 @@ class entitiesdata {
 			top: 5,
 			jwt: access_token,
 		});
-		// console.log("GetData", collectionname, usequery, orderby, this.settings.page, this.settings.page_index, entities.length, this.settings.total_count, access_token?.substring(0, 10));
-		console.log("GetData", collectionname, "page:", this.settings.page, "idx:", this.settings.page_index, "res:", entities.length, "skip:", skip, "token:", access_token?.substring(0, 10));
+		// console.log("GetData", collectionname, "page:", this.settings.page, "idx:", this.settings.page_index, "res:", entities.length, "skip:", skip, "token:", access_token?.substring(0, 10));
 		return entities;
 	}
 	async GetCount(page: string, collectionname: string, query: any, access_token: string) {
 		let total_count = 99999;
 		if (auth.isConnected == false) {
-			console.log("GetCount", "not connected, return 99999");
 			return total_count;
 		}
 		if (collectionname == null || collectionname == "") {
-			console.log("GetCount", "collectionname is null, return 99999");
 			return total_count;
 		}
 		let usequery = this.createQuery(this.settings.searchstring, query);
@@ -84,7 +79,6 @@ class entitiesdata {
 	}
 	parsesettings(raw: any) {
 		if(raw == null) {
-			console.log("parsesettings", "raw is null");
 			return;
 		}
 		usersettings.loadpage(raw);
