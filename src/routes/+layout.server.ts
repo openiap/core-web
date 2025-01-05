@@ -10,13 +10,8 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 	const { protocol, domain, client_id, profile, access_token } = locals as any;
 	let { wsurl } = locals as any;
 	const { origin } = url;
-	const searchParams = url.searchParams
-	let code = "";
 	let workspaces:Workspace[] = [];
 	let total_count = 99999;
-	if(searchParams) {
-		code = searchParams.get("code") || "";
-	}
 	try {
 		await usersettings.dbload(access_token);
 		const shortpage = (route.id != null && route.id.indexOf("/") > -1 ? route.id.split("/")[1] : "");
@@ -116,8 +111,9 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 				break;
 		}
 		console.log(page, entities.length, workspaces.length);
-		return { protocol, domain, client_id, profile, access_token, wsurl, origin, code, entities, workspaces, id, settings, total_count };
+		return { protocol, domain, client_id, profile, access_token, wsurl, origin, entities, workspaces, id, settings, total_count };
 	} catch (error) {
-		return { protocol, domain, client_id, profile, access_token, wsurl, origin, code, entities: [], workspaces: [], item: null, id: "", settings: {}, total_count };
+		console.error(error);
+		return { protocol, domain, client_id, profile, access_token, wsurl, origin, entities: [], workspaces: [], item: null, id: "", settings: {}, total_count };
 	}
 };
