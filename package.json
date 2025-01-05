@@ -41,7 +41,6 @@
 		"zod": "^3.23.8"
 	},
 	"dependencies": {
-		"ansi_up": "^6.0.2",
-		"formiojs": "^4.21.6"
+		"ansi_up": "^6.0.2"
 	}
 }
