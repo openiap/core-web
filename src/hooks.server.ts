@@ -16,6 +16,7 @@ export const init: ServerInit = async () => {
     try {
         await auth.serverinit(wsurl, protocol, domain);
     } catch (error) {
+        console.log("**** serverinit error", error);
     }
 }
 export const handle: Handle = async ({ event, resolve }) => {
