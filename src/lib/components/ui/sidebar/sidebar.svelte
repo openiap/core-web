@@ -5,6 +5,7 @@
 	import type { HTMLAttributes } from "svelte/elements";
 	import { SIDEBAR_WIDTH_MOBILE } from "./constants.js";
 	import { useSidebar } from "./context.svelte.js";
+	import { page } from "$app/stores";
 
 	let {
 		ref = $bindable(null),
@@ -21,6 +22,13 @@
 	} = $props();
 
 	const sidebar = useSidebar();
+	// TODO: This is a hack to prevent the sidebar from collapsing when the form builder is open.
+	$effect(() => {
+		const currentPage = $page.url.pathname;
+		if (currentPage.includes("form/")) {
+			collapsible = "none";
+		}
+	});
 </script>
 
 {#if collapsible === "none"}
