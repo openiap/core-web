@@ -21,11 +21,11 @@
     }
     if (!user?.avatar) {
         const name = user.name;
-        const names = name?.split(" ") || [];
+        const names = name?.split(" ") ;
         if (names.length > 1) {
             user.avatar = (names[0][0] + names[1][0]).toUpperCase();
         } else {
-            user.avatar = name.substring(0, 2).toUpperCase();
+            user.avatar = name?.substring(0, 2).toUpperCase() || "U";
         }
     }
 </script>
