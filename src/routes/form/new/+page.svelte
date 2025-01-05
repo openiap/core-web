@@ -141,7 +141,9 @@
 </div>
 <link rel='stylesheet' href='{base}/bootstrap-scope.css'>
 <div>
-    <Input type="text" placeholder="Enter form name" bind:value={data.name} />
+  <div class="flex items-center justify-start space-x-4 mb-4">
+    <Input class="max-w-sm" type="text" placeholder="Enter form name" bind:value={data.name} />
     <Button onclick={saveform}>Create form</Button>
+  </div>
     <div class="bootstrap-scope" bind:this={ref}></div>
 </div>
