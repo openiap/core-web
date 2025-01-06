@@ -1,18 +1,20 @@
 <script lang="ts">
+	import { goto } from "$app/navigation";
 	import { base } from "$app/paths";
 	import { page } from "$app/stores";
 	import * as Breadcrumb from "$lib/components/ui/breadcrumb/index.js";
 	import Separator from "$lib/components/ui/separator/separator.svelte";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import { Toaster } from "$lib/components/ui/sonner/index.js";
+	import { data as datacomponent } from "$lib/entities/data.svelte.js";
 	import AppSidebar from "$lib/sidebar/app-sidebar.svelte";
 	import { auth } from "$lib/stores/auth.svelte";
+	import { usersettings } from "$lib/stores/usersettings.svelte";
 	import { ModeWatcher } from "mode-watcher";
 	import "../app.css";
 	import Header from "./Header.svelte";
 	import type { Workspace } from "./workspace/schema.js";
-    import { usersettings } from "$lib/stores/usersettings.svelte";
-	import { data as datacomponent } from "$lib/entities/data.svelte.js";
+	import { setContext } from 'svelte';
 
 	let { children, data } = $props();
 	datacomponent.parsesettings(data.settings);
@@ -24,21 +26,28 @@
 		$page.url.pathname.replace(base, "").replace("/", ""),
 	);
 	async function loadWorkspaces() {
-		workspaces = await auth.client.Query<Workspace>({ collectionname: "users", query: { _type: "workspace" }, jwt: access_token, top: 5 });
+		workspaces = await auth.client.Query<Workspace>({
+			collectionname: "users",
+			query: { _type: "workspace" },
+			jwt: access_token,
+			top: 5,
+		});
 	}
 	async function update_currentworkspace(workspaceid: string) {
 		usersettings.currentworkspace = workspaceid;
 		currentworkspace = workspaceid;
 		await loadWorkspaces();
-        await usersettings.dopersist();
-        // goto(base + "/workspace/" + workspace._id);
+		await usersettings.dopersist();
+		if(workspaceid == null || workspaceid == ""){
+			return;
+		}
+		// goto(base + "/workspace/" + workspaceid);
 	}
 	$effect(() => {
-		if(usersettings.currentworkspace != currentworkspace) {
+		if (usersettings.currentworkspace != currentworkspace) {
 			update_currentworkspace(usersettings.currentworkspace);
 		}
 	});
-
 </script>
 
 <svelte:head>
@@ -53,7 +62,12 @@
 {#if $page.url.pathname != base + "/login" && $page.url.pathname != base + "/loginscreen"}
 	<div class="overflow-hidden flex flex-col w-full h-screen">
 		<Sidebar.Provider>
-			<AppSidebar {workspaces} {currentworkspace} {profile} {update_currentworkspace}/>
+			<AppSidebar
+				{workspaces}
+				{currentworkspace}
+				{profile}
+				{update_currentworkspace}
+			/>
 			<div class="flex flex-col w-full">
 				<header
 					class="flex h-16 shrink-0 items-center justify-between px-4 bg-gradient-to-b from-lightgradident1 to-lightgradident2 dark:bg-gradient-to-b dark:from-darkgradident1 dark:to-darkgradident2 rounded mx-2.5 my-2.5"

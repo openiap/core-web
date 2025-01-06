@@ -203,6 +203,7 @@
 		}
 	}
 
+	let _workspaceid = $state.snapshot(usersettings.currentworkspace);
 	$effect(() => {
 		if (_searchstring != searchstring) {
 			_searchstring = searchstring;
@@ -210,6 +211,9 @@
 			data.settings.page_index = 0;
 			page_index = 0;
 			data.persist();
+			GetData();
+		} else if (_workspaceid != usersettings.currentworkspace) {
+			_workspaceid = usersettings.currentworkspace;
 			GetData();
 		} else if (_collectionname != collectionname) {
 			usersettings.entities_collectionname = collectionname;

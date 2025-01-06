@@ -11,8 +11,10 @@
         workspaces,
         currentworkspace,
         update_currentworkspace = (workspaceid: string) => {},
-    }: { 
-        workspaces: Workspace[]; currentworkspace: string; update_currentworkspace: (workspaceid: string) => void
+    }: {
+        workspaces: Workspace[];
+        currentworkspace: string;
+        update_currentworkspace: (workspaceid: string) => void;
     } = $props();
     const sidebar = useSidebar();
 
@@ -48,7 +50,9 @@
                             </div>
                             <ChevronsUpDown class="ml-auto" />
                         {:else}
-                            <span class="truncate font-semibold">Create workspace</span>
+                            <span class="truncate font-semibold"
+                                >Select workspace</span
+                            >
                         {/if}
                     </Sidebar.MenuButton>
                 {/snippet}
@@ -67,7 +71,6 @@
                         onSelect={() => selectWorkspace(workspace)}
                         class="gap-2 p-2"
                     >
-                        
                         {workspace.name}
                         <DropdownMenu.Shortcut
                             >⌘{index + 1}</DropdownMenu.Shortcut
@@ -75,6 +78,20 @@
                     </DropdownMenu.Item>
                 {/each}
                 <DropdownMenu.Separator />
+                {#if workspaces.length > 0}
+                    <DropdownMenu.Item
+                        onSelect={() => selectWorkspace({ _id: "" } as any)}
+                        class="gap-2 p-2"
+                    >
+                        Unselect Workspace
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Item
+                        onSelect={() => goto(base + "/workspace")}
+                        class="gap-2 p-2"
+                    >
+                        All Workspace
+                    </DropdownMenu.Item>
+                {/if}
                 <DropdownMenu.Item
                     class="gap-2 p-2 cursor-pointer"
                     onclick={() => goto(base + "/workspace/new")}
@@ -85,7 +102,7 @@
                         <Plus class="size-4" />
                     </div>
                     <div class="text-muted-foreground font-medium">
-                        Create Workspace
+                        Select Workspace
                     </div>
                 </DropdownMenu.Item>
             </DropdownMenu.Content>

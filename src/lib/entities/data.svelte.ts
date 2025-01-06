@@ -27,6 +27,7 @@ class entitiesdata {
 	settings: pageSettings = null as any;
 	hide_empty_on_sort = true;
 	errormessage = "";
+
 	async GetData(page: string, collectionname: string, query: any, access_token: string) {
 		let orderby = this.getOrderBy();
 		let usequery = this.createQuery(this.settings.searchstring, query);
@@ -39,12 +40,18 @@ class entitiesdata {
 		if (collectionname == null || collectionname == "") {
 			return [];
 		}
+		let queryas = undefined;
+		if(usersettings.currentworkspace != null && usersettings.currentworkspace != "") {
+			queryas = usersettings.currentworkspace;
+		}
+		console.log("queryas", queryas);
 		const entities = await auth.client.Query<any>({
 			collectionname: collectionname,
 			query: usequery,
 			orderby: orderby,
 			skip: skip,
 			top: 5,
+			queryas,
 			jwt: access_token,
 		});
 		// console.log("GetData", collectionname, "page:", this.settings.page, "idx:", this.settings.page_index, "res:", entities.length, "skip:", skip, "token:", access_token?.substring(0, 10));

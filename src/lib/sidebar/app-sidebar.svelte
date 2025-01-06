@@ -42,7 +42,7 @@
 		title: "Workspace",
 		hidden: false,
 		items: [
-			new SidebarItem("Workspaces", `${base}/workspace`, false),
+			// new SidebarItem("Workspaces", `${base}/workspace`, false),
 			new SidebarItem("Members", `${base}/workspace/member`, false),
 			new SidebarItem("Memberships", `${base}/workspace/invites`, false),
 		],
@@ -77,7 +77,6 @@
 	import type { ComponentProps } from "svelte";
 	import type { Workspace } from "../../routes/workspace/schema";
 	import NavWorkspace from "./nav-workspace.svelte";
-	import { usersettings } from "$lib/stores/usersettings.svelte.js";
 	// Extend the ComponentProps type to include the workspaces property
 	type ExtendedComponentProps = ComponentProps<typeof Sidebar.Root> & {
 		workspaces?: Workspace[];
@@ -104,19 +103,14 @@
 		if (workspaces.length == 0) {
 			workspace.hidden = false;
 		}
-		const member = workspace.items.find(
-				(x: any) => x.title == "Members",
-			);
+		const member = workspace.items.find((x: any) => x.title == "Members");
 
 		management.items.find((x: any) => x.title == "Users").hidden =
 			!workspace.hidden;
 		if (!workspace.hidden) {
 			management.items.find((x: any) => x.title == "Roles").hidden =
-			currentworkspace == null || currentworkspace == "";
-			if (
-				currentworkspace != null &&
-				currentworkspace != ""
-			) {
+				currentworkspace == null || currentworkspace == "";
+			if (currentworkspace != null && currentworkspace != "") {
 				member.hidden = false;
 				member.url = `${base}/workspace/${currentworkspace}/member`;
 			} else {
@@ -144,7 +138,11 @@
 		class="bg-gradient-to-b from-lightgradident1 to-lightgradident2 dark:bg-gradient-to-b dark:from-darkgradident1 dark:to-darkgradident2 rounded my-2.5 mx-3 h-full overflow-auto"
 	>
 		<Sidebar.Header class="border-sidebar-border h-16 border-b">
-			<NavWorkspace {workspaces} {currentworkspace} {update_currentworkspace} />
+			<NavWorkspace
+				{workspaces}
+				{currentworkspace}
+				{update_currentworkspace}
+			/>
 		</Sidebar.Header>
 		<Sidebar.Content>
 			{#each data.navMain as group (group.title)}
