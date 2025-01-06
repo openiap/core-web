@@ -102,7 +102,7 @@
                         <Plus class="size-4" />
                     </div>
                     <div class="text-muted-foreground font-medium">
-                        Select Workspace
+                        Create Workspace
                     </div>
                 </DropdownMenu.Item>
             </DropdownMenu.Content>
