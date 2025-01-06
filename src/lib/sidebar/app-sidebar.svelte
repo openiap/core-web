@@ -4,6 +4,16 @@
 	import pkg from "oidc-client";
 	// import { Volleyball } from "lucide-svelte";
 
+	class SidebarCategory {
+		title: string = $state("");
+		hidden: boolean = $state(false);
+		items: SidebarItem[] = $state([]);
+		constructor(title: string, hidden: boolean, items: SidebarItem[]) {
+			this.title = title;
+			this.hidden = hidden;
+			this.items = items;
+		}
+	}
 	class SidebarItem {
 		title: string = $state("");
 		url: string = $state("");
@@ -21,54 +31,72 @@
 			this.external = external;
 		}
 	}
-	const actions: any = {
-		title: "",
-		hidden: false,
-		items: [
-			new SidebarItem("Home", `${base}/`, false),
-			new SidebarItem("Agents", `${base}/agent`, false),
-			new SidebarItem("Workitems", `${base}/workitem`, false),
-			new SidebarItem("Form workflows", `${base}/workflow`, false),
-			new SidebarItem("RPA Workflows", `${base}/rpaworkflow`, false),
-			new SidebarItem(
-				"Grafana",
-				`https://grafana.dev.openiap.io/`,
-				false,
-				true,
-			),
-		],
-	};
-	const workspace: any = {
-		title: "Workspace",
-		hidden: false,
-		items: [
-			// new SidebarItem("Workspaces", `${base}/workspace`, false),
-			new SidebarItem("Members", `${base}/workspace/member`, false),
-			new SidebarItem("Memberships", `${base}/workspace/invites`, false),
-		],
-	};
-	const management: any = {
-		title: "Management",
-		hidden: false,
-		items: [
-			new SidebarItem("Entities", `${base}/entities`, false),
-			new SidebarItem("Clients", `${base}/client`, false),
-			new SidebarItem("Users", `${base}/user`, false),
-			new SidebarItem("Roles", `${base}/role`, false),
-			new SidebarItem("Forms", `${base}/form`, false),
-			new SidebarItem("Providers", `${base}/provider`, false),
-			new SidebarItem("Resources", `${base}/resource`, true),
-			new SidebarItem("Audit logs", `${base}/auditlog`, false),
-			new SidebarItem("Console", `${base}/console`, true),
-			new SidebarItem("Credentials", `${base}/credential`, false),
-			new SidebarItem("Config", `${base}/configuration`, true),
-			new SidebarItem("Customers", `${base}/customer`, true),
-			new SidebarItem("Files", `${base}/files`, false),
-			new SidebarItem("Form Resources", `${base}/formresource`, true),
-			new SidebarItem("HD Robots", `${base}/hdrobot`, true),
-			new SidebarItem("Mail History", `${base}/mailhistory`, true),
-		],
-	};
+	const home = new SidebarItem("Home", `${base}/`, false);
+	const agent = new SidebarItem("Agents", `${base}/agent`, false);
+	const workitem = new SidebarItem("Workitems", `${base}/workitem`, false);
+	const formworkflow = new SidebarItem(
+		"Form workflows",
+		`${base}/workflow`,
+		false,
+	);
+	const rpaworkflow = new SidebarItem(
+		"RPA Workflows",
+		`${base}/rpaworkflow`,
+		false,
+	);
+	const grafana = new SidebarItem(
+		"Grafana",
+		`https://grafana.app.openiap.io/`,
+		false,
+		true,
+	);
+	const actions = new SidebarCategory("", false, [
+		home,
+		agent,
+		workitem,
+		formworkflow,
+		rpaworkflow,
+		grafana,
+	]);
+	const members = new SidebarItem("Members", `${base}/members`, false);
+	const memberships = new SidebarItem("Memberships", `${base}/invites`, false);
+	const workspace = new SidebarCategory("Workspace", false, [
+		members, memberships,
+	]);
+	const entities = new SidebarItem("Entities", `${base}/entities`, false);
+	const clients = new SidebarItem("Clients", `${base}/client`, false);
+	const users = new SidebarItem("Users", `${base}/user`, false);
+	const roles = new SidebarItem("Roles", `${base}/role`, false);
+	const forms = new SidebarItem("Forms", `${base}/form`, false);
+	const providers = new SidebarItem("Providers", `${base}/provider`, false);
+	const resources = new SidebarItem("Resources", `${base}/resource`, true);
+	const auditlogs = new SidebarItem("Audit logs", `${base}/auditlog`, false);
+	const console = new SidebarItem("Console", `${base}/console`, true);
+	const credentials = new SidebarItem("Credentials", `${base}/credential`, false);
+	const config = new SidebarItem("Config", `${base}/configuration`, true);
+	const customers = new SidebarItem("Customers", `${base}/customer`, true);
+	const files = new SidebarItem("Files", `${base}/files`, false);
+	const formresources = new SidebarItem("Form Resources", `${base}/formresource`, true);
+	const hdrobots = new SidebarItem("HD Robots", `${base}/hdrobot`, true);
+	const mailhistory = new SidebarItem("Mail History", `${base}/mailhistory`, true);
+	const management = new SidebarCategory("Management", false, [
+		entities,
+		clients,
+		users,
+		roles,
+		forms,
+		providers,
+		resources,
+		auditlogs,
+		console,
+		credentials,
+		config,
+		customers,
+		files,
+		formresources,
+		hdrobots,
+		mailhistory,
+	]);
 </script>
 
 <script lang="ts">
@@ -92,44 +120,69 @@
 		...restProps
 	}: ExtendedComponentProps = $props();
 
-	const navMain = $state([]) as any[];
-	const data = $state({
-		navMain,
-	});
-	function loadmenu() {
-		workspace.hidden = !(
-			auth.config != null && auth.config.workspace_enabled
-		);
-		if (workspaces.length == 0) {
-			workspace.hidden = false;
-		}
-		const member = workspace.items.find((x: any) => x.title == "Members");
-
-		management.items.find((x: any) => x.title == "Users").hidden =
-			!workspace.hidden;
-		if (!workspace.hidden) {
-			management.items.find((x: any) => x.title == "Roles").hidden =
-				currentworkspace == null || currentworkspace == "";
-			if (currentworkspace != null && currentworkspace != "") {
-				member.hidden = false;
-				member.url = `${base}/workspace/${currentworkspace}/member`;
+	const navMain = $state([actions, workspace, management]);
+	function loadMenu() {
+		if (auth.config.workspace_enabled) {
+			workspace.hidden = workspaces.length == 0;
+			users.hidden = true;
+			members.hidden =
+				currentworkspace == null ||
+				currentworkspace == "" ||
+				workspaces.length == 0;
+			if (!members.hidden) {
+				members.url = `${base}/workspace/${currentworkspace}/member`;
 			} else {
-				member.hidden = true;
+				members.url = `${base}/`;
 			}
-			workspace.items = workspace.items;
-			data.navMain = data.navMain;
+			if (members.hidden) {
+				roles.hidden = true;
+			} else {
+				roles.hidden = false;
+			}
+		} else {
+			users.hidden = false;
+			roles.hidden = false;
+			members.hidden = true;
+			workspace.hidden = true;
+			members.url = `${base}/`;
 		}
-		if (data.navMain.length == 0) {
-			data.navMain.push(actions);
-			data.navMain.push(workspace);
-			data.navMain.push(management);
+		let profileroles = auth.profile?.roles || [];
+		const isAdmin = profileroles.includes("admins");
+		const isWorkspaceAdmin = profileroles.find((x: any) =>
+			x.endsWith("admins"),
+		);
+		resources.hidden = !isAdmin;
+		console.hidden = !isAdmin;
+		config.hidden = !isAdmin;
+		providers.hidden = !isAdmin;
+		formresources.hidden = !isWorkspaceAdmin;
+		forms.hidden = !auth.isAuthenticated;
+		clients.hidden = !isWorkspaceAdmin;
+		
+		if(auth.config.workspace_enabled) {
+			customers.hidden = true;
+		} else {
+			customers.hidden = !auth.config.multi_tenant;
+		}
+		hdrobots.hidden = !isWorkspaceAdmin;
+		mailhistory.hidden = !isAdmin;
+
+		if (!auth.isAuthenticated) {
+			if (grafana.hidden != true) {
+				grafana.hidden = true;
+			}
+		} else {
+			if (grafana.hidden != (auth.config.grafana_url == "")) {
+				grafana.hidden = auth.config.grafana_url == "";
+			}
+			if (grafana.url != auth.config.grafana_url) {
+				grafana.url = auth.config.grafana_url;
+			}
 		}
 	}
-
-	loadmenu();
-
+	loadMenu();
 	$effect(() => {
-		loadmenu();
+		loadMenu();
 	});
 </script>
 
@@ -145,7 +198,7 @@
 			/>
 		</Sidebar.Header>
 		<Sidebar.Content>
-			{#each data.navMain as group (group.title)}
+			{#each navMain as group (group.title)}
 				{#if !group.hidden}
 					<Sidebar.Group class="ps-4">
 						{#if group.title && group.title != ""}
