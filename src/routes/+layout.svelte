@@ -67,13 +67,8 @@
 						null,
 					);
 					await usersettings.dbload(access_token);
-					console.log(
-						"currentworkspace",
-						usersettings.currentworkspace,
-					);
 					currentworkspace = usersettings.currentworkspace;
 					await loadWorkspaces();
-					console.log("workspaces", workspaces);
 					const redirect = window.localStorage.getItem("redirect");
 					window.localStorage.removeItem("redirect");
 					goto(redirect || "/");

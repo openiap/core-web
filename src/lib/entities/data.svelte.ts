@@ -44,7 +44,6 @@ class entitiesdata {
 		if(usersettings.currentworkspace != null && usersettings.currentworkspace != "") {
 			queryas = usersettings.currentworkspace;
 		}
-		console.log("queryas", queryas);
 		const entities = await auth.client.Query<any>({
 			collectionname: collectionname,
 			query: usequery,
