@@ -59,7 +59,7 @@
 		grafana,
 	]);
 	const members = new SidebarItem("Members", `${base}/members`, false);
-	const memberships = new SidebarItem("Memberships", `${base}/invites`, false);
+	const memberships = new SidebarItem("Memberships", `${base}/workspace/invites`, false);
 	const workspace = new SidebarCategory("Workspace", false, [
 		members, memberships,
 	]);
