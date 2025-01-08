@@ -45,11 +45,12 @@
 					throw new Error("Error while deleting " + id + " deleted " + deletecount + " items");
 					}
 				}
-				GetData();
 				selected_items = [];
 				toast.success("Deleted " + ids.length + " items successfully", {
 					description: "",
 				});
+				GetData();
+				data.persist();
 				} catch (error: any) {
 				toast.error("Error while deleting", {
 					description: error.message,
