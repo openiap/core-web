@@ -36,7 +36,7 @@
 	const workitem = new SidebarItem("Workitems", `${base}/workitem`, false);
 	const formworkflow = new SidebarItem(
 		"Form workflows",
-		`${base}/workflow`,
+		`${base}/invokeform`,
 		false,
 	);
 	const rpaworkflow = new SidebarItem(

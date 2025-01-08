@@ -1,7 +1,7 @@
 <script lang="ts" module>
-  export let page = "workflow";
+  export let page = "invokeform";
   export let collectionname = "workflow";
-  export let query = { _type: "workflow", web: true };
+  export let query = { _type: "workflow" };
 </script>
 
 <script lang="ts">
@@ -14,7 +14,7 @@
   import Searchinput from "$lib/searchinput/searchinput.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
-  import { Pencil, Plus, Trash2 } from "lucide-svelte";
+  import { Play, Plus, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
@@ -43,7 +43,7 @@
   }
   function deleteitems(ids: string[]) {}
   function single_item_click(item: any) {
-    goto(base + `/${page}/${item._id}`);
+    goto(base + `/invokeform/new/${item._id}`);
   }
   async function handleAccept() {
     try {
@@ -117,12 +117,13 @@
   {#snippet action(item: any)}
     <div class="flex items-center space-x-2">
       <Button
-        aria-label="edit"
-        onclick={() => goto(base + `/entities/hdrobots/edit/${item._id}`)}
+        aria-label="start"
+        title="start"
+        onclick={() => goto(base + `/invokeform/${item._id}`)}
         size="icon"
         variant="secondary"
       >
-        <Pencil />
+      <Play />
       </Button>
       <Button
         aria-label="delete"
