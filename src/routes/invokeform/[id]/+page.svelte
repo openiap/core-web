@@ -22,7 +22,11 @@
         if(!browser) return;
         queuename = await auth.client.RegisterQueue({queuename: "", jwt: auth.access_token},
         async (msg, payload, user, jwt) => {
-            console.log(msg.queuename, payload);
+            if(payload.state == "processing") {
+                message = "Processing . . .";
+            } else {
+                message = "";
+            }
             if(payload.state != "" && payload.state != null && data.item.state != payload.state) {
                 // toast.success(payload.state, {description: "Form changed state from " + data.item.state + " to " + payload.state , duration: 5000});
                 toast.success(payload.state, {description: "Form is " + payload.state , duration: 5000});
@@ -35,7 +39,6 @@
                 if(_form == null) { console.error("Form '" + data.item.form + "' not found"); return; }
                 data.form = _form;                
             } else if (data.item.form == null || data.item.form == "") {
-                console.log("No form, go to frontpage");
                 goto(base + "/");
                 return;
             }
@@ -80,6 +83,94 @@
             }
         }
     }
+    function traversecomponentsMakeDefaults(components: any) {
+        if (!components) return;
+        for (let y = 0; y < components.length; y++) {
+            const item = components[y];
+            if (item.type == "datagri{ submitbutton: string; }d") {
+                if (data.item.payload[item.key] === null || data.item.payload[item.key] === undefined) {
+                    const obj: any = {};
+                    for (let x = 0; x < item.components.length; x++) {
+                        obj[item.components[x].key] = "";
+                    }
+                    data.item.payload[item.key] = [obj];
+                } else {
+                    if (Array.isArray(data.item.payload[item.key])) {
+                    } else {
+                        const keys = Object.keys(data.item.payload[item.key]);
+                        const arr: any[] = [];
+                        for (let x = 0; x < keys.length; x++) {
+                            arr.push(data.item.payload[item.key][keys[x]]);
+                        }
+                        data.item.payload[item.key] = arr;
+                    }
+                }
+            }
+            if (item.type == "button" && item.action == "submit") {
+                data.item.payload[item.key] = false;
+            }
+        }
+        if (data.item.payload != null && data.item.payload != undefined) {
+            if (data.item.payload.values != null && data.item.payload.values != undefined) {
+                const keys = Object.keys(data.item.payload.values);
+            }
+        }
+        if (data.item.payload != null && data.item.payload != undefined) {
+            if (data.item.payload.values != null && data.item.payload.values != undefined) {
+                const keys = Object.keys(data.item.payload.values);
+                for (let i = 0; i < keys.length; i++) {
+                    const values = data.item.payload.values[keys[i]];
+                    for (let y = 0; y < components.length; y++) {
+                        const item = components[y];
+                        if (item.key == keys[i]) {
+                            if (Array.isArray(values)) {
+                                const obj2: any = {};
+                                for (let x = 0; x < values.length; x++) {
+                                    obj2[x] = values[x];
+                                }
+                                if (item.data != null && item.data != undefined) {
+                                    item.data.values = obj2;
+                                    item.data.json = JSON.stringify(values);
+                                } else {
+                                    item.values = values;
+                                }
+                            } else {
+                                if (item.data != null && item.data != undefined) {
+                                    item.data.values = values;
+                                    item.data.json = JSON.stringify(values);
+                                } else {
+                                    item.values = values;
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+        for (let i = 0; i < components.length; i++) {
+            const item = components[i];
+            if (item.type == "table") {
+                for (let x = 0; x < item.rows.length; x++) {
+                    for (let y = 0; y < item.rows[x].length; y++) {
+                        const subcomponents = item.rows[x][y].components;
+                        traversecomponentsMakeDefaults(subcomponents);
+                    }
+
+                }
+            }
+        }
+    }
+    function traversecomponentsAddCustomValidate(components: any) {
+        if (!components) return;
+        for (let y = 0; y < components.length; y++) {
+            const item = components[y];
+            if (item.type == "file") {
+                item.storage = "url";
+                item.url = "/upload"
+            }
+        }
+    }
     async function createfrom() {
         try {
             // @ts-ignore
@@ -101,6 +192,14 @@
 
         try {
             if (data.form != null && data.form.schema != null) {
+                let protocol = "http:";
+                if (auth.config.wsurl.startsWith("wss")) protocol = "https:";
+
+                traversecomponentsMakeDefaults(data.form.schema);
+                traversecomponentsAddCustomValidate(data.form.schema);
+
+                Formio.setBaseUrl(protocol + "//" + auth.config.domain);
+                Formio.setProjectUrl(protocol + "//" + auth.config.domain);
                 // @ts-ignore
                 form = await Formio.createForm(ref, data.form.schema, {
                     breadcrumbSettings: { clickable: true },
@@ -130,7 +229,6 @@
                     },
                 });
                 form.on("submit", async (submission: any) => {
-                    console.log("submit", data.item.queue);
                     await auth.client.QueueMessage({queuename: data.item.queue, data: data.item.payload, replyto: queuename, jwt: auth.access_token});
                 });
                 form.on("submitDone", function (submission:any) {
@@ -144,7 +242,6 @@
                     data.item.payload != null &&
                     data.item.payload != undefined
                 ) {
-                    console.log("set form data", data.item.payload);
                     form.submission = {
                         data: $state.snapshot(data.item.payload),
                     };
@@ -153,24 +250,32 @@
                     message = error.message ? error.message : error;
                     console.error(message);
                 });
+            } else {
+                if(data.item != null) {
+                    try {
+                        data.item.state = "failed";
+                        await auth.client.UpdateOne({collectionname: "workflow_instances", item: data.item, jwt: auth.access_token});
+                        message = "No form found, workflow marked as failed";
+                    } catch (error:any) {
+                        message = "No form found, failed to update workflow " + error.message;
+                    }
+                }
             }
         } catch (e) {
+            console.error(e);
         }
     }
     let firstrun = $state(true);
     if (browser) {
         $effect(() => {
             if (
-                ref != null &&
-                data.form != null &&
-                data.form.schema != null &&
-                data.form.schema.components.length > 0 &&
-                firstrun == true
+                ref != null && firstrun == true
             ) {
                 createfrom();
-                firstrun = false;
+                // firstrun = false;
             }
         });
+        createfrom();
     }
 </script>
 

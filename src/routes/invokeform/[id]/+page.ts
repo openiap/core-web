@@ -4,8 +4,22 @@ import { auth } from "$lib/stores/auth.svelte.js";
 import type { PageLoad } from "./$types.js";
 export const load: PageLoad = async ({ parent, params }) => {
   const { access_token } = await parent();
-  let item = {_id: "", name: "", state: "", form: "", queue: "", submission: {}, userData: {}, payload: {submitbutton: ""} };
-  let form = { _id: "", schema: { components: [] } };
+  let item: {
+    _id: string;
+    name: string;
+    state: string;
+    form: string;
+    queue: string;
+    submission: any;
+    userData: any;
+    payload: any;
+  } = {_id: "", name: "", state: "", form: "", queue: "", submission: {}, userData: {}, payload: {submitbutton: ""} };
+  let form: {
+    _id: string;
+    schema: {
+      components: any[];
+    };
+  } = { _id: "", schema: { components: [] } };
     try {
       if (params.id == null || params.id == "") { goto(base + `/invokeform`); return { item }; }
       item = await auth.client.FindOne<any>({ collectionname: "workflow_instances", query: { _id: params.id, _type: "instance" }, jwt: access_token });
