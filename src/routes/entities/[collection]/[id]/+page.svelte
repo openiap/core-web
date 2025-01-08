@@ -74,7 +74,7 @@
 
   <Acl bind:value={$formData} />
 
-  <ObjectInput bind:value={$formData} />
+  <ObjectInput classname="h-screen" bind:value={$formData} />
 </form>
 
 {#if formData != null && showdebug == true}

@@ -15,7 +15,6 @@
   const title = "Form Resource";
   const key = "formresource";
   let showdebug = $state(false);
-  const { data } = $props();
   let loading = $state(false);
   let errormessage = $state("");
   const form = superForm(defaults(zod(newFormSchema)), {
@@ -28,7 +27,7 @@
         try {
           await auth.client.InsertOne({
             collectionname: "forms",
-            item: { ...form.data, _type: "resource" },
+            item: form.data,
             jwt: auth.access_token,
           });
           toast.success("form resource added");

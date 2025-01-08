@@ -1,3 +1,7 @@
+<script lang="ts" module>
+  export let collectionname = "forms";
+</script>
+
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
@@ -47,7 +51,9 @@
       }
     },
   });
-  const { form: formData, enhance, message } = form;
+  const { form: formData, enhance, message, validateForm } = form;
+  formData.set(data.item);
+  validateForm({ update: true });
 </script>
 
 {#if message && $message != ""}

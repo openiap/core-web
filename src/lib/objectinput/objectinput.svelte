@@ -1,6 +1,11 @@
 <script lang="ts">
     import { Textarea } from "$lib/components/ui/textarea/index.js";
-    let { value = $bindable(), disabled = false, ...restProps } = $props();
+    let {
+        value = $bindable(),
+        disabled = false,
+        classname = "",
+        ...restProps
+    } = $props();
 
     let json = JSON.stringify(value, null, 2);
     let intermediateJson = $state(json);
@@ -27,7 +32,7 @@
 </script>
 
 <Textarea
-    class="w-full min-h-52 h-screen"
+    class={"w-full min-h-52 " + classname}
     {disabled}
     bind:value={intermediateJson}
     {...restProps}
