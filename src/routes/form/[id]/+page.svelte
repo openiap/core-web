@@ -1,14 +1,13 @@
 <script lang="ts">
-    import { Formio, FormBuilder } from 'formiojs';
-    import { base } from "$app/paths";
-    import 'formiojs/dist/formio.builder.min.css';
-    import { onDestroy } from "svelte";
     import { browser } from "$app/environment";
-    import { Input } from "$lib/components/ui/input";
-    import Button from "$lib/components/ui/button/button.svelte";
-    import { auth } from "$lib/stores/auth.svelte.js";
-    import { toast } from "svelte-sonner";
     import { goto } from "$app/navigation";
+    import { base } from "$app/paths";
+    import Button from "$lib/components/ui/button/button.svelte";
+    import { Input } from "$lib/components/ui/input";
+    import { auth } from "$lib/stores/auth.svelte.js";
+    import { Formio } from "formiojs";
+    import { onDestroy } from "svelte";
+    import { toast } from "svelte-sonner";
 
     const { data } = $props();
 
@@ -51,7 +50,8 @@
     let firstrun = $state(true);
     if (browser) {
         $effect(() => {
-            if (ref != null &&
+            if (
+                ref != null &&
                 data.item.schema.components.length > 0 &&
                 firstrun == true
             ) {
@@ -95,21 +95,28 @@
 </script>
 
 <svelte:head>
-    <!-- <script src="{base}/formio.full.min.js"></script>
-    <link rel="stylesheet" href="{base}/formio.form.min.css" /> -->
-    <link rel="stylesheet" href="{base}/bootstrap-scope.css" />
+    <link
+        rel="stylesheet"
+        href="{base}/font-awesome/css/font-awesome.min.css"
+    />
+    <link rel="stylesheet" href="{base}/formio-dialog-content.css" />
+    <link rel="stylesheet" href="{base}/formio.form.min.css" />
+    <link rel="stylesheet" href="{base}/formio.builder.min.css" />
 </svelte:head>
 <div>
     {message}
 </div>
 <div>
-    {#if data && data.item && data.item.name}
-        <Input
-            type="text"
-            placeholder="Enter form name"
-            bind:value={data.item.name}
-        />
-    {/if}
-    <Button onclick={saveform}>Update form</Button>
-    <div class="bootstrap-scope" bind:this={ref}></div>
+    <div class="flex items-center justify-start space-x-4 mb-4">
+        {#if data && data.item && data.item.name}
+            <Input
+                class="max-w-sm"
+                type="text"
+                placeholder="Enter form name"
+                bind:value={data.item.name}
+            />
+        {/if}
+        <Button onclick={saveform}>Update form</Button>
+    </div>
+    <div class="bootstrap-scope formio-dialog-content" bind:this={ref}></div>
 </div>

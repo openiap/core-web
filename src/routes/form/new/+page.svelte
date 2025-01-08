@@ -1,14 +1,13 @@
 <script lang="ts">
-  import { Formio, FormBuilder } from 'formiojs';
-  import { base } from "$app/paths";
-  import 'formiojs/dist/formio.builder.min.css';
-  import { onDestroy } from "svelte";
   import { browser } from "$app/environment";
-  import { Input } from "$lib/components/ui/input";
-  import Button from "$lib/components/ui/button/button.svelte";
-  import { auth } from "$lib/stores/auth.svelte.js";
-  import { toast } from "svelte-sonner";
   import { goto } from "$app/navigation";
+  import { base } from "$app/paths";
+  import Button from "$lib/components/ui/button/button.svelte";
+  import { Input } from "$lib/components/ui/input";
+  import { auth } from "$lib/stores/auth.svelte.js";
+  import { Formio } from "formiojs";
+  import { onDestroy } from "svelte";
+  import { toast } from "svelte-sonner";
 
   let builder: any = null as any;
   let ref = $state(null) as any;
@@ -79,19 +78,19 @@
   async function createfrom() {
     try {
       // @ts-ignore
-      if(Formio == null || typeof Formio.builder !== 'function') {
-        console.log('Formio not loaded, try again in 200ms');
+      if (Formio == null || typeof Formio.builder !== "function") {
+        console.log("Formio not loaded, try again in 200ms");
         setTimeout(() => {
-          createfrom()
+          createfrom();
         }, 200);
         return;
       }
     } catch (error) {
-      console.log('Formio not loaded, try again in 200ms');
+      console.log("Formio not loaded, try again in 200ms");
       setTimeout(() => {
-          createfrom()
-        }, 200);
-        return;
+        createfrom();
+      }, 200);
+      return;
     }
     console.log("creating form");
     try {
@@ -112,7 +111,6 @@
   let firstrun = $state(true);
   if (browser) {
     $effect(() => {
-
       if (ref != null && firstrun == true) {
         console.log("calling createfrom()");
         createfrom();
@@ -153,9 +151,10 @@
 </script>
 
 <svelte:head>
-  <!-- <script src="{base}/formio.full.min.js"></script>
-  <link rel="stylesheet" href="{base}/formio.form.min.css" /> -->
-  <link rel="stylesheet" href="{base}/bootstrap-scope.css" />
+  <link rel="stylesheet" href="{base}/font-awesome/css/font-awesome.min.css" />
+  <link rel="stylesheet" href="{base}/formio-dialog-content.css" />
+  <link rel="stylesheet" href="{base}/formio.form.min.css" />
+  <link rel="stylesheet" href="{base}/formio.builder.min.css" />
 </svelte:head>
 
 <div>
@@ -171,5 +170,5 @@
     />
     <Button onclick={saveform}>Create form</Button>
   </div>
-  <div class="bootstrap-scope" bind:this={ref}></div>
+  <div class="bootstrap-scope formio-dialog-content" bind:this={ref}></div>
 </div>
