@@ -4,10 +4,12 @@
     import { onDestroy } from "svelte";
     import { browser } from "$app/environment";
     import { auth } from "$lib/stores/auth.svelte.js";
+    import { data as datacomponent } from "$lib/entities/data.svelte.js";
     import { toast } from "svelte-sonner";
     import { goto } from "$app/navigation";
 
     const { data } = $props();
+    datacomponent.parsesettings(data.settings);
     let message = $state("");
     let queuename = "";
     async function init() {
@@ -16,7 +18,7 @@
         (msg, payload, user, jwt) => {
             console.log(payload)
         });
-
+        console.log("Send empty message to", data.item.queue);
         await auth.client.QueueMessage({queuename: data.item.queue, data: {}});
     }
     init();
