@@ -8,11 +8,13 @@
   import Searchinput from "$lib/searchinput/searchinput.svelte";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { auth } from "$lib/stores/auth.svelte";
-  import { Folder } from "lucide-svelte";
+  import { Folder, Pencil } from "lucide-svelte";
   import { toast } from "svelte-sonner";
+  import { goto } from "$app/navigation";
+  import { base } from "$app/paths";
   let { data } = $props();
   datacomponent.parsesettings(data.settings);
-  
+
   let collectionname = $state("");
   collectionname = data.collectionname;
   let page = $derived(() => "entities-" + collectionname);
@@ -43,6 +45,9 @@
     collectionname = name;
     usersettings.entities_collectionname = name;
     datacomponent.persist();
+  }
+  function single_item_click(item: any) {
+    goto(base + `/entities/${collectionname}/${item._id}`);
   }
 </script>
 
@@ -83,7 +88,19 @@
       bind:searchstring
       bind:selected_items
       bind:entities
-    ></Entities>
+      {single_item_click}
+    >
+      {#snippet action(item: any)}
+        <Button
+          aria-label="edit"
+          onclick={() => single_item_click(item)}
+          size="icon"
+          variant="secondary"
+        >
+          <Pencil />
+        </Button>
+      {/snippet}
+    </Entities>
   </div>
 </div>
 

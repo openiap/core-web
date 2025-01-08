@@ -27,7 +27,7 @@
 </script>
 
 <Textarea
-    class="w-full min-h-52"
+    class="w-full min-h-52 h-screen"
     {disabled}
     bind:value={intermediateJson}
     {...restProps}

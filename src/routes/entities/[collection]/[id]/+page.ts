@@ -7,11 +7,13 @@ import type { PageLoad } from "./$types.js";
 export const load: PageLoad = async ({ parent, params }) => {
   const { access_token } = await parent();
   let data: any = {};
+  console.log(params);
   let id = params.id;
+  let collection = params.collection;
   try {
-    let item = await auth.client.FindOne<any>({ collectionname: "users", query: { _id: id }, jwt: access_token });
+    let item = await auth.client.FindOne<any>({ collectionname: collection, query: { _id: id }, jwt: access_token });
     data.form = await superValidate(item, zod(editFormSchema));
-    return data;
+    return { data, id, collection };
   } catch (error) {
     return { form: await superValidate(zod(editFormSchema)) };
   }
