@@ -58,7 +58,7 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 				entities = await datacomponent.GetData(page, "forms", { _type: "form" }, access_token);
 				total_count = await datacomponent.GetCount(page, "forms", { _type: "form" }, access_token);
 				break;
-			case base + "/invokeform":
+			case base + "/formworkflow":
 				entities = await datacomponent.GetData(page, "workflow", { _type: "workflow", web: true }, access_token);
 				total_count = await datacomponent.GetCount(page, "workflow", { _type: "workflow", web: true }, access_token);
 				break;

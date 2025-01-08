@@ -36,7 +36,7 @@
 	const workitem = new SidebarItem("Workitems", `${base}/workitem`, false);
 	const formworkflow = new SidebarItem(
 		"Form workflows",
-		`${base}/invokeform`,
+		`${base}/formworkflow`,
 		false,
 	);
 	const rpaworkflow = new SidebarItem(
@@ -59,9 +59,14 @@
 		grafana,
 	]);
 	const members = new SidebarItem("Members", `${base}/members`, false);
-	const memberships = new SidebarItem("Memberships", `${base}/workspace/invites`, false);
+	const memberships = new SidebarItem(
+		"Memberships",
+		`${base}/workspace/invites`,
+		false,
+	);
 	const workspace = new SidebarCategory("Workspace", false, [
-		members, memberships,
+		members,
+		memberships,
 	]);
 	const entities = new SidebarItem("Entities", `${base}/entities`, false);
 	const clients = new SidebarItem("Clients", `${base}/client`, false);
@@ -72,13 +77,25 @@
 	const resources = new SidebarItem("Resources", `${base}/resource`, true);
 	const auditlogs = new SidebarItem("Audit logs", `${base}/auditlog`, false);
 	const console = new SidebarItem("Console", `${base}/console`, true);
-	const credentials = new SidebarItem("Credentials", `${base}/credential`, false);
+	const credentials = new SidebarItem(
+		"Credentials",
+		`${base}/credential`,
+		false,
+	);
 	const config = new SidebarItem("Config", `${base}/configuration`, true);
 	const customers = new SidebarItem("Customers", `${base}/customer`, true);
 	const files = new SidebarItem("Files", `${base}/files`, false);
-	const formresources = new SidebarItem("Form Resources", `${base}/formresource`, true);
+	const formresources = new SidebarItem(
+		"Form Resources",
+		`${base}/formresource`,
+		true,
+	);
 	const hdrobots = new SidebarItem("HD Robots", `${base}/hdrobot`, true);
-	const mailhistory = new SidebarItem("Mail History", `${base}/mailhistory`, true);
+	const mailhistory = new SidebarItem(
+		"Mail History",
+		`${base}/mailhistory`,
+		true,
+	);
 	const management = new SidebarCategory("Management", false, [
 		entities,
 		clients,
@@ -158,8 +175,8 @@
 		formresources.hidden = !isWorkspaceAdmin;
 		forms.hidden = !auth.isAuthenticated;
 		clients.hidden = !isWorkspaceAdmin;
-		
-		if(auth.config.workspace_enabled) {
+
+		if (auth.config.workspace_enabled) {
 			customers.hidden = true;
 		} else {
 			customers.hidden = !auth.config.multi_tenant;

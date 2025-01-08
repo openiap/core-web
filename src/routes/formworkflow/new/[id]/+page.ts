@@ -7,9 +7,9 @@ export const load: PageLoad = async ({ parent, params }) => {
   let item = {_id: "", name: "", queue: "", form: "", submission: {}, userData: {}, payload: {} };
   let form = { schema: { components: [] } };
     try {
-      if (params.id == null || params.id == "") { goto(base + `/invokeform`); return { item }; }
+      if (params.id == null || params.id == "") { goto(base + `/formworkflow`); return { item }; }
       item = await auth.client.FindOne<any>({ collectionname: "workflow", query: { _id: params.id, _type: "workflow" }, jwt: access_token });
-      if(item == null) { goto(base + `/invokeform`); return { item }; }
+      if(item == null) { goto(base + `/formworkflow`); return { item }; }
       if(item.form != null && item.form != "") {
         form = await auth.client.FindOne<any>({ collectionname: "forms", query: { _id: item.form, _type: "form" }, jwt: access_token });
       }

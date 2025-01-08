@@ -1,5 +1,5 @@
 <script lang="ts" module>
-  export let page = "invokeform";
+  export let page = "formworkflow";
   export let collectionname = "workflow";
   export let query = { _type: "workflow", web: true };
 </script>
@@ -41,7 +41,7 @@
     }
   }
   function single_item_click(item: any) {
-    goto(base + `/invokeform/new/${item._id}`);
+    goto(base + `/formworkflow/new/${item._id}`);
   }
   async function handleAccept() {
     try {
@@ -79,7 +79,7 @@
       <Button
         aria-label="start"
         title="start"
-        onclick={() => goto(base + `/invokeform/${item._id}`)}
+        onclick={() => single_item_click(item)}
         size="icon"
         variant="secondary"
       >

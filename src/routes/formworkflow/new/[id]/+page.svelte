@@ -18,7 +18,7 @@
         (msg, payload, user, jwt) => {
             console.log(payload)
             if(payload._id != null && payload._id != "") {
-                goto(base + "/invokeform/" + payload._id);
+                goto(base + "/formworkflow/" + payload._id);
             }
         });
         console.log("Registered temp queue as", queuename, "now, send empty message to", data.item.queue);
