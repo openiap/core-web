@@ -10,10 +10,10 @@
   import { EntitySelector } from "$lib/entityselector/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { ArrowLeft, Check, Plus, Trash2 } from "lucide-svelte";
+  import { toast } from "svelte-sonner";
   import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newFormSchema } from "../schema.js";
-    import { toast } from "svelte-sonner";
 
   const key = "role";
   let showdebug = $state(false);
@@ -41,7 +41,7 @@
           }
           await auth.client.InsertOne({
             collectionname: "users",
-            item: { ...form.data, _type: "role" },
+            item: { ...form.data },
             jwt: auth.access_token,
           });
           toast.success("Role added");

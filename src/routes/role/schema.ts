@@ -11,6 +11,7 @@ export const editFormSchema = z.object({
 export type UserSchema = typeof editFormSchema;
 
 export const newFormSchema = z.object({
+  _type: z.string().default("role"),
   name: z.string().min(2),
   rparole: z.boolean().optional(),
   hidemembers: z.boolean().optional(),
