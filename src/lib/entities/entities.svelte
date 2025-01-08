@@ -21,8 +21,8 @@
 	import { Trash2 } from "lucide-svelte";
 	import { toast } from "svelte-sonner";
 	import { data } from "./data.svelte.js";
-    import { browser } from "$app/environment";
-    import { auth } from "$lib/stores/auth.svelte.js";
+	import { browser } from "$app/environment";
+	import { auth } from "$lib/stores/auth.svelte.js";
 
 	let {
 		page = "entities",
@@ -37,12 +37,18 @@
 			try {
 				for (let id of ids) {
 					const deletecount = await auth.client.DeleteOne({
-					id: id,
-					collectionname,
-					jwt: auth.access_token,
+						id: id,
+						collectionname,
+						jwt: auth.access_token,
 					});
-					if(deletecount > 1){
-					throw new Error("Error while deleting " + id + " deleted " + deletecount + " items");
+					if (deletecount > 1) {
+						throw new Error(
+							"Error while deleting " +
+								id +
+								" deleted " +
+								deletecount +
+								" items",
+						);
 					}
 				}
 				selected_items = [];
@@ -51,12 +57,11 @@
 				});
 				GetData();
 				data.persist();
-				} catch (error: any) {
+			} catch (error: any) {
 				toast.error("Error while deleting", {
 					description: error.message,
 				});
 			}
-
 		},
 		single_item_click = (item: any) => {},
 		multi_select = true,
@@ -76,7 +81,12 @@
 	selected_items = data.settings.selected_items;
 
 	async function GetData() {
-		const _entities = await data.GetData(page, collectionname, query, auth.access_token);
+		const _entities = await data.GetData(
+			page,
+			collectionname,
+			query,
+			auth.access_token,
+		);
 		entities = _entities;
 
 		if (entities.length > 0) {
@@ -105,8 +115,13 @@
 		return entities;
 	}
 	async function GetCount() {
-		total_count = await data.GetCount(page, collectionname, query, auth.access_token);
-	};
+		total_count = await data.GetCount(
+			page,
+			collectionname,
+			query,
+			auth.access_token,
+		);
+	}
 	if (browser && total_count == 99999) {
 		GetCount();
 	}
@@ -610,6 +625,45 @@
 		GetData();
 	}}
 />
+
+<!-- <div class="flex flex-col justify-center items-center space-y-2">
+	<div class="mt-4">
+		Page {page_index + 1}
+		{#if entities.length == total_count}
+			showing {total_count} items
+		{:else}
+			showing item {page_index * 5 + 1}
+			{#if entities.length > 1}
+				to {page_index * 5 + entities.length}
+			{/if}
+			of {total_count}
+		{/if}
+	</div>
+	<div>
+		<HotkeyButton
+			data-shortcut="ArrowLeft"
+			onclick={() => {
+				page_index = page_index - 1;
+				data.settings.page_index = page_index;
+				data.persist();
+				GetData();
+			}}
+			disabled={page_index <= 0}>Previous</HotkeyButton
+		>
+		<HotkeyButton
+			data-shortcut="ArrowRight"
+			onclick={() => {
+				page_index = page_index + 1;
+				data.settings.page_index = page_index;
+				data.persist();
+				GetData();
+			}}
+			disabled={entities.length < 5 || page_index * 5 >= total_count}
+		>
+			Next</HotkeyButton
+		>
+	</div>
+</div> -->
 
 <HotkeyButton
 	data-shortcut="Control+a,Meta+a"

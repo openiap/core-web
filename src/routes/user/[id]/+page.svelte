@@ -31,7 +31,7 @@
         try {
           await auth.client.UpdateOne({
             collectionname,
-            item: { ...form.data, _type: "user" },
+            item: { ...form.data },
             jwt: auth.access_token,
           });
           toast.success("User updated");

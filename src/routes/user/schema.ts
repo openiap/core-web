@@ -11,6 +11,7 @@ export const newFormSchema = z.object({
   emailvalidated: z.boolean(),
   formvalidated: z.boolean(),
   federationids: z.array(z.string().email()).optional(),
+  _type: z.string().default("user"),
 });
 export type NewFormSchema = typeof newFormSchema;
 
