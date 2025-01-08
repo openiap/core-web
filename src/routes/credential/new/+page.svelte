@@ -12,7 +12,6 @@
 
   const key = "credential";
   let showdebug = $state(false);
-  const { data } = $props();
   let loading = $state(false);
   let errormessage = $state("");
   const form = superForm(defaults(zod(newFormSchema)), {
@@ -25,7 +24,7 @@
         try {
           await auth.client.InsertOne({
             collectionname: "openrpa",
-            item: { ...form.data, _type: "credential" },
+            item: form.data,
             jwt: auth.access_token,
           });
           toast.success("Credential added");

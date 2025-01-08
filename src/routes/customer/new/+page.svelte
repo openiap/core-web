@@ -14,7 +14,6 @@
 
   const key = "customer";
   let showdebug = $state(false);
-  const { data } = $props();
   let loading = $state(false);
   let errormessage = $state("");
   const form = superForm(defaults(zod(newFormSchema)), {

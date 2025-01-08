@@ -16,7 +16,7 @@
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import { Pencil, Plus, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
-  
+
   let { data } = $props();
   datacomponent.parsesettings(data.settings);
   let searchstring = $state(datacomponent.settings.searchstring);
@@ -49,7 +49,12 @@
       toast.success("Deleted successfully", {
         description: "",
       });
-      entities = await data1.GetData(page, collectionname, query, auth.access_token);
+      entities = await data1.GetData(
+        page,
+        collectionname,
+        query,
+        auth.access_token,
+      );
     } catch (error: any) {
       toast.error("Error while deleting", {
         description: error.message,
@@ -81,7 +86,7 @@
   {#snippet action(item: any)}
     <Button
       aria-label="edit"
-      onclick={() => goto(base + `/${page}/${item._id}`)}
+      onclick={() => single_item_click(item)}
       size="icon"
       variant="secondary"
     >
