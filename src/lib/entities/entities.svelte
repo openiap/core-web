@@ -33,7 +33,31 @@
 		selected_items = $bindable([]),
 		total_count,
 		caption = "",
-		delete_selected = (items: string[]) => {},
+		delete_selected = async (ids: string[]) => {
+			try {
+				for (let id of ids) {
+					const deletecount = await auth.client.DeleteOne({
+					id: id,
+					collectionname,
+					jwt: auth.access_token,
+					});
+					if(deletecount > 1){
+					throw new Error("Error while deleting " + id + " deleted " + deletecount + " items");
+					}
+				}
+				selected_items = [];
+				toast.success("Deleted " + ids.length + " items successfully", {
+					description: "",
+				});
+				GetData();
+				data.persist();
+				} catch (error: any) {
+				toast.error("Error while deleting", {
+					description: error.message,
+				});
+			}
+
+		},
 		single_item_click = (item: any) => {},
 		multi_select = true,
 		...rest

@@ -24,7 +24,6 @@
   let entities = $state(data.entities);
   let showWarning = $state(false);
   let deleteData: any = $state({});
-  let toggleData: any = $state({});
 
   async function deleteitem(item: any) {
     const deletecount = await auth.client.DeleteOne({
@@ -41,7 +40,6 @@
       });
     }
   }
-  function deleteitems(ids: string[]) {}
   function single_item_click(item: any) {
     goto(base + `/${page}/${item._id}`);
   }
@@ -63,43 +61,6 @@
       });
     }
   }
-  async function handleToggle() {
-    try {
-      let item = await auth.client.FindOne<any>({
-        collectionname,
-        query: { _id: toggleData._id },
-        jwt: auth.access_token,
-      });
-      item.enabled = !item.enabled;
-      await auth.client.UpdateOne({
-        item: item,
-        collectionname,
-        jwt: auth.access_token,
-      });
-      toast.success("Updated successfully", {
-        description: "",
-      });
-      entities = await datacomponent.GetData(
-        page,
-        collectionname,
-        query,
-        auth.access_token,
-      );
-    } catch (error: any) {
-      undoToggle();
-      toast.error("Error while updating", {
-        description: error.message,
-      });
-    }
-  }
-  function undoToggle() {
-    entities = entities.map((entity: any) => {
-      if (entity._id == toggleData._id) {
-        entity.enabled = !entity.enabled;
-      }
-      return entity;
-    });
-  }
 </script>
 
 <Searchinput bind:searchstring />
@@ -117,7 +78,6 @@
   {query}
   bind:searchstring
   {page}
-  delete_selected={deleteitems}
   {single_item_click}
   total_count={data.total_count}
   bind:selected_items

@@ -1,5 +1,5 @@
 <script lang="ts" module>
-  export let page = "workflow";
+  export let page = "invokeform";
   export let collectionname = "workflow";
   export let query = { _type: "workflow", web: true };
 </script>
@@ -14,7 +14,7 @@
   import Searchinput from "$lib/searchinput/searchinput.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
-  import { Pencil, Plus, Trash2 } from "lucide-svelte";
+  import { Play, Plus, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
@@ -24,7 +24,6 @@
   let entities = $state(data.entities);
   let showWarning = $state(false);
   let deleteData: any = $state({});
-  let toggleData: any = $state({});
 
   async function deleteitem(item: any) {
     const deletecount = await auth.client.DeleteOne({
@@ -41,9 +40,8 @@
       });
     }
   }
-  function deleteitems(ids: string[]) {}
   function single_item_click(item: any) {
-    goto(base + `/${page}/${item._id}`);
+    goto(base + `/invokeform/new/${item._id}`);
   }
   async function handleAccept() {
     try {
@@ -63,43 +61,6 @@
       });
     }
   }
-  async function handleToggle() {
-    try {
-      let item = await auth.client.FindOne<any>({
-        collectionname,
-        query: { _id: toggleData._id },
-        jwt: auth.access_token,
-      });
-      item.enabled = !item.enabled;
-      await auth.client.UpdateOne({
-        item: item,
-        collectionname,
-        jwt: auth.access_token,
-      });
-      toast.success("Updated successfully", {
-        description: "",
-      });
-      entities = await datacomponent.GetData(
-        page,
-        collectionname,
-        query,
-        auth.access_token,
-      );
-    } catch (error: any) {
-      undoToggle();
-      toast.error("Error while updating", {
-        description: error.message,
-      });
-    }
-  }
-  function undoToggle() {
-    entities = entities.map((entity: any) => {
-      if (entity._id == toggleData._id) {
-        entity.enabled = !entity.enabled;
-      }
-      return entity;
-    });
-  }
 </script>
 
 <Searchinput bind:searchstring />
@@ -108,7 +69,6 @@
   {query}
   bind:searchstring
   {page}
-  delete_selected={deleteitems}
   {single_item_click}
   total_count={data.total_count}
   bind:selected_items
@@ -117,12 +77,13 @@
   {#snippet action(item: any)}
     <div class="flex items-center space-x-2">
       <Button
-        aria-label="edit"
-        onclick={() => goto(base + `/entities/hdrobots/edit/${item._id}`)}
+        aria-label="start"
+        title="start"
+        onclick={() => goto(base + `/invokeform/${item._id}`)}
         size="icon"
         variant="secondary"
       >
-        <Pencil />
+      <Play />
       </Button>
       <Button
         aria-label="delete"

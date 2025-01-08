@@ -38,7 +38,6 @@
       });
     }
   }
-  function deleteitems(ids: string[]) {}
   function single_item_click(item: any) {
     goto(base + `/user/${item._id}`);
   }
@@ -66,7 +65,6 @@
   {query}
   bind:searchstring
   {page}
-  delete_selected={deleteitems}
   {single_item_click}
   total_count={data.total_count}
   bind:selected_items
