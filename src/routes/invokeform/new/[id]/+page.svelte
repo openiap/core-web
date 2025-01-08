@@ -17,9 +17,12 @@
         queuename = await auth.client.RegisterQueue({queuename: "", jwt: auth.access_token},
         (msg, payload, user, jwt) => {
             console.log(payload)
+            if(payload._id != null && payload._id != "") {
+                goto(base + "/invokeform/" + payload._id);
+            }
         });
-        console.log("Send empty message to", data.item.queue);
-        await auth.client.QueueMessage({queuename: data.item.queue, data: {}});
+        console.log("Registered temp queue as", queuename, "now, send empty message to", data.item.queue);
+        await auth.client.QueueMessage({queuename: data.item.queue, data: {}, replyto: queuename, jwt: auth.access_token});
     }
     init();
     onDestroy(() => {

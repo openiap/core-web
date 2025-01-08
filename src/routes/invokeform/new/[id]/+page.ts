@@ -4,7 +4,7 @@ import { auth } from "$lib/stores/auth.svelte.js";
 import type { PageLoad } from "./$types.js";
 export const load: PageLoad = async ({ parent, params }) => {
   const { access_token } = await parent();
-  let item = {name: "", queue: "", form: "", submission: {}, userData: {}, payload: {} };
+  let item = {_id: "", name: "", queue: "", form: "", submission: {}, userData: {}, payload: {} };
   let form = { schema: { components: [] } };
     try {
       if (params.id == null || params.id == "") { goto(base + `/invokeform`); return { item }; }

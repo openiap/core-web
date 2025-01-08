@@ -1,7 +1,7 @@
 <script lang="ts" module>
   export let page = "invokeform";
   export let collectionname = "workflow";
-  export let query = { _type: "workflow" };
+  export let query = { _type: "workflow", web: true };
 </script>
 
 <script lang="ts">
