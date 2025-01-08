@@ -33,7 +33,7 @@
         try {
           await auth.client.UpdateOne({
             collectionname,
-            item: { ...form.data, _type: "package" },
+            item: { ...form.data },
             jwt: auth.access_token,
           });
           toast.success("Package updated");
@@ -104,7 +104,7 @@
       link.href = window.URL.createObjectURL(blob);
       link.download = item.name || item.metadata.name;
       link.click();
-    } catch (error:any) {
+    } catch (error: any) {
       toast.error("Error downloading file", {
         description: error.message,
       });

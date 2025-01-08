@@ -29,7 +29,7 @@
         try {
           const result = await auth.client.InsertOne({
             collectionname: "agents",
-            item: { ...form.data, _type: "package" },
+            item: { ...form.data },
             jwt: auth.access_token,
           });
           toast.success("Package added");

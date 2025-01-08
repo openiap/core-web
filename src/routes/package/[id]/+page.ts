@@ -4,9 +4,9 @@ import { collectionname } from "./+page.svelte";
 export const load: PageLoad = async ({ parent, params }) => {
   const { access_token } = await parent();
   try {
-    let item = await auth.client.FindOne<any>({ collectionname, query: { _id: params.id }, jwt: access_token });
+    let item = await auth.client.FindOne<any>({ collectionname, query: { _id: params.id, _type: "package" }, jwt: access_token });
     return { item };
   } catch (error) {
-    return { item: null };    
+    return { item: null };
   }
 };

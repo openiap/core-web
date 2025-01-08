@@ -6,6 +6,7 @@ export const newFormSchema = z.object({
   daemon: z.boolean(),
   chromium: z.boolean(),
   fileid: z.string().min(2),
+  _type: z.string().default("package"),
 });
 export type NewFormSchema = typeof newFormSchema;
 
