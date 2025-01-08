@@ -57,25 +57,42 @@
   async function uploadFile() {
     loading = true;
     const reader = new FileReader();
-    if (fileData) {
-      reader.onload = async function () {
-        if (fileData) {
-          const content = new Uint8Array(reader.result as ArrayBuffer);
-          var name = fileData.name;
-          var type = fileData.type;
-          var id = await auth.client.UploadFile(
-            name,
-            type,
-            content,
-            auth.access_token,
-          );
-          fileData = null;
-          entities = await data1.GetData(page, collectionname, query, auth.access_token);
-          loading = false;
-        }
-      };
-      reader.readAsArrayBuffer(fileData);
+    try {
+      if (fileData) {
+        reader.onload = async function () {
+          if (fileData) {
+            const content = new Uint8Array(reader.result as ArrayBuffer);
+            var name = fileData.name;
+            var type = fileData.type;
+            await auth.client.UploadFile(
+              name,
+              type,
+              content,
+              auth.access_token,
+            );
+            toast.success("Uploaded successfully", {
+              description: "",
+            });
+            fileData = null;
+            entities = await data1.GetData(
+              page,
+              collectionname,
+              query,
+              auth.access_token,
+            );
+            toast.success("Saved in the database successfully", {
+              description: "",
+            });
+          }
+        };
+        reader.readAsArrayBuffer(fileData);
+      }
+    } catch (error: any) {
+      toast.error("Error while uploading", {
+        description: error.message,
+      });
     }
+
     loading = false;
   }
 
@@ -90,7 +107,7 @@
       link.href = window.URL.createObjectURL(blob);
       link.download = item.name || item.metadata.name;
       link.click();
-    } catch (error:any) {
+    } catch (error: any) {
       toast.error("Error while downloading", {
         description: error.message,
       });
@@ -102,7 +119,12 @@
       toast.success("Deleted successfully", {
         description: "",
       });
-      entities = await data1.GetData(page, collectionname, query, auth.access_token);
+      entities = await data1.GetData(
+        page,
+        collectionname,
+        query,
+        auth.access_token,
+      );
     } catch (error: any) {
       toast.error("Error while deleting", {
         description: error.message,
