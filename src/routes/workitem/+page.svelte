@@ -23,7 +23,6 @@
   let entities = $state(data.entities);
   let showWarning = $state(false);
   let deleteData: any = $state({});
-  let toggleData: any = $state({});
 
   async function deleteitem(item: any) {
     const deletecount = await auth.client.DeleteOne({
