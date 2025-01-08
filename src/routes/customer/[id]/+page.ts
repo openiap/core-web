@@ -9,7 +9,7 @@ export const load: PageLoad = async ({ params, parent }) => {
   let data: any = {};
   let id = params.id;
   try {
-    let item = await auth.client.FindOne<any>({ collectionname: "users", query: { _id: id }, jwt: access_token });
+    let item = await auth.client.FindOne<any>({ collectionname: "users", query: { _id: id, _type: "customer" }, jwt: access_token });
     data.form = await superValidate(item, zod(editFormSchema));
     return data;
   } catch (error) {

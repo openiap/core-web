@@ -50,7 +50,12 @@
       toast.success("Deleted successfully", {
         description: "",
       });
-      entities = await data1.GetData(page, collectionname, query, auth.access_token);
+      entities = await data1.GetData(
+        page,
+        collectionname,
+        query,
+        auth.access_token,
+      );
     } catch (error: any) {
       toast.error("Error while deleting", {
         description: error.message,
@@ -63,7 +68,8 @@
   class="mb-4"
   aria-label="Add customer"
   variant="default"
-  onclick={() => goto(base + `/${page}/new`)}>
+  onclick={() => goto(base + `/${page}/new`)}
+>
   <Plus />
   Add {page}</Hotkeybutton
 >
@@ -82,7 +88,7 @@
   {#snippet action(item: any)}
     <Button
       aria-label="Edit"
-      onclick={() => goto(base + `/${page}/${item._id}`)}
+      onclick={() => single_item_click(item)}
       size="icon"
       variant="secondary"
     >

@@ -27,7 +27,7 @@
         try {
           await auth.client.InsertOne({
             collectionname: "users",
-            item: { ...form.data, _type: "customer" },
+            item: form.data,
             jwt: auth.access_token,
           });
           toast.success("Customer added");

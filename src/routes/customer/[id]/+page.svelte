@@ -47,7 +47,9 @@
       }
     },
   });
-  const { form: formData, enhance, message } = form;
+  const { form: formData, enhance, message, validateForm } = form;
+  formData.set(data.item);
+  validateForm({ update: true });
 </script>
 
 {#if message && $message != ""}
