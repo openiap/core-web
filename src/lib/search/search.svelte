@@ -5,7 +5,7 @@
 
 <Dialog.Root>
     <Dialog.Trigger aria-label="Search" class="h-30 w-30">
-        <div class="dark:bg-darkiconbg dark:text-darkicontext p-2 rounded-[10px]">
+        <div class="dark:bg-bw700 dark:text-bw400 p-2 rounded-[10px]">
             <Search size={16} />
         </div>
     </Dialog.Trigger>

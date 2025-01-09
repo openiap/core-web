@@ -207,12 +207,10 @@
 <Sidebar.Root
 	bind:ref
 	{...restProps}
-	class="border-r border-white dark:border-darkheader"
+	class="border-r border-white dark:border-bw900"
 >
-	<div
-		class="my-2.5 mx-3 h-full overflow-auto"
-	>
-		<Sidebar.Header class=" mt-2 ms-6 ">
+	<div class="my-2.5 mx-3 h-full overflow-auto">
+		<Sidebar.Header class="ms-6">
 			<NavWorkspace
 				{workspaces}
 				{currentworkspace}
@@ -239,6 +237,10 @@
 											<Sidebar.MenuButton
 												isActive={$page.url.pathname ===
 													item.url}
+												class={$page.url.pathname ===
+												item.url
+													? "border-[1px] border-bw500"
+													: ""}
 											>
 												{#snippet child({ props })}
 													{#if item.external}

@@ -96,9 +96,8 @@
 			/>
 			<div class="flex flex-col w-full">
 				<Header />
-
 				<div
-					class="border border-gray-300 dark:border-darkborder dark:bg-darkbody rounded-xl mb-4 mx-4 h-full overflow-auto"
+					class="border border-gray-300 dark:border-bw500 dark:bg-darkbody rounded-xl mb-4 mx-4 h-full overflow-auto"
 				>
 					{#if auth.isAuthenticated == true || auth.isAuthenticated == false}
 						{#if pagename() == "entities"}

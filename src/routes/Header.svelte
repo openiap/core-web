@@ -33,7 +33,7 @@
 </script>
 
 <header 
-class="flex h-16 shrink-0 items-center justify-between px-4 rounded mx-2.5 my-2.5"
+class="flex h-16 shrink-0 items-center justify-between px-4 rounded mx-2"
 >
 	<div class="flex items-center">
 		<Sidebar.Trigger class="-ml-1" />

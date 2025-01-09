@@ -14,8 +14,9 @@
   import Searchinput from "$lib/searchinput/searchinput.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
-  import { Pencil, Plus, Trash2 } from "lucide-svelte";
+  import { Filter, Pencil, Plus, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
 
   let { data } = $props();
   datacomponent.parsesettings(data.settings);
@@ -63,16 +64,31 @@
   }
 </script>
 
-<Button
-  aria-label="add"
-  variant="default"
-  onclick={() => goto(base + `/${page}/new`)}
-  class="mb-4"
->
-  <Plus />
-  Add {page}</Button
->
-<Searchinput {searchstring} />
+<div class="flex justify-between">
+  <div class="flex gap-2 w-full">
+    <Searchinput {searchstring} />
+    <HotkeyButton
+      size="new"
+      variant="new"
+      aria-label="add"
+      class="border-dashed dark:text-bw600"
+    >
+      <Filter />
+      Filter</HotkeyButton
+    >
+  </div>
+
+  <HotkeyButton
+    size="new"
+    variant="new"
+    aria-label="add"
+    onclick={() => goto(base + `/${page}/new`)}
+  >
+    <Plus />
+    Add {page}</HotkeyButton
+  >
+</div>
+
 <Entities
   {collectionname}
   {query}

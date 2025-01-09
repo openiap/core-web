@@ -35,11 +35,10 @@
                 {#snippet child({ props })}
                     <Sidebar.MenuButton
                         {...props}
-                        size="lg"
-                        class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground border-[1px] border-tabledarkborder rounded-xl px-4"
+                        class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground border-[1px] border-bw500 rounded-[10px] px-4"
                     >
                         {#if activeWorkspacename() != ""}
-                        <Building/>
+                            <Building />
                             <div
                                 class="grid flex-1 text-left text-sm leading-tight justify-between"
                             >
