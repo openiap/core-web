@@ -3,8 +3,6 @@
 	import { goto } from "$app/navigation";
 	import { base } from "$app/paths";
 	import { page } from "$app/stores";
-	import * as Breadcrumb from "$lib/components/ui/breadcrumb/index.js";
-	import Separator from "$lib/components/ui/separator/separator.svelte";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import { Toaster } from "$lib/components/ui/sonner/index.js";
 	import { data as datacomponent } from "$lib/entities/data.svelte.js";
@@ -97,39 +95,10 @@
 				{update_currentworkspace}
 			/>
 			<div class="flex flex-col w-full">
-				<header
-					class="flex h-16 shrink-0 items-center justify-between px-4 bg-gradient-to-b from-lightgradident1 to-lightgradident2 dark:bg-gradient-to-b dark:from-darkgradident1 dark:to-darkgradident2 rounded mx-2.5 my-2.5"
-				>
-					<div class="flex items-center">
-						<Sidebar.Trigger class="-ml-1" />
-						<Separator orientation="vertical" class="mr-2 h-4" />
-						<Breadcrumb.Root>
-							<Breadcrumb.List>
-								{#each pagename().split("/") as page, index}
-									<Breadcrumb.Item class="hidden md:block">
-										{#if pagename().split("/").length - 1 !== index}
-											<Breadcrumb.Link
-												href="{base}/{page.trim()}"
-												>{page.trim()}</Breadcrumb.Link
-											>
-										{:else}
-											{page.trim()}
-										{/if}
-									</Breadcrumb.Item>
-									{#if pagename().split("/").length - 1 !== index}
-										<Breadcrumb.Separator
-											class="hidden md:block"
-										/>
-									{/if}
-								{/each}
-							</Breadcrumb.List>
-						</Breadcrumb.Root>
-					</div>
-					<Header />
-				</header>
+				<Header />
 
 				<div
-					class="border border-gray-300 dark:border-gray-400 rounded mb-2.5 mx-2.5 h-full overflow-auto"
+					class="border border-gray-300 dark:border-darkborder dark:bg-darkbody rounded-xl mb-4 mx-4 h-full overflow-auto"
 				>
 					{#if auth.isAuthenticated == true || auth.isAuthenticated == false}
 						{#if pagename() == "entities"}

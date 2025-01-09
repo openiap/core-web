@@ -64,7 +64,7 @@
 		</Pagination.Item>
 	  </Pagination.Content>
 	</div>
-	<p class="text-center text-[13px] text-muted-foreground">
+	<p class="text-center text-sm ">
 		Showing item {calculateitems()} of {total_count}
 	  </p>
 	{/snippet}

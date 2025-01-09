@@ -1,17 +1,13 @@
 <script lang="ts">
-    import BadgeCheck from "lucide-svelte/icons/badge-check";
-    import Bell from "lucide-svelte/icons/bell";
-    import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
-    import CreditCard from "lucide-svelte/icons/credit-card";
-    import LogOut from "lucide-svelte/icons/log-out";
-    import Sparkles from "lucide-svelte/icons/sparkles";
-
     import * as Avatar from "$lib/components/ui/avatar/index.js";
-    import * as Sidebar from "$lib/components/ui/sidebar/index.js";
-    import { useSidebar } from "$lib/components/ui/sidebar/index.js";
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
     import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
+    import * as Sidebar from "$lib/components/ui/sidebar/index.js";
+    import { useSidebar } from "$lib/components/ui/sidebar/index.js";
     import { auth } from "$lib/stores/auth.svelte";
+    import BadgeCheck from "lucide-svelte/icons/badge-check";
+    import Bell from "lucide-svelte/icons/bell";
+    import CreditCard from "lucide-svelte/icons/credit-card";
 
     let { user }: { user: { name: string; email: string; avatar: string } } =
         $props();
@@ -34,19 +30,11 @@
     <Sidebar.MenuItem>
         <DropdownMenu.Root>
             <DropdownMenu.Trigger>
-                {#snippet child({ props })}
-                    <Sidebar.MenuButton
-                        {...props}
-                        size="lg"
-                        class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground m-2"
+                <Avatar.Root class="rounded-lg  h-8 w-8">
+                    <Avatar.Fallback class="rounded-xl text-sm"
+                        >{user.avatar}</Avatar.Fallback
                     >
-                        <Avatar.Root class="rounded-lg h-full w-full">
-                            <Avatar.Fallback class="rounded-lg"
-                                >{user.avatar}</Avatar.Fallback
-                            >
-                        </Avatar.Root>
-                    </Sidebar.MenuButton>
-                {/snippet}
+                </Avatar.Root>
             </DropdownMenu.Trigger>
             <DropdownMenu.Content
                 class="w-[--bits-dropdown-menu-anchor-width] min-w-56 rounded-lg"

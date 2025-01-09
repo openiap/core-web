@@ -4,8 +4,10 @@
 </script>
 
 <Dialog.Root>
-    <Dialog.Trigger aria-label="Search">
-            <Search />
+    <Dialog.Trigger aria-label="Search" class="h-30 w-30">
+        <div class="dark:bg-darkiconbg dark:text-darkicontext p-2 rounded-[10px]">
+            <Search size={16} />
+        </div>
     </Dialog.Trigger>
     <Dialog.Content>
         <Dialog.Header>

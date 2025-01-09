@@ -11,7 +11,14 @@
 	import Moon from "lucide-svelte/icons/moon";
 	import Sun from "lucide-svelte/icons/sun";
 	import { toggleMode } from "mode-watcher";
+	import * as Breadcrumb from "$lib/components/ui/breadcrumb/index.js";
+	import Separator from "$lib/components/ui/separator/separator.svelte";
+	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
+	import { page } from "$app/stores";
 
+	let pagename = $derived(() =>
+		$page.url.pathname.replace(base, "").replace("/", ""),
+	);
 	function login() {
 		window.localStorage.setItem("redirect", window.location.pathname);
 		auth.login();
@@ -25,33 +32,59 @@
 	}
 </script>
 
-<header>
+<header 
+class="flex h-16 shrink-0 items-center justify-between px-4 rounded mx-2.5 my-2.5"
+>
+	<div class="flex items-center">
+		<Sidebar.Trigger class="-ml-1" />
+		<Separator orientation="vertical" class="mr-2 h-4" />
+		<Breadcrumb.Root>
+			<Breadcrumb.List>
+				{#each pagename().split("/") as page, index}
+					<Breadcrumb.Item class="hidden md:block">
+						{#if pagename().split("/").length - 1 !== index}
+							<Breadcrumb.Link
+								href="{base}/{page.trim()}"
+								>{page.trim()}</Breadcrumb.Link
+							>
+						{:else}
+							{page.trim()}
+						{/if}
+					</Breadcrumb.Item>
+					{#if pagename().split("/").length - 1 !== index}
+						<Breadcrumb.Separator
+							class="hidden md:block"
+						/>
+					{/if}
+				{/each}
+			</Breadcrumb.List>
+		</Breadcrumb.Root>
+	</div>
 	<div class="flex items-center justify-center">
-		<div class="flex space-x-2 items-center">
+		<div class="flex space-x-5 items-center">
 			<Search />
-			<a href="https://github.com/openiap">
-				<Button
-					variant="outline"
-					aria-label="Visit us at Github"
-					size="icon"
-					class="bg-indigo-600 hover:opacity-80 text-white"
-				>
-					<Github width="100%" />
-				</Button>
-			</a>
 			<Button
-				variant="outline"
+				onclick={() =>
+					window.open("https://github.com/openiap", "_blank")}
+				variant="icon"
+				size="iconnew"
+				aria-label="Visit us at Github"
+			>
+				<Github />
+			</Button>
+			<Button
+				variant="icon"
+				size="iconnew"
 				aria-label="Clear cookies"
 				onclick={reset}
-				class="bg-indigo-600 hover:opacity-80 text-white"
 			>
 				<Trash2 />
 			</Button>
-			<HotkeyButton
+			<Button
 				onclick={toggleMode}
-				variant="outline"
+				variant="icon"
+				size="iconnew"
 				aria-label="Toggle darkmode"
-				class="bg-indigo-600 hover:opacity-80 text-white"
 			>
 				<Sun
 					class="rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
@@ -60,7 +93,7 @@
 					class="absolute rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
 				/>
 				<span class="sr-only">Toggle theme</span>
-			</HotkeyButton>
+			</Button>
 
 			{#if auth.isAuthenticated == true}
 				<NavUser
@@ -80,14 +113,3 @@
 		</div>
 	</div>
 </header>
-
-<style>
-	header {
-		display: flex;
-		justify-content: space-between;
-	}
-
-	a:hover {
-		color: var(--color-theme-1);
-	}
-</style>

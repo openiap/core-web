@@ -7,6 +7,7 @@
     import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
     import Plus from "lucide-svelte/icons/plus";
     import type { Workspace } from "../../routes/workspace/schema";
+    import { Building, ChevronDown } from "lucide-svelte";
     let {
         workspaces,
         currentworkspace,
@@ -35,11 +36,12 @@
                     <Sidebar.MenuButton
                         {...props}
                         size="lg"
-                        class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                        class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground border-[1px] border-tabledarkborder rounded-xl px-4"
                     >
                         {#if activeWorkspacename() != ""}
+                        <Building/>
                             <div
-                                class="grid flex-1 text-left text-sm leading-tight"
+                                class="grid flex-1 text-left text-sm leading-tight justify-between"
                             >
                                 <span class="truncate font-semibold">
                                     {activeWorkspacename()}
@@ -50,9 +52,12 @@
                             </div>
                             <ChevronsUpDown class="ml-auto" />
                         {:else}
-                            <span class="truncate font-semibold"
-                                >Select workspace</span
-                            >
+                            <div class="flex text-sm items-center">
+                                <span class="truncate font-semibold">
+                                    Select workspace
+                                </span>
+                            </div>
+                            <ChevronDown class="ml-auto" />
                         {/if}
                     </Sidebar.MenuButton>
                 {/snippet}
@@ -89,7 +94,7 @@
                         onSelect={() => goto(base + "/workspace")}
                         class="gap-2 p-2"
                     >
-                        All Workspace
+                        All Workspaces
                     </DropdownMenu.Item>
                 {/if}
                 <DropdownMenu.Item

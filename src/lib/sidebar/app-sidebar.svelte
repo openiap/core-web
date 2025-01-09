@@ -122,6 +122,7 @@
 	import type { ComponentProps } from "svelte";
 	import type { Workspace } from "../../routes/workspace/schema";
 	import NavWorkspace from "./nav-workspace.svelte";
+	import { MessageSquare } from "lucide-svelte";
 	// Extend the ComponentProps type to include the workspaces property
 	type ExtendedComponentProps = ComponentProps<typeof Sidebar.Root> & {
 		workspaces?: Workspace[];
@@ -203,11 +204,15 @@
 	});
 </script>
 
-<Sidebar.Root bind:ref {...restProps}>
+<Sidebar.Root
+	bind:ref
+	{...restProps}
+	class="border-r border-white dark:border-darkheader"
+>
 	<div
-		class="bg-gradient-to-b from-lightgradident1 to-lightgradident2 dark:bg-gradient-to-b dark:from-darkgradident1 dark:to-darkgradident2 rounded my-2.5 mx-3 h-full overflow-auto"
+		class="my-2.5 mx-3 h-full overflow-auto"
 	>
-		<Sidebar.Header class="border-sidebar-border h-16 border-b">
+		<Sidebar.Header class=" mt-2 ms-6 ">
 			<NavWorkspace
 				{workspaces}
 				{currentworkspace}
@@ -217,7 +222,7 @@
 		<Sidebar.Content>
 			{#each navMain as group (group.title)}
 				{#if !group.hidden}
-					<Sidebar.Group class="ps-4">
+					<Sidebar.Group class="ps-8">
 						{#if group.title && group.title != ""}
 							<Sidebar.GroupLabel
 								class="font-bold text-black dark:text-white"
@@ -228,7 +233,9 @@
 							<Sidebar.Menu>
 								{#each group.items as item (item.title)}
 									{#if !item.hidden}
-										<Sidebar.MenuItem>
+										<Sidebar.MenuItem
+											class="rounded-[10px] hover:rounded-[10px]"
+										>
 											<Sidebar.MenuButton
 												isActive={$page.url.pathname ===
 													item.url}
@@ -240,13 +247,17 @@
 															{...props}
 															target="_blank"
 															rel="noopener noreferrer"
-															>{item.title}</a
+														>
+															<MessageSquare />
+															{item.title}</a
 														>
 													{:else}
 														<a
 															href={item.url}
 															{...props}
-															>{item.title}</a
+														>
+															<MessageSquare />
+															{item.title}</a
 														>
 													{/if}
 												{/snippet}
@@ -260,6 +271,5 @@
 				{/if}
 			{/each}
 		</Sidebar.Content>
-		<Sidebar.Rail />
 	</div>
 </Sidebar.Root>

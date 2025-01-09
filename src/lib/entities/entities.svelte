@@ -428,7 +428,7 @@
 </script>
 
 <div class="text-red-500">{data.errormessage}</div>
-<div class="border border-gray-400 rounded">
+<div class="border border-tabledarkborder rounded">
 	<Table.Root>
 		{#if entities.length === 0}
 			<Table.Caption class="mb-2">No data found.</Table.Caption>
@@ -439,7 +439,7 @@
 		{/if}
 		<Table.Header>
 			<Table.Row
-				class="border-b border-gray-400  justify-center item-center"
+				class="border-b border-tabledarkborder  justify-center item-center"
 			>
 				{#if multi_select}
 					<Table.Head
@@ -487,7 +487,7 @@
 		<Table.Body>
 			{#each entities as item}
 				<Table.Row
-					class="border-b border-gray-400"
+					class="border-b border-tabledarkborder"
 					ondblclick={() => {
 						single_item_click(item);
 					}}
