@@ -44,7 +44,7 @@
     }
   }
   function single_item_click(item: any) {
-    goto(base + `/${page}/${item._id}`);
+    goto(base + `/entities/fs.files/${item._id}`)
   }
 
   function handleChange(e: any) {
@@ -182,7 +182,7 @@
     <Button
       title="Edit"
       aria-label="edit"
-      onclick={() => goto(base + `/entities/${item._id}/edit`)}
+      onclick={() => single_item_click(item)}
       size="icon"
       variant="secondary"
     >

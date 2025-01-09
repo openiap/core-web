@@ -39,7 +39,7 @@
   {#snippet action(item: any)}
     <Button
       aria-label="view"
-      onclick={() => goto(base + `/${page}/${item._id}`)}
+      onclick={() => single_item_click(item)}
       size="icon"
       variant="secondary"
       title="view"

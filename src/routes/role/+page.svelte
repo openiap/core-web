@@ -65,21 +65,21 @@
     {item.members?.length}
   {/snippet}
   {#snippet action(item: any)}
-  <Button
-  aria-label="edit"
-  onclick={() => goto(base + `/${page}/${item._id}`)}
-  size="icon"
-  variant="secondary"
->
-  <Pencil />
-</Button>
-<Button
-  aria-label="delete"
-  onclick={() => deleteitem(item)}
-  size="icon"
-  variant="destructive"
->
-  <Trash2 />
-</Button>
+    <Button
+      aria-label="edit"
+      onclick={() => single_item_click(item)}
+      size="icon"
+      variant="secondary"
+    >
+      <Pencil />
+    </Button>
+    <Button
+      aria-label="delete"
+      onclick={() => deleteitem(item)}
+      size="icon"
+      variant="destructive"
+    >
+      <Trash2 />
+    </Button>
   {/snippet}
 </Entities>

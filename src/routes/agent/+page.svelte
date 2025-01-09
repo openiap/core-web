@@ -9,18 +9,18 @@
   import { Entities } from "$lib/entities/index.js";
   import Statuscard from "$lib/statuscard/statuscard.svelte";
   import {
-      Box,
-      DollarSign,
-      EllipsisVertical,
-      Pencil,
-      Play,
-      Plus,
-      RefreshCcw,
-      Square,
-      Trash2,
-      User,
-      Webhook,
-      Wrench
+    Box,
+    DollarSign,
+    EllipsisVertical,
+    Pencil,
+    Play,
+    Plus,
+    RefreshCcw,
+    Square,
+    Trash2,
+    User,
+    Webhook,
+    Wrench,
   } from "lucide-svelte";
 
   import { goto } from "$app/navigation";
@@ -128,20 +128,20 @@
   async function getPods() {
     try {
       if (knownpods.length == 0) {
-      knownpods = JSON.parse(
-        await auth.client.CustomCommand({ command: "getagentpods" }),
-      );
-    }
-    if (clients.length == 0) {
-      clients = JSON.parse(
-        await auth.client.CustomCommand({ command: "getclients" }),
-      );
-    }
+        knownpods = JSON.parse(
+          await auth.client.CustomCommand({ command: "getagentpods" }),
+        );
+      }
+      if (clients.length == 0) {
+        clients = JSON.parse(
+          await auth.client.CustomCommand({ command: "getclients" }),
+        );
+      }
 
-    for (var x = 0; x < entities.length; x++) {
-      getStatus(entities[x]);
-    }
-    entities = entities;
+      for (var x = 0; x < entities.length; x++) {
+        getStatus(entities[x]);
+      }
+      entities = entities;
     } catch (error: any) {
       toast.error("Error while getting pods", {
         description: error.message,
@@ -159,7 +159,12 @@
       toast.success("Deleted successfully", {
         description: "",
       });
-      entities = await datacomponent.GetData(page, collectionname, query, auth.access_token);
+      entities = await datacomponent.GetData(
+        page,
+        collectionname,
+        query,
+        auth.access_token,
+      );
     } catch (error: any) {
       toast.error("Error while deleting", {
         description: error.message,
@@ -195,7 +200,12 @@
     title="reload"
     variant="default"
     onclick={async () => {
-      entities = await datacomponent.GetData(page, collectionname, query, auth.access_token);
+      entities = await datacomponent.GetData(
+        page,
+        collectionname,
+        query,
+        auth.access_token,
+      );
       await getPods();
     }}
   >
@@ -211,7 +221,12 @@
         value="All"
         id="r1"
         onclick={async () => {
-          entities = await datacomponent.GetData(page, collectionname, query, auth.access_token);
+          entities = await datacomponent.GetData(
+            page,
+            collectionname,
+            query,
+            auth.access_token,
+          );
           getPods();
         }}
       />
@@ -222,10 +237,15 @@
         value="Daemon"
         id="r2"
         onclick={async () => {
-          entities = await datacomponent.GetData(page, collectionname, {
-            _type: "agent",
-            daemon: true,
-          }, auth.access_token);
+          entities = await datacomponent.GetData(
+            page,
+            collectionname,
+            {
+              _type: "agent",
+              daemon: true,
+            },
+            auth.access_token,
+          );
           getPods();
         }}
       />
@@ -236,7 +256,12 @@
         value="Pods"
         id="r3"
         onclick={async () => {
-          const result = await datacomponent.GetData(page, collectionname, query, auth.access_token);
+          const result = await datacomponent.GetData(
+            page,
+            collectionname,
+            query,
+            auth.access_token,
+          );
           entities = result.filter((x: any) =>
             knownpods.some((y: any) => x._id === y.metadata.labels.agentid),
           );
@@ -250,10 +275,15 @@
         value="Docker"
         id="r4"
         onclick={async () => {
-          entities = await datacomponent.GetData(page, collectionname, {
-            _type: "agent",
-            docker: true,
-          }, auth.access_token);
+          entities = await datacomponent.GetData(
+            page,
+            collectionname,
+            {
+              _type: "agent",
+              docker: true,
+            },
+            auth.access_token,
+          );
           getPods();
         }}
       />
@@ -264,10 +294,15 @@
         value="Assistant"
         id="r5"
         onclick={async () => {
-          entities = await datacomponent.GetData(page, collectionname, {
-            _type: "agent",
-            assistant: true,
-          }, auth.access_token);
+          entities = await datacomponent.GetData(
+            page,
+            collectionname,
+            {
+              _type: "agent",
+              assistant: true,
+            },
+            auth.access_token,
+          );
           getPods();
         }}
       />
@@ -339,7 +374,7 @@
         <DropdownMenu.Content class="w-56">
           <DropdownMenu.Item
             class="cursor-pointer"
-            onclick={() => goto(base + `/${page}/${item._id}`)}
+            onclick={() => single_item_click(item)}
           >
             <Pencil class="mr-2 size-4" />
             <span>Edit</span>

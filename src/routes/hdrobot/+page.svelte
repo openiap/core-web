@@ -43,7 +43,7 @@
     }
   }
   function single_item_click(item: any) {
-    goto(base + `/${page}/${item._id}`);
+    goto(base + `/entities/hdrobots/${item._id}`);
   }
   async function handleAccept() {
     try {
@@ -51,7 +51,12 @@
       toast.success("Deleted successfully", {
         description: "",
       });
-      entities = await datacomponent.GetData(page, collectionname, query, auth.access_token);
+      entities = await datacomponent.GetData(
+        page,
+        collectionname,
+        query,
+        auth.access_token,
+      );
     } catch (error: any) {
       toast.error("Error while deleting", {
         description: error.message,
@@ -74,7 +79,12 @@
       toast.success("Updated successfully", {
         description: "",
       });
-      entities = await datacomponent.GetData(page, collectionname, query, auth.access_token);
+      entities = await datacomponent.GetData(
+        page,
+        collectionname,
+        query,
+        auth.access_token,
+      );
     } catch (error: any) {
       undoToggle();
       toast.error("Error while updating", {
@@ -114,7 +124,7 @@
       ></Switch>
       <Button
         aria-label="edit"
-        onclick={() => goto(base + `/entities/hdrobots/edit/${item._id}`)}
+        onclick={() => single_item_click(item)}
         size="icon"
         variant="secondary"
       >

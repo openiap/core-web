@@ -87,7 +87,7 @@
     <div class="flex items-center space-x-2">
       <Button
         aria-label="edit"
-        onclick={() => goto(base + `/form/${item._id}`)}
+        onclick={() => single_item_click(item)}
         size="icon"
         variant="secondary"
       >

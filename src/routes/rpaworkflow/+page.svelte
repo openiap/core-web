@@ -41,7 +41,7 @@
     }
   }
   function single_item_click(item: any) {
-    goto(base + `/${page}/${item._id}`);
+    goto(base + `/entities/hdrobots/${item._id}`);
   }
   async function handleAccept() {
     try {
@@ -78,7 +78,7 @@
     <div class="flex items-center space-x-2">
       <Button
         aria-label="edit"
-        onclick={() => goto(base + `/entities/hdrobots/edit/${item._id}`)}
+        onclick={() => single_item_click(item)}
         size="icon"
         variant="secondary"
       >
