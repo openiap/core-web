@@ -1,21 +1,20 @@
 <script lang="ts" module>
-  export let page = "customer";
+  export let page = "billingaccount";
   export let collectionname = "users";
-  export let query = { _type: "customer" };
+  export let query = { _type: "billingaccount" };
 </script>
 
 <script lang="ts">
-  import { Entities } from "$lib/entities/index.js";
-  import { Pencil, Plus, Trash2 } from "lucide-svelte";
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
-  import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import Button from "$lib/components/ui/button/button.svelte";
   import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
-  import { data as data1 } from "$lib/entities/data.svelte.js";
+  import { data as data1, data as datacomponent } from "$lib/entities/data.svelte.js";
+  import { Entities } from "$lib/entities/index.js";
   import Searchinput from "$lib/searchinput/searchinput.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
+  import { Pencil, Plus, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
@@ -66,12 +65,12 @@
 
 <Hotkeybutton
   class="mb-4"
-  aria-label="Add customer"
+  aria-label="Create Billing Account"
   variant="default"
   onclick={() => goto(base + `/${page}/new`)}
 >
   <Plus />
-  Add {page}</Hotkeybutton
+  Create Billing Account</Hotkeybutton
 >
 <Searchinput bind:searchstring />
 

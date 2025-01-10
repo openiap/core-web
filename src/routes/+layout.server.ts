@@ -20,7 +20,6 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 		let entities: any[] = [];
 		const id = params.id;
 		datacomponent.loadsettings(page);
-		let settings = datacomponent.getpagesettingsreactless();
 		switch (page) {
 			case base + "/agent":
 				entities = await datacomponent.GetData(page, "agents", { _type: "agent" }, access_token);
@@ -30,11 +29,7 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 				entities = await datacomponent.GetData(page, "audit", { _type: "auditlog" }, access_token);
 				total_count = await datacomponent.GetCount(page, "audit", { _type: "auditlog" }, access_token);
 				break;
-			case base + "/billing":
-				entities = await datacomponent.GetData(page, "users", { _type: "customer" }, access_token);
-				total_count = await datacomponent.GetCount(page, "users", { _type: "customer" }, access_token);
-				break;
-			case base + "/client":
+		case base + "/client":
 				entities = JSON.parse(await auth.client.CustomCommand({ command: "getclients", jwt: access_token, }));
 				total_count = entities.length;
 				break;
@@ -46,13 +41,13 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 				entities = await datacomponent.GetData(page, "openrpa", { _type: "credential" }, access_token);
 				total_count = await datacomponent.GetCount(page, "openrpa", { _type: "credential" }, access_token);
 				break;
-			case base + "/customer":
-				entities = await datacomponent.GetData(page, "users", { _type: "customer" }, access_token);
-				total_count = await datacomponent.GetCount(page, "users", { _type: "customer" }, access_token);
+			case base + "/billingaccount":
+				entities = await datacomponent.GetData(page, "users", { _type: "customer" }, access_token, false);
+				total_count = await datacomponent.GetCount(page, "users", { _type: "customer" }, access_token, false);
 				break;
 			case base + "/entities":
-				entities = await datacomponent.GetData(page, "users", { _type: "customer" }, access_token);
-				total_count = await datacomponent.GetCount(page, "users", { _type: "customer" }, access_token);
+				entities = await datacomponent.GetData(page, "users", { }, access_token);
+				total_count = await datacomponent.GetCount(page, "users", { }, access_token);
 				break;
 			case base + "/files":
 				entities = await datacomponent.GetData(page, "fs.files", {}, access_token);
@@ -103,12 +98,14 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 				total_count = await datacomponent.GetCount(page, "users", { _type: "workspace" }, access_token, false);
 				break;
 			case base + `/workspace/${params.id}/member`:
+				usersettings.currentworkspace = params.id as any;
 				entities = await datacomponent.GetData(page, "users", { _type: "member", workspaceid: params.id, status: { "$ne": "rejected" } }, access_token);
 				total_count = await datacomponent.GetCount(page, "users", { _type: "member", workspaceid: params.id, status: { "$ne": "rejected" } }, access_token);
 				break;
 			case base + `/workspace/${params.id}/member`:
-				entities = await datacomponent.GetData(page, "users", { _type: "customer" }, access_token, false);
-				total_count = await datacomponent.GetCount(page, "users", { _type: "customer" }, access_token, false);
+				usersettings.currentworkspace = params.id as any;
+				entities = await datacomponent.GetData(page, "users", { _type: "member" }, access_token, false);
+				total_count = await datacomponent.GetCount(page, "users", { _type: "member" }, access_token, false);
 				break;
 			case base + "/workspace/invites":
 				const userid = auth.profile.sub;
@@ -122,6 +119,7 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 			default:
 				break;
 		}
+		let settings = datacomponent.getpagesettingsreactless();
 		console.log(page, entities.length, workspaces.length);
 		return { protocol, domain, client_id, profile, access_token, wsurl, origin, entities, workspaces, id, settings, total_count };
 	} catch (error) {

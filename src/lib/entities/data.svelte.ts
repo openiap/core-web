@@ -239,7 +239,7 @@ class entitiesdata {
 				return ["name", "collection", "_createdby", "_created", "_modified"];
 			case "files":
 				return ["filename", "metadata.name", "length", "metadata._created"];
-			case "customer":
+			case "billingaccount":
 				return ["name", "dbusage", "_created", "_modified"];
 			case "credential":
 				return ["name", "username", "_created", "_modified"];
