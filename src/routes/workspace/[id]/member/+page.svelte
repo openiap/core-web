@@ -20,6 +20,7 @@
 
   let { data } = $props();
   datacomponent.parsesettings(data.settings);
+  usersettings.currentworkspace = data.id as any;
   let searchstring = $state(datacomponent.settings?.searchstring);
   let query = $derived(() => ({
     _type: "member",
@@ -99,11 +100,6 @@
 
 <Searchinput bind:searchstring />
 
-<HotkeyButton
-  aria-label="Invite"
-  onclick={() => goto(base + `/workspace/${data.id}/invite`)}
-  >Invite user to workspace</HotkeyButton
->
 <Entities
   {collectionname}
   query={query()}

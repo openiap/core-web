@@ -68,11 +68,6 @@
   </Form.Field>
 
   <Form.Button aria-label="Create workspace">Create Invitation</Form.Button>
-  <HotkeyButton
-    aria-label="Cancel"
-    onclick={() => goto(base + `/${key}/${$formData.workspaceid}`)}
-    >Cancel</HotkeyButton
-  >
 </form>
 
 {#if formData != null && showdebug == true}
