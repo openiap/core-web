@@ -1,6 +1,9 @@
 <script lang="ts" module>
 	import type { WithElementRef } from "bits-ui";
-	import type { HTMLAnchorAttributes, HTMLButtonAttributes } from "svelte/elements";
+	import type {
+		HTMLAnchorAttributes,
+		HTMLButtonAttributes,
+	} from "svelte/elements";
 	import { type VariantProps, tv } from "tailwind-variants";
 	import { install, uninstall } from "@github/hotkey";
 	import { onMount } from "svelte";
@@ -10,21 +13,27 @@
 		base: "ring-offset-background focus-visible:ring-ring inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
 		variants: {
 			variant: {
-				default: "bg-gray-400 text-primary-foreground hover:bg-primary/90",
-				destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+				default:
+					"bg-gray-400 text-primary-foreground hover:bg-primary/90",
+				destructive:
+					"bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:bg-destructive/90 dark:bg-darkbgred dark:text-darktextred border-[1px] border-darkborderred",
 				outline:
 					"border-input bg-background hover:bg-accent hover:text-accent-foreground border",
-				secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+				secondary:
+					"bg-secondary text-secondary-foreground hover:bg-secondary/80",
 				ghost: "hover:bg-accent hover:text-accent-foreground",
 				link: "text-primary underline-offset-4 hover:underline",
 				ghostfull: "",
-				icon:"dark:bg-darkiconbg dark:text-darkicontext "
+				icon: "dark:bg-bw700 dark:text-bw400",
+				new: "dark:bg-bw850 dark:text-bw100 border-[1px] border-bw600",
 			},
 			size: {
 				default: "h-10 px-4 py-2",
 				sm: "h-9 rounded-md px-3",
 				lg: "h-11 rounded-md px-8",
 				icon: "h-10 w-10",
+				iconnew: "h-30 w-30 rounded-[10px]",
+				new: "h-7 px-2.5 py-1.5 rounded-[10px]",
 			},
 		},
 		defaultVariants: {
@@ -59,20 +68,18 @@
 
 	onMount(() => {
 		$effect(() => {
-			if(ref == null) return;
-			if(ref.dataset && ref.dataset.shortcut) {
-				install(ref, ref.dataset.shortcut)
+			if (ref == null) return;
+			if (ref.dataset && ref.dataset.shortcut) {
+				install(ref, ref.dataset.shortcut);
 			}
-
 		});
 	});
 	onDestroy(() => {
-		if(ref == null) return;
-		if(ref.dataset && ref.dataset.shortcut) {
-			uninstall(ref)
+		if (ref == null) return;
+		if (ref.dataset && ref.dataset.shortcut) {
+			uninstall(ref);
 		}
 	});
-
 </script>
 
 {#if href}

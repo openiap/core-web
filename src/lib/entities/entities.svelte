@@ -18,7 +18,13 @@
 	import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
 	import { usersettings } from "$lib/stores/usersettings.svelte.js";
 	import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
-	import { Trash2 } from "lucide-svelte";
+	import {
+		ArrowLeft,
+		ArrowRight,
+		MoveLeft,
+		MoveRight,
+		Trash2,
+	} from "lucide-svelte";
 	import { toast } from "svelte-sonner";
 	import { data } from "./data.svelte.js";
 	import { browser } from "$app/environment";
@@ -428,7 +434,7 @@
 </script>
 
 <div class="text-red-500">{data.errormessage}</div>
-<div class="border border-tabledarkborder rounded">
+<div class="border border-bw500 rounded">
 	<Table.Root>
 		{#if entities.length === 0}
 			<Table.Caption class="mb-2">No data found.</Table.Caption>
@@ -439,7 +445,7 @@
 		{/if}
 		<Table.Header>
 			<Table.Row
-				class="border-b border-tabledarkborder  justify-center item-center"
+				class="border-b border-bw500  justify-center item-center"
 			>
 				{#if multi_select}
 					<Table.Head
@@ -487,7 +493,7 @@
 		<Table.Body>
 			{#each entities as item}
 				<Table.Row
-					class="border-b border-tabledarkborder"
+					class="border-b border-bw500"
 					ondblclick={() => {
 						single_item_click(item);
 					}}
@@ -613,57 +619,73 @@
 	{/if}
 </div>
 
-<Custompagination
+<!-- <Custompagination
 	controlledPage
 	{page_index}
 	{total_count}
 	page={page_index + 1}
+	pagename={page}
 	onPageChange={(p: any) => {
 		page_index = p - 1;
 		data.settings.page_index = page_index;
 		data.persist();
 		GetData();
 	}}
-/>
+/> -->
 
-<!-- <div class="flex flex-col justify-center items-center space-y-2">
+<div class="flex justify-between items-center space-y-2">
+	<HotkeyButton
+		size="new"
+		variant="new"
+		data-shortcut="ArrowLeft"
+		onclick={() => {
+			page_index = page_index - 1;
+			data.settings.page_index = page_index;
+			data.persist();
+			GetData();
+		}}
+		disabled={page_index <= 0}
+	>
+		<div class="flex items-center space-x-2">
+			<div>
+				<MoveLeft class="text-bw500"/>
+			</div>
+			<div>Previous</div>
+		</div>
+	</HotkeyButton>
 	<div class="mt-4">
 		Page {page_index + 1}
 		{#if entities.length == total_count}
-			showing {total_count} items
+			showing {total_count}
 		{:else}
-			showing item {page_index * 5 + 1}
+			showing {page_index * 5 + 1}
 			{#if entities.length > 1}
 				to {page_index * 5 + entities.length}
 			{/if}
 			of {total_count}
+			{page.includes("entities") ? "items" : page + "s"}
 		{/if}
 	</div>
-	<div>
-		<HotkeyButton
-			data-shortcut="ArrowLeft"
-			onclick={() => {
-				page_index = page_index - 1;
-				data.settings.page_index = page_index;
-				data.persist();
-				GetData();
-			}}
-			disabled={page_index <= 0}>Previous</HotkeyButton
-		>
-		<HotkeyButton
-			data-shortcut="ArrowRight"
-			onclick={() => {
-				page_index = page_index + 1;
-				data.settings.page_index = page_index;
-				data.persist();
-				GetData();
-			}}
-			disabled={entities.length < 5 || page_index * 5 >= total_count}
-		>
-			Next</HotkeyButton
-		>
-	</div>
-</div> -->
+	<HotkeyButton
+		size="new"
+		variant="new"
+		data-shortcut="ArrowRight"
+		onclick={() => {
+			page_index = page_index + 1;
+			data.settings.page_index = page_index;
+			data.persist();
+			GetData();
+		}}
+		disabled={entities.length < 5 || page_index * 5 >= total_count}
+	>
+		<div class="flex items-center space-x-2">
+			<div> Next</div>
+			<div>
+				<MoveRight class="text-bw500"/>
+			</div>
+		</div>
+	</HotkeyButton>
+</div>
 
 <HotkeyButton
 	data-shortcut="Control+a,Meta+a"

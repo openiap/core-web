@@ -12,6 +12,7 @@
     Box,
     DollarSign,
     EllipsisVertical,
+    Filter,
     Pencil,
     Play,
     Plus,
@@ -34,6 +35,7 @@
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import { toast } from "svelte-sonner";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
 
   let { data } = $props();
   datacomponent.parsesettings(data.settings);
@@ -174,7 +176,62 @@
   getPods();
 </script>
 
-<div
+<div class="flex justify-between">
+  <div class="flex gap-2 w-full">
+    <Searchinput {searchstring} />
+    <HotkeyButton
+      size="new"
+      variant="new"
+      aria-label="add"
+      class="border-dashed dark:text-bw600"
+    >
+      <Filter />
+      Filter</HotkeyButton
+    >
+  </div>
+
+  <div class="flex gap-2">
+    <HotkeyButton
+      size="new"
+      variant="new"
+      aria-label="add"
+      onclick={() => goto(base + `/${page}/new`)}
+    >
+      <Plus />
+      Add {page}</HotkeyButton
+    >
+    <Hotkeybutton
+      aria-label="packages"
+      title="package"
+      size="new"
+      variant="new"
+      onclick={() => goto(base + `/package`)}
+    >
+      <Box />
+      Packages</Hotkeybutton
+    >
+    <Hotkeybutton
+      aria-label="reload"
+      title="reload"
+      size="new"
+      variant="new"
+      onclick={async () => {
+        entities = await datacomponent.GetData(
+          page,
+          collectionname,
+          query,
+          auth.access_token,
+        );
+        await getPods();
+      }}
+    >
+      <RefreshCcw />
+      Reload</Hotkeybutton
+    >
+  </div>
+</div>
+
+<!-- <div
   class="mb-4 border-b border-gray-300 flex justify-start pb-4 space-x-4 max-w-min"
 >
   <Hotkeybutton
@@ -212,9 +269,9 @@
     <RefreshCcw />
     Reload</Hotkeybutton
   >
-</div>
+</div> -->
 
-<div class="my-6">
+<div class="mb-4">
   <RadioGroup.Root value="All" class="flex space-x-4">
     <div class="flex items-center space-x-2">
       <RadioGroup.Item
@@ -310,8 +367,6 @@
     </div>
   </RadioGroup.Root>
 </div>
-
-<Searchinput bind:searchstring />
 
 <Entities
   {collectionname}
