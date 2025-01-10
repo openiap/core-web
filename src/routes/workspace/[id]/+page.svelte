@@ -75,6 +75,7 @@
           await auth.client.CustomCommand({
             command: "ensurebilling",
             data: JSON.stringify(billingdata),
+            jwt: auth.access_token
           }),
         );
         console.log("billing", billing);
@@ -96,6 +97,7 @@
       await auth.client.CustomCommand({
         command: "createresourceusage",
         data: JSON.stringify(data),
+        jwt: auth.access_token
       });
       toast.success("Plan added");
       // goto(base + "/");
@@ -128,6 +130,7 @@
       await auth.client.CustomCommand({
         command: "removeresourceusage",
         data: JSON.stringify(data),
+        jwt: auth.access_token
       });
       await new Promise((r) => setTimeout(r, 1000));
 

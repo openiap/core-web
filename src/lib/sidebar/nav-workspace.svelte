@@ -7,7 +7,7 @@
     import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
     import Plus from "lucide-svelte/icons/plus";
     import type { Workspace } from "../../routes/workspace/schema";
-    import { Building, ChevronDown } from "lucide-svelte";
+    import { Building, ChevronDown, Pencil } from "lucide-svelte";
     let {
         workspaces,
         currentworkspace,
@@ -27,7 +27,6 @@
         update_currentworkspace(workspace._id);
     }
 </script>
-
 <Sidebar.Menu>
     <Sidebar.MenuItem>
         <DropdownMenu.Root>
@@ -90,18 +89,29 @@
                 {/each}
                 <DropdownMenu.Separator />
                 {#if workspaces.length > 0}
+                    {#if currentworkspace != ""}
                     <DropdownMenu.Item
-                        onSelect={() => selectWorkspace({ _id: "" } as any)}
-                        class="gap-2 p-2"
-                    >
-                        Unselect Workspace
-                    </DropdownMenu.Item>
+                            onSelect={() => selectWorkspace({ _id: "" } as any)}
+                            class="gap-2 p-2"
+                        >
+                            Unselect Workspace
+                        </DropdownMenu.Item>
+                        {/if}
                     <DropdownMenu.Item
                         onSelect={() => goto(base + "/workspace")}
                         class="gap-2 p-2"
                     >
                         All Workspaces
                     </DropdownMenu.Item>
+                {/if}
+                {#if currentworkspace != ""}
+                <DropdownMenu.Item
+                    onSelect={() => goto(base + "/workspace/" + currentworkspace)}
+                    class="gap-2 p-2 text-muted-foreground font-medium"
+                >
+                    <Pencil class="size-4" />
+                    Edit {activeWorkspacename()}
+                </DropdownMenu.Item>
                 {/if}
                 <DropdownMenu.Item
                     class="gap-2 p-2 cursor-pointer"
