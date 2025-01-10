@@ -43,6 +43,7 @@
       await auth.client.CustomCommand({
         command: "removemember",
         id: item._id,
+        jwt: auth.access_token,
       });
       selected_items = selected_items.filter((i) => i !== item._id);
       toast.success("Deleted successfully", {
@@ -58,7 +59,7 @@
   async function deleteitems(ids: string[]) {
     try {
       for (let id of ids) {
-        await auth.client.CustomCommand({ command: "removemember", id });
+        await auth.client.CustomCommand({ command: "removemember", id, jwt: auth.access_token, });
       }
       entities = await datacomponent.GetData(page, collectionname, query(), auth.access_token);
       selected_items = [];
@@ -135,6 +136,7 @@
           await auth.client.CustomCommand({
             command: "updatemember",
             data: JSON.stringify(item),
+            jwt: auth.access_token,
           });
           toast.success("Updated successfully", {
             description: "",
