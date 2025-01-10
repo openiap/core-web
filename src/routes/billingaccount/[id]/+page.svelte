@@ -52,12 +52,8 @@
 {/if}
 
 <form method="POST" use:enhance>
-  <Form.Button aria-label="submit">Submit</Form.Button>
-  <HotkeyButton aria-label="Back" onclick={() => goto(base + `/${key}`)}
-    >Back</HotkeyButton
-  >
-
-  <Acl bind:value={$formData} />
+  <!-- TODO: I don't beleive we should have ACL on this page ? -->
+  <!-- <Acl bind:value={$formData} /> -->
 
   <Form.Field {form} name="name">
     <Form.Control>
@@ -70,7 +66,7 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Button aria-label="submit">Submit</Form.Button>
+  <Form.Button aria-label="Update Billing account">Update Billing account</Form.Button>
 </form>
 
 {#if formData != null && showdebug == true}

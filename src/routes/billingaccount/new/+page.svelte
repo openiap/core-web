@@ -44,10 +44,6 @@
 {/if}
 
 <form method="POST" use:enhance>
-  <Form.Button aria-label="submit">Submit</Form.Button>
-  <HotkeyButton aria-label="Back" onclick={() => goto(base + `/${key}`)}
-    >Back</HotkeyButton
-  >
   <Form.Field {form} name="name">
     <Form.Control>
       {#snippet children({ props })}
@@ -59,7 +55,7 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Button aria-label="submit">Submit</Form.Button>
+  <Form.Button aria-label="Create Billing Account">Create Billing Account</Form.Button>
 </form>
 
 {#if formData != null && showdebug == true}
