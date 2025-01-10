@@ -257,7 +257,7 @@ class entitiesdata {
 				return ["name", "status", "role", "_modified"];
 			case "/workspace/invites":
 			case "invites":
-				return ["name", "workspacename", "status", "role"];
+				return ["workspacename", "status", "role"];
 			case "formworkflow":
 				return ["name", "_created"];
 			case "rpaworkflow":
