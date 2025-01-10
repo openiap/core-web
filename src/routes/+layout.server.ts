@@ -30,6 +30,10 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 				entities = await datacomponent.GetData(page, "audit", { _type: "auditlog" }, access_token);
 				total_count = await datacomponent.GetCount(page, "audit", { _type: "auditlog" }, access_token);
 				break;
+			case base + "/billing":
+				entities = await datacomponent.GetData(page, "users", { _type: "customer" }, access_token);
+				total_count = await datacomponent.GetCount(page, "users", { _type: "customer" }, access_token);
+				break;
 			case base + "/client":
 				entities = JSON.parse(await auth.client.CustomCommand({ command: "getclients", jwt: access_token, }));
 				total_count = entities.length;
@@ -95,12 +99,16 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 				total_count = await datacomponent.GetCount(page, "users", { _type: "user" }, access_token);
 				break;
 			case base + "/workspace":
-				entities = await datacomponent.GetData(page, "users", { _type: "workspace" }, access_token);
-				total_count = await datacomponent.GetCount(page, "users", { _type: "workspace" }, access_token);
+				entities = await datacomponent.GetData(page, "users", { _type: "workspace" }, access_token, false);
+				total_count = await datacomponent.GetCount(page, "users", { _type: "workspace" }, access_token, false);
 				break;
 			case base + `/workspace/${params.id}/member`:
 				entities = await datacomponent.GetData(page, "users", { _type: "member", workspaceid: params.id, status: { "$ne": "rejected" } }, access_token);
 				total_count = await datacomponent.GetCount(page, "users", { _type: "member", workspaceid: params.id, status: { "$ne": "rejected" } }, access_token);
+				break;
+			case base + `/workspace/${params.id}/member`:
+				entities = await datacomponent.GetData(page, "users", { _type: "customer" }, access_token, false);
+				total_count = await datacomponent.GetCount(page, "users", { _type: "customer" }, access_token, false);
 				break;
 			case base + "/workspace/invites":
 				const userid = auth.profile.sub;
@@ -108,8 +116,8 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 				// const basequery = { _type: "member", "status": { "$in": ["pending", "rejected"] } };
 				const basequery = { _type: "member" };
 				let query: any = { ...basequery, ...{ "$or": [{ "userid": userid }, { "email": email }] } };
-				entities = await datacomponent.GetData(page, "users", query, access_token);
-				total_count = await datacomponent.GetCount(page, "users", query, access_token);
+				entities = await datacomponent.GetData(page, "users", query, access_token, false);
+				total_count = await datacomponent.GetCount(page, "users", query, access_token, false);
 				break;
 			default:
 				break;

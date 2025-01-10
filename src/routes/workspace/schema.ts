@@ -3,17 +3,19 @@ import { z } from 'zod';
 export class Workspace {
   _id: string;
   name: string;
-  billingid: string;
-  admins: string;
-  users: string;
-  price: string;
+  public billingid: string;
+  public admins: string;
+  public users: string;
+  public resourceusageid: string;
+  public productname: string;
   constructor() {
     this._id = "";
     this.name = "";
     this.billingid = "";
     this.admins = "";
     this.users = "";
-    this.price = "";
+    this.resourceusageid = "";
+    this.productname = "Free tier";
   }
 }
 export const newWorkspaceSchema = z.object({

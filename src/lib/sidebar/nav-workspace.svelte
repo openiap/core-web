@@ -47,7 +47,7 @@
                                     {activeWorkspacename()}
                                 </span>
                                 <span class="truncate text-xs"
-                                    >{activeWorkspace()?.price}</span
+                                    >{activeWorkspace()?.productname}</span
                                 >
                             </div>
                             <ChevronsUpDown class="ml-auto" />
@@ -76,10 +76,17 @@
                         onSelect={() => selectWorkspace(workspace)}
                         class="gap-2 p-2"
                     >
+
+                    <div
+                    class="grid flex-1 text-left text-sm leading-tight justify-between"
+                >
+                    <span class="truncate font-semibold">
                         {workspace.name}
-                        <DropdownMenu.Shortcut
-                            >⌘{index + 1}</DropdownMenu.Shortcut
-                        >
+                    </span>
+                    <span class="truncate text-xs"
+                        >{workspace.productname}</span
+                    >
+                </div>
                     </DropdownMenu.Item>
                 {/each}
                 <DropdownMenu.Separator />

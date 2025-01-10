@@ -28,7 +28,7 @@ class entitiesdata {
 	hide_empty_on_sort = true;
 	errormessage = "";
 
-	async GetData(page: string, collectionname: string, query: any, access_token: string) {
+	async GetData(page: string, collectionname: string, query: any, access_token: string, workspacefilter: boolean = true) {
 		let orderby = this.getOrderBy();
 		let usequery = this.createQuery(this.settings.searchstring, query);
 		let top = 5;
@@ -41,8 +41,10 @@ class entitiesdata {
 			return [];
 		}
 		let queryas = undefined;
-		if(usersettings.currentworkspace != null && usersettings.currentworkspace != "") {
-			queryas = usersettings.currentworkspace;
+		if(workspacefilter == true) {
+			if(usersettings.currentworkspace != null && usersettings.currentworkspace != "") {
+				queryas = usersettings.currentworkspace;
+			}
 		}
 		const entities = await auth.client.Query<any>({
 			collectionname: collectionname,
@@ -56,7 +58,7 @@ class entitiesdata {
 		// console.log("GetData", collectionname, "page:", this.settings.page, "idx:", this.settings.page_index, "res:", entities.length, "skip:", skip, "token:", access_token?.substring(0, 10));
 		return entities;
 	}
-	async GetCount(page: string, collectionname: string, query: any, access_token: string) {
+	async GetCount(page: string, collectionname: string, query: any, access_token: string, workspacefilter: boolean = true) {
 		let total_count = 99999;
 		if (auth.isConnected == false) {
 			return total_count;
@@ -65,17 +67,25 @@ class entitiesdata {
 			return total_count;
 		}
 		let usequery = this.createQuery(this.settings.searchstring, query);
+		let queryas = undefined;
+		if(workspacefilter == true) {
+			if(usersettings.currentworkspace != null && usersettings.currentworkspace != "") {
+				queryas = usersettings.currentworkspace;
+			}
+		}
 		if (["cvr", "cvrfinancial", "cvrperson", "dbusage"].indexOf(collectionname) == -1) {
 			total_count = await auth.client.Count({
 				collectionname,
 				query: usequery,
 				jwt: access_token,
+				queryas,
 			});
 		} else if (browser) {
 			total_count = await auth.client.Count({
 				collectionname,
 				query: usequery,
 				jwt: access_token,
+				queryas,
 			});
 		}
 		return total_count;
@@ -242,7 +252,7 @@ class entitiesdata {
 			case "package":
 				return ["name", "language", "_createdby", "_created"];
 			case "workspace":
-				return ["name", "_created", "_modified"];
+				return ["name", "productname", "_created", "_modified"];
 			case "member":
 				return ["name", "status", "role", "_modified"];
 			case "/workspace/invites":

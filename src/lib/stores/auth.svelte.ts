@@ -7,15 +7,6 @@ import { SvelteStorage } from "./SvelteStorage.svelte";
 const { UserManager, WebStorageStateStore } = pkg;
 // @ts-ignore
 import ws from 'ws';
-
-export class Workspace {
-    public _id: string = "";
-    public name: string = "";
-    public billingid: string = "";
-    public admins: string = "";
-    public users: string = "";
-    public price: string = "";
-}
 class Config {
     wshost: string = "";
     wsurl: string = "";
