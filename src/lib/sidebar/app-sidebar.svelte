@@ -59,13 +59,15 @@
 		grafana,
 	]);
 	const members = new SidebarItem("Members", `${base}/members`, false);
+	const invitemember = new SidebarItem("Invite Member", `${base}/members`, false);
 	const memberships = new SidebarItem(
-		"Memberships",
+		"My Memberships",
 		`${base}/workspace/invites`,
 		false,
 	);
 	const workspace = new SidebarCategory("Workspace", false, [
 		members,
+		invitemember,
 		memberships,
 	]);
 	const entities = new SidebarItem("Entities", `${base}/entities`, false);
@@ -83,7 +85,7 @@
 		false,
 	);
 	const config = new SidebarItem("Config", `${base}/configuration`, true);
-	const customers = new SidebarItem("Customers", `${base}/customer`, true);
+	const billingaccounts = new SidebarItem("Billing accounts", `${base}/billingaccount`, true);
 	const files = new SidebarItem("Files", `${base}/files`, false);
 	const formresources = new SidebarItem(
 		"Form Resources",
@@ -108,7 +110,7 @@
 		console,
 		credentials,
 		config,
-		customers,
+		billingaccounts,
 		files,
 		formresources,
 		hdrobots,
@@ -147,10 +149,13 @@
 				currentworkspace == null ||
 				currentworkspace == "" ||
 				workspaces.length == 0;
+			invitemember.hidden = members.hidden;
 			if (!members.hidden) {
 				members.url = `${base}/workspace/${currentworkspace}/member`;
+				invitemember.url = `${base}/workspace/${currentworkspace}/invite`;
 			} else {
 				members.url = `${base}/`;
+				invitemember.url = `${base}/`;
 			}
 			if (members.hidden) {
 				roles.hidden = true;
@@ -177,10 +182,15 @@
 		forms.hidden = !auth.isAuthenticated;
 		clients.hidden = !isWorkspaceAdmin;
 
-		if (auth.config.workspace_enabled) {
-			customers.hidden = true;
+		if (auth.config.workspace_enabled || auth.config.multi_tenant) {
+			billingaccounts.hidden = false;
+			if(auth.config.workspace_enabled == true) {
+				billingaccounts.title = "Billing accounts";
+			} else {
+				billingaccounts.title = "Customers";
+			}
 		} else {
-			customers.hidden = !auth.config.multi_tenant;
+			billingaccounts.hidden = true;
 		}
 		hdrobots.hidden = !isWorkspaceAdmin;
 		mailhistory.hidden = !isAdmin;
