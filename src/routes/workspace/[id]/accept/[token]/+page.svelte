@@ -22,6 +22,10 @@
 
   async function accept() {
     try {
+      if($formData.userid != "65cb30c40ff51e174095573c" && auth.isAuthenticated == false) {
+        auth.login();
+        return;
+      }
       await auth.client.CustomCommand({
         command: "acceptinvite",
         data: JSON.stringify($formData),
