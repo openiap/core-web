@@ -86,7 +86,7 @@
 
 <ModeWatcher />
 {#if $page.url.pathname != base + "/login" && $page.url.pathname != base + "/loginscreen"}
-	<div class="overflow-hidden flex flex-col w-full h-screen">
+	<div class="overflow-hidden flex flex-col w-full h-screen ">
 		<Sidebar.Provider>
 			<AppSidebar
 				{workspaces}
@@ -119,6 +119,10 @@
 <Toaster />
 
 <style>
+	:global(body) {
+		/* font-family: "DM Sans"; */
+		overflow: hidden;
+	}
 	main {
 		padding: 1.25rem 1.5rem;
 		width: 100%;

@@ -440,12 +440,10 @@
 			<Table.Caption class="mb-2">No data found.</Table.Caption>
 		{:else if caption != ""}
 			<Table.Caption>{caption}</Table.Caption>
-		{:else}
-			<Table.Caption></Table.Caption>
 		{/if}
 		<Table.Header>
 			<Table.Row
-				class="border-b border-bw500  justify-center item-center"
+				class="border-b border-bw500 justify-center item-center dark:bg-bw900 dark:text-bw100"
 			>
 				{#if multi_select}
 					<Table.Head

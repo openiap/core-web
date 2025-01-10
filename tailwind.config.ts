@@ -45,6 +45,10 @@ const config: Config = {
 				darktextyellow: "#F4E3CE",
 				darkborderyellow: "#B09777",
 
+				darkbgorange: "#5C4D3B",
+				darktextorange: "#F4E3CE",
+				darkborderorange: "#B09777",
+
 				lightgradident1: "#E5E7EB",
 				lightgradident2: "#D1D5DB",
 				// darkgradident1: "#374151",

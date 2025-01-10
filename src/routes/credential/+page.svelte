@@ -98,14 +98,13 @@
   total_count={data.total_count}
   bind:selected_items
   bind:entities
-  multi_select={false}
 >
-  <!-- {#snippet action(item: any)}
+  {#snippet action(item: any)}
     <Button
       aria-label="edit"
       onclick={() => single_item_click(item)}
-      size="icon"
-      variant="secondary"
+      variant="new"
+      size="tableicon"
     >
       <Pencil />
     </Button>
@@ -115,12 +114,12 @@
         deleteData = item;
         showWarning = !showWarning;
       }}
-      size="icon"
       variant="destructive"
+      size="tableicon"
     >
       <Trash2 />
     </Button>
-  {/snippet} -->
+  {/snippet}
 </Entities>
 
 <Warningdialogue bind:showWarning type="delete" onaccept={handleAccept}

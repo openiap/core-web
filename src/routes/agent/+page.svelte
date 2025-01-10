@@ -389,7 +389,7 @@
       <Button
         aria-label="start"
         title="start"
-        size="icon"
+        size="tableicon"
         variant="ghost"
         onclick={async () =>
           await auth.client.CustomCommand({
@@ -403,7 +403,7 @@
       <Button
         aria-label="stop"
         title="stop"
-        size="icon"
+        size="tableicon"
         variant="ghost"
         onclick={async () =>
           await auth.client.CustomCommand({
@@ -417,7 +417,7 @@
       <Button
         aria-label="debug"
         title="debug"
-        size="icon"
+        size="tableicon"
         variant="ghost"
         onclick={() => goto(base + `/${page}/${item._id}/run`)}
       >

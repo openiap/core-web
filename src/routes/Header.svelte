@@ -67,14 +67,14 @@ class="flex h-16 shrink-0 items-center justify-between px-4 rounded mx-2"
 				onclick={() =>
 					window.open("https://github.com/openiap", "_blank")}
 				variant="icon"
-				size="iconnew"
+				size="icon"
 				aria-label="Visit us at Github"
 			>
 				<Github />
 			</Button>
 			<Button
 				variant="icon"
-				size="iconnew"
+				size="icon"
 				aria-label="Clear cookies"
 				onclick={reset}
 			>
@@ -83,7 +83,7 @@ class="flex h-16 shrink-0 items-center justify-between px-4 rounded mx-2"
 			<Button
 				onclick={toggleMode}
 				variant="icon"
-				size="iconnew"
+				size="icon"
 				aria-label="Toggle darkmode"
 			>
 				<Sun
