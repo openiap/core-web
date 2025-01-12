@@ -1,19 +1,17 @@
 <script lang="ts">
-  import { goto } from "$app/navigation";
-  import { base } from "$app/paths";
-  import * as Card from "$lib/components/ui/card/index.js";
   import { Button } from "$lib/components/ui/button/index.js";
-  import * as Select from "$lib/components/ui/select/index.js";
-  import { Acl } from "$lib/acl/index.js";
+  import * as Card from "$lib/components/ui/card/index.js";
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
-  import SuperDebug, { superForm, superValidate } from "sveltekit-superforms";
+  import * as Select from "$lib/components/ui/select/index.js";
+  import { data as datacomponent } from "$lib/entities/data.svelte.js";
+  import { auth } from "$lib/stores/auth.svelte.js";
+  import { usersettings } from "$lib/stores/usersettings.svelte.js";
+  import { toast } from "svelte-sonner";
+  import SuperDebug, { superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newWorkspaceSchema } from "../schema.js";
-  import { usersettings } from "$lib/stores/usersettings.svelte.js";
-    import { auth } from "$lib/stores/auth.svelte.js";
-    import { toast } from "svelte-sonner";
 
   const key = "workspace";
   let showdebug = $state(false);
@@ -37,9 +35,13 @@
     onUpdate: async ({ form, cancel }) => {
       if (form.valid) {
         try {
-          await auth.client.CustomCommand({ command: "ensureworkspace", data: JSON.stringify(form.data), jwt: auth.access_token });
+          await auth.client.CustomCommand({
+            command: "ensureworkspace",
+            data: JSON.stringify(form.data),
+            jwt: auth.access_token,
+          });
           toast.success("Workspace updated");
-        } catch (error:any) {
+        } catch (error: any) {
           toast.error("Error", {
             description: error.message,
           });
@@ -49,8 +51,6 @@
     },
   });
   const { form: formData, enhance, message } = form;
-
-
 
   async function addplan() {
     let id = currentworkspace?._id;
@@ -75,7 +75,7 @@
           await auth.client.CustomCommand({
             command: "ensurebilling",
             data: JSON.stringify(billingdata),
-            jwt: auth.access_token
+            jwt: auth.access_token,
           }),
         );
         console.log("billing", billing);
@@ -83,7 +83,7 @@
       } else if (entities.length == 1) {
         billing = entities[0];
         billingid = billing._id;
-      } 
+      }
       if (billingid == null || billingid == "") {
         throw new Error("Please select a billing account");
       }
@@ -97,8 +97,15 @@
       await auth.client.CustomCommand({
         command: "createresourceusage",
         data: JSON.stringify(data),
-        jwt: auth.access_token
+        jwt: auth.access_token,
       });
+      entities = await datacomponent.GetData(
+        "workspace",
+        "users",
+        { _type: "customer" },
+        auth.access_token,
+      );
+
       toast.success("Plan added");
       // goto(base + "/");
     } catch (error: any) {
@@ -106,8 +113,12 @@
         description: error.message,
       });
     } finally {
-      if(id != null) {
-        currentworkspace = await auth.client.FindOne({ collectionname: "users", query: { _id: id }, jwt: auth.access_token });
+      if (id != null) {
+        currentworkspace = await auth.client.FindOne({
+          collectionname: "users",
+          query: { _id: id },
+          jwt: auth.access_token,
+        });
         usersettings.currentworkspace = id;
       }
     }
@@ -124,15 +135,20 @@
       }
       let data = {
         target: currentworkspace,
-        resourceusageid: currentworkspace.resourceusageid
-      }
+        resourceusageid: currentworkspace.resourceusageid,
+      };
       usersettings.currentworkspace = "";
       await auth.client.CustomCommand({
         command: "removeresourceusage",
         data: JSON.stringify(data),
-        jwt: auth.access_token
+        jwt: auth.access_token,
       });
-      await new Promise((r) => setTimeout(r, 1000));
+      entities = await datacomponent.GetData(
+        "workspace",
+        "users",
+        { _type: "customer" },
+        auth.access_token,
+      );
 
       toast.success("Plan removed");
       // goto(base + "/");
@@ -141,8 +157,12 @@
         description: error.message,
       });
     } finally {
-      currentworkspace = await auth.client.FindOne({ collectionname: "users", query: { _id: id }, jwt: auth.access_token });
-      if(id != null) usersettings.currentworkspace = id;
+      currentworkspace = await auth.client.FindOne({
+        collectionname: "users",
+        query: { _id: id },
+        jwt: auth.access_token,
+      });
+      if (id != null) usersettings.currentworkspace = id;
     }
   }
 </script>
@@ -162,7 +182,6 @@
         <div class="flex">
           <Input {...props} bind:value={$formData.name} />
           <Form.Button aria-label="submit">Update workspace</Form.Button>
-          <HotkeyButton aria-label="Invite" onclick={() => goto(base + `/${key}/${$formData._id}/invite`)}>Invite user to workspace</HotkeyButton>
         </div>
       {/snippet}
     </Form.Control>
@@ -185,9 +204,8 @@
       run one free cloud agent in your workspace, that will automatically be
       turned off after 4 hours. You workspace will be subject to our fair use
       policy, regarding api request, active connections and database usage.
-      Support though our <a
-        href="https://discourse.openiap.io/"
-        target="_blank">community forum</a
+      Support though our <a href="https://discourse.openiap.io/" target="_blank"
+        >community forum</a
       >.
     </Card.Content>
     <Card.Footer class="flex justify-between">
@@ -204,10 +222,10 @@
       <Card.Description>Starter package</Card.Description>
     </Card.Header>
     <Card.Content>
-      You can invite up to 25 members to your workspace. You have the option
-      to buy tiered cloud agents, that can run 24/7. You workspace will be
-      subject to our fair use policy, regarding api request, active
-      connections and database usage. Support though our <a
+      You can invite up to 25 members to your workspace. You have the option to
+      buy tiered cloud agents, that can run 24/7. You workspace will be subject
+      to our fair use policy, regarding api request, active connections and
+      database usage. Support though our <a
         href="https://discourse.openiap.io/"
         target="_blank">community forum</a
       >, for billing support please reach out using the email on the invoice.
@@ -241,9 +259,9 @@
       <Card.Description>Deluxe offering</Card.Description>
     </Card.Header>
     <Card.Content>
-      Please contact us for more information, to have unlimited members and
-      api requests. Access to support via email/online meetings. Discounts on
-      cloud agents.
+      Please contact us for more information, to have unlimited members and api
+      requests. Access to support via email/online meetings. Discounts on cloud
+      agents.
     </Card.Content>
     <Card.Footer class="flex justify-between">
       <div></div>

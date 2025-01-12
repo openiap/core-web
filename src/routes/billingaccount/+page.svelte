@@ -26,40 +26,27 @@
   let deleteData: any = $state({});
 
   async function deleteitem(item: any) {
-    const deletecount = await auth.client.DeleteOne({
-      id: item._id,
-      collectionname,
-      jwt: auth.access_token,
-    });
-    if (deletecount == 1) {
-      entities = entities.filter((entity: any) => entity._id != item._id);
-      selected_items = selected_items.filter((i) => i !== item._id);
-    } else {
+    try {
+      await auth.client.CustomCommand({command: "removebilling", id: item._id});
+      toast.success("Billing acccount removed");      
+    } catch (error:any) {
       toast.error("Error while deleting", {
-        description: "Error while deleting",
+        description: error.message,
       });
+
     }
   }
   function single_item_click(item: any) {
     goto(base + `/${page}/${item._id}`);
   }
   async function handleAccept() {
-    try {
-      await deleteitem(deleteData);
-      toast.success("Deleted successfully", {
-        description: "",
-      });
-      entities = await data1.GetData(
-        page,
-        collectionname,
-        query,
-        auth.access_token,
-      );
-    } catch (error: any) {
-      toast.error("Error while deleting", {
-        description: error.message,
-      });
-    }
+    await deleteitem(deleteData);
+    entities = await data1.GetData(
+      page,
+      collectionname,
+      query,
+      auth.access_token,
+    );
   }
 </script>
 
