@@ -32,7 +32,7 @@
           toast.success("Workspace added");
           usersettings.currentworkspace = workspace._id;
           await usersettings.dopersist();
-          goto(base + `/${key}`);
+          goto(base + `/${key}/${workspace._id}/member`);
         } catch (error: any) {
           errormessage = error.message;
           toast.error("Error", {
