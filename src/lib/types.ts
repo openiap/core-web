@@ -52,6 +52,7 @@ export class ResourceUsage {
     "subscription": any = {};
     /** "subscription_item" */
     siid: string = "";
+    key: number = $state(0);
 }
 export declare enum ResourceTargetType {
     customer = "customer",
