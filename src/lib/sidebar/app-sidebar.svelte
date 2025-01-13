@@ -59,7 +59,11 @@
 		grafana,
 	]);
 	const members = new SidebarItem("Members", `${base}/members`, false);
-	const invitemember = new SidebarItem("Invite Member", `${base}/members`, false);
+	const invitemember = new SidebarItem(
+		"Invite Member",
+		`${base}/members`,
+		false,
+	);
 	const memberships = new SidebarItem(
 		"My Memberships",
 		`${base}/workspace/invites`,
@@ -85,7 +89,11 @@
 		false,
 	);
 	const config = new SidebarItem("Config", `${base}/configuration`, true);
-	const billingaccounts = new SidebarItem("Billing accounts", `${base}/billingaccount`, true);
+	const billingaccounts = new SidebarItem(
+		"Billing accounts",
+		`${base}/billingaccount`,
+		true,
+	);
 	const files = new SidebarItem("Files", `${base}/files`, false);
 	const formresources = new SidebarItem(
 		"Form Resources",
@@ -184,7 +192,7 @@
 
 		if (auth.config.workspace_enabled || auth.config.multi_tenant) {
 			billingaccounts.hidden = false;
-			if(auth.config.workspace_enabled == true) {
+			if (auth.config.workspace_enabled == true) {
 				billingaccounts.title = "Billing accounts";
 			} else {
 				billingaccounts.title = "Customers";
@@ -233,7 +241,7 @@
 					<Sidebar.Group class="ps-8">
 						{#if group.title && group.title != ""}
 							<Sidebar.GroupLabel
-								class="font-bold text-black dark:text-white"
+								class="font-bold text-black dark:text-bw300"
 								>{group.title}</Sidebar.GroupLabel
 							>
 						{/if}
@@ -242,14 +250,14 @@
 								{#each group.items as item (item.title)}
 									{#if !item.hidden}
 										<Sidebar.MenuItem
-											class="rounded-[10px] hover:rounded-[10px]"
+											class="rounded-[10px] hover:rounded-[10px] dark:text-bw300"
 										>
 											<Sidebar.MenuButton
 												isActive={$page.url.pathname ===
 													item.url}
 												class={$page.url.pathname ===
 												item.url
-													? "border-[1px] border-bw500"
+													? "border-[1px] border-bw500 dark:text-bw100"
 													: ""}
 											>
 												{#snippet child({ props })}

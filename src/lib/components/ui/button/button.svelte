@@ -24,7 +24,7 @@
 				entitydefault: "bg-indigo-400 cursor-not-allowed text-white",
 				entityselected: "bg-indigo-200 text-black hover:opacity-80 ",
 				icon: "dark:bg-bw700 dark:text-bw400 p-2",
-				new: " dark:bg-bw850 dark:text-bw100 border-[1px] border-bw600 ",
+				new: " dark:bg-bw850 dark:text-bw200 border-[1px] border-bw600 ",
 			},
 			size: {
 				default: "p-1",

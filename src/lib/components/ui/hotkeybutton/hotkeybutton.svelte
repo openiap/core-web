@@ -25,7 +25,7 @@
 				link: "text-primary underline-offset-4 hover:underline",
 				ghostfull: "",
 				icon: "dark:bg-bw700 dark:text-bw400",
-				new: "dark:bg-bw850 dark:text-bw100 border-[1px] border-bw600",
+				new: "dark:bg-bw850 dark:text-bw200 border-[1px] border-bw600",
 			},
 			size: {
 				default: "h-10 px-4 py-2",

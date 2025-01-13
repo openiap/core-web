@@ -436,7 +436,7 @@
 </script>
 
 <div class="text-red-500">{data.errormessage}</div>
-<div class="border border-bw500 rounded">
+<div class="border border-bw500 rounded-[10px]">
 	<Table.Root>
 		{#if entities.length === 0}
 			<Table.Caption class="mb-2">No data found.</Table.Caption>
@@ -445,11 +445,11 @@
 		{/if}
 		<Table.Header>
 			<Table.Row
-				class="border-b border-bw500 justify-center item-center dark:bg-bw900 dark:text-bw100"
+				class="	 rounded-[10px] "
 			>
 				{#if multi_select}
 					<Table.Head
-						class="w-8 text-black font-semibold dark:text-white"
+						class="w-8 text-black font-semibold dark:text-bw200 dark:bg-bw900 rounded-tl-[10px]"
 						role="cell"
 						><Checkbox
 							aria-label="Select all"
@@ -462,7 +462,7 @@
 					{#if head.show}
 						<Table.Head
 							class={head.headclass +
-								" text-black font-semibold dark:text-white"}
+								" text-black font-semibold dark:text-bw200 dark:bg-bw900"}
 							role="cell"
 							draggable="true"
 							onclick={(e) => toggleSort(e, head.field)}
@@ -484,7 +484,7 @@
 				{/each}
 				{#if rest["action"]}
 					<Table.Head
-						class="text-black font-semibold dark:text-white {actionheadclass}"
+						class="text-black font-semibold dark:text-bw200 dark:bg-bw900 rounded-tr-[10px] {actionheadclass}"
 						>Action</Table.Head
 					>
 				{/if}
@@ -640,7 +640,7 @@
 	}}
 /> -->
 
-<div class="flex justify-between items-center space-y-2">
+<div class="flex justify-between items-center space-y-2 dark:text-bw300">
 	<HotkeyButton
 		size="new"
 		variant="new"

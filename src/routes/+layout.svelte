@@ -86,7 +86,7 @@
 
 <ModeWatcher />
 {#if $page.url.pathname != base + "/login" && $page.url.pathname != base + "/loginscreen"}
-	<div class="overflow-hidden flex flex-col w-full h-screen ">
+	<div class="overflow-hidden flex flex-col w-full h-screen dark:text-bw100">
 		<Sidebar.Provider>
 			<AppSidebar
 				{workspaces}
