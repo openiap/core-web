@@ -24,7 +24,7 @@
 				entitydefault: "bg-indigo-400 cursor-not-allowed text-white",
 				entityselected: "bg-indigo-200 text-black hover:opacity-80 ",
 				icon: "dark:bg-bw700 dark:text-bw400 p-2",
-				new: "dark:bg-bw850 dark:text-bw100 border-[1px] border-bw600",
+				new: " dark:bg-bw850 dark:text-bw100 border-[1px] border-bw600 ",
 			},
 			size: {
 				default: "p-1",
@@ -32,7 +32,7 @@
 				lg: "h-11 rounded-md px-8",
 				icon: "h-7 w-7 rounded-[10px]",
 				tableicon: "p-1 rounded-[10px]",
-				new: "h-9 px-3 rounded-[10px]",
+				new: " h-9 px-3 rounded-[10px] ",
 			},
 		},
 		defaultVariants: {

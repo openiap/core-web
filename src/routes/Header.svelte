@@ -41,7 +41,7 @@ class="flex h-16 shrink-0 items-center justify-between px-4 rounded mx-2"
 		<Breadcrumb.Root>
 			<Breadcrumb.List>
 				{#each pagename().split("/") as page, index}
-					<Breadcrumb.Item class="hidden md:block">
+					<Breadcrumb.Item class="hidden md:block text-bw500">
 						{#if pagename().split("/").length - 1 !== index}
 							<Breadcrumb.Link
 								href="{base}/{page.trim()}"

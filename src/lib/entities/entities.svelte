@@ -21,9 +21,11 @@
 	import {
 		ArrowLeft,
 		ArrowRight,
+		CircleX,
 		MoveLeft,
 		MoveRight,
 		Trash2,
+		Check,
 	} from "lucide-svelte";
 	import { toast } from "svelte-sonner";
 	import { data } from "./data.svelte.js";
@@ -563,7 +565,7 @@
 		disabled={selected_items.length === 0}
 		onclick={() => (showWarning = true)}
 		data-shortcut="Delete"
-		size="sm"
+		size="new"
 		variant="destructive"
 		class="bg-red-500 text-white"
 	>
@@ -572,14 +574,21 @@
 	>
 	<Hotkeybutton
 		disabled={selected_items.length === 0}
-		variant="default"
-		onclick={ClearSelected}>Clear All Selections</Hotkeybutton
+		variant="new"
+		size="new"
+		onclick={ClearSelected}
+	>
+		<CircleX />
+		Clear All Selections</Hotkeybutton
 	>
 
 	{#if tableheaders != null && tableheaders.length > 0}
 		<Sheet.Root>
-			<Sheet.Trigger class={buttonVariants({ variant: "outline" })}
-				>Select columns</Sheet.Trigger
+			<Sheet.Trigger
+				class={buttonVariants({ variant: "new", size: "new" })}
+			>
+				<Check />
+				Select columns</Sheet.Trigger
 			>
 			<Sheet.Content>
 				<Sheet.Header>
@@ -646,7 +655,7 @@
 	>
 		<div class="flex items-center space-x-2">
 			<div>
-				<MoveLeft class="text-bw500"/>
+				<MoveLeft class="text-bw500" />
 			</div>
 			<div>Previous</div>
 		</div>
@@ -677,9 +686,9 @@
 		disabled={entities.length < 5 || page_index * 5 >= total_count}
 	>
 		<div class="flex items-center space-x-2">
-			<div> Next</div>
+			<div>Next</div>
 			<div>
-				<MoveRight class="text-bw500"/>
+				<MoveRight class="text-bw500" />
 			</div>
 		</div>
 	</HotkeyButton>

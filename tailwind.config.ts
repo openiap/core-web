@@ -1,6 +1,7 @@
-import { fontFamily } from "tailwindcss/defaultTheme";
+// import { fontFamily } from "tailwindcss/defaultTheme";
 import type { Config } from "tailwindcss";
 import tailwindcssAnimate from "tailwindcss-animate";
+import defaultTheme from "tailwindcss/defaultTheme"
 
 const config: Config = {
 	darkMode: ["class"],
@@ -41,7 +42,7 @@ const config: Config = {
 				darktextpurple: "#EFDDED",
 				darkborderpurple: "#815E88",
 
-				darkbgyellow: "#s5C4D3B",
+				darkbgyellow: "#5C4D3B",
 				darktextyellow: "#F4E3CE",
 				darkborderyellow: "#B09777",
 
@@ -49,19 +50,6 @@ const config: Config = {
 				darktextorange: "#F4E3CE",
 				darkborderorange: "#B09777",
 
-				lightgradident1: "#E5E7EB",
-				lightgradident2: "#D1D5DB",
-				// darkgradident1: "#374151",
-				// darkgradident2: "#1F2937",
-				lightbutton: "#4F46E5",
-				// lightbuttonhover: "",
-				// darkbuttonhover: "",
-				// lighthover: "",
-				// darkhover: "",
-				lightheader: "#D1D5DB",
-				darkheader: "#191A1E",
-				lightbody: "#FFFFFF",
-				darkbody: "#27292E",
 				border: "hsl(var(--border) / <alpha-value>)",
 				input: "hsl(var(--input) / <alpha-value>)",
 				ring: "hsl(var(--ring) / <alpha-value>)",
@@ -113,7 +101,11 @@ const config: Config = {
 				sm: "calc(var(--radius) - 4px)"
 			},
 			fontFamily: {
-				sans: [...fontFamily.sans]
+				sans: ['DM Sans', ...defaultTheme.fontFamily.sans],
+				// sans: [...fontFamily.sans],
+				// 'dm-sans': ['"DM Sans"', 'sans-serif']
+				// 'dm-sans': ['"DM Sans"']
+				// 'dm-sans': ['DM Sans']
 			},
 			keyframes: {
 				"accordion-down": {
