@@ -50,7 +50,7 @@
     <Button
       title="Edit"
       aria-label="edit"
-      onclick={() => goto(base + `/${page}/${item._id}`)}
+      onclick={() => single_item_click(item)}
       size="icon"
       variant="secondary"
     >

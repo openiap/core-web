@@ -36,7 +36,7 @@
                 {#snippet child({ props })}
                     <Sidebar.MenuButton
                         {...props}
-                        class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground border-[1px] border-bw500 rounded-[10px] px-4"
+                        class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground border-[1px] border-bw500 rounded-[10px] px-4 py-6"
                     >
                         {#if activeWorkspacename() != ""}
                             <Building />
