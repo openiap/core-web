@@ -86,8 +86,8 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 				total_count = await datacomponent.GetCount(page, "config", { _type: "provider" }, access_token);
 				break;
 			case base + "/resource":
-				entities = await datacomponent.GetData(page, "config", { _type: "resource" }, access_token);
-				total_count = await datacomponent.GetCount(page, "config", { _type: "resource" }, access_token);
+				entities = await datacomponent.GetData(page, "config", { _type: "resource" }, access_token, false);
+				total_count = await datacomponent.GetCount(page, "config", { _type: "resource" }, access_token, false);
 				break;
 			case base + "/role":
 				entities = await datacomponent.GetData(page, "users", { _type: "role" }, access_token);

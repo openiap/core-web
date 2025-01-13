@@ -14,7 +14,7 @@
   import Searchinput from "$lib/searchinput/searchinput.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
-  import { Pencil, Plus, Trash2 } from "lucide-svelte";
+  import { DollarSign, Pencil, Plus, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
@@ -38,6 +38,9 @@
   }
   function single_item_click(item: any) {
     goto(base + `/${page}/${item._id}`);
+  }
+  function open_billing(item: any) {
+    goto(base + `/${page}/${item._id}/billing`);
   }
   async function handleAccept() {
     await deleteitem(deleteData);
@@ -72,6 +75,14 @@
   bind:entities
 >
   {#snippet action(item: any)}
+    <Button
+      aria-label="Billing"
+      onclick={() => open_billing(item)}
+      size="icon"
+      variant="secondary"
+    >
+      <DollarSign />
+    </Button>
     <Button
       aria-label="Edit"
       onclick={() => single_item_click(item)}

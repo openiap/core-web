@@ -1,14 +1,14 @@
 <script lang="ts">
   import Button from "$lib/components/ui/button/button.svelte";
   import * as Card from "$lib/components/ui/card/index.js";
-    import { auth } from "$lib/stores/auth.svelte.js";
-    import { usersettings } from "$lib/stores/usersettings.svelte.js";
-    import { toast } from "svelte-sonner";
+  import { auth } from "$lib/stores/auth.svelte.js";
+  import { toast } from "svelte-sonner";
   import {
     Resource,
     ResourceUsage,
     type Product,
   } from "../../../../lib/types.js";
+    import { usersettings } from "$lib/stores/usersettings.svelte.js";
 
   const { data } = $props();
   let entities: ResourceUsage[] = $state(data.entities);
@@ -16,8 +16,16 @@
   let key = $state(0);
 
   async function GetData() {
-    entities = await auth.client.Query<ResourceUsage>({ collectionname: "config", query: { _type: "resourceusage", "customerid": data.id }, jwt: auth.access_token });
-    resources = await auth.client.Query<Resource>({ collectionname: "config", query: { _type: "resource" }, jwt: auth.access_token });
+    entities = await auth.client.Query<ResourceUsage>({
+      collectionname: "config",
+      query: { _type: "resourceusage", customerid: data.id },
+      jwt: auth.access_token,
+    });
+    resources = await auth.client.Query<Resource>({
+      collectionname: "config",
+      query: { _type: "resource" },
+      jwt: auth.access_token,
+    });
     key++;
   }
 
@@ -55,52 +63,63 @@
   async function increment(resource: Resource, product: Product) {
     try {
       let target = data.billingaccount;
-      if(resource.target == "workspace") {
+      if (resource.target == "workspace") {
         target = data.workspace;
+        if(target == null && usersettings.currentworkspace != null && usersettings.currentworkspace != "") {
+          data.workspace = await auth.client.FindOne({
+            collectionname: "users",
+            query: { _type: "workspace", _id: usersettings.currentworkspace },            
+            jwt: auth.access_token,
+          });
+          target = data.workspace;
+        }
+        if(target == null) throw new Error("Please select a Workspace first");
       }
       await auth.client.CustomCommand({
         command: "createresourceusage",
-        data: JSON.stringify( {
+        data: JSON.stringify({
           target,
           billingid: data.billingaccount._id,
-          workspaceid: data.workspace._id,
+          workspaceid: data.workspace?._id,
           resourceid: resource._id,
           productname: product.name,
-        }),      
+        }),
         jwt: auth.access_token,
       });
       toast.success("Resource assigned");
       await GetData();
-    } catch (error:any) {
+    } catch (error: any) {
+      console.log(error);
       toast.error("Error assigning resource", {
-				description: error.message,
-			});
-
+        description: error.message,
+      });
     }
   }
   async function decrement(resourceusage: ResourceUsage | undefined) {
     try {
       let target = data.billingaccount;
-      if(resourceusage == null) throw new Error("Resource not found");
-      let resource = resources.find(x => x._id == resourceusage.resourceid);
-      if(resource == null) throw new Error("Resource not found");
-      if(resource.target == "workspace") {
+      if (resourceusage == null) throw new Error("Resource not found");
+      let resource = resources.find((x) => x._id == resourceusage.resourceid);
+      if (resource == null) throw new Error("Resource not found");
+      if (resource.target == "workspace") {
         target = data.workspace;
+        if(target == null) throw new Error("Please select a Workspace first");
       }
       await auth.client.CustomCommand({
         command: "removeresourceusage",
-        data: JSON.stringify( {
+        data: JSON.stringify({
           target,
-          resourceusageid: resourceusage._id
-        }),      
+          resourceusageid: resourceusage._id,
+        }),
         jwt: auth.access_token,
       });
       toast.success("Resource unassigned");
       await GetData();
-    } catch (error:any) {
+    } catch (error: any) {
+      console.log(error);
       toast.error("Error unassigning resource", {
-				description: error.message,
-			});
+        description: error.message,
+      });
     }
   }
   function removeresource(resource: Resource) {
@@ -170,8 +189,14 @@
                     <Button
                       variant="outline"
                       disabled={quantity(resource, product) == 0}
-                      onclick={() => decrement(entities.find(x => x.resourceid == resource._id && x.product.stripeprice == product.stripeprice))}
-                      >Decrease</Button
+                      onclick={() =>
+                        decrement(
+                          entities.find(
+                            (x) =>
+                              x.resourceid == resource._id &&
+                              x.product.stripeprice == product.stripeprice,
+                          ),
+                        )}>Decrease</Button
                     >
                   </td>
                 </tr>

@@ -40,6 +40,26 @@
   function single_item_click(item: any) {
     goto(base + `/${page}/${item._id}`);
   }
+  async function createcommon() {
+    try {
+      auth.client.CustomCommand({ command: "createcommonresources" })
+      toast.success("Created common resources", {
+        description: "",
+      });
+      entities = await datacomponent.GetData(
+        page,
+        collectionname,
+        query,
+        auth.access_token,
+        false
+      );      
+    } catch (error: any) {
+      toast.error("Error while creating", {
+        description: error.message,
+      });
+      
+    }
+  }
 </script>
 
 <div class="flex w-full max-w-sm flex-col gap-1.5">
@@ -52,6 +72,16 @@
       bind:value={searchstring}
       data-shortcut={"Control+f,Meta+f"}
     />
+    <Button
+		size="new"
+		variant="new"
+      aria-label="Create common"
+      onclick={createcommon}
+      >
+      <div class="flex items-center space-x-2">
+        Create common
+      </div>
+  </Button>
   </div>
 </div>
 <Entities
