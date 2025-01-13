@@ -31,6 +31,7 @@
 	import { data } from "./data.svelte.js";
 	import { browser } from "$app/environment";
 	import { auth } from "$lib/stores/auth.svelte.js";
+	import Button from "$lib/components/ui/button/button.svelte";
 
 	let {
 		page = "entities",
@@ -87,6 +88,7 @@
 	let actioncellclass = $state("");
 	let actionheadclass = $state("");
 	selected_items = data.settings.selected_items;
+	let toggleSheet = $state(false);
 
 	async function GetData() {
 		const _entities = await data.GetData(
@@ -444,9 +446,7 @@
 			<Table.Caption>{caption}</Table.Caption>
 		{/if}
 		<Table.Header>
-			<Table.Row
-				class="	 rounded-[10px] "
-			>
+			<Table.Row>
 				{#if multi_select}
 					<Table.Head
 						class="w-8 text-black font-semibold dark:text-bw200 dark:bg-bw900 rounded-tl-[10px]"
@@ -458,11 +458,13 @@
 						/></Table.Head
 					>
 				{/if}
-				{#each tableheaders as head}
+				{#each tableheaders as head, index}
 					{#if head.show}
 						<Table.Head
 							class={head.headclass +
-								" text-black font-semibold dark:text-bw200 dark:bg-bw900"}
+								" text-black font-semibold dark:text-bw200 dark:bg-bw900 " +
+								`${index === 0 && (multi_select ? "" : " rounded-tl-[10px]")}` +
+								` ${index === tableheaders.length - 1 && (rest["action"] ? "" : " rounded-tr-[10px]")}`}
 							role="cell"
 							draggable="true"
 							onclick={(e) => toggleSort(e, head.field)}
@@ -581,15 +583,25 @@
 		<CircleX />
 		Clear All Selections</Hotkeybutton
 	>
+	<Hotkeybutton
+		variant="new"
+		size="new"
+		onclick={() => {
+			toggleSheet = true;
+		}}
+	>
+		<Check />
+		Select columns
+	</Hotkeybutton>
 
 	{#if tableheaders != null && tableheaders.length > 0}
-		<Sheet.Root>
-			<Sheet.Trigger
+		<Sheet.Root bind:open={toggleSheet}>
+			<!-- <Sheet.Trigger
 				class={buttonVariants({ variant: "new", size: "new" })}
 			>
 				<Check />
 				Select columns</Sheet.Trigger
-			>
+			> -->
 			<Sheet.Content>
 				<Sheet.Header>
 					<Sheet.Title>Select columns</Sheet.Title>
