@@ -6,8 +6,10 @@
     import { useSidebar } from "$lib/components/ui/sidebar/index.js";
     import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
     import Plus from "lucide-svelte/icons/plus";
+    import DollarSign from "lucide-svelte/icons/dollar-sign";
     import type { Workspace } from "../../routes/workspace/schema";
-    import { Building, ChevronDown, Pencil } from "lucide-svelte";
+    import { Building, ChevronDown, DollarSignIcon, Pencil } from "lucide-svelte";
+    import { auth } from "$lib/stores/auth.svelte";
     let {
         workspaces,
         currentworkspace,
@@ -112,6 +114,15 @@
                     <Pencil class="size-4" />
                     Edit {activeWorkspacename()}
                 </DropdownMenu.Item>
+                {#if auth.profile?.roles.includes("admins")}
+                <DropdownMenu.Item
+                    onSelect={() => goto(base + "/workspace/" + currentworkspace + "/billing")}
+                    class="gap-2 p-2 text-muted-foreground font-medium"
+                >
+                    <DollarSignIcon class="size-4" />
+                    Billing for {activeWorkspacename()}
+                </DropdownMenu.Item>
+                {/if}
                 {/if}
                 <DropdownMenu.Item
                     class="gap-2 p-2 cursor-pointer"
