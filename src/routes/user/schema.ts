@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const newFormSchema = z.object({
   name: z.string().min(2),
-  email: z.string().email().optional(),
+  email: z.string().email().optional().default(""),
   username: z.string().min(2),
   password: z.string().min(6),
   disabled: z.boolean(),
@@ -10,7 +10,7 @@ export const newFormSchema = z.object({
   validated: z.boolean(),
   emailvalidated: z.boolean(),
   formvalidated: z.boolean(),
-  federationids: z.array(z.string().email()).optional(),
+  federationids: z.array(z.string().email()).optional().default([]),
   _type: z.string().default("user"),
 });
 export type NewFormSchema = typeof newFormSchema;

@@ -14,7 +14,7 @@
 			bind:value={searchstring}
 			data-shortcut={"Control+f,Meta+f"}
 			type="text"
-			class="w-full h-7 pl-8 py-2 rounded-[10px] border dark:border-bw600 dark:placeholder-bw500 dark:text-bw500 dark:bg-bw850 rounded-md focus:outline-none"
+			class="w-full h-7 pl-8 py-2 rounded-[10px] border dark:border-bw600 dark:placeholder-bw500 dark:text-bw500 dark:bg-bw850 focus:outline-none"
 		/>
 		<div></div>
 		<Search

@@ -24,13 +24,13 @@
     });
 </script>
 
-<Accordion.Root type="single" class="my-2" value={open}>
+<Accordion.Root type="single" class="mb-2" value={open}>
     <Accordion.Item value="item-1">
         <Accordion.Trigger>Access Control List</Accordion.Trigger>
         <Accordion.Content>
             {#each value._acl as ace, i}
                 <div
-                    class="flex flex-row justify-between my-2 border p-2 rounded-lg"
+                    class="flex flex-row justify-between border p-2 rounded-lg"
                 >
                     <Ace bind:value={value._acl[i]} />
                     <Button
