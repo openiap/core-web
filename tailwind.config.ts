@@ -1,4 +1,4 @@
-import { fontFamily } from "tailwindcss/defaultTheme";
+// import { fontFamily } from "tailwindcss/defaultTheme";
 import type { Config } from "tailwindcss";
 import tailwindcssAnimate from "tailwindcss-animate";
 
@@ -100,7 +100,7 @@ const config: Config = {
 				sm: "calc(var(--radius) - 4px)"
 			},
 			fontFamily: {
-				sans: ['DM Sans', ...fontFamily.sans],
+				"custom": ['DM Sans', 'serif'],
 			},
 			keyframes: {
 				"accordion-down": {
