@@ -125,7 +125,7 @@
 		overflow: hidden;
 	}
 	main {
-		padding: 1.25rem 1.5rem;
+		padding: 1.25rem 1rem;
 		width: 100%;
 		margin: 0 auto;
 		box-sizing: border-box;

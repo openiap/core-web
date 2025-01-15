@@ -4,19 +4,18 @@
   import Acl from "$lib/acl/acl.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
   import * as Form from "$lib/components/ui/form/index.js";
-  import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
-  import { Input } from "$lib/components/ui/input/index.js";
-  import Switch from "$lib/components/ui/switch/switch.svelte";
+  import { CustomInput } from "$lib/custominput/index.js";
+  import CustomSuperDebug from "$lib/customsuperdebug/customsuperdebug.svelte";
+  import { CustomSwitch } from "$lib/customswitch/index.js";
   import { EntitySelector } from "$lib/entityselector/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
-  import { ArrowLeft, Check, Plus, Trash2 } from "lucide-svelte";
+  import { Check, Plus, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
-  import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
+  import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newFormSchema } from "../schema.js";
 
   const key = "role";
-  let showdebug = $state(false);
   let errormessage = $state("");
   let loading = $state(false);
   let newid = $state("");
@@ -79,30 +78,18 @@
   {$message}
 {/if}
 
-<div class="font-bold mb-4">
-  Add {key}
-</div>
 <form method="POST" use:enhance>
-  <HotkeyButton
-    aria-label="back"
-    disabled={loading}
-    onclick={() => goto(base + `/${key}`)}
-  >
-    <ArrowLeft />
-    Back</HotkeyButton
-  >
-  <Form.Button aria-label="submit" disabled={loading}>
-    <Check />
-    Submit</Form.Button
-  >
-
   <Acl bind:value={$formData} open="item-1" />
 
-  <Form.Field {form} name="name" class="mb-4">
+  <Form.Field {form} name="name" class="mb-7">
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Name</Form.Label>
-        <Input disabled={loading} {...props} bind:value={$formData.name} />
+        <CustomInput
+          disabled={loading}
+          {...props}
+          bind:value={$formData.name}
+        />
       {/snippet}
     </Form.Control>
     <Form.FieldErrors />
@@ -111,19 +98,19 @@
   <Form.Field
     {form}
     name="rparole"
-    class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 mb-4"
+    class="flex flex-row items-start space-x-3 space-y-0 mb-7"
   >
     <Form.Control>
       {#snippet children({ props })}
         <div class="flex flex-col space-y-4">
-          <Form.Label>RPA Role</Form.Label>
-          <div class="flex items-center space-x-4">
-            <Switch
-              disabled={loading}
+          <div class="flex items-center space-x-2">
+            <CustomSwitch
+              {loading}
               bind:checked={$formData.rparole}
               {...props}
               aria-readonly
             />
+            <Form.Label>RPA Role</Form.Label>
             <span> {$formData.rparole ? "On" : "Off"} </span>
           </div>
         </div>
@@ -135,19 +122,19 @@
   <Form.Field
     {form}
     name="hidemembers"
-    class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 mb-4"
+    class="flex flex-row items-start space-x-3 space-y-0  mb-7"
   >
     <Form.Control>
       {#snippet children({ props })}
         <div class="flex flex-col space-y-4">
-          <Form.Label>Hide Members</Form.Label>
-          <div class="flex items-center space-x-4">
-            <Switch
-              disabled={loading}
+          <div class="flex items-center space-x-2">
+            <CustomSwitch
+              {loading}
               bind:checked={$formData.hidemembers}
               {...props}
               aria-readonly
             />
+            <Form.Label>Hide Members</Form.Label>
             <span> {$formData.hidemembers ? "On" : "Off"} </span>
           </div>
         </div>
@@ -156,9 +143,9 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  <div class="mb-4">
+  <div class="mb-7">
     {#if members}
-      <div class="mb-4">
+      <div class="mb-7">
         {#each members as item, index}
           <div class="flex items-center space-x-4">
             <div class="font-bold">Member</div>
@@ -185,7 +172,7 @@
       </div>
     {/if}
 
-    <div class="flex space-x-2 mb-4">
+    <div class="flex space-x-2 mb-7">
       <EntitySelector bind:value={newid} collectionname="users"
       ></EntitySelector>
       <Button
@@ -199,20 +186,16 @@
     </div>
   </div>
 
-  <Form.Button aria-label="submit" disabled={loading} class="mb-4">
+  <Form.Button
+    disabled={loading}
+    aria-label="submit"
+    variant="new"
+    size="new"
+    class="dark:bg-darkbggreen"
+  >
     <Check />
-    Submit</Form.Button
+    Add {key}</Form.Button
   >
 </form>
 
-{#if formData != null && showdebug == true}
-  <SuperDebug data={formData} theme="vscode" />
-{/if}
-
-<HotkeyButton
-  hidden
-  class="hidden"
-  aria-label="Toggle debug"
-  data-shortcut={"Control+d,Meta+d"}
-  onclick={() => (showdebug = !showdebug)}>Toggle debug</HotkeyButton
->
+<CustomSuperDebug {formData} />

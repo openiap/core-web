@@ -9,19 +9,18 @@
   import Checkbox from "$lib/components/ui/checkbox/checkbox.svelte";
   import * as Form from "$lib/components/ui/form/index.js";
   import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
-  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { CustomInput } from "$lib/custominput/index.js";
+  import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { Check, Trash2, UserRoundPlus } from "lucide-svelte";
   import { toast } from "svelte-sonner";
-  import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
+  import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../schema.js";
 
   const key = "user";
   let loading = $state(false);
   let errormessage = $state("");
-  let showdebug = $state(false);
   const { data } = $props();
   const form = superForm(defaults(zod(editFormSchema)), {
     dataType: "json",
@@ -69,7 +68,7 @@
 <form method="POST" use:enhance>
   <Acl bind:value={$formData} />
 
-  <Form.Field {form} name="name">
+  <Form.Field {form} name="name" class="mb-7">
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Name</Form.Label>
@@ -84,7 +83,7 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Field {form} name="username">
+  <Form.Field {form} name="username" class="mb-7">
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Username</Form.Label>
@@ -99,62 +98,67 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Field {form} name="password">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Password</Form.Label>
-        <CustomInput
-          type="password"
-          placeholder="Type password"
-          disabled={loading}
-          {...props}
-          bind:value={$formData.password}
-        />
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
+  {#if "password" in $formData}
+    <Form.Field {form} name="password" class="mb-7">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Password</Form.Label>
+          <CustomInput
+            type="password"
+            placeholder="Type password"
+            disabled={loading}
+            {...props}
+            bind:value={$formData.password}
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+  {/if}
 
-  <Form.Field {form} name="email" class="mb-4">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Email</Form.Label>
-        <CustomInput
-          type="email"
-          placeholder="Type email"
-          disabled={loading}
-          {...props}
-          bind:value={$formData.email}
-        />
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
+  {#if "email" in $formData && $formData.email == ""}
+    <Form.Field {form} name="email" class="mb-7">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Email</Form.Label>
+          <CustomInput
+            placeholder="Type email"
+            disabled={loading}
+            {...props}
+            bind:value={$formData.email}
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+  {/if}
 
-  <Form.Field
-    {form}
-    name="disabled"
-    class="flex flex-row items-start space-x-3 space-y-0 mb-4 "
-  >
-    <Form.Control>
-      {#snippet children({ props })}
-        <Checkbox
-          disabled={loading}
-          {...props}
-          bind:checked={$formData.disabled}
-        />
-        <div class="space-y-1 leading-none">
-          <Form.Label>Disabled</Form.Label>
-        </div>
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
+  {#if "disabled" in $formData && $formData.disabled != null}
+    <Form.Field
+      {form}
+      name="disabled"
+      class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
+    >
+      <Form.Control>
+        {#snippet children({ props })}
+          <Checkbox
+            disabled={loading}
+            {...props}
+            bind:checked={$formData.disabled}
+          />
+          <div class="space-y-1 leading-none">
+            <Form.Label>Disabled</Form.Label>
+          </div>
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+  {/if}
 
   <Form.Field
     {form}
     name="dblocked"
-    class="flex flex-row items-start space-x-3 space-y-0 mb-4"
+    class="flex flex-row items-start space-x-3 space-y-0 mb-7"
   >
     <Form.Control>
       {#snippet children({ props })}
@@ -174,7 +178,7 @@
   <Form.Field
     {form}
     name="validated"
-    class="flex flex-row items-start space-x-3 space-y-0 mb-4"
+    class="flex flex-row items-start space-x-3 space-y-0 mb-7"
   >
     <Form.Control>
       {#snippet children({ props })}
@@ -194,7 +198,7 @@
   <Form.Field
     {form}
     name="emailvalidated"
-    class="flex flex-row items-start space-x-3 space-y-0 mb-4"
+    class="flex flex-row items-start space-x-3 space-y-0 mb-7"
   >
     <Form.Control>
       {#snippet children({ props })}
@@ -214,7 +218,7 @@
   <Form.Field
     {form}
     name="formvalidated"
-    class="flex flex-row items-start space-x-3 space-y-0 mb-4"
+    class="flex flex-row items-start space-x-3 space-y-0 mb-7"
   >
     <Form.Control>
       {#snippet children({ props })}
@@ -270,7 +274,7 @@
   {/if}
   <div>
     <Hotkeybutton
-      class="mb-4"
+      class="mb-7"
       aria-label="add federation id"
       disabled={loading}
       variant="new"
@@ -297,16 +301,15 @@
   >
 </form>
 
-{#if formData != null && showdebug == true}
-  <div class="mt-4">
-    <SuperDebug data={formData} theme="vscode" />
-  </div>
-{/if}
+<CustomSuperDebug {formData} />
 
-<HotkeyButton
-  hidden
-  class="hidden"
-  aria-label="Toggle debug"
-  data-shortcut={"Control+d,Meta+d"}
-  onclick={() => (showdebug = !showdebug)}>Toggle debug</HotkeyButton
->
+<!-- issues
+In some users object 
+1. Password key missing
+2. Email is null instead of string
+3. Disabled check is either null or missing 
+Schema is conflicting with the data object hence edit user is not working 
+
+-CURRENT SOLUTION
+Addded if checks to handle the missing keys in the object
+-->

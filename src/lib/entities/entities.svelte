@@ -32,6 +32,7 @@
 	import { browser } from "$app/environment";
 	import { auth } from "$lib/stores/auth.svelte.js";
 	import Button from "$lib/components/ui/button/button.svelte";
+    import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
 
 	let {
 		page = "entities",
@@ -731,18 +732,7 @@
 	hidden={true}
 />
 
-<div class="mt-4">
-	{#if tableheaders != null && tableheaders.length > 0 && showdebug == true}
-		<SuperDebug data={entities} theme="vscode" />
-	{/if}
-
-	<HotkeyButton
-		hidden
-		class="hidden"
-		data-shortcut={"Control+d,Meta+d"}
-		onclick={() => (showdebug = !showdebug)}>Toggle debug</HotkeyButton
-	>
-</div>
+<CustomSuperDebug formData={entities} />
 
 <Warningdialogue bind:showWarning type="deleteall" onaccept={handleAccept}
 ></Warningdialogue>

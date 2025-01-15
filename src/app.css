@@ -65,11 +65,12 @@
     --card: 228 9% 11%;
     --card-foreground: 223 4% 64%;
     --border: 225 3% 54%;
-    --input: 217.2 32.6% 17.5%;
-    --primary: 223 4% 64%;
+    --input: 225 3% 54%;
+    --primary: 220 6% 20%;
     --primary-foreground: 222.2 47.4% 11.2%;
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 223 4% 64%;
+    /* Hover property */
     --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 223 4% 64%;
     --destructive: 0 62.8% 30.6%;

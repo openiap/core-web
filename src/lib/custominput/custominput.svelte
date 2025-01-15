@@ -2,7 +2,7 @@
 	import Input from "$lib/components/ui/input/input.svelte";
 	let {
 		value = $bindable(""),
-		type = $bindable(""),
+		type = "text",
 		disabled = false,
 		placeholder = "Type here",
 	} = $props();

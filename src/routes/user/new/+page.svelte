@@ -5,15 +5,15 @@
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { CustomInput } from "$lib/custominput/index.js";
+  import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { Check, Trash2, UserRoundPlus } from "lucide-svelte";
   import { toast } from "svelte-sonner";
-  import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
+  import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newFormSchema } from "../schema.js";
 
   const key = "user";
-  let showdebug = $state(false);
   let loading = $state(false);
   let errormessage = $state("");
   const form = superForm(defaults(zod(newFormSchema)), {
@@ -57,7 +57,7 @@
 {/if}
 
 <form method="POST" use:enhance>
-  <Form.Field {form} name="name">
+  <Form.Field {form} name="name" class="mb-7">
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Name</Form.Label>
@@ -72,7 +72,7 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Field {form} name="username">
+  <Form.Field {form} name="username" class="mb-7">
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Username</Form.Label>
@@ -87,7 +87,7 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Field {form} name="password">
+  <Form.Field {form} name="password" class="mb-7">
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Password</Form.Label>
@@ -103,7 +103,7 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Field {form} name="email" class="mb-4">
+  <Form.Field {form} name="email" class="mb-7">
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Email</Form.Label>
@@ -122,7 +122,7 @@
   <Form.Field
     {form}
     name="disabled"
-    class="flex flex-row items-start space-x-3 space-y-0 mb-4 "
+    class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
   >
     <Form.Control>
       {#snippet children({ props })}
@@ -142,7 +142,7 @@
   <Form.Field
     {form}
     name="dblocked"
-    class="flex flex-row items-start space-x-3 space-y-0 mb-4"
+    class="flex flex-row items-start space-x-3 space-y-0 mb-7"
   >
     <Form.Control>
       {#snippet children({ props })}
@@ -162,7 +162,7 @@
   <Form.Field
     {form}
     name="validated"
-    class="flex flex-row items-start space-x-3 space-y-0 mb-4"
+    class="flex flex-row items-start space-x-3 space-y-0 mb-7"
   >
     <Form.Control>
       {#snippet children({ props })}
@@ -182,7 +182,7 @@
   <Form.Field
     {form}
     name="emailvalidated"
-    class="flex flex-row items-start space-x-3 space-y-0 mb-4"
+    class="flex flex-row items-start space-x-3 space-y-0 mb-7"
   >
     <Form.Control>
       {#snippet children({ props })}
@@ -202,7 +202,7 @@
   <Form.Field
     {form}
     name="formvalidated"
-    class="flex flex-row items-start space-x-3 space-y-0 mb-4"
+    class="flex flex-row items-start space-x-3 space-y-0 mb-7"
   >
     <Form.Control>
       {#snippet children({ props })}
@@ -228,6 +228,7 @@
             {#if $formData.federationids}
               <div class="flex items-center justify-start">
                 <CustomInput
+                  type="email"
                   disabled={loading}
                   {...props}
                   bind:value={$formData.federationids[index]}
@@ -256,7 +257,7 @@
   {/if}
   <div>
     <HotkeyButton
-      class="mb-4"
+      class="mb-7"
       aria-label="add federation id"
       disabled={loading}
       variant="new"
@@ -283,15 +284,4 @@
   >
 </form>
 
-{#if formData != null && showdebug == true}
-  <div class="mt-4">
-    <SuperDebug data={formData} theme="vscode" />
-  </div>
-{/if}
-
-<HotkeyButton
-  hidden
-  class="hidden"
-  data-shortcut={"Control+d,Meta+d"}
-  onclick={() => (showdebug = !showdebug)}>Toggle debug</HotkeyButton
->
+<CustomSuperDebug {formData} />
