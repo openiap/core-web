@@ -149,7 +149,7 @@
     return quantity;
   }
 </script>
-
+<header>{data?.billingaccount?.name} billing usage</header>
 <div class="flex flex-wrap gap-4">
   {#each resources as resource}
     <Card.Root class="w-[450px] h-[500px] flex flex-col justify-around">
