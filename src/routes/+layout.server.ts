@@ -34,8 +34,8 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 				total_count = entities.length;
 				break;
 			case base + "/console":
-				entities = await datacomponent.GetData(page, "config", { _type: "config" }, access_token);
-				total_count = await datacomponent.GetCount(page, "config", { _type: "config" }, access_token);
+				entities = await datacomponent.GetData(page, "config", { _type: "config" }, access_token, false);
+				total_count = entities.length;
 				break;
 			case base + "/credential":
 				entities = await datacomponent.GetData(page, "openrpa", { _type: "credential" }, access_token);
