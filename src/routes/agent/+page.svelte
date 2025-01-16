@@ -180,8 +180,8 @@
   <div class="flex gap-2 w-full">
     <Searchinput {searchstring} />
     <HotkeyButton
-      size="new"
-      variant="new"
+      size="base"
+      variant="base"
       aria-label="add"
       class="border-dashed dark:text-bw600"
     >
@@ -192,8 +192,8 @@
 
   <div class="flex gap-2">
     <HotkeyButton
-      size="new"
-      variant="new"
+      size="base"
+      variant="base"
       aria-label="add"
       onclick={() => goto(base + `/${page}/new`)}
     >
@@ -203,8 +203,8 @@
     <Hotkeybutton
       aria-label="packages"
       title="package"
-      size="new"
-      variant="new"
+      size="base"
+      variant="base"
       onclick={() => goto(base + `/package`)}
     >
       <Box />
@@ -213,8 +213,8 @@
     <Hotkeybutton
       aria-label="reload"
       title="reload"
-      size="new"
-      variant="new"
+      size="base"
+      variant="base"
       onclick={async () => {
         entities = await datacomponent.GetData(
           page,

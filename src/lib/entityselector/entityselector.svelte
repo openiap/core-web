@@ -1,16 +1,15 @@
 <script lang="ts">
-    import * as Popover from "$lib/components/ui/popover/index.js";
-
-    import { buttonVariants } from "$lib/components/ui/button/index.js";
     import * as Command from "$lib/components/ui/command/index.js";
-    import { ChevronsUpDown } from "lucide-svelte";
-
+    import * as Popover from "$lib/components/ui/popover/index.js";
     import { auth } from "$lib/stores/auth.svelte";
+    import { ChevronDown, ChevronUp } from "lucide-svelte";
+
     let {
         value = $bindable(),
         collectionname = "entities",
         basefilter = {},
         returnObject = false,
+        loading = false,
         ...restProps
     } = $props();
 
@@ -29,7 +28,7 @@
         if (item != null) {
             return "(" + item._type + ") " + item.name;
         }
-        return "Select one";
+        return "Select Entitiy";
     });
 
     let entities: any[] = $state([]);
@@ -45,20 +44,27 @@
             jwt: auth.access_token,
         });
     }
-    let open = $state(false);
+    let isOpen = $state(false);
     function closeAndRefocusTrigger() {
-        open = false;
+        isOpen = false;
     }
 </script>
 
-<Popover.Root bind:open>
-    <Popover.Trigger class={buttonVariants({ variant: "outline" })}>
+<Popover.Root bind:open={isOpen} {...restProps}>
+    <Popover.Trigger
+        disabled={loading}
+        class={" dark:bg-bw1000 flex items-center justify-between border rounded-[10px] px-2 dark:border-bw600 dark:text-bw500 min-w-[260px] dark:hover:bg-bw700 dark:hover:border-bw500 "}
+    >
         {#await triggerContent()}
             Loading...
         {:then triggerContent}
             {triggerContent}
         {/await}
-        <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        {#if isOpen}
+            <ChevronUp class="ml-2 h-4 w-4 " />
+        {:else}
+            <ChevronDown class="ml-2 h-4 w-4" />
+        {/if}
     </Popover.Trigger>
     <Popover.Content class="w-80">
         {#await loadSearchResult("")}{/await}

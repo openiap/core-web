@@ -20,7 +20,7 @@ export const editFormSchema = z.object({
   username: z.string().min(2),
   // email: z.string().optional().default(""),
   // password: z.string().optional(),
-  disabled: z.boolean(),
+  // disabled: z.boolean(),
   dblocked: z.boolean(),
   validated: z.boolean(),
   emailvalidated: z.boolean(),

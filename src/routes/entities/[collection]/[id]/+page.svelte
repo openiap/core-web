@@ -73,9 +73,8 @@
   <Form.Button
     disabled={loading}
     aria-label="submit"
-    variant="new"
-    size="new"
-    class="dark:bg-darkbggreen">Save Changes</Form.Button
+    variant="success"
+    size="new">Save Changes</Form.Button
   >
 
   <Acl bind:value={$formData} />

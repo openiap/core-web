@@ -236,7 +236,7 @@
                 <HotkeyButton
                   class="ml-2 dark:bg-darkbgred"
                   aria-label="delete"
-                  size="new"
+                  size="base"
                   disabled={loading}
                   variant="icon"
                   onclick={() => {
@@ -260,8 +260,8 @@
       class="mb-7"
       aria-label="add federation id"
       disabled={loading}
-      variant="new"
-      size="new"
+      variant="base"
+      size="base"
       onclick={() => {
         let arr = $formData.federationids || [];
         $formData.federationids = [...arr, "test"];
@@ -275,9 +275,8 @@
   <Form.Button
     disabled={loading}
     aria-label="submit"
-    variant="new"
+    variant="success"
     size="new"
-    class="dark:bg-darkbggreen"
   >
     <Check />
     Add {key}</Form.Button

@@ -1,43 +1,46 @@
 <script lang="ts" module>
+	import { install, uninstall } from "@github/hotkey";
 	import type { WithElementRef } from "bits-ui";
+	import { onDestroy, onMount } from "svelte";
 	import type {
 		HTMLAnchorAttributes,
 		HTMLButtonAttributes,
 	} from "svelte/elements";
 	import { type VariantProps, tv } from "tailwind-variants";
-	import { install, uninstall } from "@github/hotkey";
-	import { onMount } from "svelte";
-	import { onDestroy } from "svelte";
 
 	export const buttonVariants = tv({
-		base: "ring-offset-background focus-visible:ring-ring inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+		base:
+			"ring-offset-background focus-visible:ring-ring inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 " +
+			" border-[1px] dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 ",
 		variants: {
 			variant: {
-				default:
-					"bg-gray-400 text-primary-foreground hover:bg-primary/90",
-				destructive:
-					"bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:bg-destructive/90 dark:bg-darkbgred dark:text-darktextred border-[1px] border-darkborderred",
-				outline:
-					"border-input bg-background hover:bg-accent hover:text-accent-foreground border",
-				secondary:
-					"bg-secondary text-secondary-foreground hover:bg-secondary/80",
+				// default:
+				// 	"bg-gray-400 text-primary-foreground hover:bg-primary/90",
+				// destructive:
+				// 	"bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:bg-destructive/90 dark:bg-darkbgred dark:text-darktextred border-[1px] border-darkborderred",
+				// outline:
+				// 	"border-input bg-background hover:bg-accent hover:text-accent-foreground border",
+				// secondary:
+				// 	"bg-secondary text-secondary-foreground hover:bg-secondary/80",
 				ghost: "hover:bg-accent hover:text-accent-foreground",
 				link: "text-primary underline-offset-4 hover:underline",
 				ghostfull: "",
 				icon: "dark:bg-bw700 dark:text-bw400",
-				new: "dark:bg-bw850 dark:text-bw200 border-[1px] border-bw600",
+				base: "dark:bg-bw850 dark:text-bw200 border-[1px] border-bw600",
+				danger: "dark:bg-darkbgred dark:hover:bg-darkbghoverred",
+				success: "dark:bg-darkbggreen dark:hover:bg-darkbghovergreen",
 			},
 			size: {
 				default: "h-10 px-4 py-2",
 				sm: "h-9 rounded-md px-3",
 				lg: "h-11 rounded-md px-8",
 				icon: "h-7 w-7 rounded-[10px]",
-				new: "h-7 px-2.5 py-1.5 rounded-[10px]",
+				base: "h-7 px-2.5 py-1.5 rounded-[10px]",
 			},
 		},
 		defaultVariants: {
-			variant: "default",
-			size: "default",
+			variant: "base",
+			size: "base",
 		},
 	});
 
@@ -56,8 +59,8 @@
 
 	let {
 		class: className,
-		variant = "default",
-		size = "default",
+		variant = "base",
+		size = "base",
 		ref = $bindable(null),
 		href = undefined,
 		type = "button",

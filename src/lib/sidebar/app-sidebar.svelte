@@ -257,8 +257,8 @@
 													item.url}
 												class={$page.url.pathname ===
 												item.url
-													? "border-[1px] border-bw500 dark:text-bw100"
-													: ""}
+													? "dark:bg-bw700 dark:text-bw100"
+													: "dark:hover:border-[1px] dark:hover:border-bw500 dark:hover:bg-bw850 dark:hover:text-bw100"}
 											>
 												{#snippet child({ props })}
 													{#if item.external}

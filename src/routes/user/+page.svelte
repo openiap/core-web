@@ -68,8 +68,8 @@
   <div class="flex gap-2 w-full">
     <Searchinput {searchstring} />
     <HotkeyButton
-      size="new"
-      variant="new"
+      size="base"
+      variant="base"
       aria-label="add"
       class="border-dashed dark:text-bw600"
     >
@@ -79,8 +79,8 @@
   </div>
 
   <HotkeyButton
-    size="new"
-    variant="new"
+    size="base"
+    variant="base"
     aria-label="add"
     onclick={() => goto(base + `/${page}/new`)}
   >
@@ -100,25 +100,26 @@
   bind:entities
 >
   {#snippet action(item: any)}
-    <Button
+    <HotkeyButton
+
       aria-label="edit"
       onclick={() => single_item_click(item)}
       size="icon"
-      variant="secondary"
+      variant="ghostfull"
     >
       <Pencil />
-    </Button>
-    <Button
+    </HotkeyButton>
+    <HotkeyButton
+      variant="danger"
       aria-label="delete"
       onclick={() => {
         deleteData = item;
         showWarning = !showWarning;
       }}
       size="icon"
-      variant="destructive"
     >
       <Trash2 />
-    </Button>
+    </HotkeyButton>
   {/snippet}
 </Entities>
 
