@@ -12,6 +12,8 @@
   import SuperDebug, { superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newWorkspaceSchema } from "../schema.js";
+    import { goto } from "$app/navigation";
+    import { base } from "$app/paths";
 
   const key = "workspace";
   let showdebug = $state(false);
@@ -232,7 +234,7 @@
     </Card.Content>
     <Card.Footer class="flex justify-between">
       <div></div>
-      {#if currentworkspace == null || currentworkspace.resourceusageid == null || currentworkspace.resourceusageid == ""}
+      {#if currentworkspace == null || currentworkspace.productname != "Basic tier"}
         {#if entities.length == 0}
           <Button onclick={addplan}>Upgrade</Button>
         {:else}
@@ -248,8 +250,8 @@
           </Select.Root>
           <Button onclick={addplan}>Upgrade</Button>
         {/if}
-      {:else}
-        <Button variant="outline">Current</Button>
+      {:else if currentworkspace.productname == "Basic tier"}
+        <Button variant="outline" onclick={()=> goto(base + '/billingaccount/' + currentworkspace.billingid + "/billing" )}>Billing</Button>
       {/if}
     </Card.Footer>
   </Card.Root>
