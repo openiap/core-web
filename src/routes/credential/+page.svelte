@@ -68,8 +68,8 @@
   <div class="flex gap-2 w-full">
     <Searchinput {searchstring} />
     <HotkeyButton
-      size="new"
-      variant="new"
+      size="base"
+      variant="base"
       aria-label="add"
       class="border-dashed dark:text-bw600"
     >
@@ -79,8 +79,8 @@
   </div>
 
   <HotkeyButton
-    size="new"
-    variant="new"
+    size="base"
+    variant="base"
     aria-label="add"
     onclick={() => goto(base + `/${page}/new`)}
   >

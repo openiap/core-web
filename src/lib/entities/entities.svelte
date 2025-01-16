@@ -5,34 +5,23 @@
 	import * as Sheet from "$lib/components/ui/sheet/index.js";
 	import { Switch } from "$lib/components/ui/switch/index.js";
 	import * as Table from "$lib/components/ui/table/index.js";
-	import Custompagination from "$lib/custompagination/custompagination.svelte";
 	import { type sort } from "$lib/stores/usersettings.svelte";
 	import ArrowDown from "lucide-svelte/icons/arrow-down";
 	import ArrowUp from "lucide-svelte/icons/arrow-up";
-	import SuperDebug from "sveltekit-superforms";
 	import { TableHeader, type TTableHeader } from "./data.svelte.js";
 </script>
 
 <script lang="ts">
+	import { browser } from "$app/environment";
 	import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
 	import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
+	import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
+	import { auth } from "$lib/stores/auth.svelte.js";
 	import { usersettings } from "$lib/stores/usersettings.svelte.js";
 	import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
-	import {
-		ArrowLeft,
-		ArrowRight,
-		CircleX,
-		MoveLeft,
-		MoveRight,
-		Trash2,
-		Check,
-	} from "lucide-svelte";
+	import { Check, CircleX, MoveLeft, MoveRight, Trash2 } from "lucide-svelte";
 	import { toast } from "svelte-sonner";
 	import { data } from "./data.svelte.js";
-	import { browser } from "$app/environment";
-	import { auth } from "$lib/stores/auth.svelte.js";
-	import Button from "$lib/components/ui/button/button.svelte";
-    import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
 
 	let {
 		page = "entities",
@@ -568,8 +557,8 @@
 		disabled={selected_items.length === 0}
 		onclick={() => (showWarning = true)}
 		data-shortcut="Delete"
-		size="new"
-		variant="destructive"
+		size="base"
+		variant="danger"
 		class="bg-red-500 text-white"
 	>
 		<Trash2 />
@@ -577,16 +566,16 @@
 	>
 	<Hotkeybutton
 		disabled={selected_items.length === 0}
-		variant="new"
-		size="new"
+		variant="base"
+		size="base"
 		onclick={ClearSelected}
 	>
 		<CircleX />
 		Clear All Selections</Hotkeybutton
 	>
 	<Hotkeybutton
-		variant="new"
-		size="new"
+		variant="base"
+		size="base"
 		onclick={() => {
 			toggleSheet = true;
 		}}
@@ -655,8 +644,8 @@
 
 <div class="flex justify-between items-center space-y-2 dark:text-bw300">
 	<HotkeyButton
-		size="new"
-		variant="new"
+		size="base"
+		variant="base"
 		data-shortcut="ArrowLeft"
 		onclick={() => {
 			page_index = page_index - 1;
@@ -687,8 +676,8 @@
 		{/if}
 	</div>
 	<HotkeyButton
-		size="new"
-		variant="new"
+		size="base"
+		variant="base"
 		data-shortcut="ArrowRight"
 		onclick={() => {
 			page_index = page_index + 1;

@@ -29,11 +29,15 @@ const config: Config = {
 				bw900: "#191A1E",
 				bw950: "#0C0D0E",
 
+				bw1000: "#282A2F",
+
 				darkbggreen: "#304E46",
+				darkbghovergreen: "#426A5F",
 				darktextgreen: "#DDEFE6",
 				darkbordergreen: "#56846D",
 
 				darkbgred: "#4E3030",
+				darkbghoverred: "#614242",
 				darktextred: "#EFDEDD",
 				darkborderred: "#886260",
 

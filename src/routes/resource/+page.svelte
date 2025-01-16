@@ -7,7 +7,8 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
-  import Button from "$lib/components/ui/button/button.svelte";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
+  import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
   import { HotkeyInput } from "$lib/components/ui/hotkeyinput/index.js";
   import { Label } from "$lib/components/ui/label/index.js";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
@@ -42,7 +43,7 @@
   }
   async function createcommon() {
     try {
-      auth.client.CustomCommand({ command: "createcommonresources" })
+      auth.client.CustomCommand({ command: "createcommonresources" });
       toast.success("Created common resources", {
         description: "",
       });
@@ -51,13 +52,12 @@
         collectionname,
         query,
         auth.access_token,
-        false
-      );      
+        false,
+      );
     } catch (error: any) {
       toast.error("Error while creating", {
         description: error.message,
       });
-      
     }
   }
 </script>
@@ -72,16 +72,14 @@
       bind:value={searchstring}
       data-shortcut={"Control+f,Meta+f"}
     />
-    <Button
-		size="new"
-		variant="new"
+    <HotkeyButton
+      size="base"
+      variant="base"
       aria-label="Create common"
       onclick={createcommon}
-      >
-      <div class="flex items-center space-x-2">
-        Create common
-      </div>
-  </Button>
+    >
+      <div class="flex items-center space-x-2">Create common</div>
+    </HotkeyButton>
   </div>
 </div>
 <Entities
@@ -95,13 +93,13 @@
   bind:entities
 >
   {#snippet action(item: any)}
-    <Button
+    <Hotkeybutton
       aria-label="delete"
       onclick={() => deleteitem(item)}
       size="icon"
-      variant="destructive"
+      variant="danger"
     >
       <Trash2 />
-    </Button>
+    </Hotkeybutton>
   {/snippet}
 </Entities>

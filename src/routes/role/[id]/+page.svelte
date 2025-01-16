@@ -94,7 +94,7 @@
 {/if}
 
 <form method="POST" use:enhance>
-  <Acl bind:value={$formData} />
+  <Acl bind:value={$formData} {loading} />
 
   <Form.Field {form} name="name" class="mb-7">
     <Form.Control>
@@ -126,7 +126,7 @@
               aria-readonly
             />
             <Form.Label>RPA Role</Form.Label>
-            <span> {$formData.rparole ? "On" : "Off"} </span>
+            <div class="text-[14px]">{$formData.rparole ? "On" : "Off"}</div>
           </div>
         </div>
       {/snippet}
@@ -150,7 +150,9 @@
               aria-readonly
             />
             <Form.Label>Hide Members</Form.Label>
-            <span> {$formData.hidemembers ? "On" : "Off"} </span>
+            <div class="text-[14px]">
+              {$formData.hidemembers ? "On" : "Off"}
+            </div>
           </div>
         </div>
       {/snippet}
@@ -158,55 +160,76 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  <div class="mb-7">
-    {#if members}
-      <div class="mb-7">
+  {#if members.length > 0}
+    <div
+      class="text-[14px] w-[895px] mb-7 border rounded-[10px] dark:bg-bw850 dark:border-bw600 px-2.5 py-1"
+    >
+      <div class="mb-5 dark:text-bw400">
+        This user is a member of the following:
+      </div>
+      {#if members.length > 0}
         {#each members as item, index}
-          <div class="flex items-center space-x-4">
-            <div class="font-bold">Member</div>
+          <div
+            class="grid grid-cols-12 items-center border px-2.5 py-[5px] my-2.5 rounded-[10px] dark:border-bw600 dark:bg-bw1000"
+          >
+            <div class="dark:text-bw400 col-span-1">Member</div>
             {#if item}
-              <div>
+              <div class="col-span-4">
                 {item.name}
               </div>
             {/if}
-
-            <HotkeyButton
-              aria-label="delete"
-              disabled={loading}
-              variant="outline"
-              onclick={() => {
-                let arr = members;
-                if (arr) {
-                  arr.splice(index, 1);
-                }
-                members = arr;
-              }}><Trash2 /></HotkeyButton
-            >
+            <div class="col-span-3">
+              <HotkeyButton
+                aria-label="delete"
+                class="dark:bg-darkbgred"
+                disabled={loading}
+                variant="danger"
+                size="base"
+                onclick={() => {
+                  let arr = members;
+                  if (arr) {
+                    arr.splice(index, 1);
+                  }
+                  members = arr;
+                }}><Trash2 />Remove Rights</HotkeyButton
+              >
+            </div>
+            <div class="col-span-4">
+              <span class="dark:text-bw400">Role id :</span>
+              <span>{item._id}</span>
+            </div>
           </div>
         {/each}
-      </div>
-    {/if}
-
-    <div class="flex space-x-2 mb-7">
-      <EntitySelector bind:value={newid} collectionname="users"
-      ></EntitySelector>
-      <HotkeyButton
-        onclick={async () => {
-          await addace(newid);
-        }}
-      >
-        <Plus />
-        Add
-      </HotkeyButton>
+      {:else}
+        <div class="dark:text-bw400">No members</div>
+      {/if}
     </div>
+  {/if}
+
+  <div class="flex space-x-2 mb-7">
+    <EntitySelector bind:value={newid} collectionname="users" {loading}
+    ></EntitySelector>
+    <HotkeyButton
+      variant="success"
+      size="base"
+      disabled={loading || newid == ""}
+      onclick={async () => {
+        if (newid) {
+          await addace(newid);
+          newid = "";
+        }
+      }}
+    >
+      <Plus />
+      Add
+    </HotkeyButton>
   </div>
 
   <Form.Button
+    variant="success"
+    size="new"
     disabled={loading}
     aria-label="submit"
-    variant="new"
-    size="new"
-    class="dark:bg-darkbggreen"
   >
     <Check />
     Update {key}</Form.Button

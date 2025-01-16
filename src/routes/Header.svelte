@@ -15,6 +15,7 @@
 	import Separator from "$lib/components/ui/separator/separator.svelte";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import { page } from "$app/stores";
+	import { capitalizeFirstLetter } from "../helper";
 
 	let pagename = $derived(() =>
 		$page.url.pathname.replace(base, "").replace("/", ""),
@@ -32,8 +33,8 @@
 	}
 </script>
 
-<header 
-class="flex h-16 shrink-0 items-center justify-between px-4 rounded mx-2"
+<header
+	class="flex h-16 shrink-0 items-center justify-between px-4 rounded mx-2"
 >
 	<div class="flex items-center">
 		<Sidebar.Trigger class="-ml-1" />
@@ -43,18 +44,18 @@ class="flex h-16 shrink-0 items-center justify-between px-4 rounded mx-2"
 				{#each pagename().split("/") as page, index}
 					<Breadcrumb.Item class="hidden md:block text-bw500">
 						{#if pagename().split("/").length - 1 !== index}
-							<Breadcrumb.Link
-								href="{base}/{page.trim()}"
+							<Breadcrumb.Link href="{base}/{page.trim()}"
 								>{page.trim()}</Breadcrumb.Link
 							>
 						{:else}
-							{page.trim()}
+							<div class="font-bold text-[16px] dark:text-bw100">
+								{capitalizeFirstLetter(page.trim())}
+							</div>
 						{/if}
 					</Breadcrumb.Item>
 					{#if pagename().split("/").length - 1 !== index}
-						<Breadcrumb.Separator
-							class="hidden md:block"
-						/>
+						<!-- <Breadcrumb.Separator class="hidden md:block" /> -->
+						<div class="hidden md:block dark:text-bw500">/</div>
 					{/if}
 				{/each}
 			</Breadcrumb.List>
