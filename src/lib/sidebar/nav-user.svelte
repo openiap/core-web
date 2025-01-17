@@ -5,6 +5,7 @@
     import * as Sidebar from "$lib/components/ui/sidebar/index.js";
     import { useSidebar } from "$lib/components/ui/sidebar/index.js";
     import { auth } from "$lib/stores/auth.svelte";
+    import { LogOut } from "lucide-svelte";
     import BadgeCheck from "lucide-svelte/icons/badge-check";
     import Bell from "lucide-svelte/icons/bell";
     import CreditCard from "lucide-svelte/icons/credit-card";
@@ -77,12 +78,17 @@
                     </DropdownMenu.Item>
                 </DropdownMenu.Group>
                 <DropdownMenu.Separator />
-                <DropdownMenu.Item>
+                <DropdownMenu.Item class="cursor-pointer" onclick={logout}>
+                    <LogOut class="h-4 w-4  " />
                     <HotkeyButton
+                        class="p-0 m-0 focus-visible:ring-offset-0 focus-visible:ring-0 "
                         aria-label="Signout"
-                        onclick={() => logout()}
-                        data-shortcut={"Control+q,Meta+q"}>Signout</HotkeyButton
+                        onclick={logout}
+                        variant="ghostfull"
+                        data-shortcut={"Control+q,Meta+q"}
                     >
+                        <div>Signout</div>
+                    </HotkeyButton>
                 </DropdownMenu.Item>
             </DropdownMenu.Content>
         </DropdownMenu.Root>

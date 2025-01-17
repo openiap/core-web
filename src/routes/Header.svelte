@@ -106,6 +106,7 @@
 				/>
 			{:else}
 				<HotkeyButton
+					variant="success"
 					aria-label="Signin"
 					onclick={login}
 					data-shortcut={"Control+q,Meta+q"}>Signin</HotkeyButton

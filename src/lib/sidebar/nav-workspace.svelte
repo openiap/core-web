@@ -4,12 +4,17 @@
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
     import * as Sidebar from "$lib/components/ui/sidebar/index.js";
     import { useSidebar } from "$lib/components/ui/sidebar/index.js";
+    import { auth } from "$lib/stores/auth.svelte";
+    import {
+        Building,
+        ChevronDown,
+        DollarSignIcon,
+        Pencil,
+    } from "lucide-svelte";
     import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
     import Plus from "lucide-svelte/icons/plus";
-    import DollarSign from "lucide-svelte/icons/dollar-sign";
     import type { Workspace } from "../../routes/workspace/schema";
-    import { Building, ChevronDown, DollarSignIcon, Pencil } from "lucide-svelte";
-    import { auth } from "$lib/stores/auth.svelte";
+
     let {
         workspaces,
         currentworkspace,
@@ -29,6 +34,7 @@
         update_currentworkspace(workspace._id);
     }
 </script>
+
 <Sidebar.Menu>
     <Sidebar.MenuItem>
         <DropdownMenu.Root>
@@ -76,29 +82,28 @@
                         onSelect={() => selectWorkspace(workspace)}
                         class="gap-2 p-2"
                     >
-
-                    <div
-                    class="grid flex-1 text-left text-sm leading-tight justify-between"
-                >
-                    <span class="truncate font-semibold">
-                        {workspace.name}
-                    </span>
-                    <span class="truncate text-xs"
-                        >{workspace.productname}</span
-                    >
-                </div>
+                        <div
+                            class="grid flex-1 text-left text-sm leading-tight justify-between"
+                        >
+                            <span class="truncate font-semibold">
+                                {workspace.name}
+                            </span>
+                            <span class="truncate text-xs"
+                                >{workspace.productname}</span
+                            >
+                        </div>
                     </DropdownMenu.Item>
                 {/each}
                 <DropdownMenu.Separator />
                 {#if workspaces.length > 0}
                     {#if currentworkspace != ""}
-                    <DropdownMenu.Item
+                        <DropdownMenu.Item
                             onSelect={() => selectWorkspace({ _id: "" } as any)}
                             class="gap-2 p-2"
                         >
                             Unselect Workspace
                         </DropdownMenu.Item>
-                        {/if}
+                    {/if}
                     <DropdownMenu.Item
                         onSelect={() => goto(base + "/workspace")}
                         class="gap-2 p-2"
@@ -107,22 +112,29 @@
                     </DropdownMenu.Item>
                 {/if}
                 {#if currentworkspace != ""}
-                <DropdownMenu.Item
-                    onSelect={() => goto(base + "/workspace/" + currentworkspace)}
-                    class="gap-2 p-2 text-muted-foreground font-medium"
-                >
-                    <Pencil class="size-4" />
-                    Edit {activeWorkspacename()}
-                </DropdownMenu.Item>
-                {#if auth.profile?.roles.includes("admins")}
-                <DropdownMenu.Item
-                    onSelect={() => goto(base + "/workspace/" + currentworkspace + "/billing")}
-                    class="gap-2 p-2 text-muted-foreground font-medium"
-                >
-                    <DollarSignIcon class="size-4" />
-                    Billing for {activeWorkspacename()}
-                </DropdownMenu.Item>
-                {/if}
+                    <DropdownMenu.Item
+                        onSelect={() =>
+                            goto(base + "/workspace/" + currentworkspace)}
+                        class="gap-2 p-2 text-muted-foreground font-medium"
+                    >
+                        <Pencil class="size-4" />
+                        Edit {activeWorkspacename()}
+                    </DropdownMenu.Item>
+                    {#if auth.profile?.roles.includes("admins")}
+                        <DropdownMenu.Item
+                            onSelect={() =>
+                                goto(
+                                    base +
+                                        "/workspace/" +
+                                        currentworkspace +
+                                        "/billing",
+                                )}
+                            class="gap-2 p-2 text-muted-foreground font-medium"
+                        >
+                            <DollarSignIcon class="size-4" />
+                            Billing for {activeWorkspacename()}
+                        </DropdownMenu.Item>
+                    {/if}
                 {/if}
                 <DropdownMenu.Item
                     class="gap-2 p-2 cursor-pointer"
@@ -133,7 +145,7 @@
                     >
                         <Plus class="size-4" />
                     </div>
-                    <div class="text-muted-foreground font-medium">
+                    <div class=" font-medium">
                         Create Workspace
                     </div>
                 </DropdownMenu.Item>

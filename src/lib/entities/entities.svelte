@@ -431,7 +431,7 @@
 <div class="border border-bw500 rounded-[10px]">
 	<Table.Root>
 		{#if entities.length === 0}
-			<Table.Caption class="mb-2">No data found.</Table.Caption>
+			<Table.Caption class="mb-2 text-bw300">No data found.</Table.Caption>
 		{:else if caption != ""}
 			<Table.Caption>{caption}</Table.Caption>
 		{/if}

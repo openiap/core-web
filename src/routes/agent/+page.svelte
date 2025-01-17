@@ -5,9 +5,20 @@
 </script>
 
 <script lang="ts">
+  import { goto } from "$app/navigation";
+  import { base } from "$app/paths";
+  import Button from "$lib/components/ui/button/button.svelte";
+  import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
+  import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { Label } from "$lib/components/ui/label/index.js";
+  import * as RadioGroup from "$lib/components/ui/radio-group/index.js";
+  import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
+  import Searchinput from "$lib/searchinput/searchinput.svelte";
   import Statuscard from "$lib/statuscard/statuscard.svelte";
+  import { auth } from "$lib/stores/auth.svelte.js";
+  import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import {
     Box,
     DollarSign,
@@ -23,19 +34,7 @@
     Webhook,
     Wrench,
   } from "lucide-svelte";
-
-  import { goto } from "$app/navigation";
-  import { base } from "$app/paths";
-  import { data as datacomponent } from "$lib/entities/data.svelte.js";
-  import Button from "$lib/components/ui/button/button.svelte";
-  import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
-  import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
-  import * as RadioGroup from "$lib/components/ui/radio-group/index.js";
-  import Searchinput from "$lib/searchinput/searchinput.svelte";
-  import { auth } from "$lib/stores/auth.svelte.js";
-  import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import { toast } from "svelte-sonner";
-  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
 
   let { data } = $props();
   datacomponent.parsesettings(data.settings);
@@ -275,6 +274,7 @@
   <RadioGroup.Root value="All" class="flex space-x-4">
     <div class="flex items-center space-x-2">
       <RadioGroup.Item
+        class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
         value="All"
         id="r1"
         onclick={async () => {
@@ -291,6 +291,7 @@
     </div>
     <div class="flex items-center space-x-2">
       <RadioGroup.Item
+        class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
         value="Daemon"
         id="r2"
         onclick={async () => {
@@ -310,6 +311,7 @@
     </div>
     <div class="flex items-center space-x-2">
       <RadioGroup.Item
+        class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
         value="Pods"
         id="r3"
         onclick={async () => {
@@ -329,6 +331,7 @@
     </div>
     <div class="flex items-center space-x-2">
       <RadioGroup.Item
+        class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
         value="Docker"
         id="r4"
         onclick={async () => {
@@ -348,6 +351,7 @@
     </div>
     <div class="flex items-center space-x-2">
       <RadioGroup.Item
+        class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
         value="Assistant"
         id="r5"
         onclick={async () => {
