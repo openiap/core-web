@@ -11,7 +11,7 @@
 	export const buttonVariants = tv({
 		base:
 			"ring-offset-background focus-visible:ring-ring inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 " +
-			" border-[1px] dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 ",
+			"  ",
 		variants: {
 			variant: {
 				// default:
@@ -26,9 +26,10 @@
 				link: "text-primary underline-offset-4 hover:underline",
 				ghostfull: "",
 				icon: "dark:bg-bw700 dark:text-bw400",
-				base: "dark:bg-bw850 dark:text-bw200 border-[1px] border-bw600",
-				danger: "dark:bg-darkbgred dark:hover:bg-darkbghoverred",
-				success: "dark:bg-darkbggreen dark:hover:bg-darkbghovergreen",
+				base: "border-[1px] dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:hover:bg-bw700 dark:bg-bw850 dark:text-bw200 border-[1px] border-bw600",
+				danger: "border-[1px] dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:bg-darkbgred dark:hover:bg-darkbghoverred",
+				success:
+					"border-[1px] dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:bg-darkbggreen dark:hover:bg-darkbghovergreen",
 			},
 			size: {
 				default: "h-10 px-4 py-2",

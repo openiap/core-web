@@ -24,9 +24,11 @@
 				entitydefault: "bg-indigo-400 cursor-not-allowed text-white",
 				entityselected: "bg-indigo-200 text-black hover:opacity-80 ",
 				icon: "dark:bg-bw700 dark:text-bw400 p-2",
-				new: "border-[1px] dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:bg-bw850 dark:text-bw200 border-[1px] border-bw600",
+				new: "border-[1px] dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:hover:bg-bw700 dark:bg-bw850 dark:text-bw200 border-[1px] border-bw600",
 				success:
 					"border-[1px] dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:bg-darkbggreen dark:hover:bg-darkbghovergreen",
+				base: "border-[1px] dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:hover:bg-bw700 dark:bg-bw850 dark:text-bw200 border-[1px] border-bw600",
+				danger: "border-[1px] dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:bg-darkbgred dark:hover:bg-darkbghoverred",
 			},
 			size: {
 				default: "p-1",
@@ -35,6 +37,7 @@
 				icon: "h-7 w-7 rounded-[10px]",
 				tableicon: "p-1 rounded-[10px]",
 				new: "h-7 px-2.5 py-1.5 rounded-[10px]",
+				base: "h-7 px-2.5 py-1.5 rounded-[10px]",
 			},
 		},
 		defaultVariants: {
