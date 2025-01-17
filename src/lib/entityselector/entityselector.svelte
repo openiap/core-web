@@ -15,6 +15,9 @@
 
     const triggerContent = $derived(async () => {
         let id;
+        if (value == "") {
+            return "Select Entitiy";
+        }
         if (returnObject) {
             id = value?._id;
         } else {

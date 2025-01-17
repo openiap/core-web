@@ -18,9 +18,9 @@ export type NewFormSchema = typeof newFormSchema;
 export const editFormSchema = z.object({
   name: z.string().min(2),
   username: z.string().min(2),
-  // email: z.string().optional().default(""),
-  // password: z.string().optional(),
-  // disabled: z.boolean(),
+  email: z.string().optional().transform((val) => val ?? ""),
+  newpassword: z.string().optional().transform((val) => val ?? ""),
+  disabled: z.boolean().optional().transform((val) => val ?? false),
   dblocked: z.boolean(),
   validated: z.boolean(),
   emailvalidated: z.boolean(),
