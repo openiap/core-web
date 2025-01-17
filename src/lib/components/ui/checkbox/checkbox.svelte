@@ -1,5 +1,8 @@
 <script lang="ts">
-	import { Checkbox as CheckboxPrimitive, type WithoutChildrenOrChild } from "bits-ui";
+	import {
+		Checkbox as CheckboxPrimitive,
+		type WithoutChildrenOrChild,
+	} from "bits-ui";
 	import Check from "lucide-svelte/icons/check";
 	import Minus from "lucide-svelte/icons/minus";
 	import { cn } from "$lib/utils.js";
@@ -16,8 +19,9 @@
 <CheckboxPrimitive.Root
 	bind:ref
 	class={cn(
-		"border-primary ring-offset-background focus-visible:ring-ring data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground peer box-content size-4 shrink-0 rounded-sm border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-50",
-		className
+		"border-primary ring-offset-background focus-visible:ring-ring data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground peer box-content size-4 shrink-0 rounded-sm border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-50" +
+			`dark:border dark:border-bw300 dark:text-bw100 w-6 h-6 md:w-4 md:h-4 mr-5 ml-1.5 ${checked && "dark:bg-bw500"}`,
+		className,
 	)}
 	bind:checked
 	bind:indeterminate

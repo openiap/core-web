@@ -53,7 +53,7 @@
                     disabled={loading}
                     checked={IsBitSet(item.value)}
                     aria-label={item.label}
-                    class="dark:border dark:border-bw300 dark:text-bw100 w-6 h-6 md:w-4 md:h-4 mr-5 ml-1.5"
+                    class={`dark:border dark:border-bw300 dark:text-bw100 w-6 h-6 md:w-4 md:h-4 mr-5 ml-1.5 ${IsBitSet(item.value) && "dark:bg-bw500"}`}
                 />
             </div>
         {/each}

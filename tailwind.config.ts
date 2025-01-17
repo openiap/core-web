@@ -106,6 +106,9 @@ const config: Config = {
 			fontFamily: {
 				"custom": ['DM Sans', 'serif'],
 			},
+			fontSize: {
+				'smaller': ['0.875rem', '1rem'], // 14px font size, 16px line height
+			},
 			keyframes: {
 				"accordion-down": {
 					from: { height: "0" },
