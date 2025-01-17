@@ -25,14 +25,15 @@
             query: { _id: id },
             jwt: auth.access_token,
         });
-        value._acl.push({ _id: item._id, name: item.name, rights: 65535 });
+        value._acl = [...value._acl, { _id: item._id, name: item.name, rights: 65535 }];
     }
-    $effect(() => {
-        if (newid != "") {
-            addace(newid);
-            newid = "";
-        }
-    });
+    // Not sure why this is here
+    // $effect(() => {
+    //     if (newid != "") {
+    //         addace(newid);
+    //         newid = "";
+    //     }
+    // });
 </script>
 
 <Accordion.Root
@@ -96,7 +97,7 @@
                     {loading}
                 ></EntitySelector>
                 <Hotkeybutton
-                    disabled={loading || newid == ""}
+                    disabled={loading}
                     variant="success"
                     size="base"
                     onclick={() => {

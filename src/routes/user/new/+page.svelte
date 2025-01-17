@@ -12,6 +12,7 @@
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newFormSchema } from "../schema.js";
+    import Customcheckbox from "$lib/customcheckbox/customcheckbox.svelte";
 
   const key = "user";
   let loading = $state(false);
@@ -146,7 +147,7 @@
   >
     <Form.Control>
       {#snippet children({ props })}
-        <Checkbox
+        <Customcheckbox
           disabled={loading}
           {...props}
           bind:checked={$formData.dblocked}

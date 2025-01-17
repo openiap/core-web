@@ -22,6 +22,9 @@
   let loading = $state(false);
   let errormessage = $state("");
   const { data } = $props();
+  console.log(data.item);
+  data.item = editFormSchema.parse(data.item);
+
   const form = superForm(defaults(zod(editFormSchema)), {
     dataType: "json",
     validators: zod(editFormSchema),
@@ -30,6 +33,10 @@
       if (form.valid) {
         loading = true;
         try {
+          if (form.data.newpassword === "") {
+            // @ts-ignore
+            delete form.data.newpassword;
+          }
           await auth.client.UpdateOne({
             collectionname,
             item: { ...form.data },
@@ -54,6 +61,7 @@
 
   const { form: formData, enhance, message, validateForm } = form;
   formData.set(data.item);
+  console.log(data.item);
   validateForm({ update: true });
 </script>
 
@@ -98,62 +106,58 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  {#if "password" in $formData}
-    <Form.Field {form} name="password" class="mb-7">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Password</Form.Label>
-          <CustomInput
-            type="password"
-            placeholder="Type password"
-            disabled={loading}
-            {...props}
-            bind:value={$formData.password}
-          />
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
-  {/if}
+  <Form.Field {form} name="newpassword" class="mb-7">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Password</Form.Label>
+        <CustomInput
+          type="password"
+          placeholder="Type new password"
+          disabled={loading}
+          {...props}
+          bind:value={$formData.newpassword}
+        />
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field>
 
-  {#if "email" in $formData && $formData.email == ""}
-    <Form.Field {form} name="email" class="mb-7">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Email</Form.Label>
-          <CustomInput
-            placeholder="Type email"
-            disabled={loading}
-            {...props}
-            bind:value={$formData.email}
-          />
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
-  {/if}
+  <Form.Field {form} name="email" class="mb-7">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Email</Form.Label>
+        <CustomInput
+          placeholder="Type email"
+          disabled={loading}
+          {...props}
+          bind:value={$formData.email}
+        />
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field>
 
-  {#if "disabled" in $formData && $formData.disabled != null}
-    <Form.Field
-      {form}
-      name="disabled"
-      class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
-    >
-      <Form.Control>
-        {#snippet children({ props })}
-          <Checkbox
-            disabled={loading}
-            {...props}
-            bind:checked={$formData.disabled}
-          />
-          <div class="space-y-1 leading-none">
-            <Form.Label>Disabled</Form.Label>
-          </div>
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
-  {/if}
+  <!-- {#if "disabled" in $formData && $formData.disabled != null} -->
+  <Form.Field
+    {form}
+    name="disabled"
+    class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
+  >
+    <Form.Control>
+      {#snippet children({ props })}
+        <Checkbox
+          disabled={loading}
+          {...props}
+          bind:checked={$formData.disabled}
+        />
+        <div class="space-y-1 leading-none">
+          <Form.Label>Disabled</Form.Label>
+        </div>
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field>
+  <!-- {/if} -->
 
   <Form.Field
     {form}
@@ -306,7 +310,7 @@
 In some users object 
 1. Password key missing
 2. Email is null instead of string
-3. Disabled check is either null or missing 
+3. Disabled check is either null or missing ? might be wrong?
 Schema is conflicting with the data object hence edit user is not working 
 
 -CURRENT SOLUTION
