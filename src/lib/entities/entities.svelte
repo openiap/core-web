@@ -72,47 +72,57 @@
 	let multi_sort = $state(false);
 	let showdebug = $state(false);
 	let page_index = $state(data.settings.page_index);
-	let tableheaders = $state([]) as TTableHeader[];
+	let tableheaders:TTableHeader[] = $state([]);
 	let showWarning = $state(false);
 
 	let actioncellclass = $state("");
 	let actionheadclass = $state("");
 	selected_items = data.settings.selected_items;
 	let toggleSheet = $state(false);
+	let loading = $state(false);
 
 	async function GetData() {
-		const _entities = await data.GetData(
-			page,
-			collectionname,
-			query,
-			auth.access_token,
-		);
-		entities = _entities;
+		loading = true;
+		try {
+			const _entities = await data.GetData(
+				page,
+				collectionname,
+				query,
+				auth.access_token,
+			);
+			entities = _entities;
 
-		if (entities.length > 0) {
-			let keys = [];
-			for (let i = 0; i < entities.length; i++) {
-				let entity = entities[i];
-				let subkeys = Object.keys(entity);
-				for (let j = 0; j < subkeys.length; j++) {
-					let key = subkeys[j];
-					if (keys.indexOf(key) == -1) {
-						keys.push(key);
+			if (entities.length > 0) {
+				let keys = [];
+				for (let i = 0; i < entities.length; i++) {
+					let entity = entities[i];
+					let subkeys = Object.keys(entity);
+					for (let j = 0; j < subkeys.length; j++) {
+						let key = subkeys[j];
+						if (keys.indexOf(key) == -1) {
+							keys.push(key);
+						}
+					}
+				}
+				for (let i = 0; i < keys.length; i++) {
+					let key = keys[i];
+					if (tableheaders.find((x) => x.field == key) == null) {
+						let header = new TableHeader();
+						header.field = key;
+						header.name = key;
+						header.show = false;
+						tableheaders.push(header);
 					}
 				}
 			}
-			for (let i = 0; i < keys.length; i++) {
-				let key = keys[i];
-				if (tableheaders.find((x) => x.field == key) == null) {
-					let header = new TableHeader();
-					header.field = key;
-					header.name = key;
-					header.show = false;
-					tableheaders.push(header);
-				}
-			}
+			return entities;
+		} catch (error:any) {
+			toast.error("Error while loading data", {
+				description: error.message,
+			});
+		} finally {
+			loading = false;
 		}
-		return entities;
 	}
 	async function GetCount() {
 		total_count = await data.GetCount(
@@ -435,7 +445,8 @@
 <div class="border border-bw500 rounded-[10px]">
 	<Table.Root>
 		{#if entities.length === 0}
-			<Table.Caption class="mb-2 text-bw300">No data found.</Table.Caption>
+			<Table.Caption class="mb-2 text-bw300">No data found.</Table.Caption
+			>
 		{:else if caption != ""}
 			<Table.Caption>{caption}</Table.Caption>
 		{/if}
@@ -580,6 +591,7 @@
 	<Hotkeybutton
 		variant="base"
 		size="base"
+		disabled={tableheaders.length == 0}
 		onclick={() => {
 			toggleSheet = true;
 		}}
@@ -688,7 +700,8 @@
 			data.persist();
 			GetData();
 		}}
-		disabled={entities.length < data.pagezie || page_index * data.pagezie >= total_count}
+		disabled={entities.length < data.pagezie ||
+			page_index * data.pagezie >= total_count}
 	>
 		<div class="flex items-center space-x-2">
 			<div>Next</div>

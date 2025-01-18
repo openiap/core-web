@@ -268,6 +268,8 @@ class entitiesdata {
 				return ["name", "_created"];
 			case "rpaworkflow":
 				return ["name", "_createdby", "_modified", "runtime"];
+			case "entities-cvr":
+				return ["name", "cvr", "virksomhedsformkort", "sidstOpdateret", "stiftelsesDato", "ophoersDato", "cvrstatus"];
 			default:
 				return ["_id", "name", "_type", "_createdby", "_created"];
 		}
