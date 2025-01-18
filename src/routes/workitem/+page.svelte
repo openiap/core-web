@@ -1,7 +1,4 @@
 <script lang="ts" module>
-  export let page = "workitem";
-  export let collectionname = "workitems";
-  export let query = {  };
 </script>
 
 <script lang="ts">
@@ -15,6 +12,8 @@
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import { toast } from "svelte-sonner";
+  let collectionname = "workitems";
+  let query = {  };
 
   let { data } = $props();
   datacomponent.parsesettings(data.settings);
@@ -40,7 +39,7 @@
     }
   }
   function single_item_click(item: any) {
-    goto(base + `/${page}/${item._id}`);
+    goto(base + `/workitem/${item.wiqid}/${item._id}`);
   }
   async function handleAccept() {
     try {
@@ -48,7 +47,7 @@
       toast.success("Deleted successfully", {
         description: "",
       });
-      entities = await datacomponent.GetData(page, collectionname, query, auth.access_token);
+      entities = await datacomponent.GetData(data.page, collectionname, query, auth.access_token);
     } catch (error: any) {
       toast.error("Error while deleting", {
         description: error.message,
@@ -62,7 +61,7 @@
   {collectionname}
   {query}
   bind:searchstring
-  {page}
+  page={data.page}
   {single_item_click}
   total_count={data.total_count}
   bind:selected_items
@@ -72,7 +71,7 @@
     <div class="flex items-center space-x-2">
       <Button
         aria-label="edit"
-        onclick={() => goto(base + `/entities/hdrobots/edit/${item._id}`)}
+        onclick={() => single_item_click(item)}
         size="icon"
         variant="secondary"
       >
