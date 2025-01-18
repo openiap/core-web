@@ -150,7 +150,7 @@
 				header.field = defaultcolumnnames[i];
 				if (header.field == "_id") {
 					header.show = false;
-					header.order = "";
+					header.order = "desc";
 					header.orderindex = 100;
 				}
 				if (i == 0) {
