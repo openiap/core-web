@@ -12,11 +12,11 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 	const { origin } = url;
 	let workspaces:Workspace[] = [];
 	let total_count = 99999;
+	const page = url.pathname;
 	try {
 		await usersettings.dbload(access_token);
 		const shortpage = (route.id != null && route.id.indexOf("/") > -1 ? route.id.split("/")[1] : "");
 		workspaces = await auth.client.Query<Workspace>({ collectionname: "users", query: { _type: "workspace" }, jwt: access_token, top: 5 });
-		const page = url.pathname;
 		let entities: any[] = [];
 		const id = params.id;
 		datacomponent.loadsettings(page);
@@ -97,6 +97,10 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 				entities = await datacomponent.GetData(page, "users", { _type: "user" }, access_token);
 				total_count = await datacomponent.GetCount(page, "users", { _type: "user" }, access_token);
 				break;
+			case base + "/workitem":
+				entities = await datacomponent.GetData(page, "workitems", { }, access_token, false);
+				total_count = await datacomponent.GetCount(page, "workitems", { }, access_token, false);
+				break;
 			case base + "/workspace":
 				entities = await datacomponent.GetData(page, "users", { _type: "workspace" }, access_token, false);
 				total_count = await datacomponent.GetCount(page, "users", { _type: "workspace" }, access_token, false);
@@ -129,9 +133,9 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 		}
 		let settings = datacomponent.getpagesettingsreactless();
 		console.log(page, entities.length, total_count, workspaces.length);
-		return { protocol, domain, client_id, profile, access_token, wsurl, origin, entities, workspaces, id, settings, total_count };
+		return { protocol, domain, client_id, page, profile, access_token, wsurl, origin, entities, workspaces, id, settings, total_count };
 	} catch (error) {
 		console.error(error);
-		return { protocol, domain, client_id, profile, access_token, wsurl, origin, entities: [], workspaces: [], item: null, id: "", settings: {}, total_count };
+		return { protocol, domain, client_id, page, profile, access_token, wsurl, origin, entities: [], workspaces: [], item: null, id: "", settings: {}, total_count };
 	}
 };

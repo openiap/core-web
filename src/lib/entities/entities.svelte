@@ -232,8 +232,12 @@
 				return "Type";
 			case "_created":
 				return "Created";
+			case "_createdby":
+				return "Created by";
 			case "_modified":
 				return "Modified";
+			case "_modifiedby":
+				return "Modified by";
 			default:
 				if (header.name != null && header.name != "") {
 					return header.name;
@@ -667,12 +671,11 @@
 		{#if entities.length == total_count}
 			showing {total_count}
 		{:else}
-			showing {page_index * 5 + 1}
+			showing {page_index * data.pagezie + 1}
 			{#if entities.length > 1}
-				to {page_index * 5 + entities.length}
+				to {page_index * data.pagezie + entities.length}
 			{/if}
 			of {total_count}
-			{page.includes("entities") ? "items" : page + "s"}
 		{/if}
 	</div>
 	<HotkeyButton
@@ -685,7 +688,7 @@
 			data.persist();
 			GetData();
 		}}
-		disabled={entities.length < 5 || page_index * 5 >= total_count}
+		disabled={entities.length < data.pagezie || page_index * data.pagezie >= total_count}
 	>
 		<div class="flex items-center space-x-2">
 			<div>Next</div>

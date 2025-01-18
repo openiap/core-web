@@ -27,11 +27,12 @@ class entitiesdata {
 	settings: pageSettings = null as any;
 	hide_empty_on_sort = true;
 	errormessage = "";
+	pagezie = $state(10);
 
 	async GetData(page: string, collectionname: string, query: any, access_token: string, workspacefilter: boolean = true) {
 		let orderby = this.getOrderBy();
 		let usequery = this.createQuery(this.settings.searchstring, query);
-		let top = 10;
+		let top = this.pagezie;
 		let skip = this.settings.page_index * top;
 
 		if (auth.isConnected == false) {
@@ -222,8 +223,9 @@ class entitiesdata {
 				return ["_id", "name", "username", "email", "lastseen", "_created"];
 			case "role":
 				return ["_id", "name", "members", "_created"];
+			case "/workitem":
 			case "workitem":
-				return ["name", "state", "retries", "priority", "queue", "lastrun", "_created"];
+				return ["name", "state", "retries", "priority", "wiq", "lastrun", "_created"];
 			case "resource":
 				return ["name", "_created", "_modified"];
 			case "provider":
