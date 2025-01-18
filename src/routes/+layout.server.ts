@@ -26,8 +26,8 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 				total_count = await datacomponent.GetCount(page, "agents", { _type: "agent" }, access_token);
 				break;
 			case base + "/auditlog":
-				entities = await datacomponent.GetData(page, "audit", { _type: "auditlog" }, access_token);
-				total_count = await datacomponent.GetCount(page, "audit", { _type: "auditlog" }, access_token);
+				entities = await datacomponent.GetData(page, "audit", { }, access_token);
+				total_count = await datacomponent.GetCount(page, "audit", { }, access_token);
 				break;
 		case base + "/client":
 				entities = JSON.parse(await auth.client.CustomCommand({ command: "getclients", jwt: access_token, }));
