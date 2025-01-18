@@ -128,7 +128,7 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 				break;
 		}
 		let settings = datacomponent.getpagesettingsreactless();
-		console.log(page, entities.length, workspaces.length);
+		console.log(page, entities.length, total_count, workspaces.length);
 		return { protocol, domain, client_id, profile, access_token, wsurl, origin, entities, workspaces, id, settings, total_count };
 	} catch (error) {
 		console.error(error);
