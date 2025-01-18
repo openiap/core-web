@@ -72,7 +72,7 @@
 	let multi_sort = $state(false);
 	let showdebug = $state(false);
 	let page_index = $state(data.settings.page_index);
-	let tableheaders:TTableHeader[] = $state([]);
+	let tableheaders: TTableHeader[] = $state([]);
 	let showWarning = $state(false);
 
 	let actioncellclass = $state("");
@@ -81,6 +81,31 @@
 	let toggleSheet = $state(false);
 	let loading = $state(false);
 
+	function detectColumns() {
+		if (entities.length > 0) {
+			let keys = [];
+			for (let i = 0; i < entities.length; i++) {
+				let entity = entities[i];
+				let subkeys = Object.keys(entity);
+				for (let j = 0; j < subkeys.length; j++) {
+					let key = subkeys[j];
+					if (keys.indexOf(key) == -1) {
+						keys.push(key);
+					}
+				}
+			}
+			for (let i = 0; i < keys.length; i++) {
+				let key = keys[i];
+				if (tableheaders.find((x) => x.field == key) == null) {
+					let header = new TableHeader();
+					header.field = key;
+					header.name = key;
+					header.show = false;
+					tableheaders.push(header);
+				}
+			}
+		}
+	}
 	async function GetData() {
 		loading = true;
 		try {
@@ -91,32 +116,9 @@
 				auth.access_token,
 			);
 			entities = _entities;
-
-			if (entities.length > 0) {
-				let keys = [];
-				for (let i = 0; i < entities.length; i++) {
-					let entity = entities[i];
-					let subkeys = Object.keys(entity);
-					for (let j = 0; j < subkeys.length; j++) {
-						let key = subkeys[j];
-						if (keys.indexOf(key) == -1) {
-							keys.push(key);
-						}
-					}
-				}
-				for (let i = 0; i < keys.length; i++) {
-					let key = keys[i];
-					if (tableheaders.find((x) => x.field == key) == null) {
-						let header = new TableHeader();
-						header.field = key;
-						header.name = key;
-						header.show = false;
-						tableheaders.push(header);
-					}
-				}
-			}
+			detectColumns();
 			return entities;
-		} catch (error:any) {
+		} catch (error: any) {
 			toast.error("Error while loading data", {
 				description: error.message,
 			});
@@ -135,7 +137,6 @@
 	if (browser && total_count == 99999) {
 		GetCount();
 	}
-
 	function EnsureDefaultHeaders(page: string) {
 		if (tableheaders.length == 0) {
 			if (
@@ -144,11 +145,13 @@
 			) {
 				for (let i = 0; i < data.settings.headers.length; i++) {
 					let org = data.settings.headers[i];
+					if (org.field == null) continue;
 					let header = new TableHeader();
 					header.show = true;
 					header.field = org.field;
-					header.order = org.order;
-					header.orderindex = org.orderindex;
+					if (org.order != null) header.order = org.order;
+					if (org.orderindex != null)
+						header.orderindex = org.orderindex;
 					tableheaders.push(header);
 				}
 				return;
@@ -234,20 +237,32 @@
 			value = header.field.split(".").pop() as any;
 		}
 		switch (value) {
+			case "_id":
+				return "ID";
 			case "name":
 				return "Name";
 			case "type":
 				return "Type";
+			case "_acl":
+				return "ACL";
+			case "_encrypt":
+				return "Encrypt";
 			case "_type":
 				return "Type";
+			case "_version":
+				return "Version";
 			case "_created":
 				return "Created";
 			case "_createdby":
 				return "Created by";
+			case "_createdbyid":
+				return "Created by ID";
 			case "_modified":
 				return "Modified";
 			case "_modifiedby":
 				return "Modified by";
+				case "_modifiedbyid":
+				return "Modified by ID";
 			default:
 				if (header.name != null && header.name != "") {
 					return header.name;
@@ -287,6 +302,7 @@
 	});
 
 	SetHeaders();
+	detectColumns();
 
 	/**
 	 * Ordering columns
@@ -349,7 +365,11 @@
 				column.orderindex =
 					tableheaders.filter((x) => x.order != "").length + 1;
 			}
-			tableheaders[index] = { ...column, order: value };
+			tableheaders[index] = {
+				...column,
+				order: value,
+				show: column.show,
+			};
 			data.SaveHeaders(tableheaders);
 		}
 	}
@@ -438,6 +458,9 @@
 				description: error.message,
 			});
 		}
+	}
+	function onSelectColumnsOpenChange(open: boolean) {
+		data.SaveHeaders(tableheaders);
 	}
 </script>
 
@@ -600,8 +623,11 @@
 		Select columns
 	</Hotkeybutton>
 
-	{#if tableheaders != null && tableheaders.length > 0}
-		<Sheet.Root bind:open={toggleSheet}>
+	{#if tableheaders.length > 0}
+		<Sheet.Root
+			bind:open={toggleSheet}
+			onOpenChange={onSelectColumnsOpenChange}
+		>
 			<!-- <Sheet.Trigger
 				class={buttonVariants({ variant: "new", size: "new" })}
 			>
@@ -737,7 +763,8 @@
 	hidden={true}
 />
 
-<CustomSuperDebug formData={entities} />
+<CustomSuperDebug formData={tableheaders} />
+<!-- <CustomSuperDebug formData={entities} /> -->
 
 <Warningdialogue bind:showWarning type="deleteall" onaccept={handleAccept}
 ></Warningdialogue>
