@@ -39,7 +39,6 @@
           if (!form.data.hidemembers) {
             delete form.data.hidemembers;
           }
-          console.log(form.data);
           await auth.client.UpdateOne({
             collectionname: "users",
             item: form.data,
@@ -72,7 +71,6 @@
   if (!("hidemembers" in $formData)) {
     $formData.hidemembers = false;
   }
-  console.log($formData);
 
   async function addace(id: string) {
     var item = await auth.client.FindOne<any>({

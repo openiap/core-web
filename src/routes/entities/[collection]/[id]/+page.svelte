@@ -30,7 +30,6 @@
     onUpdate: async ({ form, cancel }) => {
       loading = true;
       if (form.valid) {
-        console.log("test");
         try {
           await auth.client.UpdateOne({
             collectionname: collection,
@@ -50,7 +49,6 @@
         }
       } else {
         loading = false;
-        console.log("test");
         errormessage = "Form is invalid";
       }
     },

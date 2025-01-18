@@ -23,7 +23,6 @@
           x.product.stripeprice != product.stripeprice,
       );
       if (exists && exists.quantity > 0) {
-        console.log("canincrease", resource.name, false);
         return false;
       }
     }
@@ -37,14 +36,11 @@
           x.product.stripeprice == product.stripeprice,
       );
       if (exists == null || exists.quantity == 0) {
-        console.log("canincrease", product.name, true);
         return true;
       } else {
-        console.log("canincrease", product.name, false);
         return false;
       }
     }
-    console.log("canincrease", resource.name, resource.name, true);
     return true;
   });
   function increment(resource: Resource, product: Product) {

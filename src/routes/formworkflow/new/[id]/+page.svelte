@@ -16,7 +16,6 @@
         if(!browser) return;
         queuename = await auth.client.RegisterQueue({queuename: "", jwt: auth.access_token},
         (msg, payload, user, jwt) => {
-            console.log(payload)
             if(payload._id != null && payload._id != "") {
                 goto(base + "/formworkflow/" + payload._id);
             }

@@ -22,7 +22,6 @@
   let loading = $state(false);
   let errormessage = $state("");
   const { data } = $props();
-  console.log(data.item);
   data.item = editFormSchema.parse(data.item);
 
   const form = superForm(defaults(zod(editFormSchema)), {
@@ -61,7 +60,6 @@
 
   const { form: formData, enhance, message, validateForm } = form;
   formData.set(data.item);
-  console.log(data.item);
   validateForm({ update: true });
 </script>
 

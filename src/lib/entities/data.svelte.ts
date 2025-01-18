@@ -56,11 +56,11 @@ class entitiesdata {
 			queryas,
 			jwt: access_token,
 		});
-		if (Object.keys(query).length <= 3) {
-			console.log("collectionname", collectionname, "page:", this.settings.page, "idx:", this.settings.page_index, "res:", entities.length, "skip:", skip, "query:", query, "token:", access_token?.substring(0, 10));
-		} else {
-			console.log("collectionname", collectionname, "page:", this.settings.page, "idx:", this.settings.page_index, "res:", entities.length, "skip:", skip, "token:", access_token?.substring(0, 10));
-		}
+		// if (Object.keys(query).length <= 3) {
+		// 	console.log("collectionname", collectionname, "page:", this.settings.page, "idx:", this.settings.page_index, "res:", entities.length, "skip:", skip, "query:", query, "token:", access_token?.substring(0, 10));
+		// } else {
+		// 	console.log("collectionname", collectionname, "page:", this.settings.page, "idx:", this.settings.page_index, "res:", entities.length, "skip:", skip, "token:", access_token?.substring(0, 10));
+		// }
 		return entities;
 	}
 	async GetCount(page: string, collectionname: string, query: any, access_token: string, workspacefilter: boolean = true) {
@@ -142,7 +142,7 @@ class entitiesdata {
 			}
 		}
 		if (Object.keys(orderby).length == 0) {
-			return "";
+			return { _id: -1 };
 		}
 		return orderby;
 	}

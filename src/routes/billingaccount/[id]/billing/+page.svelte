@@ -89,7 +89,6 @@
       toast.success("Resource assigned");
       await GetData();
     } catch (error: any) {
-      console.log(error);
       toast.error("Error assigning resource", {
         description: error.message,
       });
@@ -116,7 +115,6 @@
       toast.success("Resource unassigned");
       await GetData();
     } catch (error: any) {
-      console.log(error);
       toast.error("Error unassigning resource", {
         description: error.message,
       });

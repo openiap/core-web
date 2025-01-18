@@ -80,7 +80,6 @@
             jwt: auth.access_token,
           }),
         );
-        console.log("billing", billing);
         billingid = billing._id;
       } else if (entities.length == 1) {
         billing = entities[0];
