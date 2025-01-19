@@ -45,7 +45,7 @@
 
 <Hotkeybutton
   aria-label="add"
-  variant={"outline"}
+  variant="base"
   onclick={() => goto(base + `/${page}/new`)}>Add {page}</Hotkeybutton
 >
 <div class="flex w-full max-w-sm flex-col gap-1.5">
