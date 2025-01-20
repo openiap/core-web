@@ -11,6 +11,7 @@
         Trash2,
     } from "lucide-svelte";
     import { Ace } from "./index.js";
+    import { toast } from "svelte-sonner";
 
     let {
         value = $bindable(null),
@@ -25,7 +26,16 @@
             query: { _id: id },
             jwt: auth.access_token,
         });
-        value._acl = [...value._acl, { _id: item._id, name: item.name, rights: 65535 }];
+        const exists = value._acl.some((ace: any) => ace._id === item._id);
+        if (!exists) {
+            value._acl = [
+                ...value._acl,
+                { _id: item._id, name: item.name, rights: 65535 },
+            ];
+        } else {
+            toast.error("Role already exists in ACL");
+        }
+        newid = "";
     }
     // Not sure why this is here
     // $effect(() => {
