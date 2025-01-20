@@ -2,13 +2,9 @@
   import Button from "$lib/components/ui/button/button.svelte";
   import * as Card from "$lib/components/ui/card/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
+  import { usersettings } from "$lib/stores/usersettings.svelte.js";
+  import { Resource, ResourceUsage, type Product } from "$lib/types.svelte.js";
   import { toast } from "svelte-sonner";
-  import {
-    Resource,
-    ResourceUsage,
-    type Product,
-  } from "../../../../lib/types.js";
-    import { usersettings } from "$lib/stores/usersettings.svelte.js";
 
   const { data } = $props();
   let entities: ResourceUsage[] = $state(data.entities);
@@ -65,15 +61,19 @@
       let target = data.billingaccount;
       if (resource.target == "workspace") {
         target = data.workspace;
-        if(target == null && usersettings.currentworkspace != null && usersettings.currentworkspace != "") {
+        if (
+          target == null &&
+          usersettings.currentworkspace != null &&
+          usersettings.currentworkspace != ""
+        ) {
           data.workspace = await auth.client.FindOne({
             collectionname: "users",
-            query: { _type: "workspace", _id: usersettings.currentworkspace },            
+            query: { _type: "workspace", _id: usersettings.currentworkspace },
             jwt: auth.access_token,
           });
           target = data.workspace;
         }
-        if(target == null) throw new Error("Please select a Workspace first");
+        if (target == null) throw new Error("Please select a Workspace first");
       }
       await auth.client.CustomCommand({
         command: "createresourceusage",
@@ -102,7 +102,7 @@
       if (resource == null) throw new Error("Resource not found");
       if (resource.target == "workspace") {
         target = data.workspace;
-        if(target == null) throw new Error("Please select a Workspace first");
+        if (target == null) throw new Error("Please select a Workspace first");
       }
       await auth.client.CustomCommand({
         command: "removeresourceusage",
@@ -147,6 +147,7 @@
     return quantity;
   }
 </script>
+
 <header>{data?.billingaccount?.name} billing usage</header>
 <div class="flex flex-wrap gap-4">
   {#each resources as resource}

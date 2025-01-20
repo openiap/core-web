@@ -1,19 +1,18 @@
 <script lang="ts">
+  import { goto, replaceState } from "$app/navigation";
+  import { base } from "$app/paths";
+  import { page as sveltepage } from "$app/state";
   import Button from "$lib/components/ui/button/button.svelte";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
   import { Separator } from "$lib/components/ui/separator/index.js";
-  import { Entities } from "$lib/entities/index.js";
-  import { usersettings } from "$lib/stores/usersettings.svelte.js";
-  import Searchinput from "$lib/searchinput/searchinput.svelte";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
+  import { Entities } from "$lib/entities/index.js";
+  import Searchinput from "$lib/searchinput/searchinput.svelte";
   import { auth } from "$lib/stores/auth.svelte";
+  import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import { Folder, Pencil } from "lucide-svelte";
   import { toast } from "svelte-sonner";
-  import { goto } from "$app/navigation";
-  import { base } from "$app/paths";
-  import { page as sveltepage } from "$app/state";
-  import { replaceState } from "$app/navigation";
 
   let { data } = $props();
   datacomponent.parsesettings(data.settings);
@@ -48,7 +47,6 @@
     collectionname = name;
     usersettings.entities_collectionname = name;
     datacomponent.persist();
-    // sveltepage.url.searchParams.set('collectionname', collectionname); 
     sveltepage.url.pathname = base + `/entities/${collectionname}`;
     replaceState(sveltepage.url, sveltepage.state);
   }
