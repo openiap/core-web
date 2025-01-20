@@ -58,21 +58,16 @@
   });
   async function increment(resource: Resource, product: Product) {
     try {
-      let target = data.billingaccount;
-      if (resource.target == "workspace") {
+      let target:any = null;
+      if (resource.target == "customer") {
+        target = data.billingaccount;
+      } else if (resource.target == "workspace") {
+        data.workspace = await auth.client.FindOne({
+          collectionname: "users",
+          query: { _type: "workspace", _id: usersettings.currentworkspace },
+          jwt: auth.access_token,
+        });
         target = data.workspace;
-        if (
-          target == null &&
-          usersettings.currentworkspace != null &&
-          usersettings.currentworkspace != ""
-        ) {
-          data.workspace = await auth.client.FindOne({
-            collectionname: "users",
-            query: { _type: "workspace", _id: usersettings.currentworkspace },
-            jwt: auth.access_token,
-          });
-          target = data.workspace;
-        }
         if (target == null) throw new Error("Please select a Workspace first");
       }
       await auth.client.CustomCommand({
@@ -94,15 +89,33 @@
       });
     }
   }
-  async function decrement(resourceusage: ResourceUsage | undefined) {
+  async function decrement(resource: Resource, product: Product) {
     try {
-      let target = data.billingaccount;
-      if (resourceusage == null) throw new Error("Resource not found");
-      let resource = resources.find((x) => x._id == resourceusage.resourceid);
+      let target:any = null;
       if (resource == null) throw new Error("Resource not found");
-      if (resource.target == "workspace") {
+      if (product == null) throw new Error("Product not found");
+      let resourceusage: ResourceUsage = entities.find(
+        (x) =>
+          x.resourceid == resource._id && x.product.stripeprice == product.stripeprice,
+      ) as any;
+      if (resource.target == "customer") {
+        target = data.billingaccount;
+      } else if (resource.target == "workspace") {
+        data.workspace = await auth.client.FindOne({
+          collectionname: "users",
+          query: { _type: "workspace", _id: usersettings.currentworkspace },
+          jwt: auth.access_token,
+        });
         target = data.workspace;
         if (target == null) throw new Error("Please select a Workspace first");
+        let usage = entities.filter(
+          (x) =>
+            x.resourceid == resource._id &&
+            x.product.stripeprice == product.stripeprice && x.workspaceid == target._id,
+        );
+        if (usage.length == 1) {
+          resourceusage = usage[0];
+        }
       }
       await auth.client.CustomCommand({
         command: "removeresourceusage",
@@ -129,13 +142,14 @@
     key++;
   }
   function quantity(resource: Resource, product: Product) {
-    let exists = entities.find(
+    let usage = entities.filter(
       (x) =>
         x.resourceid == resource._id &&
         x.product.stripeprice == product.stripeprice,
     );
-    if (exists == null) return 0;
-    return exists.quantity;
+    if (usage.length == null) return 0;
+    let quantity = usage.reduce((a, b) => a + b.quantity, 0);
+    return quantity;
   }
   function rquantity(resource: Resource) {
     let exists = entities.filter((x) => x.resourceid == resource._id);
@@ -189,13 +203,8 @@
                       variant="outline"
                       disabled={quantity(resource, product) == 0}
                       onclick={() =>
-                        decrement(
-                          entities.find(
-                            (x) =>
-                              x.resourceid == resource._id &&
-                              x.product.stripeprice == product.stripeprice,
-                          ),
-                        )}>Decrease</Button
+                        decrement(resource, product)
+                          }>Decrease</Button
                     >
                   </td>
                 </tr>
