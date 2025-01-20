@@ -7,8 +7,6 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
-  import Button from "$lib/components/ui/button/button.svelte";
-  import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
@@ -101,7 +99,6 @@
 >
   {#snippet action(item: any)}
     <HotkeyButton
-
       aria-label="edit"
       onclick={() => single_item_click(item)}
       size="icon"

@@ -18,13 +18,13 @@ export type NewFormSchema = typeof newFormSchema;
 export const editFormSchema = z.object({
   name: z.string().min(2),
   username: z.string().min(2),
-  email: z.string().optional().transform((val) => val ?? ""),
+  email: z.string().optional().nullable().transform((val) => val ?? ""),
   newpassword: z.string().optional().transform((val) => val ?? ""),
-  disabled: z.boolean().optional().transform((val) => val ?? false),
-  dblocked: z.boolean(),
-  validated: z.boolean(),
-  emailvalidated: z.boolean(),
-  formvalidated: z.boolean(),
-  federationids: z.array(z.string().email()).optional().default([]),
+  disabled: z.boolean().optional().nullable().transform((val) => val ?? false),
+  dblocked: z.boolean().optional().nullable().transform((val) => val ?? false),
+  validated: z.boolean().optional().nullable().transform((val) => val ?? false),
+  emailvalidated: z.boolean().optional().nullable().transform((val) => val ?? false),
+  formvalidated: z.boolean().optional().nullable().transform((val) => val ?? false),
+  federationids: z.array(z.string().email()).optional().nullable().transform((val) => val ?? []),
 }).passthrough();
 export type EditFormSchema = typeof editFormSchema;

@@ -4,6 +4,7 @@
   import { Checkbox } from "$lib/components/ui/checkbox/index.js";
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
+  import Customcheckbox from "$lib/customcheckbox/customcheckbox.svelte";
   import { CustomInput } from "$lib/custominput/index.js";
   import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
@@ -12,7 +13,6 @@
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newFormSchema } from "../schema.js";
-    import Customcheckbox from "$lib/customcheckbox/customcheckbox.svelte";
 
   const key = "user";
   let loading = $state(false);

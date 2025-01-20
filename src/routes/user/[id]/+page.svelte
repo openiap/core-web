@@ -8,7 +8,7 @@
   import { Acl } from "$lib/acl";
   import Checkbox from "$lib/components/ui/checkbox/checkbox.svelte";
   import * as Form from "$lib/components/ui/form/index.js";
-  import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
   import { CustomInput } from "$lib/custominput/index.js";
   import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
@@ -135,7 +135,6 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  <!-- {#if "disabled" in $formData && $formData.disabled != null} -->
   <Form.Field
     {form}
     name="disabled"
@@ -155,7 +154,6 @@
     </Form.Control>
     <Form.FieldErrors />
   </Form.Field>
-  <!-- {/if} -->
 
   <Form.Field
     {form}
@@ -242,7 +240,6 @@
       <Form.Field {form} name="federationids">
         <Form.Control>
           {#snippet children({ props })}
-            <!-- <Form.Label>Federation id {index + 1}</Form.Label> -->
             {#if $formData.federationids}
               <div class="flex items-center justify-start">
                 <CustomInput
@@ -252,7 +249,7 @@
                   {...props}
                   bind:value={$formData.federationids[index]}
                 />
-                <Hotkeybutton
+                <HotkeyButton
                   class="ml-2 dark:bg-darkbgred"
                   aria-label="delete"
                   size="base"
@@ -264,7 +261,7 @@
                       arr.splice(index, 1);
                     }
                     $formData.federationids = arr;
-                  }}><Trash2 /></Hotkeybutton
+                  }}><Trash2 /></HotkeyButton
                 >
               </div>
             {/if}
@@ -275,7 +272,7 @@
     {/each}
   {/if}
   <div>
-    <Hotkeybutton
+    <HotkeyButton
       class="mb-7"
       aria-label="add federation id"
       disabled={loading}
@@ -287,7 +284,7 @@
       }}
     >
       <UserRoundPlus />
-      Add federation id</Hotkeybutton
+      Add federation id</HotkeyButton
     >
   </div>
 
