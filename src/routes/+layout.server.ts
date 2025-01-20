@@ -49,10 +49,6 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 				entities = await auth.client.Query({ collectionname: "config", query: { _type: "resourceusage", "customerid": params.id }, jwt: access_token });
 				total_count = await auth.client.Count({ collectionname: "config", query: { _type: "resourceusage", "customerid": params.id }, jwt: access_token });
 				break;
-			case base + "/entities":
-				entities = await datacomponent.GetData(page, "users", { }, access_token);
-				total_count = await datacomponent.GetCount(page, "users", { }, access_token);
-				break;
 			case base + "/files":
 				entities = await datacomponent.GetData(page, "fs.files", {}, access_token);
 				total_count = await datacomponent.GetCount(page, "fs.files", {}, access_token);
