@@ -1,8 +1,8 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
-  import Acl from "$lib/acl/acl.svelte";
   import * as Form from "$lib/components/ui/form/index.js";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { CustomInput } from "$lib/custominput/index.js";
   import CustomSuperDebug from "$lib/customsuperdebug/customsuperdebug.svelte";
   import { CustomSwitch } from "$lib/customswitch/index.js";
@@ -13,7 +13,6 @@
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newFormSchema } from "../schema.js";
-  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
 
   const key = "role";
   let errormessage = $state("");
@@ -83,7 +82,6 @@
 {/if}
 
 <form method="POST" use:enhance>
-  <Acl bind:value={$formData} open="item-1" {loading} />
 
   <Form.Field {form} name="name" class="mb-7">
     <Form.Control>

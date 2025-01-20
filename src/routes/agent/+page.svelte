@@ -7,10 +7,8 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
-  import Button from "$lib/components/ui/button/button.svelte";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
-  import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
-  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
+  import { HotkeyButton } from "$lib/components/ui/HotkeyButton/index.js";
   import { Label } from "$lib/components/ui/label/index.js";
   import * as RadioGroup from "$lib/components/ui/radio-group/index.js";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
@@ -22,7 +20,7 @@
   import {
     Box,
     DollarSign,
-    EllipsisVertical,
+    Ellipsis,
     Filter,
     Pencil,
     Play,
@@ -199,7 +197,7 @@
       <Plus />
       Add {page}</HotkeyButton
     >
-    <Hotkeybutton
+    <HotkeyButton
       aria-label="packages"
       title="package"
       size="base"
@@ -207,9 +205,9 @@
       onclick={() => goto(base + `/package`)}
     >
       <Box />
-      Packages</Hotkeybutton
+      Packages</HotkeyButton
     >
-    <Hotkeybutton
+    <HotkeyButton
       aria-label="reload"
       title="reload"
       size="base"
@@ -225,7 +223,7 @@
       }}
     >
       <RefreshCcw />
-      Reload</Hotkeybutton
+      Reload</HotkeyButton
     >
   </div>
 </div>
@@ -233,25 +231,25 @@
 <!-- <div
   class="mb-4 border-b border-gray-300 flex justify-start pb-4 space-x-4 max-w-min"
 >
-  <Hotkeybutton
+  <HotkeyButton
     aria-label="add"
     title="add"
     variant="default"
     onclick={() => goto(base + `/${page}/new`)}
   >
     <Plus />
-    Add {page}</Hotkeybutton
+    Add {page}</HotkeyButton
   >
-  <Hotkeybutton
+  <HotkeyButton
     aria-label="packages"
     title="package"
     variant="default"
     onclick={() => goto(base + `/package`)}
   >
     <Box />
-    Packages</Hotkeybutton
+    Packages</HotkeyButton
   >
-  <Hotkeybutton
+  <HotkeyButton
     aria-label="reload"
     title="reload"
     variant="default"
@@ -266,7 +264,7 @@
     }}
   >
     <RefreshCcw />
-    Reload</Hotkeybutton
+    Reload</HotkeyButton
   >
 </div> -->
 
@@ -389,12 +387,12 @@
     {/if}
   {/snippet}
   {#snippet action(item: any)}
-    <div class="flex items-center space-x-2">
-      <Button
+    <div class="flex items-center justify-center">
+      <HotkeyButton
         aria-label="start"
         title="start"
         size="tableicon"
-        variant="ghost"
+        variant="icon"
         onclick={async () =>
           await auth.client.CustomCommand({
             command: "startagent",
@@ -403,12 +401,12 @@
           })}
       >
         <Play />
-      </Button>
-      <Button
+      </HotkeyButton>
+      <HotkeyButton
         aria-label="stop"
         title="stop"
         size="tableicon"
-        variant="ghost"
+        variant="icon"
         onclick={async () =>
           await auth.client.CustomCommand({
             command: "stopagent",
@@ -417,19 +415,21 @@
           })}
       >
         <Square />
-      </Button>
-      <Button
+      </HotkeyButton>
+      <HotkeyButton
         aria-label="debug"
         title="debug"
         size="tableicon"
-        variant="ghost"
+        variant="icon"
         onclick={() => goto(base + `/${page}/${item._id}/run`)}
       >
         <Wrench />
-      </Button>
+      </HotkeyButton>
 
       <DropdownMenu.Root>
-        <DropdownMenu.Trigger><EllipsisVertical /></DropdownMenu.Trigger>
+        <DropdownMenu.Trigger class="dark:text-bw300"
+          ><Ellipsis /></DropdownMenu.Trigger
+        >
         <DropdownMenu.Content class="w-56">
           <DropdownMenu.Item
             class="cursor-pointer"

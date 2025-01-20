@@ -10,6 +10,7 @@
         basefilter = {},
         returnObject = false,
         loading = false,
+        class: className = "",
         ...restProps
     } = $props();
 
@@ -56,7 +57,8 @@
 <Popover.Root bind:open={isOpen} {...restProps}>
     <Popover.Trigger
         disabled={loading}
-        class={" dark:bg-bw1000 flex items-center justify-between border rounded-[10px] px-2 dark:border-bw600 dark:text-bw500 min-w-[260px] dark:hover:bg-bw700 dark:hover:border-bw500 "}
+        class={" dark:bg-bw1000 flex items-center justify-between border rounded-[10px] px-2 py-1 dark:border-bw600 dark:text-bw500 min-w-[260px] dark:hover:bg-bw700 dark:hover:border-bw500 " +
+            className}
     >
         {#await triggerContent()}
             Loading...

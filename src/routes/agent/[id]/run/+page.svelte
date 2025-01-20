@@ -1,7 +1,7 @@
 <script lang="ts">
   import { browser } from "$app/environment";
   import * as Accordion from "$lib/components/ui/accordion";
-  import Button from "$lib/components/ui/button/button.svelte";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import Entityselector from "$lib/entityselector/entityselector.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
@@ -119,17 +119,20 @@
 
 <div>View Logs for packages running on {agent.name}</div>
 
-<Entityselector
-  collectionname="agents"
-  basefilter={{ _type: "package", language: { $in: agent.languages } }}
-  bind:value={packageId}
-/>
-<Button onclick={runpackage}>Run package</Button>
-<br />
+<div class="flex items-center justify-start space-x-2 my-2">
+  <Entityselector
+    collectionname="agents"
+    basefilter={{ _type: "package", language: { $in: agent.languages } }}
+    bind:value={packageId}
+  />
+  <HotkeyButton onclick={runpackage}>Run package</HotkeyButton>
+</div>
 
-<Button onclick={init}>Init</Button>
-<Button onclick={pokeagent}>refresh</Button>
-<Button onclick={listprocesses}>List processes</Button>
+<div></div>
+<HotkeyButton onclick={init}>Init</HotkeyButton>
+<HotkeyButton onclick={pokeagent}>refresh</HotkeyButton>
+<HotkeyButton onclick={listprocesses}>List processes</HotkeyButton>
+
 {#if processes.length > 0}
   <ul>
     <Accordion.Root type="single" class="w-full sm:max-w-[70%]">
@@ -141,12 +144,12 @@
             {process.id}
           </Accordion.Trigger>
           <Accordion.Content>
-            <Button
+            <HotkeyButton
               onclick={() => {
                 deleteData = process;
                 showWarning = true;
               }}
-              variant="link">Kill process</Button
+              variant="link">Kill process</HotkeyButton
             >
             <br />
             {@html ansi.ansi_to_html(process.output).split("\n").join("<br>")}

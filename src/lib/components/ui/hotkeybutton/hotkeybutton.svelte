@@ -25,11 +25,15 @@
 				ghost: "hover:bg-accent hover:text-accent-foreground",
 				link: "text-primary underline-offset-4 hover:underline",
 				ghostfull: "",
-				icon: "dark:bg-bw700 dark:text-bw400",
+				dangerIcon:
+					"dark:bg-bw700 border-[1px] dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:bg-darkbgred dark:hover:bg-darkbghoverred",
+				icon: "dark:text-bw300 dark:hover:bg-bw700 dark:hover:border-[1px] dark:hover:border-bw500",
 				base: "border-[1px] dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:hover:bg-bw700 dark:bg-bw850 dark:text-bw200 border-[1px] border-bw600",
 				danger: "border-[1px] dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:bg-darkbgred dark:hover:bg-darkbghoverred",
 				success:
 					"border-[1px] dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:bg-darkbggreen dark:hover:bg-darkbghovergreen",
+				refresh:
+					"border dark:border-bw600 dark:bg-bw850 dark:hover:bg-bw700 dark:hover:border-bw500",
 			},
 			size: {
 				default: "h-10 px-4 py-2",
@@ -37,6 +41,9 @@
 				lg: "h-11 rounded-md px-8",
 				icon: "h-7 w-7 rounded-[10px]",
 				base: "h-7 px-2.5 py-1.5 rounded-[10px]",
+				tableicon:
+					"p-1 m-[1px] hover:mt-0 hover:mb-0  hover:mr-0 rounded-[10px]",
+				refresh: "p-1 rounded-[10px]",
 			},
 		},
 		defaultVariants: {

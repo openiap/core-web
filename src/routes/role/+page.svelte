@@ -82,7 +82,7 @@
       aria-label="edit"
       onclick={() => single_item_click(item)}
       size="icon"
-      variant="secondary"
+      variant="base"
     >
       <Pencil />
     </HotkeyButton>
@@ -90,7 +90,7 @@
       aria-label="delete"
       onclick={() => deleteitem(item)}
       size="icon"
-      variant="danger"
+      variant="dangerIcon"
     >
       <Trash2 />
     </HotkeyButton>

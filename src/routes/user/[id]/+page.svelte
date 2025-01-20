@@ -6,9 +6,9 @@
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import { Acl } from "$lib/acl";
-  import Checkbox from "$lib/components/ui/checkbox/checkbox.svelte";
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
+  import { CustomCheckbox } from "$lib/customcheckbox/index.js";
   import { CustomInput } from "$lib/custominput/index.js";
   import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
@@ -142,7 +142,7 @@
   >
     <Form.Control>
       {#snippet children({ props })}
-        <Checkbox
+        <CustomCheckbox
           disabled={loading}
           {...props}
           bind:checked={$formData.disabled}
@@ -162,7 +162,7 @@
   >
     <Form.Control>
       {#snippet children({ props })}
-        <Checkbox
+        <CustomCheckbox
           disabled={loading}
           {...props}
           bind:checked={$formData.dblocked}
@@ -182,7 +182,7 @@
   >
     <Form.Control>
       {#snippet children({ props })}
-        <Checkbox
+        <CustomCheckbox
           disabled={loading}
           {...props}
           bind:checked={$formData.validated}
@@ -202,7 +202,7 @@
   >
     <Form.Control>
       {#snippet children({ props })}
-        <Checkbox
+        <CustomCheckbox
           disabled={loading}
           {...props}
           bind:checked={$formData.emailvalidated}
@@ -222,7 +222,7 @@
   >
     <Form.Control>
       {#snippet children({ props })}
-        <Checkbox
+        <CustomCheckbox
           disabled={loading}
           {...props}
           bind:checked={$formData.formvalidated}

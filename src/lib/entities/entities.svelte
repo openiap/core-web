@@ -22,6 +22,7 @@
 	import { Check, CircleX, MoveLeft, MoveRight, Trash2 } from "lucide-svelte";
 	import { toast } from "svelte-sonner";
 	import { data } from "./data.svelte.js";
+	import { CustomCheckbox } from "$lib/customcheckbox/index.js";
 
 	let {
 		page = "entities",
@@ -261,7 +262,7 @@
 				return "Modified";
 			case "_modifiedby":
 				return "Modified by";
-				case "_modifiedbyid":
+			case "_modifiedbyid":
 				return "Modified by ID";
 			default:
 				if (header.name != null && header.name != "") {
@@ -479,10 +480,10 @@
 					<Table.Head
 						class="w-8 text-black font-semibold dark:text-bw200 dark:bg-bw900 rounded-tl-[10px]"
 						role="cell"
-						><Checkbox
-							aria-label="Select all"
+						><CustomCheckbox
+							arialabel="Select all"
 							checked={is_all_selected()}
-							onclick={ToogleAll}
+							handleClick={ToogleAll}
 						/></Table.Head
 					>
 				{/if}
@@ -532,8 +533,8 @@
 						<Table.Cell
 							class="w-8"
 							onclick={() => ToggleSelect(item)}
-							><Checkbox
-								aria-label="Select item"
+							><CustomCheckbox
+								arialabel="Select item"
 								checked={selected_items.indexOf(item._id) > -1}
 							/></Table.Cell
 						>

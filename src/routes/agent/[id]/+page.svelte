@@ -5,34 +5,27 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
-  import Checkbox from "$lib/components/ui/checkbox/checkbox.svelte";
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
-  import { Input } from "$lib/components/ui/input/index.js";
-  import { auth } from "$lib/stores/auth.svelte.js";
-
-  import Button from "$lib/components/ui/button/button.svelte";
-  import * as Select from "$lib/components/ui/select/index.js";
   import Separator from "$lib/components/ui/separator/separator.svelte";
-  import Switch from "$lib/components/ui/switch/switch.svelte";
+  import { CustomInput } from "$lib/custominput/index.js";
+  import { CustomSelect } from "$lib/customselect/index.js";
+  import { CustomSwitch } from "$lib/customswitch/index.js";
   import Entityselector from "$lib/entityselector/entityselector.svelte";
   import { ObjectInput } from "$lib/objectinput/index.js";
   import Statuscard from "$lib/statuscard/statuscard.svelte";
+  import { auth } from "$lib/stores/auth.svelte.js";
   import Timezoneselector from "$lib/timezoneselector/timezoneselector.svelte";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import { AnsiUp } from "ansi_up";
-  import {
-      ArrowLeft,
-      Check,
-      RefreshCcw,
-      Trash2,
-      User
-  } from "lucide-svelte";
+  import { Check, RefreshCcw, Trash2, User } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { randomname } from "../helper.js";
   import { editFormSchema } from "../schema.js";
+  import { CustomCheckbox } from "$lib/customcheckbox/index.js";
+
   const ansi_up = new AnsiUp();
 
   const { data } = $props();
@@ -92,10 +85,22 @@
       "Select a language",
   );
   let products = $state([
-    { stripeprice: "", name: "Free tier", metadata: { resources: {requests: { memory: "128Mi" },  limits: { memory: "128Mi" }  }  }},
+    {
+      stripeprice: "",
+      name: "Free tier",
+      metadata: {
+        resources: {
+          requests: { memory: "128Mi" },
+          limits: { memory: "128Mi" },
+        },
+      },
+    },
   ]);
-  if(data.agentInstance != null) {
-    products = [{ stripeprice: "", name: "Free tier" }, ...data.agentInstance.products];
+  if (data.agentInstance != null) {
+    products = [
+      { stripeprice: "", name: "Free tier" },
+      ...data.agentInstance.products,
+    ];
   }
   const resource = data.agentInstance;
   const images = auth.config.agent_images;
@@ -208,7 +213,7 @@
     if (ram == null) ram = "128Mi";
     if (ram.indexOf("Mi") > -1) {
       ram = ram.replace("Mi", "");
-      ram = parseInt(ram) / 1024 as any;
+      ram = (parseInt(ram) / 1024) as any;
     } else if (ram.indexOf("Gi") > -1) {
       ram = ram.replace("Gi", "");
       ram = parseInt(ram) as any;
@@ -317,7 +322,6 @@
   {$message}
 {/if}
 
-
 {#if resourceMonitor != null}
   <div class="my-2">
     <div>Resource monitor</div>
@@ -347,8 +351,9 @@
       </div>
 
       <div class="px-4 pb-4">
-        <Button
-          variant="outline"
+        <HotkeyButton
+          variant="base"
+          size="base"
           aria-label="Logs"
           title="Logs"
           onclick={async () => {
@@ -379,17 +384,17 @@
               instancelog = "";
             }
             loading = false;
-          }}>Logs</Button
+          }}>Logs</HotkeyButton
         >
-        <Button
+        <HotkeyButton
           class="ml-4"
-          variant="destructive"
+          variant="danger"
           aria-label="Delete"
           title="Delete"
           onclick={() => {
             showWarningAgentDelete = true;
             deleteData = data.item;
-          }}>Delete</Button
+          }}>Delete</HotkeyButton
         >
       </div>
     </div>
@@ -408,27 +413,19 @@
     aria-label="Update agent"
     title="Update agent"
     class="mb-4"
+    variant="base"
+    size="base"
   >
     <Check />
     Update agent</Form.Button
   >
-  <HotkeyButton
-  class="mb-4"
-  disabled={loading}
-  aria-label="Cancel"
-  onclick={() => goto(base + `/${page}`)}
-  title="Cancel"
->
-  <ArrowLeft />
-  Cancel</HotkeyButton
->
 
   <div class="flex items-center justify-between space-x-4">
     <Form.Field {form} name="name" class="w-full">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Name</Form.Label>
-          <Input disabled={loading} bind:value={$formData.name} />
+          <CustomInput disabled={loading} bind:value={$formData.name} />
         {/snippet}
       </Form.Control>
       <Form.FieldErrors />
@@ -439,18 +436,24 @@
         {#snippet children({ props })}
           <div class="flex items-center">
             <Form.Label>Slug</Form.Label>
-            <button
-              class="ms-2 hover:opacity-80 border p-1 rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
+            <HotkeyButton
+              class="ml-2"
               aria-label="refresh"
+              size="refresh"
+              variant="refresh"
               title="refresh"
               disabled={loading}
               onclick={() => {
                 $formData.name = randomname();
                 $formData.slug = $formData.name;
-              }}><RefreshCcw class="size-3" /></button
+              }}><RefreshCcw class="h-4 w-4" /></HotkeyButton
             >
           </div>
-          <Input disabled={loading} {...props} bind:value={$formData.slug} />
+          <CustomInput
+            disabled={loading}
+            {...props}
+            bind:value={$formData.slug}
+          />
         {/snippet}
       </Form.Control>
       <Form.FieldErrors />
@@ -460,24 +463,15 @@
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Image</Form.Label>
-          <Select.Root
-            disabled={loading}
-            {...props}
+          <CustomSelect
             type="single"
+            {loading}
+            {...props}
             bind:value={$formData.image}
-            onValueChange={ImageUpdated}
-          >
-            <Select.Trigger>
-              {triggerContentImage()}
-            </Select.Trigger>
-            <Select.Content>
-              {#each images as image}
-                <Select.Item value={image.image} label={image.name}
-                  >{image.name}</Select.Item
-                >
-              {/each}
-            </Select.Content>
-          </Select.Root>
+            onValueChangeFunction={ImageUpdated}
+            selectitems={images}
+            triggerContent={triggerContentImage}
+          />
         {/snippet}
       </Form.Control>
       <Form.FieldErrors />
@@ -487,24 +481,15 @@
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Plan</Form.Label>
-          <Select.Root
-            disabled={loading}
+          <CustomSelect
+            {loading}
             {...props}
-            type="single"
             bind:value={$formData.stripeprice}
-            onValueChange={PlanUpdated}
-          >
-            <Select.Trigger>
-              {triggerContentPlan()}
-            </Select.Trigger>
-            <Select.Content>
-              {#each products as plan}
-                <Select.Item value={plan.stripeprice} label={plan.name}
-                  >{plan.name}</Select.Item
-                >
-              {/each}
-            </Select.Content>
-          </Select.Root>
+            onValueChangeFunction={PlanUpdated}
+            selectitems={products}
+            triggerContent={triggerContentPlan}
+            type="single"
+          />
         {/snippet}
       </Form.Control>
       <Form.FieldErrors />
@@ -537,17 +522,17 @@
   <Form.Field
     {form}
     name="autostart"
-    class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 mb-4"
+    class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
   >
     <Form.Control>
       {#snippet children({ props })}
-        <div class="flex flex-col space-y-4">
+        <div class="flex flex-col space-y-2">
           <Form.Label>Auto Start</Form.Label>
           <Form.Description>
             If enabled, the user is autostart and cannot signin
           </Form.Description>
           <div class="flex items-center space-x-4">
-            <Switch
+            <CustomSwitch
               disabled={loading}
               bind:checked={$formData.autostart}
               {...props}
@@ -564,17 +549,17 @@
   <Form.Field
     {form}
     name="webserver"
-    class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 mb-4"
+    class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
   >
     <Form.Control>
       {#snippet children({ props })}
-        <div class="flex flex-col space-y-4">
+        <div class="flex flex-col space-y-2">
           <Form.Label>Web Server</Form.Label>
           <Form.Description>
             If enabled, the user is webserver and cannot signin
           </Form.Description>
           <div class="flex space-x-4">
-            <Switch
+            <CustomSwitch
               disabled={loading}
               bind:checked={$formData.webserver}
               {...props}
@@ -591,17 +576,17 @@
   <Form.Field
     {form}
     name="sleep"
-    class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 mb-4"
+    class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
   >
     <Form.Control>
       {#snippet children({ props })}
-        <div class="flex flex-col space-y-4">
+        <div class="flex flex-col space-y-2">
           <Form.Label>Sleep</Form.Label>
           <Form.Description>
             If enabled, the user is sleep and cannot signin
           </Form.Description>
           <div class="flex space-x-4">
-            <Switch
+            <CustomSwitch
               disabled={loading}
               bind:checked={$formData.sleep}
               {...props}
@@ -643,14 +628,13 @@
             basefilter={{ _type: "user" }}
             bind:value={$formData.runas}
           />
-          <Button
-            variant="outline"
-            aria-label="Refresh"
-            title="Refresh"
+          <HotkeyButton
+            aria-label="User details"
+            title="User details"
             disabled={loading}
             onclick={() => {
               goto(base + `/user/${$formData.runas}`);
-            }}><User />User details</Button
+            }}><User />User details</HotkeyButton
           >
         </div>
       {/snippet}
@@ -678,7 +662,7 @@
     {#if packageData?.daemon == false}
       <div class="flex items-center space-x-2">
         <data>Cron</data>
-        <Input
+        <CustomInput
           disabled={loading}
           bind:value={packageData.cron}
           placeholder="* * * * *"
@@ -686,7 +670,7 @@
       </div>
     {/if}
 
-    <Button onclick={addpackage}>Run package</Button>
+    <HotkeyButton onclick={addpackage}>Run package</HotkeyButton>
   </div>
 
   {#if $formData.schedules}
@@ -705,7 +689,7 @@
               <Form.Field {form} name="item.name">
                 <Form.Control>
                   <Form.Label>Name</Form.Label>
-                  <Input bind:value={item.name} />
+                  <CustomInput bind:value={item.name} />
                 </Form.Control>
                 <Form.FieldErrors />
               </Form.Field>
@@ -716,7 +700,7 @@
                 <Form.Field {form} name="item.cron">
                   <Form.Control>
                     <Form.Label>Cron</Form.Label>
-                    <Input
+                    <CustomInput
                       disabled={loading}
                       bind:value={item.cron}
                       placeholder="* * * * *"
@@ -730,7 +714,7 @@
                 <Form.Field {form} name="item.allowConcurrentRuns">
                   <Form.Control>
                     <div class="flex items-center justify-center space-x-2">
-                      <Switch
+                      <CustomSwitch
                         disabled={loading}
                         bind:checked={item.allowConcurrentRuns}
                       />
@@ -749,7 +733,8 @@
                 <Form.Field {form} name="item.terminateIfRunning">
                   <Form.Control>
                     <div class="flex items-center justify-center space-x-2">
-                      <Checkbox
+                      <CustomCheckbox
+                        arialabel="Terminate If Running"
                         disabled={loading}
                         bind:checked={item.terminateIfRunning}
                       />
@@ -765,7 +750,10 @@
               <Form.Field {form} name="item.enabled">
                 <Form.Control>
                   <div class="flex items-center justify-center space-x-2">
-                    <Switch disabled={loading} bind:checked={item.enabled} />
+                    <CustomSwitch
+                      disabled={loading}
+                      bind:checked={item.enabled}
+                    />
                     <Form.Label
                       >Enabled {item.enabled ? "On" : "Off"}</Form.Label
                     >
@@ -785,14 +773,14 @@
               </Form.Field>
             </div>
 
-            <Button
+            <HotkeyButton
               class="max-w-fit"
               aria-label="Delete package"
-              variant="destructive"
+              variant="danger"
               onclick={() => {
                 showWarning = true;
                 deleteData = index;
-              }}><Trash2 />Remove Schedule</Button
+              }}><Trash2 />Remove Schedule</HotkeyButton
             >
           </div>
         {/if}
@@ -801,14 +789,11 @@
   {:else}
     <div class="my-2">No packages found</div>
   {/if}
-
-  <Form.Button disabled={loading} aria-label="Update agent" title="Update agent"
-    >Update agent</Form.Button
-  >
 </form>
 
 <div class="italic text-gray-500 py-2">
-  Agents using free plan will be shutdown after {data.agentInstance?.defaultmetadata.runtime_hours} hours. Buy one or more products on the customer
+  Agents using free plan will be shutdown after {data.agentInstance
+    ?.defaultmetadata.runtime_hours} hours. Buy one or more products on the customer
   page, and then assign it to an agent to allow it to run 24/7. You are limited to
   {data.agentInstance?.defaultmetadata.agentcount} free agents. Add more resources
   on the customer page to increase the limit.

@@ -295,17 +295,25 @@
 </script>
 
 <Select.Root {disabled} {...restProps} type="single" name="timezone" bind:value>
-  <Select.Trigger class="w-[180px]">
+  <Select.Trigger
+    class="w-[180px] h-8 w-64 py-2 rounded-[10px] border dark:border-bw600 dark:placeholder-bw500 dark:text-bw400 dark:bg-bw800 focus:outline-none"
+  >
     {triggerContent}
   </Select.Trigger>
-  <Select.Content>
+  <Select.Content
+    class="dark:bg-bw850 border dark:border-bw600 dark:text-bw100"
+  >
     {#each timezones as group}
       <Select.Group>
         <Select.GroupHeading class="font-bold text-lg">
           {group.group}</Select.GroupHeading
         >
         {#each group.items as item}
-          <Select.Item value={item.value} label={item.label}>
+          <Select.Item
+            value={item.value}
+            label={item.label}
+            class={` ${value === item?.value && "border dark:border-bw600 dark:bg-bw700 "} rounded-[10px] dark:text-bw100`}
+          >
             {item.label}
           </Select.Item>
         {/each}

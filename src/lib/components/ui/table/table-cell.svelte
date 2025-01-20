@@ -14,7 +14,7 @@
 <td
 	bind:this={ref}
 	class={cn(
-		"font-medium h-9 p-2.5 align-middle [&:has([role=checkbox])]:pr-0",
+		"font-medium h-9 p-2 align-middle [&:has([role=checkbox])]:pr-0",
 		className,
 	)}
 	{...restProps}
