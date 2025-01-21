@@ -40,7 +40,7 @@
 				sm: "h-9 rounded-md px-3",
 				lg: "h-11 rounded-md px-8",
 				icon: "h-7 w-7 rounded-[10px]",
-				base: "h-7 px-2.5 py-1.5 rounded-[10px]",
+				base: "h-8 px-2.5 py-1.5 rounded-[10px]",
 				tableicon:
 					"p-1 m-[1px] hover:mt-0 hover:mb-0  hover:mr-0 rounded-[10px]",
 				refresh: "p-1 rounded-[10px]",

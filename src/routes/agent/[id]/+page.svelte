@@ -18,7 +18,7 @@
   import Timezoneselector from "$lib/timezoneselector/timezoneselector.svelte";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import { AnsiUp } from "ansi_up";
-  import { Check, RefreshCcw, Trash2, User } from "lucide-svelte";
+  import { Box, Check, RefreshCcw, Trash2, User } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
@@ -314,378 +314,381 @@
   }
 </script>
 
-{#if errormessage && errormessage != ""}
-  {errormessage}
-{/if}
+<div class="px-6">
+  {#if errormessage && errormessage != ""}
+    {errormessage}
+  {/if}
 
-{#if message && $message != ""}
-  {$message}
-{/if}
+  {#if message && $message != ""}
+    {$message}
+  {/if}
 
-{#if resourceMonitor != null}
-  <div class="my-2">
-    <div>Resource monitor</div>
-    <div class="font-bold mb-4">
-      {resourceMonitor.metadata.name}
-    </div>
-    <div class="grid grid-cols-6 items-center justify-center border rounded">
-      <div class="border-b text-center p-4 col-span-1">Status</div>
-      <div class="border-b text-center p-4 col-span-2">CPU</div>
-      <div class="border-b text-center p-4 col-span-2">Men</div>
-      <div class="border-b text-center p-4 col-span-1">Created</div>
-      <div class="flex items-center justify-center p-4 col-span-1">
-        <Statuscard title={resourceMonitor.showstatus} />
+  {#if resourceMonitor != null}
+    <div class="my-2">
+      <div>Resource monitor</div>
+      <div class="font-bold mb-4">
+        {resourceMonitor.metadata.name}
       </div>
-      <div class="text-center p-4 col-span-2">
-        {resourceMonitor?.metrics?.cpu +
-          "/" +
-          resourceMonitor?.spec?.containers[0]?.resources?.limits?.cpu}
-      </div>
-      <div class="text-center p-4 col-span-2">
-        {resourceMonitor?.metrics?.memory +
-          "/" +
-          resourceMonitor?.spec?.containers[0]?.resources?.limits?.memory}
-      </div>
-      <div class="text-center p-4 col-span-1">
-        {resourceMonitor?.metadata?.creationTimestamp}
-      </div>
+      <div class="grid grid-cols-6 items-center justify-center border rounded">
+        <div class="border-b text-center p-4 col-span-1">Status</div>
+        <div class="border-b text-center p-4 col-span-2">CPU</div>
+        <div class="border-b text-center p-4 col-span-2">Men</div>
+        <div class="border-b text-center p-4 col-span-1">Created</div>
+        <div class="flex items-center justify-center p-4 col-span-1">
+          <Statuscard title={resourceMonitor.showstatus} />
+        </div>
+        <div class="text-center p-4 col-span-2">
+          {resourceMonitor?.metrics?.cpu +
+            "/" +
+            resourceMonitor?.spec?.containers[0]?.resources?.limits?.cpu}
+        </div>
+        <div class="text-center p-4 col-span-2">
+          {resourceMonitor?.metrics?.memory +
+            "/" +
+            resourceMonitor?.spec?.containers[0]?.resources?.limits?.memory}
+        </div>
+        <div class="text-center p-4 col-span-1">
+          {resourceMonitor?.metadata?.creationTimestamp}
+        </div>
 
-      <div class="px-4 pb-4">
-        <HotkeyButton
-          variant="base"
-          size="base"
-          aria-label="Logs"
-          title="Logs"
-          onclick={async () => {
-            loading = true;
-            try {
-              instancelog = null;
-              var lines: any = await auth.client.CustomCommand({
-                command: "getagentlog",
-                id: data.item._id,
-                name: resourceMonitor.metadata.name,
-              });
-              lines = JSON.parse(lines);
-              if (lines != null) {
-                lines = ansi_up.ansi_to_html(lines);
-                lines = lines.split("\n");
-                lines = lines.reverse();
-              } else {
-                lines = [];
+        <div class="px-4 pb-4">
+          <HotkeyButton
+            variant="base"
+            size="base"
+            aria-label="Logs"
+            title="Logs"
+            onclick={async () => {
+              loading = true;
+              try {
+                instancelog = null;
+                var lines: any = await auth.client.CustomCommand({
+                  command: "getagentlog",
+                  id: data.item._id,
+                  name: resourceMonitor.metadata.name,
+                });
+                lines = JSON.parse(lines);
+                if (lines != null) {
+                  lines = ansi_up.ansi_to_html(lines);
+                  lines = lines.split("\n");
+                  lines = lines.reverse();
+                } else {
+                  lines = [];
+                }
+                lines = lines.join("<br>");
+                instancelog = lines;
+                errormessage = "";
+              } catch (error: any) {
+                toast.error("Error while deleting", {
+                  description: error.message,
+                });
+                errormessage = error.message ? error.message : error;
+                instancelog = "";
               }
-              lines = lines.join("<br>");
-              instancelog = lines;
-              errormessage = "";
-            } catch (error: any) {
-              toast.error("Error while deleting", {
-                description: error.message,
-              });
-              errormessage = error.message ? error.message : error;
-              instancelog = "";
-            }
-            loading = false;
-          }}>Logs</HotkeyButton
-        >
-        <HotkeyButton
-          class="ml-4"
-          variant="danger"
-          aria-label="Delete"
-          title="Delete"
-          onclick={() => {
-            showWarningAgentDelete = true;
-            deleteData = data.item;
-          }}>Delete</HotkeyButton
-        >
+              loading = false;
+            }}>Logs</HotkeyButton
+          >
+          <HotkeyButton
+            class="ml-4"
+            variant="danger"
+            aria-label="Delete"
+            title="Delete"
+            onclick={() => {
+              showWarningAgentDelete = true;
+              deleteData = data.item;
+            }}>Delete</HotkeyButton
+          >
+        </div>
       </div>
     </div>
-  </div>
-{/if}
-{#if instancelog != null}
-  <div class="border rounded-xl p-2 my-2">
-    <div>Logs</div>
-    {@html instancelog}
-  </div>
-{/if}
-
-<form method="POST" use:enhance>
-  <Form.Button
-    disabled={loading}
-    aria-label="Update agent"
-    title="Update agent"
-    class="mb-4"
-    variant="base"
-    size="base"
-  >
-    <Check />
-    Update agent</Form.Button
-  >
-
-  <div class="flex items-center justify-between space-x-4">
-    <Form.Field {form} name="name" class="w-full">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Name</Form.Label>
-          <CustomInput disabled={loading} bind:value={$formData.name} />
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
-
-    <Form.Field {form} name="slug" class="w-full">
-      <Form.Control>
-        {#snippet children({ props })}
-          <div class="flex items-center">
-            <Form.Label>Slug</Form.Label>
-            <HotkeyButton
-              class="ml-2"
-              aria-label="refresh"
-              size="refresh"
-              variant="refresh"
-              title="refresh"
-              disabled={loading}
-              onclick={() => {
-                $formData.name = randomname();
-                $formData.slug = $formData.name;
-              }}><RefreshCcw class="h-4 w-4" /></HotkeyButton
-            >
-          </div>
-          <CustomInput
-            disabled={loading}
-            {...props}
-            bind:value={$formData.slug}
-          />
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
-
-    <Form.Field {form} name="image" class="w-full">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Image</Form.Label>
-          <CustomSelect
-            type="single"
-            {loading}
-            {...props}
-            bind:value={$formData.image}
-            onValueChangeFunction={ImageUpdated}
-            selectitems={images}
-            triggerContent={triggerContentImage}
-          />
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
-
-    <Form.Field {form} name="stripeprice" class="w-full">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Plan</Form.Label>
-          <CustomSelect
-            {loading}
-            {...props}
-            bind:value={$formData.stripeprice}
-            onValueChangeFunction={PlanUpdated}
-            selectitems={products}
-            triggerContent={triggerContentPlan}
-            type="single"
-          />
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
-  </div>
-
-  {#if sizewarningtitle != ""}
-    <div
-      class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-4 rounded relative"
-    >
-      <strong class="font-bold">{sizewarningtitle}</strong>
-      <span class="block sm:inline">{sizewarning}</span>
+  {/if}
+  {#if instancelog != null}
+    <div class="border rounded-xl p-2 my-2">
+      <div>Logs</div>
+      {@html instancelog}
     </div>
   {/if}
 
-  <Form.Field {form} name="environment" class="mb-4">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Environment</Form.Label>
-        <ObjectInput
-          disabled={loading}
-          {...props}
-          bind:value={$formData.environment}
-          class="min-h-52"
-        />
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-  <Form.Field
-    {form}
-    name="autostart"
-    class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
-  >
-    <Form.Control>
-      {#snippet children({ props })}
-        <div class="flex flex-col space-y-2">
-          <Form.Label>Auto Start</Form.Label>
-          <Form.Description>
-            If enabled, the user is autostart and cannot signin
-          </Form.Description>
-          <div class="flex items-center space-x-4">
-            <CustomSwitch
+  <form method="POST" use:enhance class="text-sm">
+    <Form.Button
+      disabled={loading}
+      aria-label="Save changes"
+      title="Save changes"
+      class="mb-4"
+      variant="success"
+      size="base"
+    >
+      <Check />
+      Save Changes</Form.Button
+    >
+
+    <div class="flex items-center justify-between space-x-4">
+      <Form.Field {form} name="name" class="w-full">
+        <Form.Control>
+          {#snippet children({ props })}
+            <Form.Label>Name</Form.Label>
+            <CustomInput disabled={loading} bind:value={$formData.name} />
+          {/snippet}
+        </Form.Control>
+        <Form.FieldErrors />
+      </Form.Field>
+
+      <Form.Field {form} name="slug" class="w-full">
+        <Form.Control>
+          {#snippet children({ props })}
+            <div class="flex items-center">
+              <Form.Label>Slug</Form.Label>
+              <HotkeyButton
+                class="ml-2"
+                aria-label="refresh"
+                size="refresh"
+                variant="refresh"
+                title="refresh"
+                disabled={loading}
+                onclick={() => {
+                  $formData.name = randomname();
+                  $formData.slug = $formData.name;
+                }}><RefreshCcw class="h-4 w-4" /></HotkeyButton
+              >
+            </div>
+            <CustomInput
               disabled={loading}
-              bind:checked={$formData.autostart}
               {...props}
-              aria-readonly
+              bind:value={$formData.slug}
             />
-            <span> {$formData.autostart ? "On" : "Off"} </span>
-          </div>
-        </div>
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
+          {/snippet}
+        </Form.Control>
+        <Form.FieldErrors />
+      </Form.Field>
 
-  <Form.Field
-    {form}
-    name="webserver"
-    class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
-  >
-    <Form.Control>
-      {#snippet children({ props })}
-        <div class="flex flex-col space-y-2">
-          <Form.Label>Web Server</Form.Label>
-          <Form.Description>
-            If enabled, the user is webserver and cannot signin
-          </Form.Description>
-          <div class="flex space-x-4">
-            <CustomSwitch
-              disabled={loading}
-              bind:checked={$formData.webserver}
+      <Form.Field {form} name="image" class="w-full">
+        <Form.Control>
+          {#snippet children({ props })}
+            <Form.Label>Image</Form.Label>
+            <CustomSelect
+              type="single"
+              {loading}
               {...props}
-              aria-readonly
+              bind:value={$formData.image}
+              onValueChangeFunction={ImageUpdated}
+              selectitems={images}
+              triggerContent={triggerContentImage}
             />
-            <span> {$formData.webserver ? "On" : "Off"} </span>
-          </div>
-        </div>
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
+          {/snippet}
+        </Form.Control>
+        <Form.FieldErrors />
+      </Form.Field>
 
-  <Form.Field
-    {form}
-    name="sleep"
-    class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
-  >
-    <Form.Control>
-      {#snippet children({ props })}
-        <div class="flex flex-col space-y-2">
-          <Form.Label>Sleep</Form.Label>
-          <Form.Description>
-            If enabled, the user is sleep and cannot signin
-          </Form.Description>
-          <div class="flex space-x-4">
-            <CustomSwitch
-              disabled={loading}
-              bind:checked={$formData.sleep}
+      <Form.Field {form} name="stripeprice" class="w-full">
+        <Form.Control>
+          {#snippet children({ props })}
+            <Form.Label>Plan</Form.Label>
+            <CustomSelect
+              {loading}
               {...props}
-              aria-readonly
+              bind:value={$formData.stripeprice}
+              onValueChangeFunction={PlanUpdated}
+              selectitems={products}
+              triggerContent={triggerContentPlan}
+              type="single"
             />
-            <span> {$formData.sleep ? "On" : "Off"} </span>
-          </div>
-        </div>
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-
-  <Form.Field {form} name="timezone" class="mb-4">
-    <Form.Control>
-      {#snippet children({ props })}
-        <div class="flex items-center space-x-6">
-          <Form.Label>Timezone</Form.Label>
-          <Timezoneselector
-            disabled={loading}
-            {...props}
-            bind:value={$formData.timezone}
-          />
-        </div>
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-
-  <Form.Field {form} name="runas">
-    <Form.Control>
-      {#snippet children({ props })}
-        <div class="flex items-center space-x-5">
-          <Form.Label class="me-6">Runas</Form.Label>
-          <Entityselector
-            disabled={loading}
-            {...props}
-            collectionname="users"
-            basefilter={{ _type: "user" }}
-            bind:value={$formData.runas}
-          />
-          <HotkeyButton
-            aria-label="User details"
-            title="User details"
-            disabled={loading}
-            onclick={() => {
-              goto(base + `/user/${$formData.runas}`);
-            }}><User />User details</HotkeyButton
-          >
-        </div>
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-
-  <Separator class="my-6" />
-
-  <div>Add schedule of package</div>
-  <div class="flex space-x-2 my-2">
-    <div class="flex items-center space-x-2">
-      <data>Package</data>
-      <Entityselector
-        collectionname="agents"
-        basefilter={{
-          _type: "package",
-          language: { $in: $formData.languages },
-        }}
-        returnObject={true}
-        bind:value={packageData}
-      />
+          {/snippet}
+        </Form.Control>
+        <Form.FieldErrors />
+      </Form.Field>
     </div>
 
-    {#if packageData?.daemon == false}
-      <div class="flex items-center space-x-2">
-        <data>Cron</data>
-        <CustomInput
-          disabled={loading}
-          bind:value={packageData.cron}
-          placeholder="* * * * *"
-        />
+    {#if sizewarningtitle != ""}
+      <div
+        class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-4 rounded relative"
+      >
+        <strong class="font-bold">{sizewarningtitle}</strong>
+        <span class="block sm:inline">{sizewarning}</span>
       </div>
     {/if}
 
-    <HotkeyButton onclick={addpackage}>Run package</HotkeyButton>
-  </div>
+    <Form.Field {form} name="environment" class="mb-4 w-full">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Environment</Form.Label>
+          <ObjectInput
+            disabled={loading}
+            {...props}
+            bind:value={$formData.environment}
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
 
-  {#if $formData.schedules}
-    <div>Packages list</div>
-    {#each $formData.schedules as item, index}
-      <div class="flex items-center my-2">
-        {#if $formData.schedules}
-          <div class="p-4 border rounded-xl flex flex-col space-y-4 w-full">
-            <div class="flex items-center space-x-2 justify-between">
-              <div class="text-center">
-                Package {index + 1}
-              </div>
+    <Form.Field
+      {form}
+      name="autostart"
+      class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
+    >
+      <Form.Control>
+        {#snippet children({ props })}
+          <div class="flex flex-col space-y-2">
+            <Form.Label>Auto Start</Form.Label>
+            <Form.Description>
+              If enabled, the user is autostart and cannot signin
+            </Form.Description>
+            <div class="flex items-center space-x-4">
+              <CustomSwitch
+                disabled={loading}
+                bind:checked={$formData.autostart}
+                {...props}
+                aria-readonly
+              />
+              <span> {$formData.autostart ? "On" : "Off"} </span>
+            </div>
+          </div>
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+
+    <Form.Field
+      {form}
+      name="webserver"
+      class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
+    >
+      <Form.Control>
+        {#snippet children({ props })}
+          <div class="flex flex-col space-y-2">
+            <Form.Label>Web Server</Form.Label>
+            <Form.Description>
+              If enabled, the user is webserver and cannot signin
+            </Form.Description>
+            <div class="flex space-x-4">
+              <CustomSwitch
+                disabled={loading}
+                bind:checked={$formData.webserver}
+                {...props}
+                aria-readonly
+              />
+              <span> {$formData.webserver ? "On" : "Off"} </span>
+            </div>
+          </div>
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+
+    <Form.Field
+      {form}
+      name="sleep"
+      class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
+    >
+      <Form.Control>
+        {#snippet children({ props })}
+          <div class="flex flex-col space-y-2">
+            <Form.Label>Sleep</Form.Label>
+            <Form.Description>
+              If enabled, the user is sleep and cannot signin
+            </Form.Description>
+            <div class="flex space-x-4">
+              <CustomSwitch
+                disabled={loading}
+                bind:checked={$formData.sleep}
+                {...props}
+                aria-readonly
+              />
+              <span> {$formData.sleep ? "On" : "Off"} </span>
+            </div>
+          </div>
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+
+    <Form.Field {form} name="timezone" class="mb-4">
+      <Form.Control>
+        {#snippet children({ props })}
+          <div class="flex flex-col items-start space-y-2">
+            <Form.Label>Timezone</Form.Label>
+            <Timezoneselector
+              disabled={loading}
+              {...props}
+              bind:value={$formData.timezone}
+            />
+          </div>
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+
+    <Form.Field {form} name="runas">
+      <Form.Control>
+        {#snippet children({ props })}
+          <div class="flex flex-col items-start space-y-2">
+            <Form.Label>Runas</Form.Label>
+            <div class="flex items-center space-x-4">
+              <Entityselector
+                disabled={loading}
+                {...props}
+                collectionname="users"
+                basefilter={{ _type: "user" }}
+                bind:value={$formData.runas}
+              />
+              <HotkeyButton
+                aria-label="User details"
+                title="User details"
+                disabled={loading}
+                onclick={() => {
+                  goto(base + `/user/${$formData.runas}`);
+                }}><User />User details</HotkeyButton
+              >
+            </div>
+          </div>
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+
+    <Separator class="my-6" />
+
+    <div>
+      <div>Add schedule of package</div>
+      <div class="flex space-x-5 my-2">
+        <div class="flex items-center space-x-8">
+          <Entityselector
+            collectionname="agents"
+            basefilter={{
+              _type: "package",
+              language: { $in: $formData.languages },
+            }}
+            returnObject={true}
+            bind:value={packageData}
+          />
+        </div>
+
+        {#if packageData?.daemon == false}
+          <div class="flex items-center space-x-2">
+            <data>Cron</data>
+            <CustomInput
+              disabled={loading}
+              bind:value={packageData.cron}
+              placeholder="* * * * *"
+            />
+          </div>
+        {/if}
+
+        <HotkeyButton onclick={addpackage}>
+          <Box />
+          Run package</HotkeyButton
+        >
+      </div>
+    </div>
+
+    {#if $formData.schedules}
+      {#each $formData.schedules as item, index}
+        <div class="my-4">
+          {#if $formData.schedules}
+            <div class="text-lg my-6">
+              Package {index + 1}
             </div>
 
-            <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-2 mb-4">
               <Form.Field {form} name="item.name">
                 <Form.Control>
                   <Form.Label>Name</Form.Label>
@@ -696,57 +699,59 @@
             </div>
 
             {#if item.cron != ""}
-              <div class="flex items-center space-x-2">
-                <Form.Field {form} name="item.cron">
-                  <Form.Control>
-                    <Form.Label>Cron</Form.Label>
-                    <CustomInput
-                      disabled={loading}
-                      bind:value={item.cron}
-                      placeholder="* * * * *"
-                    />
-                  </Form.Control>
-                  <Form.FieldErrors />
-                </Form.Field>
-              </div>
-
-              <div class="flex items-center space-x-2">
-                <Form.Field {form} name="item.allowConcurrentRuns">
-                  <Form.Control>
-                    <div class="flex items-center justify-center space-x-2">
-                      <CustomSwitch
+              <div class="mb-4">
+                <div class="flex items-center space-x-2">
+                  <Form.Field {form} name="item.cron">
+                    <Form.Control>
+                      <Form.Label>Cron</Form.Label>
+                      <CustomInput
                         disabled={loading}
-                        bind:checked={item.allowConcurrentRuns}
+                        bind:value={item.cron}
+                        placeholder="* * * * *"
                       />
-                      <Form.Label
-                        >Concurent Runs {item.allowConcurrentRuns
-                          ? "On"
-                          : "Off"}</Form.Label
-                      >
-                    </div>
-                  </Form.Control>
-                  <Form.FieldErrors />
-                </Form.Field>
-              </div>
+                    </Form.Control>
+                    <Form.FieldErrors />
+                  </Form.Field>
+                </div>
 
-              <div class="flex items-center space-x-2">
-                <Form.Field {form} name="item.terminateIfRunning">
-                  <Form.Control>
-                    <div class="flex items-center justify-center space-x-2">
-                      <CustomCheckbox
-                        arialabel="Terminate If Running"
-                        disabled={loading}
-                        bind:checked={item.terminateIfRunning}
-                      />
-                      <Form.Label>Terminate If Running</Form.Label>
-                    </div>
-                  </Form.Control>
-                  <Form.FieldErrors />
-                </Form.Field>
+                <div class="flex items-center space-x-2">
+                  <Form.Field {form} name="item.allowConcurrentRuns">
+                    <Form.Control>
+                      <div class="flex items-center justify-center space-x-2">
+                        <CustomSwitch
+                          disabled={loading}
+                          bind:checked={item.allowConcurrentRuns}
+                        />
+                        <Form.Label
+                          >Concurent Runs {item.allowConcurrentRuns
+                            ? "On"
+                            : "Off"}</Form.Label
+                        >
+                      </div>
+                    </Form.Control>
+                    <Form.FieldErrors />
+                  </Form.Field>
+                </div>
+
+                <div class="flex items-center space-x-2">
+                  <Form.Field {form} name="item.terminateIfRunning">
+                    <Form.Control>
+                      <div class="flex items-center justify-center space-x-2">
+                        <CustomCheckbox
+                          arialabel="Terminate If Running"
+                          disabled={loading}
+                          bind:checked={item.terminateIfRunning}
+                        />
+                        <Form.Label>Terminate If Running</Form.Label>
+                      </div>
+                    </Form.Control>
+                    <Form.FieldErrors />
+                  </Form.Field>
+                </div>
               </div>
             {/if}
 
-            <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-2 mb-4">
               <Form.Field {form} name="item.enabled">
                 <Form.Control>
                   <div class="flex items-center justify-center space-x-2">
@@ -763,7 +768,7 @@
               </Form.Field>
             </div>
 
-            <div class="flex flex-col items-start space-y-2 w-full">
+            <div class="mb-4">
               <Form.Field {form} name="item.env">
                 <Form.Control>
                   <Form.Label>Environment</Form.Label>
@@ -782,40 +787,41 @@
                 deleteData = index;
               }}><Trash2 />Remove Schedule</HotkeyButton
             >
-          </div>
-        {/if}
-      </div>
-    {/each}
-  {:else}
-    <div class="my-2">No packages found</div>
+          {/if}
+        </div>
+      {/each}
+    {:else}
+      <div class="my-2">No packages found</div>
+    {/if}
+  </form>
+
+  <div class="italic text-gray-500 py-2">
+    Agents using free plan will be shutdown after {data.agentInstance
+      ?.defaultmetadata.runtime_hours} hours. Buy one or more products on the customer
+    page, and then assign it to an agent to allow it to run 24/7. You are limited
+    to
+    {data.agentInstance?.defaultmetadata.agentcount} free agents. Add more resources
+    on the customer page to increase the limit.
+  </div>
+
+  {#if formData != null && showdebug == true}
+    <SuperDebug data={formData} theme="vscode" />
   {/if}
-</form>
 
-<div class="italic text-gray-500 py-2">
-  Agents using free plan will be shutdown after {data.agentInstance
-    ?.defaultmetadata.runtime_hours} hours. Buy one or more products on the customer
-  page, and then assign it to an agent to allow it to run 24/7. You are limited to
-  {data.agentInstance?.defaultmetadata.agentcount} free agents. Add more resources
-  on the customer page to increase the limit.
+  <HotkeyButton
+    hidden
+    class="hidden"
+    aria-label="Toggle debug"
+    data-shortcut={"Control+d,Meta+d"}
+    onclick={() => (showdebug = !showdebug)}>Toggle debug</HotkeyButton
+  >
+
+  <Warningdialogue bind:showWarning type="delete" onaccept={handleAccept}
+  ></Warningdialogue>
+
+  <Warningdialogue
+    bind:showWarning={showWarningAgentDelete}
+    type="delete"
+    onaccept={handleAcceptAgentDelete}
+  ></Warningdialogue>
 </div>
-
-{#if formData != null && showdebug == true}
-  <SuperDebug data={formData} theme="vscode" />
-{/if}
-
-<HotkeyButton
-  hidden
-  class="hidden"
-  aria-label="Toggle debug"
-  data-shortcut={"Control+d,Meta+d"}
-  onclick={() => (showdebug = !showdebug)}>Toggle debug</HotkeyButton
->
-
-<Warningdialogue bind:showWarning type="delete" onaccept={handleAccept}
-></Warningdialogue>
-
-<Warningdialogue
-  bind:showWarning={showWarningAgentDelete}
-  type="delete"
-  onaccept={handleAcceptAgentDelete}
-></Warningdialogue>

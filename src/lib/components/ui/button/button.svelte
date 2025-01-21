@@ -37,7 +37,7 @@
 				icon: "h-7 w-7 rounded-[10px]",
 				tableicon: "p-1 rounded-[10px]",
 				new: "h-7 px-2.5 py-1.5 rounded-[10px]",
-				base: "h-7 px-2.5 py-1.5 rounded-[10px]",
+				base: "h-8 px-2.5 py-1.5 rounded-[10px]",
 			},
 		},
 		defaultVariants: {

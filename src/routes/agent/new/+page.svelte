@@ -230,263 +230,269 @@
   }
 </script>
 
-{#if errormessage && errormessage != ""}
-  {errormessage}
-{/if}
-
-{#if message && $message != ""}
-  {$message}
-{/if}
-
-<form method="POST" use:enhance>
-  <Form.Button
-    disabled={loading}
-    aria-label="Create agent"
-    title="Create agent"
-    variant="base"
-    size="base"
-  >
-    <Check />
-    Create agent</Form.Button
-  >
-  <div class="flex items-center justify-between space-x-4 mb-2">
-    <Form.Field {form} name="name" class="w-full">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Name</Form.Label>
-          <CustomInput disabled={loading} bind:value={$formData.name} />
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
-
-    <Form.Field {form} name="slug" class="w-full">
-      <Form.Control>
-        {#snippet children({ props })}
-          <div class="flex items-center">
-            <Form.Label>Slug</Form.Label>
-            <HotkeyButton
-              class="ml-2"
-              aria-label="refresh"
-              size="refresh"
-              variant="refresh"
-              title="refresh"
-              disabled={loading}
-              onclick={() => {
-                $formData.name = randomname();
-                $formData.slug = $formData.name;
-              }}><RefreshCcw class="h-4 w-4" /></HotkeyButton
-            >
-          </div>
-          <CustomInput
-            disabled={loading}
-            {...props}
-            bind:value={$formData.slug}
-          />
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
-
-    <Form.Field {form} name="image" class="w-full">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Image</Form.Label>
-          <CustomSelect
-            type="single"
-            {loading}
-            {...props}
-            bind:value={$formData.image}
-            onValueChangeFunction={ImageUpdated}
-            selectitems={images}
-            triggerContent={triggerContentImage}
-          />
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
-
-    <Form.Field {form} name="stripeprice" class="w-full">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Plan</Form.Label>
-          <CustomSelect
-            {loading}
-            {...props}
-            bind:value={$formData.stripeprice}
-            onValueChangeFunction={PlanUpdated}
-            selectitems={products}
-            triggerContent={triggerContentPlan}
-            type="single"
-          />
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
-  </div>
-
-  {#if sizewarningtitle != ""}
-    <div
-      class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-4 rounded relative"
-    >
-      <strong class="font-bold">{sizewarningtitle}</strong>
-      <span class="block sm:inline">{sizewarning}</span>
-    </div>
+<div class="mx-6">
+  {#if errormessage && errormessage != ""}
+    {errormessage}
   {/if}
 
-  <Form.Field {form} name="environment" class="min-h-52 w-full mb-4">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Environment</Form.Label>
-        <ObjectInput
-          disabled={loading}
-          {...props}
-          bind:value={$formData.environment}
-        />
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
+  {#if message && $message != ""}
+    {$message}
+  {/if}
 
-  <Form.Field
-    {form}
-    name="autostart"
-    class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
-  >
-    <Form.Control>
-      {#snippet children({ props })}
-        <div class="flex flex-col space-y-2">
-          <Form.Label>Auto Start</Form.Label>
-          <Form.Description>
-            If enabled, the user is autostart and cannot signin
-          </Form.Description>
-          <div class="flex items-center space-x-4">
-            <Customswitch
+  <form method="POST" use:enhance>
+    <Form.Button
+      disabled={loading}
+      aria-label="Create agent"
+      title="Create agent"
+      variant="success"
+      size="base"
+      class="mb-4"
+    >
+      <Check />
+      Create agent</Form.Button
+    >
+    <div class="flex items-center justify-between space-x-4 mb-2">
+      <Form.Field {form} name="name" class="w-full">
+        <Form.Control>
+          {#snippet children({ props })}
+            <Form.Label>Name</Form.Label>
+            <CustomInput disabled={loading} bind:value={$formData.name} />
+          {/snippet}
+        </Form.Control>
+        <Form.FieldErrors />
+      </Form.Field>
+
+      <Form.Field {form} name="slug" class="w-full">
+        <Form.Control>
+          {#snippet children({ props })}
+            <div class="flex items-center">
+              <Form.Label>Slug</Form.Label>
+              <HotkeyButton
+                class="ml-2"
+                aria-label="refresh"
+                size="refresh"
+                variant="refresh"
+                title="refresh"
+                disabled={loading}
+                onclick={() => {
+                  $formData.name = randomname();
+                  $formData.slug = $formData.name;
+                }}><RefreshCcw class="h-4 w-4" /></HotkeyButton
+              >
+            </div>
+            <CustomInput
               disabled={loading}
-              bind:checked={$formData.autostart}
               {...props}
-              aria-readonly
+              bind:value={$formData.slug}
             />
-            <span> {$formData.autostart ? "On" : "Off"} </span>
-          </div>
-        </div>
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
+          {/snippet}
+        </Form.Control>
+        <Form.FieldErrors />
+      </Form.Field>
 
-  <Form.Field
-    {form}
-    name="webserver"
-    class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
-  >
-    <Form.Control>
-      {#snippet children({ props })}
-        <div class="flex flex-col space-y-2">
-          <Form.Label>Web Server</Form.Label>
-          <Form.Description>
-            If enabled, the user is webserver and cannot signin
-          </Form.Description>
-          <div class="flex space-x-4">
-            <Customswitch
-              disabled={loading}
-              bind:checked={$formData.webserver}
+      <Form.Field {form} name="image" class="w-full">
+        <Form.Control>
+          {#snippet children({ props })}
+            <Form.Label>Image</Form.Label>
+            <CustomSelect
+              type="single"
+              {loading}
               {...props}
+              bind:value={$formData.image}
+              onValueChangeFunction={ImageUpdated}
+              selectitems={images}
+              triggerContent={triggerContentImage}
             />
-            <span> {$formData.webserver ? "On" : "Off"} </span>
-          </div>
-        </div>
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
+          {/snippet}
+        </Form.Control>
+        <Form.FieldErrors />
+      </Form.Field>
 
-  <Form.Field
-    {form}
-    name="sleep"
-    class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
-  >
-    <Form.Control>
-      {#snippet children({ props })}
-        <div class="flex flex-col space-y-2">
-          <Form.Label>Sleep</Form.Label>
-          <Form.Description>
-            If enabled, the user is sleep and cannot signin
-          </Form.Description>
-          <div class="flex space-x-4">
-            <Customswitch
-              disabled={loading}
-              bind:checked={$formData.sleep}
+      <Form.Field {form} name="stripeprice" class="w-full">
+        <Form.Control>
+          {#snippet children({ props })}
+            <Form.Label>Plan</Form.Label>
+            <CustomSelect
+              {loading}
               {...props}
-              aria-readonly
+              bind:value={$formData.stripeprice}
+              onValueChangeFunction={PlanUpdated}
+              selectitems={products}
+              triggerContent={triggerContentPlan}
+              type="single"
             />
-            <span> {$formData.sleep ? "On" : "Off"} </span>
-          </div>
-        </div>
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
+          {/snippet}
+        </Form.Control>
+        <Form.FieldErrors />
+      </Form.Field>
+    </div>
 
-  <Form.Field {form} name="timezone" class="mb-4">
-    <Form.Control>
-      {#snippet children({ props })}
-        <div class="flex items-center space-x-6">
-          <Form.Label>Timezone</Form.Label>
-          <Timezoneselector
+    {#if sizewarningtitle != ""}
+      <div
+        class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-4 rounded relative"
+      >
+        <strong class="font-bold">{sizewarningtitle}</strong>
+        <span class="block sm:inline">{sizewarning}</span>
+      </div>
+    {/if}
+
+    <Form.Field {form} name="environment" class="min-h-52 w-full mb-4">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Environment</Form.Label>
+          <ObjectInput
             disabled={loading}
             {...props}
-            bind:value={$formData.timezone}
+            bind:value={$formData.environment}
           />
-        </div>
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
 
-  <Form.Field {form} name="runas" class="mb-4">
-    <Form.Control>
-      {#snippet children({ props })}
-        <div class="flex items-center space-x-5">
-          <Form.Label class="me-6">Runas</Form.Label>
-          <Entityselector
-            disabled={loading}
-            {...props}
-            collectionname="users"
-            basefilter={{ _type: "user" }}
-            bind:value={$formData.runas}
-          />
-          <HotkeyButton
-            variant="base"
-            aria-label="Refresh"
-            title="Refresh"
-            disabled={loading}
-            onclick={() => {
-              goto(base + `/user/${$formData.runas}`);
-            }}><User />User details</HotkeyButton
-          >
-        </div>
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-</form>
+    <Form.Field
+      {form}
+      name="autostart"
+      class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
+    >
+      <Form.Control>
+        {#snippet children({ props })}
+          <div class="flex flex-col space-y-2">
+            <Form.Label>Auto Start</Form.Label>
+            <Form.Description>
+              If enabled, the user is autostart and cannot signin
+            </Form.Description>
+            <div class="flex items-center space-x-4">
+              <Customswitch
+                disabled={loading}
+                bind:checked={$formData.autostart}
+                {...props}
+                aria-readonly
+              />
+              <span> {$formData.autostart ? "On" : "Off"} </span>
+            </div>
+          </div>
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
 
-<div class="italic text-gray-500 py-2">
-  Agents using free plan will be shutdown after {data.agentInstance
-    ?.defaultmetadata.runtime_hours} hours. Buy one or more products on the customer
-  page, and then assign it to an agent to allow it to run 24/7. You are limited to
-  {data.agentInstance?.defaultmetadata.agentcount} free agents. Add more resources
-  on the customer page to increase the limit.
+    <Form.Field
+      {form}
+      name="webserver"
+      class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
+    >
+      <Form.Control>
+        {#snippet children({ props })}
+          <div class="flex flex-col space-y-2">
+            <Form.Label>Web Server</Form.Label>
+            <Form.Description>
+              If enabled, the user is webserver and cannot signin
+            </Form.Description>
+            <div class="flex space-x-4">
+              <Customswitch
+                disabled={loading}
+                bind:checked={$formData.webserver}
+                {...props}
+              />
+              <span> {$formData.webserver ? "On" : "Off"} </span>
+            </div>
+          </div>
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+
+    <Form.Field
+      {form}
+      name="sleep"
+      class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
+    >
+      <Form.Control>
+        {#snippet children({ props })}
+          <div class="flex flex-col space-y-2">
+            <Form.Label>Sleep</Form.Label>
+            <Form.Description>
+              If enabled, the user is sleep and cannot signin
+            </Form.Description>
+            <div class="flex space-x-4">
+              <Customswitch
+                disabled={loading}
+                bind:checked={$formData.sleep}
+                {...props}
+                aria-readonly
+              />
+              <span> {$formData.sleep ? "On" : "Off"} </span>
+            </div>
+          </div>
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+
+    <Form.Field {form} name="timezone" class="mb-4">
+      <Form.Control>
+        {#snippet children({ props })}
+          <div class="flex flex-col items-start space-y-2">
+            <Form.Label>Timezone</Form.Label>
+            <Timezoneselector
+              disabled={loading}
+              {...props}
+              bind:value={$formData.timezone}
+            />
+          </div>
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+
+    <Form.Field {form} name="runas" class="mb-4">
+      <Form.Control>
+        {#snippet children({ props })}
+          <div class="flex flex-col items-start space-y-2">
+            <Form.Label class="me-6">Runas</Form.Label>
+            <div class="flex items-center space-x-4">
+              <Entityselector
+                disabled={loading}
+                {...props}
+                collectionname="users"
+                basefilter={{ _type: "user" }}
+                bind:value={$formData.runas}
+              />
+              <HotkeyButton
+                variant="base"
+                aria-label="Refresh"
+                title="Refresh"
+                disabled={loading}
+                onclick={() => {
+                  goto(base + `/user/${$formData.runas}`);
+                }}><User />User details</HotkeyButton
+              >
+            </div>
+          </div>
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+  </form>
+
+  <div class="italic text-gray-500 py-2">
+    Agents using free plan will be shutdown after {data.agentInstance
+      ?.defaultmetadata.runtime_hours} hours. Buy one or more products on the customer
+    page, and then assign it to an agent to allow it to run 24/7. You are limited
+    to
+    {data.agentInstance?.defaultmetadata.agentcount} free agents. Add more resources
+    on the customer page to increase the limit.
+  </div>
+
+  {#if formData != null && showdebug == true}
+    <SuperDebug data={formData} theme="vscode" />
+  {/if}
+
+  <HotkeyButton
+    hidden
+    class="hidden"
+    data-shortcut={"Control+d,Meta+d"}
+    onclick={() => (showdebug = !showdebug)}>Toggle debug</HotkeyButton
+  >
 </div>
-
-{#if formData != null && showdebug == true}
-  <SuperDebug data={formData} theme="vscode" />
-{/if}
-
-<HotkeyButton
-  hidden
-  class="hidden"
-  data-shortcut={"Control+d,Meta+d"}
-  onclick={() => (showdebug = !showdebug)}>Toggle debug</HotkeyButton
->

@@ -57,7 +57,7 @@
 <Popover.Root bind:open={isOpen} {...restProps}>
     <Popover.Trigger
         disabled={loading}
-        class={" dark:bg-bw1000 flex items-center justify-between border rounded-[10px] px-2 py-1 dark:border-bw600 dark:text-bw500 min-w-[260px] dark:hover:bg-bw700 dark:hover:border-bw500 " +
+        class={"h-8 w-64 dark:bg-bw1000 flex items-center justify-between border rounded-[10px] px-3 py-1 dark:border-bw600 dark:text-bw500  dark:hover:bg-bw700 dark:hover:border-bw500 text-sm " +
             className}
     >
         {#await triggerContent()}
