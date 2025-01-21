@@ -44,9 +44,9 @@
   <div class="flex gap-2 w-full">
     <Searchinput {searchstring} />
     <HotkeyButton
-      size="base"
+      size="sm"
       variant="base"
-      aria-label="add"
+      aria-label="Filter"
       class="border-dashed dark:text-bw600"
     >
       <Filter />
@@ -55,7 +55,7 @@
   </div>
 
   <HotkeyButton
-    size="base"
+    size="sm"
     variant="base"
     aria-label="add"
     onclick={() => goto(base + `/${page}/new`)}

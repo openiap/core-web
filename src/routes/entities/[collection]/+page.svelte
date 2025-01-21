@@ -2,7 +2,6 @@
   import { goto, replaceState } from "$app/navigation";
   import { base } from "$app/paths";
   import { page as sveltepage } from "$app/state";
-  import Button from "$lib/components/ui/button/button.svelte";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
   import { Separator } from "$lib/components/ui/separator/index.js";
@@ -41,7 +40,7 @@
     }
   }
   function collectionvariant(name: string): any {
-    return name == collectionname ? "entitydefault" : "entityselected";
+    return name == collectionname ? "entityselected" : "entitydefault";
   }
   function selectcollection(name: string) {
     collectionname = name;
@@ -58,22 +57,22 @@
 <div class="flex items-start justify-between">
   <div
     id="div1"
-    class="w-full max-w-max flex-shrink-0 hidden sm:block p-6 border-r border-gray-400"
+    class="w-full max-w-max flex-shrink-0 hidden sm:block p-2.5 rounded-[10px] dark:bg-bw900"
   >
-    <ScrollArea class="max-h-screen sm:max-h-[calc(100vh-8rem)] overflow-auto">
-      <div class="p-4">
-        <small>{collectionname}</small>
+    <small class="ps-4">{collectionname}</small>
+    <ScrollArea class="max-h-[60vh] w-[266px] overflow-auto ">
+      <div class="pt-0 p-4">
         {#each collections as collection}
-          <div class="text-sm">
-            <Button
-              class="w-full"
+          <div class="text-sm text-start">
+            <HotkeyButton
+              class="w-full text-start"
               variant={collectionvariant(collection.name)}
               onclick={(e) => {
                 selectcollection(collection.name);
               }}
             >
               <Folder class="size-4" />
-              {collection.name}</Button
+              {collection.name}</HotkeyButton
             >
           </div>
           <Separator class="my-2" />
@@ -81,7 +80,7 @@
       </div>
     </ScrollArea>
   </div>
-  <div id="div2" class="m-6 flex-1">
+  <div id="div2" class="mt-0 m-6 flex-1">
     <Searchinput bind:searchstring />
     <Entities
       {collectionname}
@@ -94,14 +93,14 @@
       {single_item_click}
     >
       {#snippet action(item: any)}
-        <Button
+        <HotkeyButton
           aria-label="edit"
           onclick={() => single_item_click(item)}
-          size="icon"
-          variant="secondary"
+          size="tableicon"
+          variant="icon"
         >
           <Pencil />
-        </Button>
+        </HotkeyButton>
       {/snippet}
     </Entities>
   </div>
