@@ -1,8 +1,11 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
 	import { base } from "$app/paths";
-	import { Button } from "$lib/components/ui/button";
+	import { page } from "$app/stores";
+	import * as Breadcrumb from "$lib/components/ui/breadcrumb/index.js";
 	import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
+	import Separator from "$lib/components/ui/separator/separator.svelte";
+	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import Search from "$lib/search/search.svelte";
 	import NavUser from "$lib/sidebar/nav-user.svelte";
 	import { auth } from "$lib/stores/auth.svelte";
@@ -11,10 +14,6 @@
 	import Moon from "lucide-svelte/icons/moon";
 	import Sun from "lucide-svelte/icons/sun";
 	import { toggleMode } from "mode-watcher";
-	import * as Breadcrumb from "$lib/components/ui/breadcrumb/index.js";
-	import Separator from "$lib/components/ui/separator/separator.svelte";
-	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
-	import { page } from "$app/stores";
 	import { capitalizeFirstLetter } from "../helper";
 
 	let pagename = $derived(() =>
@@ -61,10 +60,10 @@
 			</Breadcrumb.List>
 		</Breadcrumb.Root>
 	</div>
-	<div class="flex items-center justify-center">
+	<div class="flex items-center justify-end">
 		<div class="flex space-x-5 items-center">
 			<Search />
-			<Button
+			<HotkeyButton
 				onclick={() =>
 					window.open("https://github.com/openiap", "_blank")}
 				variant="icon"
@@ -72,16 +71,16 @@
 				aria-label="Visit us at Github"
 			>
 				<Github />
-			</Button>
-			<Button
+			</HotkeyButton>
+			<HotkeyButton
 				variant="icon"
 				size="icon"
 				aria-label="Clear cookies"
 				onclick={reset}
 			>
 				<Trash2 />
-			</Button>
-			<Button
+			</HotkeyButton>
+			<HotkeyButton
 				onclick={toggleMode}
 				variant="icon"
 				size="icon"
@@ -94,7 +93,7 @@
 					class="absolute rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
 				/>
 				<span class="sr-only">Toggle theme</span>
-			</Button>
+			</HotkeyButton>
 
 			{#if auth.isAuthenticated == true}
 				<NavUser

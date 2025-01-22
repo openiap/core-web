@@ -40,7 +40,7 @@
 			size: {
 				default: "h-10 px-4 py-2",
 				lg: "h-11 rounded-md px-8",
-				icon: "h-7 w-7 rounded-[10px]",
+				icon: "h-7 w-7 rounded-[10px] p-2",
 				base: "h-8 px-2.5 py-1.5 rounded-[10px]",
 				sm: "h-7 px-2.5 py-1.5 rounded-[10px]",
 				tableicon:
