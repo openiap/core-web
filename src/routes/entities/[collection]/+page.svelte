@@ -80,7 +80,7 @@
       </div>
     </ScrollArea>
   </div>
-  <div id="div2" class="mt-0 m-6 flex-1">
+  <div id="div2" class="ms-6 flex-1">
     <Searchinput bind:searchstring />
     <Entities
       {collectionname}
