@@ -5,8 +5,8 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
-  import Button from "$lib/components/ui/button/button.svelte";
   import { Entities } from "$lib/entities/index.js";
   import Searchinput from "$lib/searchinput/searchinput.svelte";
   import { MapPinHouse, User } from "lucide-svelte";
@@ -31,14 +31,14 @@
   bind:entities
 >
   {#snippet action(item: any)}
-    <Button
+    <HotkeyButton
       title="go to user"
       aria-label="go to user"
       onclick={() => goto(base + `/user/${item.user._id}`)}
-      size="icon"
-      variant="secondary"><User /></Button
+      size="tableicon"
+      variant="icon"><User /></HotkeyButton
     >
-    <Button
+    <HotkeyButton
       title="View on map"
       aria-label="view"
       onclick={() => {
@@ -47,8 +47,8 @@
           "_blank",
         );
       }}
-      size="icon"
-      variant="secondary"><MapPinHouse /></Button
+      size="tableicon"
+      variant="icon"><MapPinHouse /></HotkeyButton
     >
   {/snippet}
 </Entities>

@@ -5,6 +5,7 @@
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { CustomInput } from "$lib/custominput/index.js";
   import { CustomSelect } from "$lib/customselect/index.js";
+  import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import Customswitch from "$lib/customswitch/customswitch.svelte";
   import Entityselector from "$lib/entityselector/entityselector.svelte";
   import { ObjectInput } from "$lib/objectinput/index.js";
@@ -12,13 +13,12 @@
   import Timezoneselector from "$lib/timezoneselector/timezoneselector.svelte";
   import { Check, RefreshCcw, User } from "lucide-svelte";
   import { toast } from "svelte-sonner";
-  import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
+  import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { randomname } from "../helper.js";
   import { newFormSchema } from "../schema.js";
 
   const key = "agent";
-  let showdebug = $state(false);
   const { data } = $props();
 
   let loading = $state(false);
@@ -485,14 +485,5 @@
     on the customer page to increase the limit.
   </div>
 
-  {#if formData != null && showdebug == true}
-    <SuperDebug data={formData} theme="vscode" />
-  {/if}
-
-  <HotkeyButton
-    hidden
-    class="hidden"
-    data-shortcut={"Control+d,Meta+d"}
-    onclick={() => (showdebug = !showdebug)}>Toggle debug</HotkeyButton
-  >
+  <CustomSuperDebug {formData} />
 </div>

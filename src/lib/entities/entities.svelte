@@ -1,6 +1,5 @@
 <script lang="ts" module>
 	import { buttonVariants } from "$lib/components/ui/button/index.js";
-	import { Checkbox } from "$lib/components/ui/checkbox/index.js";
 	import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
 	import * as Sheet from "$lib/components/ui/sheet/index.js";
 	import { Switch } from "$lib/components/ui/switch/index.js";
@@ -15,6 +14,7 @@
 	import { browser } from "$app/environment";
 	import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
 	import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
+	import { CustomCheckbox } from "$lib/customcheckbox/index.js";
 	import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
 	import { auth } from "$lib/stores/auth.svelte.js";
 	import { usersettings } from "$lib/stores/usersettings.svelte.js";
@@ -22,7 +22,6 @@
 	import { Check, CircleX, MoveLeft, MoveRight, Trash2 } from "lucide-svelte";
 	import { toast } from "svelte-sonner";
 	import { data } from "./data.svelte.js";
-	import { CustomCheckbox } from "$lib/customcheckbox/index.js";
 
 	let {
 		page = "entities",
@@ -463,6 +462,7 @@
 	function onSelectColumnsOpenChange(open: boolean) {
 		data.SaveHeaders(tableheaders);
 	}
+	console.log(multi_select);
 </script>
 
 <div class="text-red-500">{data.errormessage}</div>
@@ -475,10 +475,10 @@
 			<Table.Caption>{caption}</Table.Caption>
 		{/if}
 		<Table.Header>
-			<Table.Row>
+			<Table.Row class="dark:bg-bw900 rounded-[10px]">
 				{#if multi_select}
 					<Table.Head
-						class="w-8 text-black font-semibold dark:text-bw200 dark:bg-bw900 rounded-tl-[10px]"
+						class="w-8 dark:text-bw200 rounded-tl-[10px]"
 						role="cell"
 						><CustomCheckbox
 							arialabel="Select all"
@@ -490,10 +490,7 @@
 				{#each tableheaders as head, index}
 					{#if head.show}
 						<Table.Head
-							class={head.headclass +
-								" text-black font-semibold dark:text-bw200 dark:bg-bw900 " +
-								`${index === 0 && (multi_select ? "" : " rounded-tl-[10px]")}` +
-								` ${index === tableheaders.length - 1 && (rest["action"] ? "" : " rounded-tr-[10px]")}`}
+							class={head.headclass + " dark:text-bw200"}
 							role="cell"
 							draggable="true"
 							onclick={(e) => toggleSort(e, head.field)}
@@ -515,7 +512,7 @@
 				{/each}
 				{#if rest["action"]}
 					<Table.Head
-						class="text-black font-semibold dark:text-bw200 dark:bg-bw900 rounded-tr-[10px] {actionheadclass}"
+						class="dark:text-bw200 rounded-tr-[10px] {actionheadclass}"
 						>Action</Table.Head
 					>
 				{/if}
@@ -591,7 +588,7 @@
 	</Table.Root>
 </div>
 
-<div class="flex my-2 space-x-2 items-center">
+<div class="flex mt-5 mb-2.5 space-x-5 items-center">
 	<HotkeyButton
 		disabled={selected_items.length === 0}
 		onclick={() => (showWarning = true)}
@@ -685,7 +682,7 @@
 	}}
 /> -->
 
-<div class="flex justify-between items-center space-y-2 dark:text-bw300">
+<div class="flex justify-between items-center dark:text-bw300">
 	<HotkeyButton
 		size="base"
 		variant="base"
@@ -705,14 +702,14 @@
 			<div>Previous</div>
 		</div>
 	</HotkeyButton>
-	<div class="mt-4">
+	<div>
 		Page {page_index + 1}
 		{#if entities.length == total_count}
 			showing {total_count}
 		{:else}
-			showing {page_index * data.pagezie + 1}
+			showing {page_index * data.pagesize + 1}
 			{#if entities.length > 1}
-				to {page_index * data.pagezie + entities.length}
+				to {page_index * data.pagesize + entities.length}
 			{/if}
 			of {total_count}
 		{/if}
@@ -727,8 +724,8 @@
 			data.persist();
 			GetData();
 		}}
-		disabled={entities.length < data.pagezie ||
-			page_index * data.pagezie >= total_count}
+		disabled={entities.length < data.pagesize ||
+			page_index * data.pagesize >= total_count}
 	>
 		<div class="flex items-center space-x-2">
 			<div>Next</div>

@@ -7,14 +7,13 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
-  import Button from "$lib/components/ui/button/button.svelte";
-  import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
   import Searchinput from "$lib/searchinput/searchinput.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
-  import { ArrowLeft, Pencil, Plus, Trash2 } from "lucide-svelte";
+  import { ArrowLeft, Filter, Pencil, Plus, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
@@ -51,53 +50,61 @@
   }
 </script>
 
-<div class="mb-4">
-  <Hotkeybutton aria-label="Agents" onclick={() => goto(base + `/agent`)}>
-    <ArrowLeft />
-    Agents</Hotkeybutton
-  >
-  <Hotkeybutton
-    aria-label="Add package"
+<div class="flex justify-between">
+  <div class="flex gap-2 w-full">
+    <Searchinput {searchstring} />
+    <HotkeyButton
+      size="sm"
+      variant="base"
+      aria-label="Filter"
+      class="border-dashed dark:text-bw600"
+    >
+      <Filter />
+      Filter</HotkeyButton
+    >
+  </div>
+
+  <HotkeyButton
+    size="sm"
+    variant="base"
+    aria-label="add"
     onclick={() => goto(base + `/${page}/new`)}
   >
     <Plus />
-    Add {page}</Hotkeybutton
+    Add {page}</HotkeyButton
   >
 </div>
-
-<Searchinput bind:searchstring />
 
 <Entities
   {collectionname}
   {query}
   bind:searchstring
   {page}
-  multi_select={false}
   {single_item_click}
   total_count={data.total_count}
   bind:selected_items
   bind:entities
 >
   {#snippet action(item: any)}
-    <Button
+    <HotkeyButton
       aria-label="Edit"
       onclick={() => single_item_click(item)}
-      size="icon"
-      variant="secondary"
+      size="tableicon"
+      variant="icon"
     >
       <Pencil />
-    </Button>
-    <Button
+    </HotkeyButton>
+    <HotkeyButton
       aria-label="Delete"
       onclick={() => {
         deleteData = item;
         showWarning = !showWarning;
       }}
-      size="icon"
-      variant="destructive"
+      size="tableicon"
+      variant="danger"
     >
       <Trash2 />
-    </Button>
+    </HotkeyButton>
   {/snippet}
 </Entities>
 

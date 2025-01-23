@@ -225,7 +225,7 @@
 
   <Form.Button
     variant="success"
-    size="new"
+    size="base"
     disabled={loading}
     aria-label="submit"
   >

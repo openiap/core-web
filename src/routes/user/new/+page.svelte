@@ -276,7 +276,7 @@
     disabled={loading}
     aria-label="submit"
     variant="success"
-    size="new"
+    size="base"
   >
     <Check />
     Add {key}</Form.Button

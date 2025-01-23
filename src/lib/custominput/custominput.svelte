@@ -5,6 +5,7 @@
 		type = "text",
 		disabled = false,
 		placeholder = "Type here",
+		onchangefunction = null,
 	} = $props();
 </script>
 
@@ -17,5 +18,6 @@
 		data-shortcut={"Control+f,Meta+f"}
 		{type}
 		class="w-full h-8 w-64  py-2 rounded-[10px] border dark:border-bw600 dark:placeholder-bw500 dark:text-bw400 dark:bg-bw800 focus:outline-none"
+		onchange={onchangefunction}
 	/>
 </div>

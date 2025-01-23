@@ -27,12 +27,12 @@ class entitiesdata {
 	settings: pageSettings = null as any;
 	hide_empty_on_sort = true;
 	errormessage = "";
-	pagezie = $state(12);
+	pagesize = $state(13);
 
 	async GetData(page: string, collectionname: string, query: any, access_token: string, workspacefilter: boolean = true) {
 		let orderby = this.getOrderBy();
 		let usequery = this.createQuery(this.settings.searchstring, query);
-		let top = this.pagezie;
+		let top = this.pagesize;
 		let skip = this.settings.page_index * top;
 
 		if (auth.isConnected == false) {

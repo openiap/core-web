@@ -60,21 +60,20 @@
     class="w-full max-w-max flex-shrink-0 hidden sm:block p-2.5 rounded-[10px] dark:bg-bw900"
   >
     <small class="ps-4">{collectionname}</small>
-    <ScrollArea class="max-h-[60vh] w-[266px] overflow-auto ">
+    <ScrollArea class="max-h-[79.5vh] w-[266px] overflow-auto ">
       <div class="pt-0 p-4">
         {#each collections as collection}
-          <div class="text-sm text-start">
-            <HotkeyButton
-              class="w-full text-start"
-              variant={collectionvariant(collection.name)}
-              onclick={(e) => {
-                selectcollection(collection.name);
-              }}
-            >
-              <Folder class="size-4" />
-              {collection.name}</HotkeyButton
-            >
-          </div>
+          <HotkeyButton
+            class="w-full justify-start"
+            size="entity"
+            variant={collectionvariant(collection.name)}
+            onclick={(e) => {
+              selectcollection(collection.name);
+            }}
+          >
+            <Folder class="size-4" />
+            {collection.name}</HotkeyButton
+          >
           <Separator class="my-2" />
         {/each}
       </div>

@@ -2,18 +2,19 @@
 </script>
 
 <script lang="ts">
-  import { Entities } from "$lib/entities/index.js";
-  import { Pencil, Trash2 } from "lucide-svelte";
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
-  import Button from "$lib/components/ui/button/button.svelte";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
+  import { Entities } from "$lib/entities/index.js";
   import Searchinput from "$lib/searchinput/searchinput.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
+  import { Pencil, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
+
   let collectionname = "workitems";
-  let query = {  };
+  let query = {};
 
   let { data } = $props();
   datacomponent.parsesettings(data.settings);
@@ -47,7 +48,12 @@
       toast.success("Deleted successfully", {
         description: "",
       });
-      entities = await datacomponent.GetData(data.page, collectionname, query, auth.access_token);
+      entities = await datacomponent.GetData(
+        data.page,
+        collectionname,
+        query,
+        auth.access_token,
+      );
     } catch (error: any) {
       toast.error("Error while deleting", {
         description: error.message,
@@ -69,25 +75,25 @@
 >
   {#snippet action(item: any)}
     <div class="flex items-center space-x-2">
-      <Button
+      <HotkeyButton
         aria-label="edit"
         onclick={() => single_item_click(item)}
-        size="icon"
-        variant="secondary"
+        size="tableicon"
+        variant="icon"
       >
         <Pencil />
-      </Button>
-      <Button
+      </HotkeyButton>
+      <HotkeyButton
         aria-label="delete"
         onclick={() => {
           deleteData = item;
           showWarning = !showWarning;
         }}
-        size="icon"
-        variant="destructive"
+        size="tableicon"
+        variant="danger"
       >
         <Trash2 />
-      </Button>
+      </HotkeyButton>
     </div>
   {/snippet}
 </Entities>

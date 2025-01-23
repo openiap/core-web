@@ -7,7 +7,7 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
-  import Button from "$lib/components/ui/button/button.svelte";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
   import Searchinput from "$lib/searchinput/searchinput.svelte";
@@ -37,23 +37,23 @@
   bind:entities
 >
   {#snippet action(item: any)}
-    <Button
+    <HotkeyButton
       aria-label="view"
       onclick={() => single_item_click(item)}
-      size="icon"
-      variant="secondary"
+      size="tableicon"
+      variant="icon"
       title="view"
     >
       <Eye />
-    </Button>
-    <Button
+    </HotkeyButton>
+    <HotkeyButton
       title="edit"
       aria-label="edit"
       onclick={() => goto(base + `/user/${item._createdbyid}`)}
-      size="icon"
-      variant="secondary"
+      size="tableicon"
+      variant="icon"
     >
       <Pencil />
-    </Button>
+    </HotkeyButton>
   {/snippet}
 </Entities>

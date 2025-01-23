@@ -7,16 +7,14 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
-  import { data as datacomponent } from "$lib/entities/data.svelte.js";
-  import Button from "$lib/components/ui/button/button.svelte";
-  import { data as data1 } from "$lib/entities/data.svelte.js";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
+  import { data as data1, data as datacomponent } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
   import Searchinput from "$lib/searchinput/searchinput.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import { Filter, Pencil, Plus, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
-  import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
 
   let { data } = $props();
   datacomponent.parsesettings(data.settings);
@@ -100,25 +98,25 @@
   bind:entities
 >
   {#snippet action(item: any)}
-    <Button
+    <HotkeyButton
       aria-label="edit"
       onclick={() => single_item_click(item)}
-      variant="new"
+      variant="icon"
       size="tableicon"
     >
       <Pencil />
-    </Button>
-    <Button
+    </HotkeyButton>
+    <HotkeyButton
       aria-label="delete"
       onclick={() => {
         deleteData = item;
         showWarning = !showWarning;
       }}
-      variant="destructive"
+      variant="danger"
       size="tableicon"
     >
       <Trash2 />
-    </Button>
+    </HotkeyButton>
   {/snippet}
 </Entities>
 

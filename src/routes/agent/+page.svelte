@@ -8,7 +8,7 @@
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
-  import { HotkeyButton } from "$lib/components/ui/HotkeyButton/index.js";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
   import { Label } from "$lib/components/ui/label/index.js";
   import * as RadioGroup from "$lib/components/ui/radio-group/index.js";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
@@ -19,14 +19,14 @@
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import {
     Box,
-    DollarSign,
     Ellipsis,
     Filter,
-    Pencil,
     Play,
     Plus,
+    Receipt,
     RefreshCcw,
     Square,
+    SquarePen,
     Trash2,
     User,
     Webhook,
@@ -174,7 +174,7 @@
 </script>
 
 <div class="flex justify-between">
-  <div class="flex gap-2 w-full">
+  <div class="flex space-x-5 w-full">
     <Searchinput {searchstring} />
     <HotkeyButton
       size="base"
@@ -187,7 +187,7 @@
     >
   </div>
 
-  <div class="flex gap-2">
+  <div class="flex space-x-5">
     <HotkeyButton
       size="base"
       variant="base"
@@ -387,7 +387,7 @@
     {/if}
   {/snippet}
   {#snippet action(item: any)}
-    <div class="flex items-center justify-center">
+    <div class="flex items-center justify-center space-x-2.5">
       <HotkeyButton
         aria-label="start"
         title="start"
@@ -430,42 +430,52 @@
         <DropdownMenu.Trigger class="dark:text-bw300"
           ><Ellipsis /></DropdownMenu.Trigger
         >
-        <DropdownMenu.Content class="w-56">
+        <DropdownMenu.Content class="w-44">
           <DropdownMenu.Item
             class="cursor-pointer"
             onclick={() => single_item_click(item)}
           >
-            <Pencil class="mr-2 size-4" />
-            <span>Edit</span>
+            <div class="flex items-center">
+              <SquarePen class="mr-2 size-4" />
+              <span> Edit</span>
+            </div>
           </DropdownMenu.Item>
-          <DropdownMenu.Separator />
+
           <DropdownMenu.Item class="cursor-pointer">
-            <Webhook class="mr-2 size-4" />
-            <span>Webhook</span>
+            <div class="flex items-center">
+              <Webhook class="mr-2 size-4" />
+              <span>Webhook</span>
+            </div>
           </DropdownMenu.Item>
-          <DropdownMenu.Separator />
+
           <DropdownMenu.Item class="cursor-pointer">
-            <DollarSign class="mr-2 size-4" />
-            <span>Billing</span>
+            <div class="flex items-center">
+              <Receipt class="mr-2 size-4" />
+              <span>Billing</span>
+            </div>
           </DropdownMenu.Item>
-          <DropdownMenu.Separator />
+
           <DropdownMenu.Item
             class="cursor-pointer"
             onclick={() => goto(base + `/user/${item.runas}`)}
           >
-            <User class="mr-2 size-4" />
-            <span>User</span>
+            <div class="flex items-center">
+              <User class="mr-2 size-4" />
+              <span>User</span>
+            </div>
           </DropdownMenu.Item>
           <DropdownMenu.Separator />
           <DropdownMenu.Item
-            class="text-red-500 cursor-pointer hover:text-white hover:bg-red-500 hover:bg-opacity-50"
+            class="cursor-pointer hover:bg-opacity-50"
             onclick={() => {
               deleteData = item;
               showWarning = !showWarning;
             }}
           >
-            <Trash2 class="mr-2 size-4" />
-            <span>Delete</span>
+            <div class="flex items-center">
+              <Trash2 class="mr-2 size-4" />
+              <span>Delete Agent</span>
+            </div>
           </DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu.Root>

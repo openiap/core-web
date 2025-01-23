@@ -36,6 +36,9 @@ const config: Config = {
 				darktextgreen: "#DDEFE6",
 				darkbordergreen: "#56846D",
 
+				darkentities:"#46686D",
+				darkentitiesselected:"#304A4E",
+
 				darkbgred: "#4E3030",
 				darkbghoverred: "#614242",
 				darktextred: "#EFDEDD",

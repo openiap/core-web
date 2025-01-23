@@ -15,7 +15,7 @@
   import { Entities } from "$lib/entities/index.js";
   import Searchinput from "$lib/searchinput/searchinput.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
-    import { usersettings } from "$lib/stores/usersettings.svelte.js";
+  import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import { Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
@@ -36,7 +36,7 @@
   let deleteData: any = $state({});
 
   function single_item_click(item: any) {
-    if(item.status == "accepted") {
+    if (item.status == "accepted") {
       goto(base + `/workspace/${item.workspaceid}/member`);
       return;
     }

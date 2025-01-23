@@ -5,7 +5,7 @@
 	let { searchstring = $bindable("") } = $props();
 </script>
 
-<div class="flex w-full max-w-xs flex-col gap-1.5 mb-4">
+<div class="flex w-full max-w-[288px] flex-col gap-1.5 mb-4">
 	<div class="relative">
 		<label for="searchstring" class="sr-only">Search</label>
 		<HotkeyInput

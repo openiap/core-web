@@ -7,13 +7,13 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
-  import Button from "$lib/components/ui/button/button.svelte";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
   import Searchinput from "$lib/searchinput/searchinput.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
-  import { Pencil, Plus, Trash2 } from "lucide-svelte";
+  import { Filter, Pencil, Plus, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
@@ -62,18 +62,20 @@
   }
 </script>
 
-<Button
-  class="mb-4"
-  aria-label="add"
-  variant="default"
-  onclick={() => goto(base + `/${page}/new`)}
->
-  <Plus />
-  Add {page}</Button
->
+<div class="flex justify-between">
+  <div class="flex gap-2 w-full">
+    <Searchinput {searchstring} />
+    <HotkeyButton aria-label="Filter" class="border-dashed dark:text-bw600">
+      <Filter />
+      Filter</HotkeyButton
+    >
+  </div>
 
-<Searchinput bind:searchstring />
-
+  <HotkeyButton aria-label="add" onclick={() => goto(base + `/${page}/new`)}>
+    <Plus />
+    Add {page}</HotkeyButton
+  >
+</div>
 <Entities
   {collectionname}
   {query}
@@ -85,25 +87,25 @@
   bind:entities
 >
   {#snippet action(item: any)}
-    <Button
+    <HotkeyButton
       aria-label="edit"
       onclick={() => single_item_click(item)}
-      size="icon"
-      variant="secondary"
+      size="tableicon"
+      variant="icon"
     >
       <Pencil />
-    </Button>
-    <Button
+    </HotkeyButton>
+    <HotkeyButton
       aria-label="delete"
       onclick={() => {
         deleteData = item;
         showWarning = !showWarning;
       }}
-      size="icon"
-      variant="destructive"
+      size="tableicon"
+      variant="danger"
     >
       <Trash2 />
-    </Button>
+    </HotkeyButton>
   {/snippet}
 </Entities>
 

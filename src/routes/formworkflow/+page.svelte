@@ -7,8 +7,7 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
-  import Button from "$lib/components/ui/button/button.svelte";
-  import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
   import Searchinput from "$lib/searchinput/searchinput.svelte";
@@ -76,26 +75,26 @@
 >
   {#snippet action(item: any)}
     <div class="flex items-center space-x-2">
-      <Button
+      <HotkeyButton
         aria-label="start"
         title="start"
         onclick={() => single_item_click(item)}
-        size="icon"
-        variant="secondary"
+        size="tableicon"
+        variant="icon"
       >
-      <Play />
-      </Button>
-      <Button
+        <Play />
+      </HotkeyButton>
+      <HotkeyButton
         aria-label="delete"
         onclick={() => {
           deleteData = item;
           showWarning = !showWarning;
         }}
-        size="icon"
-        variant="destructive"
+        size="tableicon"
+        variant="danger"
       >
         <Trash2 />
-      </Button>
+      </HotkeyButton>
     </div>
   {/snippet}
 </Entities>

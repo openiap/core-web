@@ -26,10 +26,10 @@
 	>
 		{#each selectitems as item}
 			<Select.Item
-				value={item?.image || item?.stripeprice}
+				value={item?.image || item?.stripeprice || item?.value}
 				label={item.name}
-				class={` ${value === (item?.image || item?.stripeprice) && "border dark:border-bw600 dark:bg-bw700 "} rounded-[10px] dark:text-bw100`}
-				>{item.name}</Select.Item
+				class={` ${value === (item?.image || item?.stripeprice || item?.value) && "border dark:border-bw600 dark:bg-bw700 "} rounded-[10px] dark:text-bw100`}
+				>{item?.name || item?.label}</Select.Item
 			>
 		{/each}
 	</Select.Content>
