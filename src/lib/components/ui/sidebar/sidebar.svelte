@@ -25,7 +25,7 @@
 	// TODO: This is a hack to prevent the sidebar from collapsing when the form builder is open.
 	$effect(() => {
 		const currentPage = $page.url.pathname;
-		if (currentPage.includes("form/")) {
+		if (currentPage.includes("form/") || currentPage.includes("formworkflow/")) {
 			collapsible = "none";
 		}
 	});
