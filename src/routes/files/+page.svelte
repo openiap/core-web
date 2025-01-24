@@ -10,13 +10,14 @@
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
-  import Button from "$lib/components/ui/button/button.svelte";
   import Input from "$lib/components/ui/input/input.svelte";
   import { data as data1 } from "$lib/entities/data.svelte.js";
   import { SearchInput } from "$lib/searchinput";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import { toast } from "svelte-sonner";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
+  import { CustomInput } from "$lib/custominput";
 
   let { data } = $props();
   datacomponent.parsesettings(data.settings);
@@ -44,7 +45,7 @@
     }
   }
   function single_item_click(item: any) {
-    goto(base + `/entities/fs.files/${item._id}`)
+    goto(base + `/entities/fs.files/${item._id}`);
   }
 
   function handleChange(e: any) {
@@ -136,26 +137,29 @@
 <div class="mb-4">
   <div class="mb-2">Upload New File</div>
   <div class="flex space-x-2">
-    <Input
+    <CustomInput
+      size="sm"
       disabled={loading}
       type="file"
       bind:value={fileData}
-      onchange={handleChange}
+      onchangefunction={handleChange}
     />
-    <Button
+    <HotkeyButton
+      size="sm"
       disabled={loading || !fileData}
       onclick={() => (fileData = null)}
       aria-label="Delete"
     >
       Delete
-    </Button>
-    <Button
+    </HotkeyButton>
+    <HotkeyButton
+      size="sm"
       disabled={loading || !fileData}
       onclick={uploadFile}
       aria-label="Upload"
     >
       Upload
-    </Button>
+    </HotkeyButton>
   </div>
 </div>
 
@@ -172,35 +176,35 @@
   bind:entities
 >
   {#snippet action(item: any)}
-    <Button
+    <HotkeyButton
       onclick={() => downloadFile(item)}
       title="download"
       aria-label="download"
-      size="icon"
-      variant="secondary"><Download /></Button
+      size="tableicon"
+      variant="icon"><Download /></HotkeyButton
     >
-    <Button
+    <HotkeyButton
       title="Edit"
       aria-label="edit"
       onclick={() => single_item_click(item)}
-      size="icon"
-      variant="secondary"
+      size="tableicon"
+      variant="icon"
     >
       <Pencil />
-    </Button>
+    </HotkeyButton>
 
-    <Button
+    <HotkeyButton
       title="Delete"
       aria-label="delete"
       onclick={() => {
         deleteData = item;
         showWarning = !showWarning;
       }}
-      size="icon"
-      variant="destructive"
+      size="tableicon"
+      variant="danger"
     >
       <Trash2 />
-    </Button>
+    </HotkeyButton>
   {/snippet}
 </Entities>
 

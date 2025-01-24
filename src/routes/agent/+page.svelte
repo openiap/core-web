@@ -13,24 +13,24 @@
   import * as RadioGroup from "$lib/components/ui/radio-group/index.js";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
-  import Searchinput from "$lib/searchinput/searchinput.svelte";
-  import Statuscard from "$lib/statuscard/statuscard.svelte";
+  import { SearchInput } from "$lib/searchinput/index.js";
+  import { StatusCard } from "$lib/statuscard/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import {
-    Box,
-    Ellipsis,
-    Filter,
-    Play,
-    Plus,
-    Receipt,
-    RefreshCcw,
-    Square,
-    SquarePen,
-    Trash2,
-    User,
-    Webhook,
-    Wrench,
+      Box,
+      Ellipsis,
+      Filter,
+      Play,
+      Plus,
+      Receipt,
+      RefreshCcw,
+      Square,
+      SquarePen,
+      Trash2,
+      User,
+      Webhook,
+      Wrench,
   } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
@@ -175,9 +175,9 @@
 
 <div class="flex justify-between">
   <div class="flex space-x-5 w-full">
-    <Searchinput {searchstring} />
+    <SearchInput {searchstring} />
     <HotkeyButton
-      size="base"
+      size="sm"
       variant="base"
       aria-label="add"
       class="border-dashed dark:text-bw600"
@@ -189,7 +189,7 @@
 
   <div class="flex space-x-5">
     <HotkeyButton
-      size="base"
+      size="sm"
       variant="base"
       aria-label="add"
       onclick={() => goto(base + `/${page}/new`)}
@@ -200,7 +200,7 @@
     <HotkeyButton
       aria-label="packages"
       title="package"
-      size="base"
+      size="sm"
       variant="base"
       onclick={() => goto(base + `/package`)}
     >
@@ -210,7 +210,7 @@
     <HotkeyButton
       aria-label="reload"
       title="reload"
-      size="base"
+      size="sm"
       variant="base"
       onclick={async () => {
         entities = await datacomponent.GetData(
@@ -383,7 +383,7 @@
 >
   {#snippet status(item: any)}
     {#if item && item.status}
-      <Statuscard bind:title={item.status as string} />
+      <StatusCard bind:title={item.status as string} />
     {/if}
   {/snippet}
   {#snippet action(item: any)}

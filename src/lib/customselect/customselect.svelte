@@ -1,6 +1,7 @@
 <script lang="ts">
 	import * as Select from "$lib/components/ui/select";
 	let {
+		class: className = "h-8",
 		value = $bindable(""),
 		onValueChangeFunction = null,
 		triggerContent = () => {},
@@ -17,7 +18,8 @@
 	onValueChange={onValueChangeFunction}
 >
 	<Select.Trigger
-		class="h-8 w-64 py-2 rounded-[10px] border dark:border-bw600 dark:placeholder-bw500 dark:text-bw400 dark:bg-bw800 focus:outline-none"
+		class={"w-64 py-2 rounded-[10px] border dark:border-bw600 dark:placeholder-bw500 dark:text-bw400 dark:bg-bw800 focus:outline-none " +
+			className}
 	>
 		{triggerContent()}
 	</Select.Trigger>
@@ -26,9 +28,12 @@
 	>
 		{#each selectitems as item}
 			<Select.Item
-				value={item?.image || item?.stripeprice || item?.value}
+				value={item?._id ||
+					item?.image ||
+					item?.stripeprice ||
+					item?.value}
 				label={item.name}
-				class={` ${value === (item?.image || item?.stripeprice || item?.value) && "border dark:border-bw600 dark:bg-bw700 "} rounded-[10px] dark:text-bw100`}
+				class={` ${value === (item?._id || item?.image || item?.stripeprice || item?.value) && "border dark:border-bw600 dark:bg-bw700 "} rounded-[10px] dark:text-bw100`}
 				>{item?.name || item?.label}</Select.Item
 			>
 		{/each}

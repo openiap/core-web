@@ -32,7 +32,7 @@
 </script>
 
 <Textarea
-    class={"w-full min-h-52 dark:bg-bw850 border dark:border-bw600 rounded-[10px]" + classname}
+    class={"w-full min-h-52 dark:bg-bw850 border dark:border-bw600 rounded-[10px] " + classname}
     {disabled}
     bind:value={intermediateJson}
     {...restProps}

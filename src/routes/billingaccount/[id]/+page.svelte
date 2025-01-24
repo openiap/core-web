@@ -14,9 +14,12 @@
   import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { customerSchema } from "../schema.js";
+  import { Check } from "lucide-svelte";
+    import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
 
   const key = "billingaccount";
   let showdebug = $state(false);
+  let loading = $state(false);
   const { data } = $props();
   const form = superForm(defaults(zod(customerSchema)), {
     dataType: "json",
@@ -66,17 +69,17 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Button aria-label="Update Billing account">Update Billing account</Form.Button>
+  <Form.Button
+    disabled={loading}
+    aria-label="Update Billing account"
+    title="Update Billing account"
+    variant="success"
+    size="base"
+  >
+    <Check />
+    Update Billing account</Form.Button
+  >
 </form>
 
-{#if formData != null && showdebug == true}
-  <SuperDebug data={formData} theme="vscode" />
-{/if}
+<CustomSuperDebug {formData} />
 
-<HotkeyButton
-  hidden
-  class="hidden"
-  aria-label="Toggle debug"
-  data-shortcut={"Control+d,Meta+d"}
-  onclick={() => (showdebug = !showdebug)}>Toggle debug</HotkeyButton
->

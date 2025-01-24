@@ -5,16 +5,14 @@
 
 <Dialog.Root>
     <Dialog.Trigger aria-label="Search" class="h-30 w-30">
-        <div class="dark:bg-bw700 dark:text-bw400 p-2 rounded-[10px]">
+        <div class="dark:bg-bw700 dark:text-bw400 p-1.5 rounded-[10px]">
             <Search size={16} />
         </div>
     </Dialog.Trigger>
     <Dialog.Content>
         <Dialog.Header>
             <Dialog.Title>Search</Dialog.Title>
-            <Dialog.Description>
-                Search the whole site
-            </Dialog.Description>
+            <Dialog.Description>Search the whole site</Dialog.Description>
         </Dialog.Header>
     </Dialog.Content>
 </Dialog.Root>

@@ -8,13 +8,11 @@
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
-  import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
-  import { HotkeyInput } from "$lib/components/ui/hotkeyinput/index.js";
-  import { Label } from "$lib/components/ui/label/index.js";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
+  import { SearchInput } from "$lib/searchinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
-  import { Trash2 } from "lucide-svelte";
+  import { Filter, Plus, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
@@ -62,26 +60,31 @@
   }
 </script>
 
-<div class="flex w-full max-w-sm flex-col gap-1.5">
-  <Label for="email">Search</Label>
-  <div class="flex gap-1.5">
-    <HotkeyInput
-      type="text"
-      id="searchstring"
-      placeholder="Searchstring or JSON query"
-      bind:value={searchstring}
-      data-shortcut={"Control+f,Meta+f"}
-    />
+<div class="flex justify-between">
+  <div class="flex gap-2 w-full">
+    <SearchInput {searchstring} />
     <HotkeyButton
-      size="base"
+      size="sm"
       variant="base"
-      aria-label="Create common"
-      onclick={createcommon}
+      aria-label="Filter"
+      class="border-dashed dark:text-bw600"
     >
-      <div class="flex items-center space-x-2">Create common</div>
-    </HotkeyButton>
+      <Filter />
+      Filter</HotkeyButton
+    >
   </div>
+
+  <HotkeyButton
+    size="sm"
+    variant="base"
+    aria-label="add"
+    onclick={createcommon}
+  >
+    <Plus />
+    Create common</HotkeyButton
+  >
 </div>
+
 <Entities
   {collectionname}
   {query}
@@ -93,13 +96,13 @@
   bind:entities
 >
   {#snippet action(item: any)}
-    <Hotkeybutton
+    <HotkeyButton
       aria-label="delete"
       onclick={() => deleteitem(item)}
-      size="icon"
+      size="tableicon"
       variant="danger"
     >
       <Trash2 />
-    </Hotkeybutton>
+    </HotkeyButton>
   {/snippet}
 </Entities>

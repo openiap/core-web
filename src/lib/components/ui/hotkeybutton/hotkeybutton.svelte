@@ -12,22 +12,12 @@
 		base: "ring-offset-background focus-visible:ring-ring inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 ",
 		variants: {
 			variant: {
-				// default:
-				// 	"bg-gray-400 text-primary-foreground hover:bg-primary/90",
-				// destructive:
-				// 	"bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:bg-destructive/90 dark:bg-darkbgred dark:text-darktextred border-[1px] border-darkborderred",
-				// outline:
-				// 	"border-input bg-background hover:bg-accent hover:text-accent-foreground border",
-				// secondary:
-				// 	"bg-secondary text-secondary-foreground hover:bg-secondary/80",
+				base: "border-[1px] dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:hover:bg-bw700 dark:bg-bw850 dark:text-bw200 border-[1px] border-bw600",
+				danger: "border-[1px] dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:bg-darkbgred dark:hover:bg-darkbghoverred",
 				ghost: "hover:bg-accent hover:text-accent-foreground",
 				link: "text-primary underline-offset-4 hover:underline",
 				ghostfull: "",
-				dangerIcon:
-					"dark:bg-bw700 border-[1px] dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:bg-darkbgred dark:hover:bg-darkbghoverred",
 				icon: "dark:text-bw300 dark:hover:bg-bw700 border-[1px] border-transparent dark:hover:border-bw500",
-				base: "border-[1px] dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:hover:bg-bw700 dark:bg-bw850 dark:text-bw200 border-[1px] border-bw600",
-				danger: "border-[1px] dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:bg-darkbgred dark:hover:bg-darkbghoverred",
 				success:
 					"border-[1px] dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:bg-darkbggreen dark:hover:bg-darkbghovergreen",
 				refresh:
@@ -37,10 +27,10 @@
 					"cursor-not-allowed rounded-[0px] bg-darkentitiesselected dark:bg-darkentitiesselected",
 			},
 			size: {
+				base: "h-8 px-2.5 py-1.5 rounded-[10px]",
 				icon: "h-7 w-7 rounded-[10px] p-2",
-				base: "h-7 px-2.5 py-1.5 rounded-[10px]",
-				lg: "h-8 px-2.5 py-1.5 rounded-[10px]",
 				sm: "h-7 px-2.5 py-1.5 rounded-[10px]",
+				lg: "h-8 px-2.5 py-1.5 rounded-[10px]",
 				tableicon: "p-1 rounded-[10px]",
 				refresh: "p-1 rounded-[10px]",
 				entity: "h-8 px-2.5 py-1.5",
@@ -72,6 +62,7 @@
 		ref = $bindable(null),
 		href = undefined,
 		type = "button",
+		"aria-label": ariaLabel = "default",
 		children,
 		...restProps
 	}: ButtonProps = $props();
@@ -95,6 +86,7 @@
 {#if href}
 	<a
 		bind:this={ref}
+		aria-label={ariaLabel}
 		class={cn(buttonVariants({ variant, size, className }))}
 		{href}
 		{...restProps}
@@ -104,6 +96,7 @@
 {:else}
 	<button
 		bind:this={ref}
+		aria-label={ariaLabel}
 		class={cn(buttonVariants({ variant, size, className }))}
 		{type}
 		{...restProps}

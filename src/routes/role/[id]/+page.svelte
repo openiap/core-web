@@ -189,7 +189,7 @@
                     arr.splice(index, 1);
                   }
                   members = arr;
-                }}><Trash2 />Remove Rights</HotkeyButton
+                }}><Trash2 />Remove Member</HotkeyButton
               >
             </div>
             <div class="col-span-4">
@@ -227,7 +227,7 @@
     variant="success"
     size="base"
     disabled={loading}
-    aria-label="submit"
+    aria-label="Update"
   >
     <Check />
     Update {key}</Form.Button

@@ -1,20 +1,20 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
-  import Button from "$lib/components/ui/button/button.svelte";
-  import { Checkbox } from "$lib/components/ui/checkbox/index.js";
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
-  import { Input } from "$lib/components/ui/input/index.js";
-  import * as Select from "$lib/components/ui/select/index.js";
+  import { CustomCheckbox } from "$lib/customcheckbox/index.js";
+  import { CustomInput } from "$lib/custominput/index.js";
+  import { CustomSelect } from "$lib/customselect/index.js";
+  import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
+  import { Check } from "lucide-svelte";
   import { toast } from "svelte-sonner";
-  import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
+  import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newFormSchema } from "../schema.js";
 
   const page = "package";
-  let showdebug = $state(false);
   let fileData = $state(null);
   let loading = $state(false);
   let errormessage = $state("");
@@ -97,56 +97,47 @@
   {$message}
 {/if}
 
-<div>
-  Add {page}
-</div>
-
 <form method="POST" use:enhance>
-  <Form.Button disabled={loading} aria-label="Submit">Submit</Form.Button>
-  <HotkeyButton
-    disabled={loading}
-    onclick={() => goto(base + `/${page}`)}
-    aria-label="Back">Back</HotkeyButton
-  >
-  <Form.Field {form} name="name">
+  <Form.Field {form} name="name" class="mb-7">
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Name</Form.Label>
-        <Input disabled={loading} {...props} bind:value={$formData.name} />
+        <CustomInput
+          disabled={loading}
+          {...props}
+          bind:value={$formData.name}
+        />
       {/snippet}
     </Form.Control>
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Field {form} name="language">
+  <Form.Field {form} name="language" class="mb-7">
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Language</Form.Label>
-        <Select.Root type="single" {...props} bind:value={$formData.language}>
-          <Select.Trigger>{triggerContent}</Select.Trigger>
-          <Select.Content>
-            {#each selectItems as item}
-              <Select.Item value={item.value} label={item.label}
-                >{item.label}</Select.Item
-              >
-            {/each}
-          </Select.Content>
-        </Select.Root>
+        <CustomSelect
+          {loading}
+          {...props}
+          bind:value={$formData.language}
+          onValueChangeFunction={() => {}}
+          selectitems={selectItems}
+          triggerContent={() => triggerContent}
+          type="single"
+        />
       {/snippet}
     </Form.Control>
     <Form.FieldErrors />
   </Form.Field>
-
-  <div>Options</div>
 
   <Form.Field
     {form}
     name="chromium"
-    class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4"
+    class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
   >
     <Form.Control>
       {#snippet children({ props })}
-        <Checkbox
+        <CustomCheckbox
           disabled={loading}
           {...props}
           bind:checked={$formData.chromium}
@@ -162,11 +153,11 @@
   <Form.Field
     {form}
     name="daemon"
-    class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4"
+    class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
   >
     <Form.Control>
       {#snippet children({ props })}
-        <Checkbox
+        <CustomCheckbox
           disabled={loading}
           {...props}
           bind:checked={$formData.daemon}
@@ -179,45 +170,46 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Field {form} name="fileid">
+  <Form.Field {form} name="fileid" class="mb-7">
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Package file</Form.Label>
-        <div class="flex">
-          <Input
+        <div class="flex items-center space-x-5">
+          <CustomInput
+            size="md"
             disabled={loading}
             type="file"
             bind:value={fileData}
-            onchange={uploadFile}
+            onchangefunction={uploadFile}
           />
-          <Button
+          <HotkeyButton
             disabled={loading || !fileData}
             onclick={() => (fileData = null)}
             aria-label="Delete"
+            variant="danger"
+            size="lg"
           >
-            Delete
-          </Button>
+            Clear
+          </HotkeyButton>
         </div>
       {/snippet}
     </Form.Control>
     <Form.FieldErrors />
   </Form.Field>
 
-  <div>
+  <div class="mb-7">
     git example <span> https://github.com/openiap/nodeworkitemagent.git </span>
   </div>
 
-  <Form.Button disabled={loading} aria-label="Submit">Submit</Form.Button>
+  <Form.Button
+    disabled={loading}
+    aria-label="Submit"
+    variant="success"
+    size="base"
+  >
+    <Check />
+    Add {page}</Form.Button
+  >
 </form>
 
-{#if formData != null && showdebug == true}
-  <SuperDebug data={formData} theme="vscode" />
-{/if}
-
-<HotkeyButton
-  hidden
-  class="hidden"
-  data-shortcut={"Control+d,Meta+d"}
-  onclick={() => (showdebug = !showdebug)}
-  aria-label="Toggle debug">Toggle debug</HotkeyButton
->
+<CustomSuperDebug {formData} />

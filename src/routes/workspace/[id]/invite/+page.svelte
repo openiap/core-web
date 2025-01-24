@@ -2,17 +2,18 @@
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import * as Form from "$lib/components/ui/form/index.js";
-  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
-  import { Input } from "$lib/components/ui/input/index.js";
+  import { CustomInput } from "$lib/custominput/index.js";
+  import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
+  import { Check } from "lucide-svelte";
   import { toast } from "svelte-sonner";
-  import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
+  import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newMemberSchema } from "../../schema.js";
 
   const { data } = $props();
   const key = "workspace";
-  let showdebug = $state(false);
+  let loading = $state(false);
   let errormessage = $state("");
   const form = superForm(defaults(zod(newMemberSchema)), {
     dataType: "json",
@@ -60,24 +61,22 @@
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Email</Form.Label>
-        <Input {...props} bind:value={$formData.email} />
+        <CustomInput {...props} bind:value={$formData.email} />
       {/snippet}
     </Form.Control>
     <Form.Description>The user you want to invite</Form.Description>
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Button aria-label="Create workspace">Create Invitation</Form.Button>
+  <Form.Button
+    disabled={loading}
+    aria-label="Create Invitation"
+    variant="success"
+    size="base"
+  >
+    <Check />
+    Create Invitation</Form.Button
+  >
 </form>
 
-{#if formData != null && showdebug == true}
-  <SuperDebug data={formData} theme="vscode" />
-{/if}
-
-<HotkeyButton
-  hidden
-  class="hidden"
-  aria-label="Toggle debug"
-  data-shortcut={"Control+d,Meta+d"}
-  onclick={() => (showdebug = !showdebug)}>Toggle debug</HotkeyButton
->
+<CustomSuperDebug {formData} />

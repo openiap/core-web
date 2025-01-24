@@ -10,7 +10,7 @@
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
-  import Searchinput from "$lib/searchinput/searchinput.svelte";
+  import { SearchInput } from "$lib/searchinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { Filter, Pencil, Plus, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
@@ -42,7 +42,7 @@
 
 <div class="flex justify-between">
   <div class="flex gap-2 w-full">
-    <Searchinput {searchstring} />
+    <SearchInput {searchstring} />
     <HotkeyButton
       size="sm"
       variant="base"
@@ -64,6 +64,7 @@
     Add {page}</HotkeyButton
   >
 </div>
+
 <Entities
   {collectionname}
   {query}
@@ -81,16 +82,16 @@
     <HotkeyButton
       aria-label="edit"
       onclick={() => single_item_click(item)}
-      size="icon"
-      variant="base"
+      size="tableicon"
+      variant="icon"
     >
       <Pencil />
     </HotkeyButton>
     <HotkeyButton
       aria-label="delete"
       onclick={() => deleteitem(item)}
-      size="icon"
-      variant="dangerIcon"
+      size="tableicon"
+      variant="danger"
     >
       <Trash2 />
     </HotkeyButton>

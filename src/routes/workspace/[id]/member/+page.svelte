@@ -4,16 +4,15 @@
 </script>
 
 <script lang="ts">
-  import { goto } from "$app/navigation";
   import { base } from "$app/paths";
-  import Button from "$lib/components/ui/button/button.svelte";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { Label } from "$lib/components/ui/label/index.js";
+  import { CustomSelect } from "$lib/customselect";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
-  import Searchinput from "$lib/searchinput/searchinput.svelte";
+  import { SearchInput } from "$lib/searchinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
-    import { usersettings } from "$lib/stores/usersettings.svelte.js";
+  import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import { Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
@@ -33,8 +32,10 @@
   let showWarning = $state(false);
   let deleteData: any = $state({});
 
-  $effect(() => {    
-      datacomponent.GetData(page, collectionname, query(), auth.access_token).then((d) => {
+  $effect(() => {
+    datacomponent
+      .GetData(page, collectionname, query(), auth.access_token)
+      .then((d) => {
         entities = d;
       });
   });
@@ -50,7 +51,12 @@
       toast.success("Deleted successfully", {
         description: "",
       });
-      entities = await datacomponent.GetData(page, collectionname, query(), auth.access_token);
+      entities = await datacomponent.GetData(
+        page,
+        collectionname,
+        query(),
+        auth.access_token,
+      );
     } catch (error: any) {
       toast.error("Error while deleting", {
         description: error.message,
@@ -60,9 +66,18 @@
   async function deleteitems(ids: string[]) {
     try {
       for (let id of ids) {
-        await auth.client.CustomCommand({ command: "removemember", id, jwt: auth.access_token, });
+        await auth.client.CustomCommand({
+          command: "removemember",
+          id,
+          jwt: auth.access_token,
+        });
       }
-      entities = await datacomponent.GetData(page, collectionname, query(), auth.access_token);
+      entities = await datacomponent.GetData(
+        page,
+        collectionname,
+        query(),
+        auth.access_token,
+      );
       selected_items = [];
       toast.success("Deleted " + ids.length + " items successfully", {
         description: "",
@@ -98,7 +113,7 @@
   }
 </script>
 
-<Searchinput bind:searchstring />
+<SearchInput bind:searchstring />
 
 <Entities
   {collectionname}
@@ -113,21 +128,28 @@
 >
   {#snippet status(item: any)}
     {#if item.status == "pending"}
-      <Button
-        aria-label="Copy"
+      <HotkeyButton
+        aria-label="Copy invite link"
         onclick={() => copylink(item.workspaceid, item.token)}
-        variant="secondary"
+        size="sm"
       >
         Copy invite link
-      </Button>
+      </HotkeyButton>
     {:else}
       <Label>{item.status}</Label>
     {/if}
   {/snippet}
   {#snippet role(item: any)}
-    <select
+    <CustomSelect
+      class="h-6"
+      type="single"
       bind:value={item.role}
-      onchange={async () => {
+      triggerContent={() => item.role}
+      selectitems={[
+        { name: "member", value: "member" },
+        { name: "admin", value: "admin" },
+      ]}
+      onValueChangeFunction={async () => {
         try {
           await auth.client.CustomCommand({
             command: "updatemember",
@@ -143,25 +165,27 @@
           });
         }
         // Run again to "reset"
-        entities = await datacomponent.GetData(page, collectionname, query(), auth.access_token);
+        entities = await datacomponent.GetData(
+          page,
+          collectionname,
+          query(),
+          auth.access_token,
+        );
       }}
-    >
-      <option value="member">Member</option>
-      <option value="admin">Admin</option>
-    </select>
+    />
   {/snippet}
   {#snippet action(item: any)}
-    <Button
+    <HotkeyButton
       aria-label="Delete"
       onclick={() => {
         deleteData = item;
         showWarning = !showWarning;
       }}
-      size="icon"
-      variant="destructive"
+      size="tableicon"
+      variant="danger"
     >
       <Trash2 />
-    </Button>
+    </HotkeyButton>
   {/snippet}
 </Entities>
 

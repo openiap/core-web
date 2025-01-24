@@ -3,9 +3,12 @@
     import { auth } from "$lib/stores/auth.svelte";
     let { value = $bindable(), ...restProps } = $props();
 
-    
     let collections: string[] = $state([]);
-    const triggerContent = $derived(() => collections.find((item: any) => item === value) ?? "Select a collection");
+    const triggerContent = $derived(
+        () =>
+            collections.find((item: any) => item === value) ??
+            "Select a collection",
+    );
     async function getData() {
         collections = (await auth.client.ListCollections()).map(
             (col) => col.name,
@@ -17,10 +20,18 @@
 </script>
 
 <Select.Root type="single" {...restProps} bind:value>
-    <Select.Trigger>{triggerContent()}</Select.Trigger>
-    <Select.Content>
+    <Select.Trigger
+        class="h-8 w-64 py-2 rounded-[10px] border dark:border-bw600 dark:placeholder-bw500 dark:text-bw400 dark:bg-bw800 focus:outline-none"
+        >{triggerContent()}</Select.Trigger
+    >
+    <Select.Content
+        class="dark:bg-bw850 border dark:border-bw600 dark:text-bw100"
+    >
         {#each collections as collection}
-            <Select.Item value={collection}>{collection}</Select.Item>
+            <Select.Item
+                class={` ${value === collection && "border dark:border-bw600 dark:bg-bw700 "} rounded-[10px] dark:text-bw100`}
+                value={collection}>{collection}</Select.Item
+            >
         {/each}
     </Select.Content>
 </Select.Root>

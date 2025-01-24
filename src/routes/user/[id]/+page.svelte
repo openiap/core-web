@@ -290,7 +290,7 @@
 
   <Form.Button
     disabled={loading}
-    aria-label="submit"
+    aria-label="Update"
     variant="success"
     size="base"
   >

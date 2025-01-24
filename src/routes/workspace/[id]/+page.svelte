@@ -1,22 +1,24 @@
 <script lang="ts">
-  import { Button } from "$lib/components/ui/button/index.js";
+  import { goto } from "$app/navigation";
+  import { base } from "$app/paths";
   import * as Card from "$lib/components/ui/card/index.js";
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
-  import { Input } from "$lib/components/ui/input/index.js";
   import * as Select from "$lib/components/ui/select/index.js";
+  import { CustomInput } from "$lib/custominput/index.js";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
+  import { Check } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import SuperDebug, { superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newWorkspaceSchema } from "../schema.js";
-    import { goto } from "$app/navigation";
-    import { base } from "$app/paths";
+  import { CustomSelect } from "$lib/customselect/index.js";
 
   const key = "workspace";
   let showdebug = $state(false);
+  let loading = $state(false);
   const { data } = $props();
   let currentworkspace = $state(data.currentworkspace);
 
@@ -176,13 +178,21 @@
   <!-- TODO: I don't beleive we should have ACL on this page ? -->
   <!-- <Acl bind:value={$formData} /> -->
 
-  <Form.Field {form} name="name">
+  <Form.Field {form} name="name" class="mb-7">
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Workspace Name</Form.Label>
-        <div class="flex">
-          <Input {...props} bind:value={$formData.name} />
-          <Form.Button aria-label="submit">Update workspace</Form.Button>
+        <div class="flex space-x-5">
+          <CustomInput {...props} bind:value={$formData.name} />
+          <Form.Button
+            disabled={loading}
+            aria-label="Update workspace"
+            variant="success"
+            size="base"
+          >
+            <Check />
+            Update workspace</Form.Button
+          >
         </div>
       {/snippet}
     </Form.Control>
@@ -194,7 +204,7 @@
   <SuperDebug data={formData} theme="vscode" />
 {/if}
 
-<div class="flex">
+<div class="flex justify-around">
   <Card.Root class="w-[350px] h-[500px] flex flex-col justify-around">
     <Card.Header>
       <Card.Title>Free tier</Card.Title>
@@ -211,9 +221,9 @@
     </Card.Content>
     <Card.Footer class="flex justify-between">
       {#if currentworkspace == null || currentworkspace.resourceusageid == null || currentworkspace.resourceusageid == ""}
-        <Button variant="outline">Current</Button>
+        <HotkeyButton>Current</HotkeyButton>
       {:else}
-        <Button onclick={removeplan}>Downgrade</Button>
+        <HotkeyButton onclick={removeplan}>Downgrade</HotkeyButton>
       {/if}
     </Card.Footer>
   </Card.Root>
@@ -235,9 +245,15 @@
       <div></div>
       {#if currentworkspace == null || currentworkspace.productname != "Basic tier"}
         {#if entities.length == 0}
-          <Button onclick={addplan}>Upgrade</Button>
+          <HotkeyButton onclick={addplan}>Upgrade</HotkeyButton>
         {:else}
-          <Select.Root bind:value={billingid} type="single">
+          <CustomSelect
+            type="single"
+            triggerContent={billingname}
+            bind:value={billingid}
+            selectitems={entities}
+          />
+          <!-- <Select.Root bind:value={billingid} type="single">
             <Select.Trigger>{billingname()}</Select.Trigger>
             <Select.Content>
               {#each entities as item}
@@ -246,11 +262,21 @@
                 >
               {/each}
             </Select.Content>
-          </Select.Root>
-          <Button onclick={addplan}>Upgrade</Button>
+          </Select.Root> -->
+          <HotkeyButton class="ms-2" onclick={addplan} variant="success"
+            >Upgrade</HotkeyButton
+          >
         {/if}
       {:else if currentworkspace.productname == "Basic tier"}
-        <Button variant="outline" onclick={()=> goto(base + '/billingaccount/' + currentworkspace.billingid + "/billing" )}>Billing</Button>
+        <HotkeyButton
+          onclick={() =>
+            goto(
+              base +
+                "/billingaccount/" +
+                currentworkspace.billingid +
+                "/billing",
+            )}>Billing</HotkeyButton
+        >
       {/if}
     </Card.Footer>
   </Card.Root>
@@ -266,7 +292,7 @@
     </Card.Content>
     <Card.Footer class="flex justify-between">
       <div></div>
-      <Button
+      <HotkeyButton
         size="lg"
         onclick={() =>
           window.open(
@@ -276,7 +302,7 @@
           )}
       >
         Contact us
-      </Button>
+      </HotkeyButton>
     </Card.Footer>
   </Card.Root>
 </div>

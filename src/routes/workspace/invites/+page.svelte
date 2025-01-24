@@ -10,12 +10,11 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
-  import Button from "$lib/components/ui/button/button.svelte";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
-  import Searchinput from "$lib/searchinput/searchinput.svelte";
+  import { SearchInput } from "$lib/searchinput";
   import { auth } from "$lib/stores/auth.svelte.js";
-  import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import { Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
@@ -76,7 +75,7 @@
   }
 </script>
 
-<Searchinput bind:searchstring />
+<SearchInput bind:searchstring />
 
 <Entities
   {collectionname}
@@ -90,17 +89,17 @@
   bind:entities
 >
   {#snippet action(item: any)}
-    <Button
+    <HotkeyButton
       aria-label="Delete"
       onclick={() => {
         deleteData = item;
         showWarning = !showWarning;
       }}
-      size="icon"
-      variant="destructive"
+      size="tableicon"
+      variant="danger"
     >
       <Trash2 />
-    </Button>
+    </HotkeyButton>
   {/snippet}</Entities
 >
 

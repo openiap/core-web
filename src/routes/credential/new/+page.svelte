@@ -9,6 +9,8 @@
   import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newFormSchema } from "../schema.js";
+    import { Check } from "lucide-svelte";
+    import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
 
   const key = "credential";
   let showdebug = $state(false);
@@ -59,8 +61,6 @@
 </div>
 
 <form method="POST" use:enhance>
-  <Form.Button aria-label="submit">Submit</Form.Button>
-  <HotkeyButton onclick={() => goto(base + `/${key}`)}>Back</HotkeyButton>
   <Form.Field {form} name="name">
     <Form.Control>
       {#snippet children({ props })}
@@ -93,16 +93,15 @@
     <Form.Description>This is your password.</Form.Description>
     <Form.FieldErrors />
   </Form.Field>
-  <Form.Button aria-label="submit">Submit</Form.Button>
+  <Form.Button
+    disabled={loading}
+    aria-label="submit"
+    variant="success"
+    size="base"
+  >
+    <Check />
+    Create {key}</Form.Button
+  >
 </form>
 
-{#if formData != null && showdebug == true}
-  <SuperDebug data={formData} theme="vscode" />
-{/if}
-
-<HotkeyButton
-  hidden
-  class="hidden"
-  data-shortcut={"Control+d,Meta+d"}
-  onclick={() => (showdebug = !showdebug)}>Toggle debug</HotkeyButton
->
+<CustomSuperDebug {formData} />

@@ -10,7 +10,7 @@
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
-  import Searchinput from "$lib/searchinput/searchinput.svelte";
+  import { SearchInput } from "$lib/searchinput/index.js";
   import { Eye, Pencil } from "lucide-svelte";
 
   let { data } = $props();
@@ -24,7 +24,7 @@
   }
 </script>
 
-<Searchinput bind:searchstring />
+<SearchInput bind:searchstring />
 <Entities
   {collectionname}
   {query}

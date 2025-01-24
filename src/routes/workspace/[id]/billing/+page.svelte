@@ -4,7 +4,6 @@
   import { Resource, ResourceUsage, type Product } from "$lib/types.svelte.js";
 
   const key = "workspace";
-  let showdebug = $state(false);
   const { data } = $props();
   for (let i = 0; i < data.entities.length; i++) {
     data.entities[i].key = 0;

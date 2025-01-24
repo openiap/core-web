@@ -17,6 +17,10 @@
   import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../schema.js";
+  import { CustomInput } from "$lib/custominput/index.js";
+  import { CustomSelect } from "$lib/customselect/index.js";
+  import { CustomCheckbox } from "$lib/customcheckbox/index.js";
+  import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
 
   const page = "package";
   let loading = $state(false);
@@ -110,160 +114,127 @@
       });
     }
   }
-
-  const maindiv = "flex flex-row items-center p-4 max-w-sm";
 </script>
 
 {#if message && $message != ""}
   {$message}
 {/if}
 
-<div class="mb-4 font-bold">
-  Edit {page}
-</div>
-
 <form method="POST" use:enhance>
-  <HotkeyButton
-    disabled={loading}
-    onclick={() => goto(base + `/${page}`)}
-    aria-label="Back"
+  <Form.Field {form} name="name" class="mb-7">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Name</Form.Label>
+        <CustomInput
+          disabled={loading}
+          {...props}
+          bind:value={$formData.name}
+        />
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field>
+
+  <Form.Field {form} name="language" class="mb-7">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Language</Form.Label>
+        <CustomSelect
+          {loading}
+          {...props}
+          bind:value={$formData.language}
+          onValueChangeFunction={() => {}}
+          selectitems={selectItems}
+          triggerContent={() => triggerContent}
+          type="single"
+        />
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field>
+
+  <Form.Field
+    {form}
+    name="chromium"
+    class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
   >
-    <ArrowLeft />
-    Back</HotkeyButton
+    <Form.Control>
+      {#snippet children({ props })}
+        <CustomCheckbox
+          disabled={loading}
+          {...props}
+          bind:checked={$formData.chromium}
+        />
+        <div class="space-y-1 leading-none">
+          <Form.Label>Require Chromium</Form.Label>
+        </div>
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field>
+
+  <Form.Field
+    {form}
+    name="daemon"
+    class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
   >
-  <Form.Button disabled={loading} aria-label="Submit">
-    <Check />
-    Submit</Form.Button
-  >
-
-  <Form.Field {form} name="name" class={maindiv}>
     <Form.Control>
       {#snippet children({ props })}
-        <div class="grid grid-cols-3 items-center">
-          <Form.Label class="col-span-1">Name</Form.Label>
-          <div class="col-span-2">
-            <Input disabled={loading} {...props} bind:value={$formData.name} />
-          </div>
+        <CustomCheckbox
+          disabled={loading}
+          {...props}
+          bind:checked={$formData.daemon}
+        />
+        <div class="space-y-1 leading-none">
+          <Form.Label>Daemon</Form.Label>
         </div>
       {/snippet}
     </Form.Control>
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Field {form} name="language" class={maindiv}>
-    <Form.Control>
-      {#snippet children({ props })}
-        <div class="grid grid-cols-3 items-center gap-8">
-          <Form.Label class="col-span-1">Language</Form.Label>
-          <div class="col-span-2">
-            <Select.Root
-              type="single"
-              {...props}
-              bind:value={$formData.language}
-            >
-              <Select.Trigger>{triggerContent}</Select.Trigger>
-              <Select.Content>
-                {#each selectItems as item}
-                  <Select.Item value={item.value} label={item.label}
-                    >{item.label}</Select.Item
-                  >
-                {/each}
-              </Select.Content>
-            </Select.Root>
-          </div>
-        </div>
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-
-  <Form.Field {form} name="chromium" class={maindiv}>
-    <Form.Control>
-      {#snippet children({ props })}
-        <div class="grid grid-cols-3 items-center gap-8">
-          <Form.Label class="col-span-1">Require <br />Chromium</Form.Label>
-          <Checkbox
-            class="col-span-2"
-            disabled={loading}
-            {...props}
-            bind:checked={$formData.chromium}
-          />
-        </div>
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-
-  <Form.Field {form} name="daemon" class={maindiv}>
-    <Form.Control>
-      {#snippet children({ props })}
-        <div class="grid grid-cols-3 items-center justify-center gap-11">
-          <Form.Label class="col-span-1">Daemon</Form.Label>
-          <div class="col-span-2">
-            <Checkbox
-              disabled={loading}
-              {...props}
-              bind:checked={$formData.daemon}
-            />
-          </div>
-        </div>
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-
-  <div class={maindiv}>
-    <div>Package file (OLD)</div>
-    <Button
-      class="ml-4"
+  <div class="mb-7">
+    <div class="text-sm mb-2">Package file (Current)</div>
+    <HotkeyButton
       disabled={loading || !$formData.fileid}
       onclick={downloadFile}
-      aria-label="Download">Download</Button
+      aria-label="Download">Download</HotkeyButton
     >
   </div>
 
-  <Form.Field {form} name="fileid" class={maindiv}>
+  <Form.Field {form} name="fileid" class="mb-7">
     <Form.Control>
-      <Form.Label>Package file (NEW)</Form.Label>
-      <div class="flex flex-col space-y-2 ms-10">
-        <div class="flex max-w-sm space-x-2">
-          <Input
+      {#snippet children({ props })}
+        <Form.Label>Package file</Form.Label>
+        <div class="flex items-center space-x-5">
+          <CustomInput
+            size="md"
             disabled={loading}
             type="file"
             bind:value={fileData}
-            onchange={uploadFile}
+            onchangefunction={uploadFile}
           />
-          <Button
+          <HotkeyButton
             disabled={loading || !fileData}
             onclick={() => (fileData = null)}
             aria-label="Delete"
+            variant="danger"
+            size="lg"
           >
-            Delete
-          </Button>
+            Clear
+          </HotkeyButton>
         </div>
-        <div class="text-sm text-gray-500">
-          If no file is chosen, the default package will be <span>
-            https://github.com/openiap/nodeworkitemagent.git
-          </span>
-        </div>
-      </div>
+      {/snippet}
     </Form.Control>
     <Form.FieldErrors />
   </Form.Field>
 
-  <div></div>
-
-  <Form.Button disabled={loading} aria-label="Submit">Submit</Form.Button>
+  <Form.Button
+    disabled={loading}
+    aria-label="Save Changes"
+    variant="success"
+    size="base">Save Changes</Form.Button
+  >
 </form>
 
-{#if formData != null && showdebug == true}
-  <SuperDebug data={formData} theme="vscode" />
-{/if}
-
-<HotkeyButton
-  hidden
-  class="hidden"
-  aria-label="Toggle debug"
-  data-shortcut={"Control+d,Meta+d"}
-  onclick={() => (showdebug = !showdebug)}>Toggle debug</HotkeyButton
->
+<CustomSuperDebug {formData} />

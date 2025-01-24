@@ -413,7 +413,6 @@
       disabled={loading}
       aria-label="Save changes"
       title="Save changes"
-      class="mb-4"
       variant="success"
       size="base"
     >

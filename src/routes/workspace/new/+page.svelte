@@ -3,18 +3,18 @@
   import { base } from "$app/paths";
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
-  import { Input } from "$lib/components/ui/input/index.js";
+  import { CustomInput } from "$lib/custominput/index.js";
+  import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
+  import { usersettings } from "$lib/stores/usersettings.svelte.js";
+  import { Check } from "lucide-svelte";
   import { toast } from "svelte-sonner";
-  import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
+  import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newWorkspaceSchema } from "../schema.js";
-    import { usersettings } from "$lib/stores/usersettings.svelte.js";
 
   const key = "workspace";
-  let showdebug = $state(false);
   let loading = $state(false);
-
   let errormessage = $state("");
   const form = superForm(defaults(zod(newWorkspaceSchema)), {
     dataType: "json",
@@ -24,11 +24,13 @@
       if (form.valid) {
         loading = true;
         try {
-          const workspace = JSON.parse(await auth.client.CustomCommand({
-            command: "ensureworkspace",
-            data: JSON.stringify(form.data),
-            jwt: auth.access_token,
-          }));
+          const workspace = JSON.parse(
+            await auth.client.CustomCommand({
+              command: "ensureworkspace",
+              data: JSON.stringify(form.data),
+              jwt: auth.access_token,
+            }),
+          );
           toast.success("Workspace added");
           usersettings.currentworkspace = workspace._id;
           await usersettings.dopersist();
@@ -63,27 +65,29 @@
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Workspace Name</Form.Label>
-        <Input {...props} bind:value={$formData.name} />
+        <CustomInput {...props} bind:value={$formData.name} />
       {/snippet}
     </Form.Control>
     <Form.Description>This is the name of your new workspace.</Form.Description>
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Button aria-label="Create workspace">Create workspace</Form.Button>
-  <HotkeyButton aria-label="Cancel" onclick={() => goto(base + `/${key}`)}
-    >Cancel</HotkeyButton
-  >
+  <div class="flex items-center space-x-5">
+    <Form.Button
+      disabled={loading}
+      aria-label="Create"
+      variant="success"
+      size="base"
+    >
+      <Check />
+      Create {key}</Form.Button
+    >
+    <HotkeyButton
+      size="lg"
+      aria-label="Cancel"
+      onclick={() => goto(base + `/${key}`)}>Cancel</HotkeyButton
+    >
+  </div>
 </form>
 
-{#if formData != null && showdebug == true}
-  <SuperDebug data={formData} theme="vscode" />
-{/if}
-
-<HotkeyButton
-  hidden
-  class="hidden"
-  aria-label="Toggle debug"
-  data-shortcut={"Control+d,Meta+d"}
-  onclick={() => (showdebug = !showdebug)}>Toggle debug</HotkeyButton
->
+<CustomSuperDebug {formData} />

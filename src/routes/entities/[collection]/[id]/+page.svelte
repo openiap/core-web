@@ -16,6 +16,7 @@
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../schema.js";
   import { ObjectInput } from "$lib/objectinput/index.js";
+  import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
 
   let loading = $state(false);
   let errormessage = $state("");
@@ -69,22 +70,19 @@
 
 <form method="POST" use:enhance>
   <Form.Button
+    class="mb-4"
     disabled={loading}
     aria-label="submit"
     variant="success"
-    size="new">Save Changes</Form.Button
+    size="base">Save Changes</Form.Button
   >
 
   <Acl bind:value={$formData} />
 
-  <ObjectInput classname="h-screen" bind:value={$formData} />
+  <ObjectInput classname="min-h-[74vh]" bind:value={$formData} />
 </form>
 
-{#if formData != null && showdebug == true}
-  <div class="mt-4">
-    <SuperDebug data={formData} theme="vscode" />
-  </div>
-{/if}
+<CustomSuperDebug {formData} />
 
 <HotkeyButton
   hidden

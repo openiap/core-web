@@ -7,7 +7,7 @@
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
-  import Searchinput from "$lib/searchinput/searchinput.svelte";
+  import { SearchInput } from "$lib/searchinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import { Pencil, Trash2 } from "lucide-svelte";
@@ -62,7 +62,8 @@
   }
 </script>
 
-<Searchinput bind:searchstring />
+<SearchInput bind:searchstring />
+
 <Entities
   {collectionname}
   {query}

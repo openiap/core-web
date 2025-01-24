@@ -246,7 +246,6 @@
       title="Create agent"
       variant="success"
       size="base"
-      class="mb-4"
     >
       <Check />
       Create agent</Form.Button

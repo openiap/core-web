@@ -8,9 +8,12 @@
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
-  import { data as data1, data as datacomponent } from "$lib/entities/data.svelte.js";
+  import {
+      data as data1,
+      data as datacomponent,
+  } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
-  import Searchinput from "$lib/searchinput/searchinput.svelte";
+  import { SearchInput } from "$lib/searchinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import { Filter, Pencil, Plus, Trash2 } from "lucide-svelte";
@@ -64,9 +67,9 @@
 
 <div class="flex justify-between">
   <div class="flex gap-2 w-full">
-    <Searchinput {searchstring} />
+    <SearchInput {searchstring} />
     <HotkeyButton
-      size="base"
+      size="sm"
       variant="base"
       aria-label="add"
       class="border-dashed dark:text-bw600"
@@ -77,7 +80,7 @@
   </div>
 
   <HotkeyButton
-    size="base"
+    size="sm"
     variant="base"
     aria-label="add"
     onclick={() => goto(base + `/${page}/new`)}

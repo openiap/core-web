@@ -7,14 +7,16 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
-  import Button from "$lib/components/ui/button/button.svelte";
-  import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
-  import { data as data1, data as datacomponent } from "$lib/entities/data.svelte.js";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
+  import {
+    data as data1,
+    data as datacomponent,
+  } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
-  import Searchinput from "$lib/searchinput/searchinput.svelte";
+  import { SearchInput } from "$lib/searchinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
-  import { DollarSign, Pencil, Plus, Trash2 } from "lucide-svelte";
+  import { DollarSign, Filter, Pencil, Plus, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
@@ -27,13 +29,15 @@
 
   async function deleteitem(item: any) {
     try {
-      await auth.client.CustomCommand({command: "removebilling", id: item._id});
-      toast.success("Billing acccount removed");      
-    } catch (error:any) {
+      await auth.client.CustomCommand({
+        command: "removebilling",
+        id: item._id,
+      });
+      toast.success("Billing acccount removed");
+    } catch (error: any) {
       toast.error("Error while deleting", {
         description: error.message,
       });
-
     }
   }
   function single_item_click(item: any) {
@@ -53,16 +57,30 @@
   }
 </script>
 
-<Hotkeybutton
-  class="mb-4"
-  aria-label="Create Billing Account"
-  variant="default"
-  onclick={() => goto(base + `/${page}/new`)}
->
-  <Plus />
-  Create Billing Account</Hotkeybutton
->
-<Searchinput bind:searchstring />
+<div class="flex justify-between">
+  <div class="flex gap-2 w-full">
+    <SearchInput {searchstring} />
+    <HotkeyButton
+      size="sm"
+      variant="base"
+      aria-label="Filter"
+      class="border-dashed dark:text-bw600"
+    >
+      <Filter />
+      Filter</HotkeyButton
+    >
+  </div>
+
+  <HotkeyButton
+    size="sm"
+    variant="base"
+    aria-label="Create Billing Account"
+    onclick={() => goto(base + `/${page}/new`)}
+  >
+    <Plus />
+    Create Billing Account</HotkeyButton
+  >
+</div>
 
 <Entities
   {collectionname}
@@ -75,33 +93,33 @@
   bind:entities
 >
   {#snippet action(item: any)}
-    <Button
+    <HotkeyButton
       aria-label="Billing"
       onclick={() => open_billing(item)}
-      size="icon"
-      variant="secondary"
+      size="tableicon"
+      variant="icon"
     >
       <DollarSign />
-    </Button>
-    <Button
+    </HotkeyButton>
+    <HotkeyButton
       aria-label="Edit"
       onclick={() => single_item_click(item)}
-      size="icon"
-      variant="secondary"
+      size="tableicon"
+      variant="icon"
     >
       <Pencil />
-    </Button>
-    <Button
+    </HotkeyButton>
+    <HotkeyButton
       aria-label="Delete"
       onclick={() => {
         deleteData = item;
         showWarning = !showWarning;
       }}
-      size="icon"
-      variant="destructive"
+      size="tableicon"
+      variant="danger"
     >
       <Trash2 />
-    </Button>
+    </HotkeyButton>
   {/snippet}
 </Entities>
 

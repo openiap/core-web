@@ -14,6 +14,8 @@
   import { editFormSchema } from "../schema.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { toast } from "svelte-sonner";
+  import { Check } from "lucide-svelte";
+    import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
 
   const key = "credential";
   let showdebug = $state(false);
@@ -63,11 +65,6 @@
 </div>
 
 <form method="POST" use:enhance>
-  <Form.Button aria-label="submit">Submit</Form.Button>
-  <HotkeyButton aria-label="back" onclick={() => goto(base + `/${key}`)}
-    >Back</HotkeyButton
-  >
-
   <Acl bind:value={$formData} />
 
   <Form.Field {form} name="name">
@@ -103,17 +100,15 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Button aria-label="submit">Submit</Form.Button>
+  <Form.Button
+    variant="success"
+    size="base"
+    disabled={loading}
+    aria-label="submit"
+  >
+    <Check />
+    Update {key}</Form.Button
+  >
 </form>
 
-{#if formData != null && showdebug == true}
-  <SuperDebug data={formData} theme="vscode" />
-{/if}
-
-<HotkeyButton
-  hidden
-  class="hidden"
-  aria-label="Toggle debug"
-  data-shortcut={"Control+d,Meta+d"}
-  onclick={() => (showdebug = !showdebug)}>Toggle debug</HotkeyButton
->
+<CustomSuperDebug {formData} />
