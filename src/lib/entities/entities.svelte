@@ -462,7 +462,6 @@
 	function onSelectColumnsOpenChange(open: boolean) {
 		data.SaveHeaders(tableheaders);
 	}
-	console.log(multi_select);
 </script>
 
 <div class="text-red-500">{data.errormessage}</div>
