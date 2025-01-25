@@ -228,49 +228,6 @@
 		}
 		return value;
 	}
-	function RenderHeaderName(header: TableHeader) {
-		if (header == null) {
-			return "ERROR!!!";
-		}
-		let value = header.field;
-		if (header.field.indexOf(".") > -1) {
-			value = header.field.split(".").pop() as any;
-		}
-		switch (value) {
-			case "_id":
-				return "ID";
-			case "name":
-				return "Name";
-			case "type":
-				return "Type";
-			case "_acl":
-				return "ACL";
-			case "_encrypt":
-				return "Encrypt";
-			case "_type":
-				return "Type";
-			case "_version":
-				return "Version";
-			case "_created":
-				return "Created";
-			case "_createdby":
-				return "Created by";
-			case "_createdbyid":
-				return "Created by ID";
-			case "_modified":
-				return "Modified";
-			case "_modifiedby":
-				return "Modified by";
-			case "_modifiedbyid":
-				return "Modified by ID";
-			default:
-				if (header.name != null && header.name != "") {
-					return header.name;
-				}
-				return header.field;
-		}
-	}
-
 	let _workspaceid = $state.snapshot(usersettings.currentworkspace);
 	$effect(() => {
 		if (_searchstring != searchstring) {
@@ -500,7 +457,7 @@
 							ontouchend={(e) => ontouchend(e, head)}
 							{ontouchmove}
 						>
-							{RenderHeaderName(head)}
+							{data.RenderHeaderName(head)}
 							{#if sortby(head.field) == "asc"}
 								<ArrowUp class="ml-2 h-4 w-4" />
 							{:else if sortby(head.field) == "desc"}
@@ -646,7 +603,7 @@
 							>
 								<div class="flex-1 space-y-1">
 									<p class="text-muted-foreground text-sm">
-										{RenderHeaderName(head)}
+										{data.RenderHeaderName(head)}
 									</p>
 								</div>
 								<Switch

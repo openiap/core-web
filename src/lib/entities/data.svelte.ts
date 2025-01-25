@@ -217,6 +217,52 @@ class entitiesdata {
 		return q;
 	}
 
+	RenderHeaderName(header: TableHeader) {
+		if (header == null) {
+			return "ERROR!!!";
+		}
+		let value = header.field;
+		if (header.field.indexOf(".") > -1) {
+			value = header.field.split(".").pop() as any;
+		}
+		switch (value) {
+			case "_id":
+				return "ID";
+			case "name":
+				return "Name";
+			case "type":
+				return "Type";
+			case "_acl":
+				return "ACL";
+			case "_encrypt":
+				return "Encrypt";
+			case "_type":
+				return "Type";
+			case "_version":
+				return "Version";
+			case "_created":
+				return "Created";
+			case "_createdby":
+				return "Created by";
+			case "_createdbyid":
+				return "Created by ID";
+			case "_modified":
+				return "Modified";
+			case "_modifiedby":
+				return "Modified by";
+			case "_modifiedbyid":
+				return "Modified by ID";
+			case "_productname":
+				return "Product";
+			case "_billingid":
+				return "Billing ID";
+			default:
+				if (header.name != null && header.name != "") {
+					return header.name;
+				}
+				return value.charAt(0).toUpperCase() + value.slice(1);
+		}
+	}
 	defaultcolumnnames(page: string) {
 		switch (page) {
 			case "user":
@@ -254,11 +300,11 @@ class entitiesdata {
 			case "auditlog":
 				return ["_id", "name", "_type", "impostorname", "clientagent", "clientversion", "remoteip", "_created"];
 			case "agent":
-				return ["name", "image", "os", "stripeprice", "_createdby", "status"];
+				return ["name", "image", "os", "_productname", "_createdby", "status"];
 			case "package":
 				return ["name", "language", "_createdby", "_created"];
 			case "workspace":
-				return ["name", "productname", "_created", "_modified"];
+				return ["name", "_productname", "_created", "_modified"];
 			case "member":
 				return ["name", "status", "role", "_modified"];
 			case "/workspace/invites":
