@@ -659,9 +659,13 @@
 					</ScrollArea>
 				</div>
 				<Sheet.Footer>
-					<Sheet.Close class={buttonVariants({ variant: "outline" })}>
-						Close
-					</Sheet.Close>
+					<HotkeyButton size="base"
+						onclick={() => {
+						toggleSheet = false;
+						}}
+					>
+					Close
+					</HotkeyButton>
 				</Sheet.Footer>
 			</Sheet.Content>
 		</Sheet.Root>
