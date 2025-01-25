@@ -3,24 +3,24 @@ import { z } from 'zod';
 export class Workspace {
   _id: string;
   name: string;
-  public billingid: string;
   public admins: string;
   public users: string;
-  public resourceusageid: string;
-  public productname: string;
+  public _billingid: string;
+  public _resourceusageid: string;
+  public _productname: string;
   constructor() {
     this._id = "";
     this.name = "";
-    this.billingid = "";
     this.admins = "";
     this.users = "";
-    this.resourceusageid = "";
-    this.productname = "Free tier";
+    this._billingid = "";
+    this._resourceusageid = "";
+    this._productname = "Free tier";
   }
 }
 export const newWorkspaceSchema = z.object({
   name: z.string().min(2).default("Lemonify"),
-  billingid: z.string().optional()
+  _billingid: z.string().optional()
 });
 export type NewWorkspaceSchema = typeof newWorkspaceSchema;
 
@@ -28,7 +28,7 @@ export const workspaceSchema = z.object({
   name: z.string().min(2),
   admins: z.string().min(2),
   users: z.string().min(2),
-  billingid: z.string().optional(),
+  _billingid: z.string().optional(),
   price: z.string().optional(),
 }).passthrough();
 export type WorkspaceSchema = typeof workspaceSchema;

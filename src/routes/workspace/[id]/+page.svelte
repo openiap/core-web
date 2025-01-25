@@ -131,14 +131,14 @@
     try {
       if (currentworkspace == null) throw new Error("No workspace selected");
       if (
-        currentworkspace.resourceusageid == null ||
-        currentworkspace.resourceusageid == ""
+        currentworkspace._resourceusageid == null ||
+        currentworkspace._resourceusageid == ""
       ) {
         throw new Error("No plan to remove");
       }
       let data = {
         target: currentworkspace,
-        resourceusageid: currentworkspace.resourceusageid,
+        resourceusageid: currentworkspace._resourceusageid,
       };
       usersettings.currentworkspace = "";
       await auth.client.CustomCommand({
@@ -220,7 +220,7 @@
       >.
     </Card.Content>
     <Card.Footer class="flex justify-between">
-      {#if currentworkspace == null || currentworkspace.resourceusageid == null || currentworkspace.resourceusageid == ""}
+      {#if currentworkspace == null || currentworkspace._resourceusageid == null || currentworkspace._resourceusageid == ""}
         <HotkeyButton>Current</HotkeyButton>
       {:else}
         <HotkeyButton onclick={removeplan}>Downgrade</HotkeyButton>
@@ -243,7 +243,7 @@
     </Card.Content>
     <Card.Footer class="flex justify-between">
       <div></div>
-      {#if currentworkspace == null || currentworkspace.productname != "Basic tier"}
+      {#if currentworkspace == null || currentworkspace._productname != "Basic tier"}
         {#if entities.length == 0}
           <HotkeyButton onclick={addplan}>Upgrade</HotkeyButton>
         {:else}
@@ -267,13 +267,13 @@
             >Upgrade</HotkeyButton
           >
         {/if}
-      {:else if currentworkspace.productname == "Basic tier"}
+      {:else if currentworkspace._productname == "Basic tier"}
         <HotkeyButton
           onclick={() =>
             goto(
               base +
                 "/billingaccount/" +
-                currentworkspace.billingid +
+                currentworkspace._billingid +
                 "/billing",
             )}>Billing</HotkeyButton
         >

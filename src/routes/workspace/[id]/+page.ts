@@ -24,11 +24,11 @@ export const load: PageLoad = async ({ parent, params }) => {
     if (params.id == null || params.id == "") { goto(base + `/workspace`); return { form, currentbilling, entities, total_count, currentworkspace }; }
     usersettings.currentworkspace = params.id;
 
-    let workspace = await auth.client.FindOne<any>({ collectionname: "workspaces", query: { _id: usersettings.currentworkspace }, jwt: access_token });
-    if (workspace.billingid != null && workspace.billingid != "") {
-      currentbilling = entities.find((x) => x._id == workspace.billingid);
+    let workspace = await auth.client.FindOne<Workspace>({ collectionname: "workspaces", query: { _id: usersettings.currentworkspace }, jwt: access_token });
+    if (workspace._billingid != null && workspace._billingid != "") {
+      currentbilling = entities.find((x) => x._id == workspace._billingid);
       if (currentbilling == null) {
-        currentbilling = await auth.client.FindOne<any>({ collectionname: "users", query: { _type: "customer", _id: workspace.billingid }, jwt: access_token });
+        currentbilling = await auth.client.FindOne<any>({ collectionname: "users", query: { _type: "customer", _id: workspace._billingid }, jwt: access_token });
         if (currentbilling != null) {
           entities.push(currentbilling);
         }

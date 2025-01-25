@@ -16,21 +16,22 @@
   import { SearchInput } from "$lib/searchinput/index.js";
   import { StatusCard } from "$lib/statuscard/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
+  import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import {
-      Box,
-      Ellipsis,
-      Filter,
-      Play,
-      Plus,
-      Receipt,
-      RefreshCcw,
-      Square,
-      SquarePen,
-      Trash2,
-      User,
-      Webhook,
-      Wrench,
+    Box,
+    Ellipsis,
+    Filter,
+    Play,
+    Plus,
+    Receipt,
+    RefreshCcw,
+    Square,
+    SquarePen,
+    Trash2,
+    User,
+    Webhook,
+    Wrench,
   } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
@@ -45,21 +46,59 @@
   let clients: any = [];
 
   async function deleteitem(item: any) {
-    const deletecount = await auth.client.DeleteOne({
-      id: item._id,
-      collectionname,
-      jwt: auth.access_token,
-    });
-    if (deletecount == 1) {
-      entities = entities.filter((entity: any) => entity._id != item._id);
-      selected_items = selected_items.filter((i) => i !== item._id);
-    } else {
+    try {
+      await auth.client.CustomCommand({
+        command: "deleteagent",
+        id: item._id,
+        name: item.slug,
+      });
+      toast.success("Deleted successfully", {
+        description: "",
+      });
+    } catch (error: any) {
       toast.error("Error while deleting", {
-        description: "deletecount is " + deletecount,
+        description: error.message,
       });
     }
   }
-  function deleteitems(ids: string[]) {}
+  async function deleteitems(ids: string[]) {
+    let haderror = false;
+    for (let i = 0; i < ids.length; i++) {
+      let id = ids[i];
+      var item = entities.find((x: any) => x._id == id);
+      if (item) {
+        try {
+          await auth.client.CustomCommand({
+            command: "deleteagent",
+            id: item._id,
+            name: item.slug,
+          });
+        } catch (error: any) {
+          haderror = true;
+          toast.error("Error while deleting", {
+            description: error.message,
+          });
+          return;
+        }
+      }
+    }
+    entities = await datacomponent.GetData(
+      page,
+      collectionname,
+      query,
+      auth.access_token,
+    );
+    if (!haderror) {
+      toast.success(
+        "Successfully deleted " + selected_items.length + " agent(s)",
+        {
+          description: "",
+        },
+      );
+    }
+    selected_items = [];
+    usersettings.persist();
+  }
   function single_item_click(item: any) {
     goto(base + `/${page}/${item._id}`);
   }
@@ -164,6 +203,9 @@
         query,
         auth.access_token,
       );
+
+      await getPods();
+      usersettings.persist();
     } catch (error: any) {
       toast.error("Error while deleting", {
         description: error.message,
@@ -227,46 +269,6 @@
     >
   </div>
 </div>
-
-<!-- <div
-  class="mb-4 border-b border-gray-300 flex justify-start pb-4 space-x-4 max-w-min"
->
-  <HotkeyButton
-    aria-label="add"
-    title="add"
-    variant="default"
-    onclick={() => goto(base + `/${page}/new`)}
-  >
-    <Plus />
-    Add {page}</HotkeyButton
-  >
-  <HotkeyButton
-    aria-label="packages"
-    title="package"
-    variant="default"
-    onclick={() => goto(base + `/package`)}
-  >
-    <Box />
-    Packages</HotkeyButton
-  >
-  <HotkeyButton
-    aria-label="reload"
-    title="reload"
-    variant="default"
-    onclick={async () => {
-      entities = await datacomponent.GetData(
-        page,
-        collectionname,
-        query,
-        auth.access_token,
-      );
-      await getPods();
-    }}
-  >
-    <RefreshCcw />
-    Reload</HotkeyButton
-  >
-</div> -->
 
 <div class="mb-4">
   <RadioGroup.Root value="All" class="flex space-x-4">
@@ -384,6 +386,13 @@
   {#snippet status(item: any)}
     {#if item && item.status}
       <StatusCard bind:title={item.status as string} />
+    {/if}
+  {/snippet}
+  {#snippet _productname(item: any)}
+    {#if item && item._productname != null && item._productname != ""}
+      {item._productname}
+    {:else}
+      Free tier
     {/if}
   {/snippet}
   {#snippet action(item: any)}

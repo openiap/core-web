@@ -8,6 +8,7 @@
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import Separator from "$lib/components/ui/separator/separator.svelte";
+  import { CustomCheckbox } from "$lib/customcheckbox/index.js";
   import { CustomInput } from "$lib/custominput/index.js";
   import { CustomSelect } from "$lib/customselect/index.js";
   import { CustomSwitch } from "$lib/customswitch/index.js";
@@ -15,6 +16,7 @@
   import { ObjectInput } from "$lib/objectinput/index.js";
   import Statuscard from "$lib/statuscard/statuscard.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
+  import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import Timezoneselector from "$lib/timezoneselector/timezoneselector.svelte";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import { AnsiUp } from "ansi_up";
@@ -22,13 +24,16 @@
   import { toast } from "svelte-sonner";
   import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
+  import type { Workspace } from "../../workspace/schema.js";
   import { randomname } from "../helper.js";
   import { editFormSchema } from "../schema.js";
-  import { CustomCheckbox } from "$lib/customcheckbox/index.js";
 
   const ansi_up = new AnsiUp();
 
   const { data } = $props();
+  if (data.item != null && data.item.stripeprice == null) {
+    data.item.stripeprice = "";
+  }
   const page = "agent";
   let loading = $state(false);
   let packageData: any = $state(null);
@@ -45,21 +50,102 @@
     SPA: true,
     onUpdate: async ({ form, cancel }) => {
       if (form.valid) {
-        loading = true;
         try {
-          await auth.client.UpdateOne({
-            collectionname,
-            item: { ...form.data },
-            jwt: auth.access_token,
-          });
-          toast.success("Agent updated");
-          goto(base + `/${page}`);
-        } catch (error: any) {
-          errormessage = error.message;
+          let workspace: Workspace | null = null;
+          let product = products.find(
+            (x: any) => x.stripeprice == form.data.stripeprice,
+          );
+          if (auth.config.workspace_enabled) {
+            if (
+              usersettings.currentworkspace == null ||
+              usersettings.currentworkspace == ""
+            ) {
+              throw new Error("You must select a workspace first");
+            }
+            workspace = await auth.client.FindOne({
+              collectionname: "users",
+              query: {
+                _type: "workspace",
+                _id: usersettings.currentworkspace,
+              },
+              jwt: auth.access_token,
+            });
+            if (workspace == null) {
+              throw new Error("Workspace not found");
+            }
+
+            // @ts-ignore
+            form.data._acl = workspace._acl;
+          }
+          if (form.data.stripeprice != null && form.data.stripeprice != "") {
+            if (product == null) {
+              throw new Error("Product not found");
+            }
+          }
+          if (
+            workspace != null &&
+            data.item.stripeprice != form.data.stripeprice
+          ) {
+            if (data.item.stripeprice != null && data.item.stripeprice != "" && data.item._resourceusageid != null && data.item._resourceusageid != "") { 
+              await auth.client.CustomCommand({
+                command: "removeresourceusage",
+                data: JSON.stringify({
+                  target: data.item,
+                  resourceusageid: data.item._resourceusageid,
+                }),
+                jwt: auth.access_token,
+              });
+            }
+            if (
+              workspace != null &&
+              form.data.stripeprice != null &&
+              form.data.stripeprice != ""
+            ) {
+              if (product == null) {
+                throw new Error("Product not found");
+              }
+              if(workspace._billingid == null || workspace._billingid == "") {
+                throw new Error("workspace " + workspace.name + " does not have a billing account");
+              }
+              await auth.client.CustomCommand({
+                command: "createresourceusage",
+                data: JSON.stringify({
+                  target: form.data,
+                  billingid: workspace._billingid,
+                  workspaceid: workspace._id,
+                  resourceid: resource._id,
+                  productname: product?.name,
+                }),
+                jwt: auth.access_token,
+              });
+            }
+          }
+
+          try {
+            delete form.data._billingid;
+            delete form.data._resourceusageid;
+            delete form.data._productname;
+            await auth.client.UpdateOne({
+              collectionname,
+              item: { ...form.data },
+              jwt: auth.access_token,
+            });
+            toast.success("Agent updated");
+            goto(base + `/${page}`);
+          } catch (error: any) {
+            errormessage = error.message;
+            toast.error("Error", {
+              description: error.message,
+            });
+            cancel();
+          } finally {
+            loading = false;
+          }
+        } catch (error:any) {
           toast.error("Error", {
-            description: error.message,
-          });
-          cancel();
+              description: error.message,
+            });
+            cancel();
         } finally {
           loading = false;
         }

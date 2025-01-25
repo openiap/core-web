@@ -10,11 +10,13 @@
   import Entityselector from "$lib/entityselector/entityselector.svelte";
   import { ObjectInput } from "$lib/objectinput/index.js";
   import { auth } from "$lib/stores/auth.svelte";
+  import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import Timezoneselector from "$lib/timezoneselector/timezoneselector.svelte";
   import { Check, RefreshCcw, User } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
+  import type { Workspace } from "../../workspace/schema.js";
   import { randomname } from "../helper.js";
   import { newFormSchema } from "../schema.js";
 
@@ -30,14 +32,67 @@
     onUpdate: async ({ form, cancel }) => {
       if (form.valid) {
         loading = true;
+        let workspace: Workspace | null = null;
+        let product = products.find(
+          (x: any) => x.stripeprice == form.data.stripeprice,
+        );
         try {
-          const result = await auth.client.InsertOne({
+          if (auth.config.workspace_enabled) {
+            if (
+              usersettings.currentworkspace == null ||
+              usersettings.currentworkspace == ""
+            ) {
+              throw new Error("You must select a workspace first");
+            }
+            workspace = await auth.client.FindOne({
+              collectionname: "users",
+              query: {
+                _type: "workspace",
+                _id: usersettings.currentworkspace,
+              },
+              jwt: auth.access_token,
+            });
+            if (workspace == null) {
+              throw new Error("Workspace not found");
+            }
+            // @ts-ignore
+            form.data._acl = workspace._acl;
+          }
+          if (form.data.stripeprice != null && form.data.stripeprice != "") {
+            if (product == null) {
+              throw new Error("Product not found");
+            }
+          }
+
+          const result = await auth.client.InsertOne<any>({
             collectionname: "agents",
             item: { ...form.data, _type: "agent" },
             jwt: auth.access_token,
           });
-          toast.success("Agent updated");
-          goto(base + `/${key}`);
+          toast.success("Agent created");
+          try {
+            if (
+              workspace &&
+              form.data.stripeprice != null &&
+              form.data.stripeprice != ""
+            ) {
+              await auth.client.CustomCommand({
+                command: "createresourceusage",
+                data: JSON.stringify({
+                  target: result,
+                  billingid: workspace._billingid,
+                  workspaceid: workspace._id,
+                  resourceid: resource._id,
+                  productname: product?.name,
+                }),
+                jwt: auth.access_token,
+              });
+              toast.success("Resource assigned");
+            }
+            goto(base + `/agent`);
+          } catch (error) {
+            goto(base + `/agent/${result._id}`);
+          }
         } catch (error: any) {
           errormessage = error.message;
           toast.error("Error", {
@@ -58,7 +113,7 @@
   $formData.slug = $formData.name;
   $formData.environment = {};
   $formData.stripeprice = "";
-  $formData.image = "openiap/nodeagent";
+  $formData.image = auth.config.agent_images[0].image;
   $formData.runas = auth.profile.sub;
 
   let products = $state([

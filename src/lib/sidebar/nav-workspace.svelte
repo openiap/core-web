@@ -53,7 +53,7 @@
                                     {activeWorkspacename()}
                                 </span>
                                 <span class="truncate text-xs"
-                                    >{activeWorkspace()?.productname}</span
+                                    >{activeWorkspace()?._productname}</span
                                 >
                             </div>
                             <ChevronsUpDown class="ml-auto" />
@@ -89,7 +89,7 @@
                                 {workspace.name}
                             </span>
                             <span class="truncate text-xs"
-                                >{workspace.productname}</span
+                                >{workspace._productname}</span
                             >
                         </div>
                     </DropdownMenu.Item>
