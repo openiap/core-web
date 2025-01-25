@@ -1,15 +1,21 @@
 <script lang="ts">
+  import { buttonVariants } from "$lib/components/ui/button/index.js";
   import Button from "$lib/components/ui/button/button.svelte";
+  import * as Sheet from "$lib/components/ui/sheet/index.js";
+  import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
   import * as Card from "$lib/components/ui/card/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import { Resource, ResourceUsage, type Product } from "$lib/types.svelte.js";
   import { toast } from "svelte-sonner";
+  import { Check } from "lucide-svelte";
 
   const { data } = $props();
   let entities: ResourceUsage[] = $state(data.entities);
   let resources: Resource[] = $state(data.resources);
   let key = $state(0);
+  let toggleSheet = $state(false);
+  let sheetresource = $state<Resource>(null as any);
 
   async function GetData() {
     entities = await auth.client.Query<ResourceUsage>({
@@ -187,20 +193,20 @@
                   <td>
                     {#if canincrease(resource, product)}
                       <Button
-                        variant="outline"
+                        variant="outline" size="base"
                         onclick={() => increment(resource, product)}
                         >Increase</Button
                       >
                     {:else}
                       <Button
-                        variant="outline"
+                        variant="outline" size="base"
                         disabled={true}
                         onclick={() => increment(resource, product)}
                         >Increase</Button
                       >
                     {/if}
                     <Button
-                      variant="outline"
+                      variant="outline" size="base"
                       disabled={quantity(resource, product) == 0}
                       onclick={() =>
                         decrement(resource, product)
@@ -214,16 +220,54 @@
         </table>
       </Card.Content>
       <Card.Footer class="flex justify-between">
-        <!-- {#key key}
-          {#if rquantity(resource) == 0}
-            <Button variant="outline">Unused</Button>
-          {:else}
-            <Button onclick={() => removeresource(resource)}
-              >Unsubscribe all</Button
-            >
-          {/if}
-        {/key} -->
+        <Button variant="outline" size="base"
+        onclick={() => {
+          sheetresource = resource;
+          toggleSheet = true;
+        }}
+      >
+        <Check />
+        Detailed Usage
+      </Button>
       </Card.Footer>
     </Card.Root>
   {/each}
 </div>
+
+
+<Sheet.Root
+bind:open={toggleSheet}
+>
+<Sheet.Content>
+  <Sheet.Header>
+    <Sheet.Title>Select columns</Sheet.Title>
+    <Sheet.Description>
+      Select what columns to show in the table.
+    </Sheet.Description>
+  </Sheet.Header>
+  <div class="grid gap-4 py-4">
+    <ScrollArea class="max-h-[70vh]">
+      {#each entities.filter(x=> x.resourceid == sheetresource._id) as resource}
+        <div
+          class=" flex items-center space-x-4 rounded-md border p-4"
+        >
+          <div class="flex-1 space-y-1">
+            <p class="text-muted-foreground text-sm">
+              {resource.name}
+            </p>
+          </div>
+        </div>
+      {/each}
+    </ScrollArea>
+  </div>
+  <Sheet.Footer>
+    <Button variant="outline" size="base"
+      onclick={() => {
+        toggleSheet = false;
+      }}
+    >
+    Close
+  </Button>
+  </Sheet.Footer>
+</Sheet.Content>
+</Sheet.Root>
