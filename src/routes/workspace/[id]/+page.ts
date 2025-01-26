@@ -1,5 +1,6 @@
 import { goto } from "$app/navigation";
 import { base } from "$app/paths";
+import type { Billing } from "$lib/billing.svelte.js";
 import { data } from "$lib/entities/data.svelte.js";
 import { auth } from "$lib/stores/auth.svelte.js";
 import { usersettings } from "$lib/stores/usersettings.svelte.js";
@@ -13,7 +14,7 @@ export const load: PageLoad = async ({ parent, params }) => {
   await usersettings.dbload(access_token);
   let page = "workspace";
   data.loadsettings(page);
-  let currentbilling: any = null;
+  let currentbilling: Billing | null = null;
   let entities: any[] = [];
   let total_count = 0;
   let currentworkspace: Workspace = null as any;
@@ -24,11 +25,11 @@ export const load: PageLoad = async ({ parent, params }) => {
     if (params.id == null || params.id == "") { goto(base + `/workspace`); return { form, currentbilling, entities, total_count, currentworkspace }; }
     usersettings.currentworkspace = params.id;
 
-    let workspace = await auth.client.FindOne<Workspace>({ collectionname: "workspaces", query: { _id: usersettings.currentworkspace }, jwt: access_token });
+    let workspace = await auth.client.FindOne<Workspace>({ collectionname: "users", query: { _id: usersettings.currentworkspace, _type: "workspace" }, jwt: access_token });
     if (workspace._billingid != null && workspace._billingid != "") {
       currentbilling = entities.find((x) => x._id == workspace._billingid);
       if (currentbilling == null) {
-        currentbilling = await auth.client.FindOne<any>({ collectionname: "users", query: { _type: "customer", _id: workspace._billingid }, jwt: access_token });
+        currentbilling = await auth.client.FindOne<Billing>({ collectionname: "users", query: { _type: "customer", _id: workspace._billingid }, jwt: access_token });
         if (currentbilling != null) {
           entities.push(currentbilling);
         }

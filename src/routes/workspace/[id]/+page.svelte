@@ -1,11 +1,12 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
+  import type { Billing } from "$lib/billing.svelte.js";
   import * as Card from "$lib/components/ui/card/index.js";
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
-  import * as Select from "$lib/components/ui/select/index.js";
   import { CustomInput } from "$lib/custominput/index.js";
+  import { CustomSelect } from "$lib/customselect/index.js";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
@@ -14,7 +15,7 @@
   import SuperDebug, { superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newWorkspaceSchema } from "../schema.js";
-  import { CustomSelect } from "$lib/customselect/index.js";
+    import Button from "$lib/components/ui/button/button.svelte";
 
   const key = "workspace";
   let showdebug = $state(false);
@@ -69,7 +70,7 @@
       if (resource == null) throw new Error("Could not find workspae resource");
       let product = resource.products.find((p: any) => p.name == "Basic tier");
       if (product == null) throw new Error("Could not find basic tier product");
-      let billing: any;
+      let billing: Billing;
       if (entities.length == 0) {
         let billingdata: any = {
           name: currentworkspace.name,
@@ -97,11 +98,16 @@
         resourceid: resource._id,
         productname: product.name,
       };
-      await auth.client.CustomCommand({
-        command: "createresourceusage",
-        data: JSON.stringify(data),
-        jwt: auth.access_token,
-      });
+      const { result, link } = JSON.parse(
+        await auth.client.CustomCommand({
+          command: "createresourceusage",
+          data: JSON.stringify(data),
+          jwt: auth.access_token,
+        }),
+      );
+      if (link != null && link != "") {
+        document.location.href = link;
+      }
       entities = await datacomponent.GetData(
         "workspace",
         "users",
@@ -136,14 +142,10 @@
       ) {
         throw new Error("No plan to remove");
       }
-      let data = {
-        target: currentworkspace,
-        resourceusageid: currentworkspace._resourceusageid,
-      };
       usersettings.currentworkspace = "";
       await auth.client.CustomCommand({
         command: "removeresourceusage",
-        data: JSON.stringify(data),
+        id: currentworkspace._resourceusageid,
         jwt: auth.access_token,
       });
       entities = await datacomponent.GetData(
@@ -173,7 +175,6 @@
 {#if message && $message != ""}
   {$message}
 {/if}
-
 <form method="POST" use:enhance>
   <!-- TODO: I don't beleive we should have ACL on this page ? -->
   <!-- <Acl bind:value={$formData} /> -->
@@ -193,6 +194,26 @@
             <Check />
             Update workspace</Form.Button
           >
+          {#if data.currentbilling != null}
+            <Button
+              variant="outline"
+              size="base"
+              onclick={() =>
+                goto(base + "/workspace/" + currentworkspace._id + "/billing")
+              }
+            >
+              Billing
+            </Button>
+            <Button
+              variant="outline"
+              size="base"
+              onclick={() =>
+                goto(base + "/billingaccount/" + data.currentbilling?._id + "/billing")
+              }
+            >
+              {data.currentbilling?.name}
+            </Button>
+          {/if}
         </div>
       {/snippet}
     </Form.Control>
@@ -253,16 +274,6 @@
             bind:value={billingid}
             selectitems={entities}
           />
-          <!-- <Select.Root bind:value={billingid} type="single">
-            <Select.Trigger>{billingname()}</Select.Trigger>
-            <Select.Content>
-              {#each entities as item}
-                <Select.Item value={item._id} label={item.name}
-                  >{item.name}</Select.Item
-                >
-              {/each}
-            </Select.Content>
-          </Select.Root> -->
           <HotkeyButton class="ms-2" onclick={addplan} variant="success"
             >Upgrade</HotkeyButton
           >

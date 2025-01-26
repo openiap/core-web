@@ -57,14 +57,19 @@
             }
             // @ts-ignore
             form.data._acl = workspace._acl;
+            // @ts-ignore
+            form.data._workspaceid = workspace._id;
           }
+          let stripeprice = "";
           if (form.data.stripeprice != null && form.data.stripeprice != "") {
             if (product == null) {
               throw new Error("Product not found");
             }
+            stripeprice = product.stripeprice;
           }
+          form.data.stripeprice = "";
 
-          const result = await auth.client.InsertOne<any>({
+          const newagent = await auth.client.InsertOne<any>({
             collectionname: "agents",
             item: { ...form.data, _type: "agent" },
             jwt: auth.access_token,
@@ -73,25 +78,29 @@
           try {
             if (
               workspace &&
-              form.data.stripeprice != null &&
-              form.data.stripeprice != ""
+              stripeprice != ""
             ) {
-              await auth.client.CustomCommand({
-                command: "createresourceusage",
-                data: JSON.stringify({
-                  target: result,
-                  billingid: workspace._billingid,
-                  workspaceid: workspace._id,
-                  resourceid: resource._id,
-                  productname: product?.name,
+              const { result, link } = JSON.parse(
+                await auth.client.CustomCommand({
+                  command: "createresourceusage",
+                  data: JSON.stringify({
+                    target: newagent,
+                    billingid: workspace._billingid,
+                    workspaceid: workspace._id,
+                    resourceid: resource._id,
+                    productname: product?.name,
+                  }),
+                  jwt: auth.access_token,
                 }),
-                jwt: auth.access_token,
-              });
+              );
+              if (link != null && link != "") {
+                document.location.href = link;
+              }
               toast.success("Resource assigned");
             }
             goto(base + `/agent`);
           } catch (error) {
-            goto(base + `/agent/${result._id}`);
+            goto(base + `/agent/${newagent._id}`);
           }
         } catch (error: any) {
           errormessage = error.message;
@@ -129,6 +138,9 @@
     },
   ]);
   if (data.agentInstance != null) {
+    data.agentInstance.products = data.agentInstance.products.filter(
+      (x: any) => x.deprecated != true,
+    );
     products = [
       { stripeprice: "", name: "Free tier" },
       ...data.agentInstance.products,

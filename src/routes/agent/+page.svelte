@@ -163,9 +163,9 @@
     }
   }
 
-  async function getPods() {
+  async function getPods(force: boolean) {
     try {
-      if (knownpods.length == 0) {
+      if (knownpods.length == 0 || force == true) {
         knownpods = JSON.parse(
           await auth.client.CustomCommand({ command: "getagentpods" }),
         );
@@ -204,7 +204,7 @@
         auth.access_token,
       );
 
-      await getPods();
+      await getPods(false);
       usersettings.persist();
     } catch (error: any) {
       toast.error("Error while deleting", {
@@ -212,7 +212,7 @@
       });
     }
   }
-  getPods();
+  getPods(false);
 </script>
 
 <div class="flex justify-between">
@@ -261,7 +261,7 @@
           query,
           auth.access_token,
         );
-        await getPods();
+        await getPods(true);
       }}
     >
       <RefreshCcw />
@@ -284,7 +284,7 @@
             query,
             auth.access_token,
           );
-          getPods();
+          getPods(false);
         }}
       />
       <Label for="r1" class="cursor-pointer">All</Label>
@@ -304,7 +304,7 @@
             },
             auth.access_token,
           );
-          getPods();
+          getPods(false);
         }}
       />
       <Label for="r2" class="cursor-pointer">Daemon</Label>
@@ -324,7 +324,7 @@
           entities = result.filter((x: any) =>
             knownpods.some((y: any) => x._id === y.metadata.labels.agentid),
           );
-          getPods();
+          getPods(false);
         }}
       />
       <Label for="r3" class="cursor-pointer">Pods</Label>
@@ -344,7 +344,7 @@
             },
             auth.access_token,
           );
-          getPods();
+          getPods(false);
         }}
       />
       <Label for="r4" class="cursor-pointer">Docker</Label>
@@ -364,7 +364,7 @@
             },
             auth.access_token,
           );
-          getPods();
+          getPods(false);
         }}
       />
       <Label for="r5" class="cursor-pointer">Assistant</Label>
@@ -402,12 +402,23 @@
         title="start"
         size="tableicon"
         variant="icon"
-        onclick={async () =>
-          await auth.client.CustomCommand({
-            command: "startagent",
-            id: item._id,
-            name: item.slug,
-          })}
+        onclick={async () => {
+          try {
+            await auth.client.CustomCommand({
+              command: "startagent",
+              id: item._id,
+              name: item.slug,
+            });
+            toast.success("Started successfully", {
+              description: "",
+            });
+            await getPods(true);
+          } catch (error: any) {
+            toast.error("Error while starting", {
+              description: error.message,
+            });
+          }
+        }}
       >
         <Play />
       </HotkeyButton>
@@ -416,12 +427,24 @@
         title="stop"
         size="tableicon"
         variant="icon"
-        onclick={async () =>
-          await auth.client.CustomCommand({
-            command: "stopagent",
-            id: item._id,
-            name: item.slug,
-          })}
+        onclick={async () => {
+          try {
+            await auth.client.CustomCommand({
+              command: "stopagent",
+              id: item._id,
+              name: item.slug,
+            });
+            toast.success("Stopped successfully", {
+              description: "",
+            });
+            await getPods(true);
+          } catch (error: any) {
+            toast.error("Error while stopping", {
+              description: error.message,
+            });
+          }
+        }}
+        
       >
         <Square />
       </HotkeyButton>

@@ -1,15 +1,15 @@
 <script lang="ts">
-  import { buttonVariants } from "$lib/components/ui/button/index.js";
-  import Button from "$lib/components/ui/button/button.svelte";
-  import * as Sheet from "$lib/components/ui/sheet/index.js";
-  import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
+  import { goto } from "$app/navigation";
+    import { base } from "$app/paths";
+import Button from "$lib/components/ui/button/button.svelte";
   import * as Card from "$lib/components/ui/card/index.js";
+  import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
+  import * as Sheet from "$lib/components/ui/sheet/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import { Resource, ResourceUsage, type Product } from "$lib/types.svelte.js";
+  import { Check, Trash } from "lucide-svelte";
   import { toast } from "svelte-sonner";
-  import { Check } from "lucide-svelte";
-  import SuperDebug from "sveltekit-superforms";
 
   const { data } = $props();
   let entities: ResourceUsage[] = $state(data.entities);
@@ -21,7 +21,7 @@
   async function GetData() {
     entities = await auth.client.Query<ResourceUsage>({
       collectionname: "config",
-      query: { _type: "resourceusage", workspaceid: data.id },
+      query: { _type: "resourceusage", workspaceid: usersettings.currentworkspace },
       jwt: auth.access_token,
     });
     resources = await auth.client.Query<Resource>({
@@ -39,7 +39,7 @@
     // return true;
     if (product.allowdirectassign == false) return false;
     if (resource.allowdirectassign == false) return false;
-    if (resource.customerassign == "singlevariant") {
+    if (resource.assign == "singlevariant") {
       let exists = entities.find(
         (x) =>
           x.resourceid == resource._id &&
@@ -50,8 +50,8 @@
       }
     }
     if (
-      product.customerassign == "single" ||
-      product.customerassign == "metered"
+      product.assign == "single" ||
+      product.assign == "metered"
     ) {
       let exists = entities.find(
         (x) =>
@@ -80,17 +80,22 @@
         target = data.workspace;
         if (target == null) throw new Error("Please select a Workspace first");
       }
-      await auth.client.CustomCommand({
-        command: "createresourceusage",
-        data: JSON.stringify({
-          target,
-          billingid: data.billingaccount._id,
-          workspaceid: data.workspace?._id,
-          resourceid: resource._id,
-          productname: product.name,
+      const { result, link } = JSON.parse(
+        await auth.client.CustomCommand({
+          command: "createresourceusage",
+          data: JSON.stringify({
+            target,
+            billingid: data.billingaccount._id,
+            workspaceid: usersettings.currentworkspace,
+            resourceid: resource._id,
+            productname: product.name,
+          }),
+          jwt: auth.access_token,
         }),
-        jwt: auth.access_token,
-      });
+      );
+      if (link != null && link != "") {
+        document.location.href = link;
+      }
       toast.success("Resource assigned");
       await GetData();
     } catch (error: any) {
@@ -119,22 +124,40 @@
         });
         target = data.workspace;
         if (target == null) throw new Error("Please select a Workspace first");
+        
         let usage = entities.filter(
           (x) =>
-            x.resourceid == resource._id &&
-            x.product.stripeprice == product.stripeprice &&
-            x.workspaceid == target._id,
+            x.workspaceid == usersettings.currentworkspace &&
+            ((x.resourceid == resource._id &&
+              x.product.stripeprice == product.stripeprice) ||
+              (x.product.lookup_key == product.lookup_key &&
+                product.lookup_key != null &&
+                product.lookup_key != "")),
         );
         if (usage.length == 1) {
           resourceusage = usage[0];
         }
+      } else if (resource.target == "agent") {
+        let usage = entities.filter(
+          (x) =>
+            x.workspaceid == usersettings.currentworkspace &&
+            ((x.resourceid == resource._id &&
+              x.product.stripeprice == product.stripeprice) ||
+              (x.product.lookup_key == product.lookup_key &&
+                product.lookup_key != null &&
+                product.lookup_key != "")),
+        );
+        if (usage.length == 1) {
+          resourceusage = usage[0];
+        } else {
+          throw new Error("Remove plan from agent page or click Detail Usage");
+        }
       }
+      console.log("removing", resourceusage);
+      
       await auth.client.CustomCommand({
         command: "removeresourceusage",
-        data: JSON.stringify({
-          target,
-          resourceusageid: resourceusage._id,
-        }),
+        id: resourceusage._id,
         jwt: auth.access_token,
       });
       toast.success("Resource unassigned");
@@ -156,9 +179,13 @@
   function quantity(resource: Resource, product: Product) {
     let usage = entities.filter(
       (x) =>
-        x.resourceid == resource._id &&
-        x.product.stripeprice == product.stripeprice,
+        (x.resourceid == resource._id &&
+          x.product.stripeprice == product.stripeprice) ||
+        (x.product.lookup_key == product.lookup_key &&
+          product.lookup_key != null &&
+          product.lookup_key != ""),
     );
+
     if (usage.length == null) return 0;
     let quantity = usage.reduce((a, b) => a + b.quantity, 0);
     return quantity;
@@ -174,7 +201,26 @@
   }
 </script>
 
-<header>{data?.billingaccount?.name} billing usage</header>
+<header>Linked to 
+  <Button
+    variant="outline"
+    size="base"
+    onclick={() => {
+      goto(base + "/billingaccount/" + data.billingaccount?._id);
+    }}
+  >
+  {data?.billingaccount?.name}
+  </Button> 's <Button
+  variant="outline"
+  size="base"
+  onclick={() => {
+    goto(base + "/billingaccount/" + data.billingaccount?._id + "/billing");
+  }}
+>
+billing usage
+</Button>
+</header>
+
 <div class="flex flex-wrap gap-4">
   {#each resources as resource}
     <Card.Root class="w-[450px] h-[500px] flex flex-col justify-around">
@@ -261,6 +307,13 @@
             <div class="flex-1 space-y-1">
               <p class="text-muted-foreground text-sm">
                 {resource.name}
+                <Button
+                variant="outline"
+                size="base"
+                onclick={() => decrement(sheetresource, resource.product)}
+              >
+                <Trash />
+              </Button>
               </p>
             </div>
           </div>

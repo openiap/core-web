@@ -6,10 +6,7 @@ export class Resource {
     _id: string = "";
     name: string = "";
     target: ResourceTargetType = ResourceTargetType.customer;
-    customerassign: ResourceVariantType = ResourceVariantType.single;
-    workspaceassign: ResourceVariantType = ResourceVariantType.single;
-    userassign: ResourceVariantType = ResourceVariantType.single;
-    memberassign: ResourceVariantType = ResourceVariantType.single;
+    assign: ResourceVariantType = ResourceVariantType.single;
     defaultmetadata: any = {};
     products: Product[] = [];
     allowdirectassign: boolean = false;
@@ -20,10 +17,8 @@ export class Product {
     name: string = "";
     stripeproduct: string = "";
     stripeprice: string = "";
-    customerassign: ResourceAssignedType = ResourceAssignedType.single;
-    workspaceassign: ResourceAssignedType = ResourceAssignedType.single;
-    userassign: ResourceAssignedType = ResourceAssignedType.single;
-    memberassign: ResourceAssignedType = ResourceAssignedType.single;
+    lookup_key: string = "";
+    assign: ResourceAssignedType = ResourceAssignedType.single;
     added_stripeprice: string = "";
     added_resourceid: string = "";
     added_quantity_multiplier: number = 0;
@@ -59,6 +54,7 @@ export declare enum ResourceTargetType {
     workspace = "workspace",
     user = "user",
     member = "member",
+    agent = "agent"
 }
 export declare enum ResourceVariantType {
     single = "singlevariant",

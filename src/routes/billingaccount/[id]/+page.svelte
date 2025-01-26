@@ -16,6 +16,7 @@
   import { customerSchema } from "../schema.js";
   import { Check } from "lucide-svelte";
     import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
+    import Button from "$lib/components/ui/button/button.svelte";
 
   const key = "billingaccount";
   let showdebug = $state(false);
@@ -54,6 +55,43 @@
   {$message}
 {/if}
 
+<header>
+<Button
+  variant="outline"
+  size="base"
+  onclick={() => {
+    goto(base + "/billingaccount/" + data.id + "/billing");
+  }}
+>
+billing usage
+</Button>
+{#if data.item?.stripeid != null && data.item?.stripeid != ""}
+<Button
+  variant="outline"
+  size="base"
+  onclick={async () => {
+    try {
+      const link = await auth.client.CustomCommand({
+      command: "getbillingportallink",
+      id: data.id,
+      jwt: auth.access_token,
+    });
+    if(link != null && link != "") {
+      document.location.href = link.split('"').join("");
+    } else {
+      toast.error("Error opening billing portal");
+    }        
+    } catch (error:any) {
+      toast.error("Error opening billing portal", {
+        description: error.message,
+      });
+    }
+  }}
+>
+  Open Billing Portal
+</Button>
+{/if}
+</header>
 <form method="POST" use:enhance>
   <!-- TODO: I don't beleive we should have ACL on this page ? -->
   <!-- <Acl bind:value={$formData} /> -->

@@ -73,9 +73,10 @@
             if (workspace == null) {
               throw new Error("Workspace not found");
             }
-
             // @ts-ignore
-            form.data._acl = workspace._acl;
+            form.data._acl = [...form.data._acl, ...workspace._acl];
+            // @ts-ignore
+            form.data._workspaceid = workspace._id;
           }
           if (form.data.stripeprice != null && form.data.stripeprice != "") {
             if (product == null) {
@@ -86,16 +87,6 @@
             workspace != null &&
             data.item.stripeprice != form.data.stripeprice
           ) {
-            if (data.item.stripeprice != null && data.item.stripeprice != "" && data.item._resourceusageid != null && data.item._resourceusageid != "") { 
-              await auth.client.CustomCommand({
-                command: "removeresourceusage",
-                data: JSON.stringify({
-                  target: data.item,
-                  resourceusageid: data.item._resourceusageid,
-                }),
-                jwt: auth.access_token,
-              });
-            }
             if (
               workspace != null &&
               form.data.stripeprice != null &&
@@ -104,20 +95,30 @@
               if (product == null) {
                 throw new Error("Product not found");
               }
-              if(workspace._billingid == null || workspace._billingid == "") {
-                throw new Error("workspace " + workspace.name + " does not have a billing account");
+              if (workspace._billingid == null || workspace._billingid == "") {
+                throw new Error(
+                  "workspace " +
+                    workspace.name +
+                    " does not have a billing account",
+                );
               }
-              await auth.client.CustomCommand({
-                command: "createresourceusage",
-                data: JSON.stringify({
-                  target: form.data,
-                  billingid: workspace._billingid,
-                  workspaceid: workspace._id,
-                  resourceid: resource._id,
-                  productname: product?.name,
+              const { result, link } = JSON.parse(
+                await auth.client.CustomCommand({
+                  command: "createresourceusage",
+                  data: JSON.stringify({
+                    target: form.data,
+                    billingid: workspace._billingid,
+                    workspaceid: workspace._id,
+                    resourceid: resource._id,
+                    productname: product?.name,
+                    allowreplace: true,
+                  }),
+                  jwt: auth.access_token,
                 }),
-                jwt: auth.access_token,
-              });
+              );
+              if (link != null && link != "") {
+                document.location.href = link;
+              }
             }
           }
 
@@ -141,11 +142,11 @@
           } finally {
             loading = false;
           }
-        } catch (error:any) {
+        } catch (error: any) {
           toast.error("Error", {
-              description: error.message,
-            });
-            cancel();
+            description: error.message,
+          });
+          cancel();
         } finally {
           loading = false;
         }
@@ -154,6 +155,9 @@
       }
     },
   });
+  if(data.item.stripeprice == null) {
+    data.item.stripeprice = "";
+  }
   const { form: formData, enhance, message, validateForm } = form;
   formData.set(data.item);
   validateForm({ update: true });
@@ -183,6 +187,10 @@
     },
   ]);
   if (data.agentInstance != null) {
+    data.agentInstance.products = data.agentInstance.products.filter(
+      (x: any) => x.deprecated != true || x.stripeprice == $formData.stripeprice,
+    );
+
     products = [
       { stripeprice: "", name: "Free tier" },
       ...data.agentInstance.products,
@@ -399,6 +407,9 @@
     }
   }
 </script>
+
+
+<!-- <SuperDebug data={formData} theme="vscode" /> -->
 
 <div class="px-6">
   {#if errormessage && errormessage != ""}
