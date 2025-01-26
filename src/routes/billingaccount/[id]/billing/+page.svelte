@@ -8,7 +8,7 @@
   import { auth } from "$lib/stores/auth.svelte.js";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import { Resource, ResourceUsage, type Product } from "$lib/types.svelte.js";
-  import { Check, Trash } from "lucide-svelte";
+  import { Check, LucideBadgeDollarSign, Minus, Plus, Trash } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   const { data } = $props();
@@ -29,6 +29,7 @@
       query: { _type: "resource" },
       jwt: auth.access_token,
     });
+    cleanResources();
     key++;
   }
 
@@ -199,6 +200,26 @@
     });
     return quantity;
   }
+  function cleanResources() {
+    for(let i = 0; i < resources.length; i++) {
+      let resource = resources[i];
+      for(let y = 0; y < resource.products.length; y++) {
+        let product = resource.products[y];
+        let remove = product.deprecated && quantity(resource, product) == 0;
+        if(remove) {
+          resource.products.splice(y, 1);
+          y--;
+        }
+      }
+
+      let remove = (resource.deprecated && rquantity(resource) == 0) || resource.products.length == 0;
+      if(remove) {
+        resources.splice(i, 1);
+        i--;
+      }
+    }
+  }
+  cleanResources();
 </script>
 <header>
   <Button
@@ -222,7 +243,7 @@
           jwt: auth.access_token,
         });
         if(link != null && link != "") {
-          document.location.href = link;
+          document.location.href = link.split('"').join("");
         } else {
           toast.error("Error opening billing portal");
         }        
@@ -236,15 +257,6 @@
       Open Billing Portal
     </Button>
   {/if}
-  <Button
-  variant="outline"
-  size="base"
-  onclick={() => {
-    goto(base + "/billingaccount/" + data.billingaccount?._id);
-  }}
->
-{data?.billingaccount?.name}
-</Button> 's billing usage
 
 </header>
 
@@ -277,7 +289,7 @@
                         variant="outline"
                         size="base"
                         onclick={() => increment(resource, product)}
-                        >Increase</Button
+                        ><Plus /></Button
                       >
                     {:else}
                       <Button
@@ -285,7 +297,7 @@
                         size="base"
                         disabled={true}
                         onclick={() => increment(resource, product)}
-                        >Increase</Button
+                        ><Plus /></Button
                       >
                     {/if}
                     <Button
@@ -293,7 +305,7 @@
                       size="base"
                       disabled={quantity(resource, product) == 0}
                       onclick={() => decrement(resource, product)}
-                      >Decrease</Button
+                      ><Minus /></Button
                     >
                   </td>
                 </tr>
@@ -306,12 +318,13 @@
         <Button
           variant="outline"
           size="base"
+          disabled={rquantity(resource) == 0}
           onclick={() => {
             sheetresource = resource;
             toggleSheet = true;
           }}
         >
-          <Check />
+          <LucideBadgeDollarSign />
           Detailed Usage
         </Button>
       </Card.Footer>

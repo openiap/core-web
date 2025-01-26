@@ -32,6 +32,7 @@ import Button from "$lib/components/ui/button/button.svelte";
       },
       jwt: auth.access_token,
     });
+    cleanResources();
     key++;
   }
 
@@ -199,6 +200,26 @@ import Button from "$lib/components/ui/button/button.svelte";
     });
     return quantity;
   }
+  function cleanResources() {
+    for(let i = 0; i < resources.length; i++) {
+      let resource = resources[i];
+      for(let y = 0; y < resource.products.length; y++) {
+        let product = resource.products[y];
+        let remove = product.deprecated && quantity(resource, product) == 0;
+        if(remove) {
+          resource.products.splice(y, 1);
+          y--;
+        }
+      }
+
+      let remove = (resource.deprecated && rquantity(resource) == 0) || resource.products.length == 0;
+      if(remove) {
+        resources.splice(i, 1);
+        i--;
+      }
+    }
+  }
+  cleanResources();
 </script>
 
 <header>Linked to 

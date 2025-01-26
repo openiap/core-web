@@ -11,6 +11,7 @@ export class Resource {
     products: Product[] = [];
     allowdirectassign: boolean = false;
     order: number = 0;
+    deprecated: boolean = false;
     key: number = $state(0);
 }
 export class Product {
@@ -25,6 +26,7 @@ export class Product {
     metadata: any = {};
     allowdirectassign: boolean = false;
     order: number = 0;
+    deprecated: boolean = false;
     key: number = $state(0);
 }
 export class ResourceUsage {
