@@ -22,8 +22,13 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 		datacomponent.loadsettings(page);
 		switch (page) {
 			case base + "/agent":
-				entities = await datacomponent.GetData(page, "agents", { _type: "agent" }, access_token);
-				total_count = await datacomponent.GetCount(page, "agents", { _type: "agent" }, access_token);
+				if(usersettings.currentworkspace != null && usersettings.currentworkspace != ""){
+					entities = await datacomponent.GetData(page, "agents", { _type: "agent", _workspaceid: usersettings.currentworkspace }, access_token);
+					total_count = await datacomponent.GetCount(page, "agents", { _type: "agent", _workspaceid: usersettings.currentworkspace }, access_token);
+				} else {
+					entities = await datacomponent.GetData(page, "agents", { _type: "agent" }, access_token);
+					total_count = await datacomponent.GetCount(page, "agents", { _type: "agent" }, access_token);
+				}
 				break;
 			case base + "/auditlog":
 				entities = await datacomponent.GetData(page, "audit", { }, access_token);
