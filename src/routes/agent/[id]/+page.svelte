@@ -771,7 +771,7 @@
 
         <HotkeyButton onclick={addpackage}>
           <Box />
-          Run package</HotkeyButton
+          Add package</HotkeyButton
         >
       </div>
     </div>
