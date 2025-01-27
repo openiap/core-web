@@ -51,6 +51,7 @@
         command: "deleteagent",
         id: item._id,
         name: item.slug,
+        jwt: auth.access_token,
       });
       toast.success("Deleted successfully", {
         description: "",
@@ -72,6 +73,7 @@
             command: "deleteagent",
             id: item._id,
             name: item.slug,
+            jwt: auth.access_token,
           });
         } catch (error: any) {
           haderror = true;
@@ -167,12 +169,12 @@
     try {
       if (knownpods.length == 0 || force == true) {
         knownpods = JSON.parse(
-          await auth.client.CustomCommand({ command: "getagentpods" }),
+          await auth.client.CustomCommand({ command: "getagentpods", jwt: auth.access_token, }),
         );
       }
       if (clients.length == 0) {
         clients = JSON.parse(
-          await auth.client.CustomCommand({ command: "getclients" }),
+          await auth.client.CustomCommand({ command: "getclients", jwt: auth.access_token, }),
         );
       }
 
@@ -193,6 +195,7 @@
         command: "deleteagent",
         id: deleteData._id,
         name: deleteData.slug,
+        jwt: auth.access_token,
       });
       toast.success("Deleted successfully", {
         description: "",
@@ -408,6 +411,7 @@
               command: "startagent",
               id: item._id,
               name: item.slug,
+              jwt: auth.access_token,
             });
             toast.success("Started successfully", {
               description: "",
@@ -433,6 +437,7 @@
               command: "stopagent",
               id: item._id,
               name: item.slug,
+              jwt: auth.access_token,
             });
             toast.success("Stopped successfully", {
               description: "",
