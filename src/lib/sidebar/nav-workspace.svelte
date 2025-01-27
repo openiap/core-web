@@ -33,6 +33,9 @@
     async function selectWorkspace(workspace: Workspace) {
         update_currentworkspace(workspace._id);
     }
+    const hasBilling = $derived(() => {
+        return activeWorkspace()?._billingid != null && activeWorkspace()?._billingid != "";
+    });
 </script>
 
 <Sidebar.Menu>
@@ -120,7 +123,7 @@
                         <Pencil class="size-4" />
                         Edit {activeWorkspacename()}
                     </DropdownMenu.Item>
-                    {#if auth.profile?.roles.includes("admins")}
+                    {#if hasBilling()}
                         <DropdownMenu.Item
                             onSelect={() =>
                                 goto(
