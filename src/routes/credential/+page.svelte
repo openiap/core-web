@@ -8,10 +8,7 @@
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
-  import {
-      data as data1,
-      data as datacomponent,
-  } from "$lib/entities/data.svelte.js";
+  import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
   import { SearchInput } from "$lib/searchinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
@@ -51,7 +48,7 @@
       toast.success("Deleted successfully", {
         description: "",
       });
-      entities = await data1.GetData(
+      entities = await datacomponent.GetData(
         page,
         collectionname,
         query,

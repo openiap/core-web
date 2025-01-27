@@ -11,7 +11,6 @@
   import { base } from "$app/paths";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import Input from "$lib/components/ui/input/input.svelte";
-  import { data as data1 } from "$lib/entities/data.svelte.js";
   import { SearchInput } from "$lib/searchinput";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
@@ -75,7 +74,7 @@
               description: "",
             });
             fileData = null;
-            entities = await data1.GetData(
+            entities = await datacomponent.GetData(
               page,
               collectionname,
               query,
@@ -120,7 +119,7 @@
       toast.success("Deleted successfully", {
         description: "",
       });
-      entities = await data1.GetData(
+      entities = await datacomponent.GetData(
         page,
         collectionname,
         query,
