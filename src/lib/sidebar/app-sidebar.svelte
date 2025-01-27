@@ -132,7 +132,9 @@
 	import type { ComponentProps } from "svelte";
 	import type { Workspace } from "../../routes/workspace/schema";
 	import NavWorkspace from "./nav-workspace.svelte";
-	import { MessageSquare } from "lucide-svelte";
+	import { MessageSquare, Bot } from "lucide-svelte";
+	import IconRenderer from "./IconRenderer.svelte";
+
 	// Extend the ComponentProps type to include the workspaces property
 	type ExtendedComponentProps = ComponentProps<typeof Sidebar.Root> & {
 		workspaces?: Workspace[];
@@ -268,7 +270,9 @@
 															target="_blank"
 															rel="noopener noreferrer"
 														>
-															<MessageSquare />
+															<IconRenderer
+																title={item.title}
+															/>
 															{item.title}</a
 														>
 													{:else}
@@ -276,7 +280,9 @@
 															href={item.url}
 															{...props}
 														>
-															<MessageSquare />
+															<IconRenderer
+																title={item.title}
+															/>
 															{item.title}</a
 														>
 													{/if}
