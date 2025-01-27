@@ -131,13 +131,6 @@
                 product.lookup_key != null &&
                 product.lookup_key != "")),
         );
-        // let usage = entities.filter(
-        //   (x) =>
-        //     x.resourceid == resource._id &&
-        //     x.product.stripeprice == product.stripeprice &&
-        //     x.workspaceid == target._id,
-        // );
-
         if (usage.length == 1) {
           resourceusage = usage[0];
         }
@@ -157,6 +150,9 @@
           throw new Error("Remove plan from agent page or click Detail Usage");
         }
       }
+      if(resourceusage == null) {
+        throw new Error("Failed finding resource. Click Detail Usage to remove");
+      }
       await auth.client.CustomCommand({
         command: "removeresourceusage",
         id: resourceusage._id,
@@ -170,13 +166,20 @@
       });
     }
   }
-  function removeresource(resource: Resource) {
-    let exists = entities.filter((x) => x.resourceid == resource._id);
-    if (exists == null || exists.length === 0) return;
-    exists.forEach((x) => {
-      x.quantity = 0;
-    });
-    key++;
+  async function removeresourceusage(resourceusage: ResourceUsage) {
+    try {
+      await auth.client.CustomCommand({
+        command: "removeresourceusage",
+        id: resourceusage._id,
+        jwt: auth.access_token,
+      });
+      toast.success("Resource unassigned");
+      await GetData();
+    } catch (error: any) {
+      toast.error("Error unassigning resource", {
+        description: error.message,
+      });
+    }
   }
   function quantity(resource: Resource, product: Product) {
     let usage = entities.filter(
@@ -350,7 +353,7 @@
                 <Button
                   variant="outline"
                   size="base"
-                  onclick={() => decrement(sheetresource, resource.product)}
+                  onclick={() => removeresourceusage(resource)}
                 >
                   <Trash />
                 </Button>

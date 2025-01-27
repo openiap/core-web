@@ -154,8 +154,9 @@ import Button from "$lib/components/ui/button/button.svelte";
           throw new Error("Remove plan from agent page or click Detail Usage");
         }
       }
-      console.log("removing", resourceusage);
-      
+      if(resourceusage == null) {
+        throw new Error("Failed finding resource. Click Detail Usage to remove");
+      }
       await auth.client.CustomCommand({
         command: "removeresourceusage",
         id: resourceusage._id,
@@ -169,13 +170,20 @@ import Button from "$lib/components/ui/button/button.svelte";
       });
     }
   }
-  function removeresource(resource: Resource) {
-    let exists = entities.filter((x) => x.resourceid == resource._id);
-    if (exists == null || exists.length === 0) return;
-    exists.forEach((x) => {
-      x.quantity = 0;
-    });
-    key++;
+  async function removeresourceusage(resourceusage: ResourceUsage) {
+    try {
+      await auth.client.CustomCommand({
+        command: "removeresourceusage",
+        id: resourceusage._id,
+        jwt: auth.access_token,
+      });
+      toast.success("Resource unassigned");
+      await GetData();
+    } catch (error: any) {
+      toast.error("Error unassigning resource", {
+        description: error.message,
+      });
+    }
   }
   function quantity(resource: Resource, product: Product) {
     let usage = entities.filter(
@@ -331,7 +339,7 @@ billing usage
                 <Button
                 variant="outline"
                 size="base"
-                onclick={() => decrement(sheetresource, resource.product)}
+                onclick={() => removeresourceusage(resource)}
               >
                 <Trash />
               </Button>
