@@ -23,8 +23,13 @@
   const { data } = $props();
   let currentworkspace = $state(data.currentworkspace);
 
+
+  let _billingid = "";
+  if(data.entities.length == 1) {
+    _billingid = data.entities[0]._id;
+  }
   let workspaces = $state(data.workspaces);
-  let billingid = $state("");
+  let billingid = $state(_billingid);
   let entities = $state(data.entities);
   const billingname = $derived(() => {
     if (billingid == null || billingid == "") return "Billing Account";
