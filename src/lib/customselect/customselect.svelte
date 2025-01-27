@@ -1,9 +1,11 @@
 <script lang="ts">
 	import * as Select from "$lib/components/ui/select";
+	function onvc(value: any) {
+	}
 	let {
 		class: className = "h-8",
 		value = $bindable(""),
-		onValueChangeFunction = null,
+		onValueChangeFunction = onvc,
 		triggerContent = () => {},
 		type,
 		loading = false,
