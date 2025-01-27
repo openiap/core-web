@@ -1,17 +1,8 @@
-<script lang="ts" module>
-  export let page = "billingaccount";
-  export let collectionname = "users";
-  export let query = { _type: "billingaccount" };
-</script>
-
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
-  import {
-    data as data1,
-    data as datacomponent,
-  } from "$lib/entities/data.svelte.js";
+  import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
   import { SearchInput } from "$lib/searchinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
@@ -26,6 +17,9 @@
   let entities = $state(data.entities);
   let showWarning = $state(false);
   let deleteData: any = $state({});
+  let page = "billingaccount";
+  let collectionname = "users";
+  let query = { _type: "customer" };
 
   async function deleteitem(item: any) {
     try {
@@ -35,6 +29,13 @@
         jwt: auth.access_token,
       });
       toast.success("Billing acccount removed");
+      entities = await datacomponent.GetData(
+      "billingaccount",
+      collectionname,
+      query,
+      auth.access_token, false
+
+    );
     } catch (error: any) {
       toast.error("Error while deleting", {
         description: error.message,
@@ -42,19 +43,13 @@
     }
   }
   function single_item_click(item: any) {
-    goto(base + `/${page}/${item._id}`);
+    goto(base + `/billingaccount/${item._id}`);
   }
   function open_billing(item: any) {
-    goto(base + `/${page}/${item._id}/billing`);
+    goto(base + `/billingaccount/${item._id}/billing`);
   }
   async function handleAccept() {
     await deleteitem(deleteData);
-    entities = await data1.GetData(
-      page,
-      collectionname,
-      query,
-      auth.access_token,
-    );
   }
 </script>
 
@@ -76,7 +71,7 @@
     size="sm"
     variant="base"
     aria-label="Create Billing Account"
-    onclick={() => goto(base + `/${page}/new`)}
+    onclick={() => goto(base + `/billingaccount/new`)}
   >
     <Plus />
     Create Billing Account</HotkeyButton
