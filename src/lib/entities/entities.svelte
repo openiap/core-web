@@ -245,12 +245,14 @@
 			data.settings.page_index = page_index;
 			data.persist();
 			data.loadsettings(page);
+			total_count = 99999;
 			_collectionname = collectionname;
 			_searchstring = data.settings.searchstring;
 			searchstring = data.settings.searchstring;
 			selected_items = data.settings.selected_items;
 			page_index = data.settings.page_index;
 			GetData();
+			GetCount();
 		}
 		data.settings.searchstring = $state.snapshot(searchstring);
 		data.settings.selected_items = selected_items;
