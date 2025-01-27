@@ -14,8 +14,8 @@
 <th
 	bind:this={ref}
 	class={cn(
-		"text-muted-foreground h-10 px-3 text-left align-middle [&:has([role=checkbox])]:pr-0",
-		className
+		"text-muted-foreground h-10 px-1.5 text-left align-middle [&:has([role=checkbox])]:pr-0",
+		className,
 	)}
 	{...restProps}
 >

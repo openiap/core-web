@@ -137,7 +137,7 @@
   <div class="mb-2">Upload New File</div>
   <div class="flex space-x-2">
     <CustomInput
-      size="sm"
+      height="h-7"
       disabled={loading}
       type="file"
       bind:value={fileData}
