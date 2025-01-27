@@ -395,6 +395,7 @@
         command: "deleteagent",
         id: deleteData._id,
         name: deleteData.slug,
+        jwt: auth.access_token,
       });
       toast.success("Deleted successfully", {
         description: "",
@@ -462,6 +463,7 @@
                   command: "getagentlog",
                   id: data.item._id,
                   name: resourceMonitor.metadata.name,
+                  jwt: auth.access_token,
                 });
                 lines = JSON.parse(lines);
                 if (lines != null) {

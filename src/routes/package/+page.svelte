@@ -32,6 +32,7 @@
       await auth.client.CustomCommand({
         command: "deletepackage",
         id: deleteData._id,
+        jwt: auth.access_token,
       });
       toast.success("Deleted successfully", {
         description: "",

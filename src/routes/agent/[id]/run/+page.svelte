@@ -56,6 +56,7 @@
         data: { command: "addcommandstreamid" },
         replyto: queuename,
         queuename: agent.slug + "agent",
+        jwt: auth.access_token,
       },
       false,
     );
@@ -66,6 +67,7 @@
         data: { command: "listprocesses" },
         replyto: queuename,
         queuename: agent.slug + "agent",
+        jwt: auth.access_token,
       },
       false,
     );
@@ -80,6 +82,7 @@
           queuename: queuename,
         },
         queuename: agent.slug + "agent",
+        jwt: auth.access_token,
       },
       false,
     );
@@ -90,6 +93,7 @@
       {
         data: { command: "kill", id: id },
         queuename: agent.slug + "agent",
+        jwt: auth.access_token,
       },
       false,
     );
@@ -101,6 +105,7 @@
         {
           data: { command: "kill", id: deleteData.id },
           queuename: agent.slug + "agent",
+          jwt: auth.access_token,
         },
         false,
       );

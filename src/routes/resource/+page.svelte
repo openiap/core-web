@@ -41,7 +41,7 @@
   }
   async function createcommon() {
     try {
-      auth.client.CustomCommand({ command: "createcommonresources" });
+      auth.client.CustomCommand({ command: "createcommonresources", jwt: auth.access_token, });
       toast.success("Created common resources", {
         description: "",
       });

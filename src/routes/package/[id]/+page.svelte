@@ -102,6 +102,7 @@
       });
       var filecontent: any = await auth.client.DownloadFile({
         id: item._id,
+        jwt: auth.access_token,
       });
       var blob = new Blob([filecontent], { type: item.contentType });
       var link = document.createElement("a");

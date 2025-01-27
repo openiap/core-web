@@ -32,6 +32,7 @@
       await auth.client.CustomCommand({
         command: "removebilling",
         id: item._id,
+        jwt: auth.access_token,
       });
       toast.success("Billing acccount removed");
     } catch (error: any) {

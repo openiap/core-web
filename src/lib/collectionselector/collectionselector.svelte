@@ -10,7 +10,7 @@
             "Select a collection",
     );
     async function getData() {
-        collections = (await auth.client.ListCollections()).map(
+        collections = (await auth.client.ListCollections({jwt: auth.access_token})).map(
             (col) => col.name,
         );
     }

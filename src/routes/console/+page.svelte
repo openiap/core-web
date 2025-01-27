@@ -51,7 +51,7 @@
 
   if (browser) {
     auth.client.RegisterExchange(
-      { exchangename: "openflow_logs", algorithm: "fanout" },
+      { exchangename: "openflow_logs", algorithm: "fanout", jwt: auth.access_token, },
       (msg: any, payload: any, user: any, jwt: string) => {
         if (pause == true) return;
         if (payload.lvl == 0) payload.lvl = "inf";
