@@ -51,6 +51,7 @@ class entitiesdata {
 			collectionname: collectionname,
 			query: usequery,
 			orderby: orderby,
+			projection: {"Xaml": 0, "xml": 0}, // exclude Xaml (openrpa workflows) and xml (openrpa instance state) fields
 			skip: skip,
 			top: top,
 			queryas,

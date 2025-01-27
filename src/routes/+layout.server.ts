@@ -94,6 +94,10 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 				entities = await datacomponent.GetData(page, "users", { _type: "role" }, access_token);
 				total_count = await datacomponent.GetCount(page, "users", { _type: "role" }, access_token);
 				break;
+			case base + "/rpaworkflow":
+				entities = await datacomponent.GetData(page, "openrpa", { _type: "workflow" }, access_token);
+				total_count = await datacomponent.GetCount(page, "openrpa", { _type: "workflow" }, access_token);
+				break;
 			case base + "/user":
 				entities = await datacomponent.GetData(page, "users", { _type: "user" }, access_token);
 				total_count = await datacomponent.GetCount(page, "users", { _type: "user" }, access_token);
