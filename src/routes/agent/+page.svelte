@@ -44,6 +44,7 @@
   let deleteData: any = $state({});
   let knownpods: any = [];
   let clients: any = [];
+  let filterby: "all" | "daemon" | "pods" | "docker" | "assistant" = "all";
 
   async function deleteitem(item: any) {
     try {
@@ -61,6 +62,36 @@
         description: error.message,
       });
     }
+  }
+  async function GetData() {
+    let query:any = { _type: "agent" };
+    if (filterby == "all") {
+    } else if (filterby == "daemon") {
+      query = { _type: "agent", daemon: true, }
+    } else if (filterby == "assistant") {
+      query = { _type: "agent", assistant: true, }
+    } else if ( filterby == "docker") {
+      query = { _type: "agent", docker: true, }
+    } else if (filterby == "pods") {
+    }
+    if(usersettings.currentworkspace != null && usersettings.currentworkspace != ""){
+      query._workspaceid = usersettings.currentworkspace;
+    }
+    const _entities = await datacomponent.GetData(
+        page,
+        collectionname,
+        query,
+        auth.access_token,
+    );
+    console.log(_entities, query);
+    if (filterby == "pods") {
+      entities = _entities.filter((x: any) =>
+        knownpods.some((y: any) => x._id === y.metadata.labels.agentid),
+      );
+    } else {
+      entities = _entities;
+    }
+
   }
   async function deleteitems(ids: string[]) {
     let haderror = false;
@@ -84,12 +115,7 @@
         }
       }
     }
-    entities = await datacomponent.GetData(
-      page,
-      collectionname,
-      query,
-      auth.access_token,
-    );
+    GetData();
     if (!haderror) {
       toast.success(
         "Successfully deleted " + selected_items.length + " agent(s)",
@@ -169,12 +195,18 @@
     try {
       if (knownpods.length == 0 || force == true) {
         knownpods = JSON.parse(
-          await auth.client.CustomCommand({ command: "getagentpods", jwt: auth.access_token, }),
+          await auth.client.CustomCommand({
+            command: "getagentpods",
+            jwt: auth.access_token,
+          }),
         );
       }
       if (clients.length == 0) {
         clients = JSON.parse(
-          await auth.client.CustomCommand({ command: "getclients", jwt: auth.access_token, }),
+          await auth.client.CustomCommand({
+            command: "getclients",
+            jwt: auth.access_token,
+          }),
         );
       }
 
@@ -200,12 +232,7 @@
       toast.success("Deleted successfully", {
         description: "",
       });
-      entities = await datacomponent.GetData(
-        page,
-        collectionname,
-        query,
-        auth.access_token,
-      );
+      GetData();
 
       await getPods(false);
       usersettings.persist();
@@ -258,12 +285,7 @@
       size="sm"
       variant="base"
       onclick={async () => {
-        entities = await datacomponent.GetData(
-          page,
-          collectionname,
-          query,
-          auth.access_token,
-        );
+        GetData();
         await getPods(true);
       }}
     >
@@ -281,12 +303,8 @@
         value="All"
         id="r1"
         onclick={async () => {
-          entities = await datacomponent.GetData(
-            page,
-            collectionname,
-            query,
-            auth.access_token,
-          );
+          filterby = "all";
+          GetData();
           getPods(false);
         }}
       />
@@ -298,15 +316,8 @@
         value="Daemon"
         id="r2"
         onclick={async () => {
-          entities = await datacomponent.GetData(
-            page,
-            collectionname,
-            {
-              _type: "agent",
-              daemon: true,
-            },
-            auth.access_token,
-          );
+          filterby = "daemon";
+          GetData();
           getPods(false);
         }}
       />
@@ -318,15 +329,8 @@
         value="Pods"
         id="r3"
         onclick={async () => {
-          const result = await datacomponent.GetData(
-            page,
-            collectionname,
-            query,
-            auth.access_token,
-          );
-          entities = result.filter((x: any) =>
-            knownpods.some((y: any) => x._id === y.metadata.labels.agentid),
-          );
+          filterby = "pods";
+          GetData();
           getPods(false);
         }}
       />
@@ -338,15 +342,8 @@
         value="Docker"
         id="r4"
         onclick={async () => {
-          entities = await datacomponent.GetData(
-            page,
-            collectionname,
-            {
-              _type: "agent",
-              docker: true,
-            },
-            auth.access_token,
-          );
+          filterby = "docker";
+          GetData();
           getPods(false);
         }}
       />
@@ -358,15 +355,8 @@
         value="Assistant"
         id="r5"
         onclick={async () => {
-          entities = await datacomponent.GetData(
-            page,
-            collectionname,
-            {
-              _type: "agent",
-              assistant: true,
-            },
-            auth.access_token,
-          );
+          filterby = "assistant";
+          GetData();
           getPods(false);
         }}
       />
@@ -449,7 +439,6 @@
             });
           }
         }}
-        
       >
         <Square />
       </HotkeyButton>
