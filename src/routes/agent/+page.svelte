@@ -217,7 +217,7 @@
 
 <div class="flex justify-between">
   <div class="flex space-x-5 w-full">
-    <SearchInput {searchstring} />
+    <SearchInput bind:searchstring />
     <HotkeyButton
       size="sm"
       variant="base"

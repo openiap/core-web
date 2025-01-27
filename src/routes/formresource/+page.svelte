@@ -64,7 +64,7 @@
 
 <div class="flex justify-between">
   <div class="flex gap-2 w-full">
-    <SearchInput {searchstring} />
+    <SearchInput bind:searchstring />
     <HotkeyButton
       aria-label="Filter"
       class="border-dashed dark:text-bw600"
