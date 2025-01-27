@@ -7,7 +7,6 @@ import type { PageLoad } from "./$types.js";
 export const load: PageLoad = async ({ parent, params }) => {
   const { access_token } = await parent();
   let data: any = {};
-  console.log(params);
   let id = params.id;
   let collection = params.collection;
   try {
