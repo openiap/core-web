@@ -9,6 +9,15 @@
 		loading = false,
 		selectitems = [],
 	} = $props();
+
+	function getValue(item:any) {
+		if(item == null) return "";
+		if(item._id != null) return item._id;
+		if(item.image != null) return item.image;
+		if(item.stripeprice != null) return item.stripeprice;
+		if(item.value != null) return item.value;
+		return "";
+	}
 </script>
 
 <Select.Root
@@ -28,10 +37,7 @@
 	>
 		{#each selectitems as item}
 			<Select.Item
-				value={item?._id ||
-					item?.image ||
-					item?.stripeprice ||
-					item?.value}
+				value={getValue(item)}
 				label={item.name}
 				class={` ${value === (item?._id || item?.image || item?.stripeprice || item?.value) && "border dark:border-bw600 dark:bg-bw700 "} rounded-[10px] dark:text-bw100`}
 				>{item?.name || item?.label}</Select.Item
