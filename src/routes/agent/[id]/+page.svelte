@@ -102,22 +102,30 @@
                     " does not have a billing account",
                 );
               }
-              const { result, link } = JSON.parse(
+              if (product.stripeprice == "") {
                 await auth.client.CustomCommand({
-                  command: "createresourceusage",
-                  data: JSON.stringify({
-                    target: form.data,
-                    billingid: workspace._billingid,
-                    workspaceid: workspace._id,
-                    resourceid: resource._id,
-                    productname: product?.name,
-                    allowreplace: true,
-                  }),
+                  command: "removeresourceusage",
+                  id: form.data._resourceusageid as any,
                   jwt: auth.access_token,
-                }),
-              );
-              if (link != null && link != "") {
-                document.location.href = link;
+                });
+              } else {
+                const { result, link } = JSON.parse(
+                  await auth.client.CustomCommand({
+                    command: "createresourceusage",
+                    data: JSON.stringify({
+                      target: form.data,
+                      billingid: workspace._billingid,
+                      workspaceid: workspace._id,
+                      resourceid: resource._id,
+                      productname: product?.name,
+                      allowreplace: true,
+                    }),
+                    jwt: auth.access_token,
+                  }),
+                );
+                if (link != null && link != "") {
+                  document.location.href = link;
+                }
               }
             }
           }
@@ -155,7 +163,7 @@
       }
     },
   });
-  if(data.item.stripeprice == null) {
+  if (data.item.stripeprice == null) {
     data.item.stripeprice = "";
   }
   const { form: formData, enhance, message, validateForm } = form;
@@ -188,7 +196,8 @@
   ]);
   if (data.agentInstance != null) {
     data.agentInstance.products = data.agentInstance.products.filter(
-      (x: any) => x.deprecated != true || x.stripeprice == $formData.stripeprice,
+      (x: any) =>
+        x.deprecated != true || x.stripeprice == $formData.stripeprice,
     );
 
     products = [
@@ -408,7 +417,6 @@
     }
   }
 </script>
-
 
 <!-- <SuperDebug data={formData} theme="vscode" /> -->
 
