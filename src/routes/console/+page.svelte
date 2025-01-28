@@ -5,14 +5,13 @@
 </script>
 
 <script lang="ts">
-  import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { browser } from "$app/environment";
-  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label/index.js";
   import { Switch } from "$lib/components/ui/switch/index.js";
+  import { CustomSuperDebug } from "$lib/customsuperdebug";
+  import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { auth } from "$lib/stores/auth.svelte.js";
-  import SuperDebug from "sveltekit-superforms";
 
   let { data } = $props();
   datacomponent.parsesettings(data.settings);
@@ -20,7 +19,8 @@
   if (data.entities.length > 0) {
     dataconfig = data.entities[0];
     if (dataconfig != null) {
-      if (dataconfig.log_to_exchange == null) dataconfig.log_to_exchange = false;
+      if (dataconfig.log_to_exchange == null)
+        dataconfig.log_to_exchange = false;
       if (dataconfig.log_cache == null) dataconfig.log_cache = false;
       if (dataconfig.log_amqp == null) dataconfig.log_amqp = false;
       if (dataconfig.log_websocket == null) dataconfig.log_websocket = false;
@@ -28,15 +28,21 @@
       if (dataconfig.log_oauth == null) dataconfig.log_oauth = false;
       if (dataconfig.log_database == null) dataconfig.log_database = false;
       if (dataconfig.log_grafana == null) dataconfig.log_grafana = false;
-      if (dataconfig.log_housekeeping == null) dataconfig.log_housekeeping = false;
+      if (dataconfig.log_housekeeping == null)
+        dataconfig.log_housekeeping = false;
       if (dataconfig.log_git == null) dataconfig.log_git = false;
-      if (dataconfig.log_login_provider == null) dataconfig.log_login_provider = false;
+      if (dataconfig.log_login_provider == null)
+        dataconfig.log_login_provider = false;
       if (dataconfig.log_otel == null) dataconfig.log_otel = false;
-      if (dataconfig.log_blocked_ips == null) dataconfig.log_blocked_ips = false;
+      if (dataconfig.log_blocked_ips == null)
+        dataconfig.log_blocked_ips = false;
       if (dataconfig.log_openapi == null) dataconfig.log_openapi = false;
-      if (dataconfig.log_database_queries == null) dataconfig.log_database_queries = false;
-      if (dataconfig.log_database_queries_ms == null) dataconfig.log_database_queries_ms = 100;
-      if (dataconfig.log_all_watches == null) dataconfig.log_all_watches = false;
+      if (dataconfig.log_database_queries == null)
+        dataconfig.log_database_queries = false;
+      if (dataconfig.log_database_queries_ms == null)
+        dataconfig.log_database_queries_ms = 100;
+      if (dataconfig.log_all_watches == null)
+        dataconfig.log_all_watches = false;
       if (dataconfig.log_debug == null) dataconfig.log_debug = false;
       if (dataconfig.log_verbose == null) dataconfig.log_verbose = false;
       if (dataconfig.log_silly == null) dataconfig.log_silly = false;
@@ -51,7 +57,11 @@
 
   if (browser) {
     auth.client.RegisterExchange(
-      { exchangename: "openflow_logs", algorithm: "fanout", jwt: auth.access_token, },
+      {
+        exchangename: "openflow_logs",
+        algorithm: "fanout",
+        jwt: auth.access_token,
+      },
       (msg: any, payload: any, user: any, jwt: string) => {
         if (pause == true) return;
         if (payload.lvl == 0) payload.lvl = "inf";
@@ -304,13 +314,4 @@
   <div>Loading...</div>
 {/if}
 
-{#if showdebug == true}
-  <SuperDebug data={config} theme="vscode" />
-{/if}
-
-<HotkeyButton
-  hidden
-  class="hidden"
-  data-shortcut={"Control+d,Meta+d"}
-  onclick={() => (showdebug = !showdebug)}>Toggle debug</HotkeyButton
->
+<CustomSuperDebug formData={config} width="max-w-[148vh]" />

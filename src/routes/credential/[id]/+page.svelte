@@ -7,18 +7,16 @@
   import { base } from "$app/paths";
   import { Acl } from "$lib/acl/index.js";
   import * as Form from "$lib/components/ui/form/index.js";
-  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
-  import { Input } from "$lib/components/ui/input/index.js";
-  import SuperDebug, { superForm, defaults } from "sveltekit-superforms";
+  import { CustomInput } from "$lib/custominput/index.js";
+  import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
+  import { auth } from "$lib/stores/auth.svelte.js";
+  import { Check } from "lucide-svelte";
+  import { toast } from "svelte-sonner";
+  import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../schema.js";
-  import { auth } from "$lib/stores/auth.svelte.js";
-  import { toast } from "svelte-sonner";
-  import { Check } from "lucide-svelte";
-    import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
 
   const key = "credential";
-  let showdebug = $state(false);
   const { data } = $props();
   let loading = $state(false);
   let errormessage = $state("");
@@ -60,40 +58,36 @@
   {$message}
 {/if}
 
-<div>
-  Edit {key}
-</div>
-
 <form method="POST" use:enhance>
   <Acl bind:value={$formData} />
 
-  <Form.Field {form} name="name">
+  <Form.Field {form} name="name" class="mb-7">
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Name</Form.Label>
-        <Input {...props} bind:value={$formData.name} />
+        <CustomInput {...props} bind:value={$formData.name} />
       {/snippet}
     </Form.Control>
     <Form.Description>This is the name.</Form.Description>
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Field {form} name="username">
+  <Form.Field {form} name="username" class="mb-7">
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Username</Form.Label>
-        <Input {...props} bind:value={$formData.username} />
+        <CustomInput {...props} bind:value={$formData.username} />
       {/snippet}
     </Form.Control>
     <Form.Description>This is your username.</Form.Description>
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Field {form} name="password">
+  <Form.Field {form} name="password" class="mb-7">
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Password</Form.Label>
-        <Input {...props} bind:value={$formData.password} type="password" />
+        <CustomInput {...props} bind:value={$formData.password} type="password" />
       {/snippet}
     </Form.Control>
     <Form.Description>This is your password.</Form.Description>

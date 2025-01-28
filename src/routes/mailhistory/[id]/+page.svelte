@@ -7,12 +7,12 @@
   import { base } from "$app/paths";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import Switch from "$lib/components/ui/switch/switch.svelte";
-  import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
+  import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../schema.js";
+  import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
 
   const key = "mailhistory";
-  let showdebug = $state(false);
   const { data } = $props();
   const form = superForm(defaults(zod(editFormSchema)), {
     dataType: "json",
@@ -48,40 +48,30 @@
     </div>
   </div>
 
-    <table class="mb-4">
-      <thead>
-        <tr>
-          <th>No.</th>
-          <th>Dates</th>
-          <th>Domain</th>
-          <th>Agent</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#if data.item.opened.length > 0}
-          {#each data.item.opened as item, index}
-            <tr>
-              <td>
-                {index + 1}
-              </td>
-              <td>{item.dt}</td>
-              <td>{item.domain}</td>
-              <td>{item.agent}</td>
-            </tr>
-          {/each}
-        {/if}
-      </tbody>
-    </table>
+  <table class="mb-4">
+    <thead>
+      <tr>
+        <th>No.</th>
+        <th>Dates</th>
+        <th>Domain</th>
+        <th>Agent</th>
+      </tr>
+    </thead>
+    <tbody>
+      {#if data.item.opened.length > 0}
+        {#each data.item.opened as item, index}
+          <tr>
+            <td>
+              {index + 1}
+            </td>
+            <td>{item.dt}</td>
+            <td>{item.domain}</td>
+            <td>{item.agent}</td>
+          </tr>
+        {/each}
+      {/if}
+    </tbody>
+  </table>
 </div>
 
-{#if formData != null && showdebug == true}
-  <SuperDebug data={formData} theme="vscode" />
-{/if}
-
-<HotkeyButton
-  hidden
-  class="hidden"
-  aria-label="Toggle debug"
-  data-shortcut={"Control+d,Meta+d"}
-  onclick={() => (showdebug = !showdebug)}>Toggle debug</HotkeyButton
->
+<CustomSuperDebug {formData} />

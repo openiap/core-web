@@ -5,21 +5,18 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
-  import { Acl } from "$lib/acl/index.js";
+  import Button from "$lib/components/ui/button/button.svelte";
   import * as Form from "$lib/components/ui/form/index.js";
-  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
+  import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
+  import { Check } from "lucide-svelte";
   import { toast } from "svelte-sonner";
-  import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
+  import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { customerSchema } from "../schema.js";
-  import { Check } from "lucide-svelte";
-    import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
-    import Button from "$lib/components/ui/button/button.svelte";
 
   const key = "billingaccount";
-  let showdebug = $state(false);
   let loading = $state(false);
   const { data } = $props();
   const form = superForm(defaults(zod(customerSchema)), {

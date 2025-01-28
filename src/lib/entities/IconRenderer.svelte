@@ -15,7 +15,6 @@
     export let title: string;
 </script>
 
-{console.log(title)}
 {#if title == "Action"}
     <Clapperboard class="h-4 w-4 me-1.5" />
 {:else if title == "_created"}
