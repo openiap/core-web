@@ -6,21 +6,17 @@
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import { Acl } from "$lib/acl";
-  import Checkbox from "$lib/components/ui/checkbox/checkbox.svelte";
   import * as Form from "$lib/components/ui/form/index.js";
-  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
-  import { Input } from "$lib/components/ui/input/index.js";
+  import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
+  import { ObjectInput } from "$lib/objectinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { toast } from "svelte-sonner";
-  import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
+  import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../schema.js";
-  import { ObjectInput } from "$lib/objectinput/index.js";
-  import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
 
   let loading = $state(false);
   let errormessage = $state("");
-  let showdebug = $state(false);
   const { data } = $props();
   const collection = data.collection;
   const id = data.id;
@@ -83,11 +79,3 @@
 </form>
 
 <CustomSuperDebug {formData} />
-
-<HotkeyButton
-  hidden
-  class="hidden"
-  aria-label="Toggle debug"
-  data-shortcut={"Control+d,Meta+d"}
-  onclick={() => (showdebug = !showdebug)}>Toggle debug</HotkeyButton
->

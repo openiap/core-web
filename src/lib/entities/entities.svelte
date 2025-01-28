@@ -22,6 +22,7 @@
 	import { Check, CircleX, MoveLeft, MoveRight, Trash2 } from "lucide-svelte";
 	import { toast } from "svelte-sonner";
 	import { data } from "./data.svelte.js";
+	import IconRenderer from "./IconRenderer.svelte";
 
 	let {
 		page = "entities",
@@ -70,7 +71,6 @@
 	let _searchstring = $state.snapshot(data.settings.searchstring);
 	let _collectionname = $state.snapshot(collectionname);
 	let multi_sort = $state(false);
-	let showdebug = $state(false);
 	let page_index = $state(data.settings.page_index);
 	let tableheaders: TTableHeader[] = $state([]);
 	let showWarning = $state(false);
@@ -459,7 +459,10 @@
 							ontouchend={(e) => ontouchend(e, head)}
 							{ontouchmove}
 						>
-							{data.RenderHeaderName(head)}
+							<div class="flex items-center justify-right">
+								<IconRenderer title={head.field} />
+								{data.RenderHeaderName(head)}
+							</div>
 							{#if sortby(head.field) == "asc"}
 								<ArrowUp class="ml-2 h-4 w-4" />
 							{:else if sortby(head.field) == "desc"}
@@ -471,8 +474,12 @@
 				{#if rest["action"]}
 					<Table.Head
 						class="dark:text-bw200 rounded-tr-[10px] {actionheadclass}"
-						>Action</Table.Head
 					>
+						<div class="flex items-center justify-right">
+							<IconRenderer title="Action" />
+							Action
+						</div>
+					</Table.Head>
 				{/if}
 			</Table.Row>
 		</Table.Header>
@@ -617,12 +624,13 @@
 					</ScrollArea>
 				</div>
 				<Sheet.Footer>
-					<HotkeyButton size="base"
+					<HotkeyButton
+						size="base"
 						onclick={() => {
-						toggleSheet = false;
+							toggleSheet = false;
 						}}
 					>
-					Close
+						Close
 					</HotkeyButton>
 				</Sheet.Footer>
 			</Sheet.Content>
@@ -723,8 +731,8 @@
 	hidden={true}
 />
 
-<CustomSuperDebug formData={tableheaders} />
-<!-- <CustomSuperDebug formData={entities} /> -->
+<!-- <CustomSuperDebug formData={tableheaders} /> -->
+<CustomSuperDebug formData={entities} />
 
 <Warningdialogue bind:showWarning type="deleteall" onaccept={handleAccept}
 ></Warningdialogue>

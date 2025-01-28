@@ -2,18 +2,16 @@
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import * as Form from "$lib/components/ui/form/index.js";
-  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
-  import { Input } from "$lib/components/ui/input/index.js";
+  import { CustomInput } from "$lib/custominput/index.js";
+  import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
+  import { Check } from "lucide-svelte";
   import { toast } from "svelte-sonner";
-  import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
+  import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newCustomerSchema } from "../schema.js";
-  import { Check } from "lucide-svelte";
-  import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
 
   const key = "billingaccount";
-  let showdebug = $state(false);
   let loading = $state(false);
   const form = superForm(defaults(zod(newCustomerSchema)), {
     dataType: "json",
@@ -51,7 +49,7 @@
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Company Name</Form.Label>
-        <Input {...props} bind:value={$formData.name} />
+        <CustomInput {...props} bind:value={$formData.name} />
       {/snippet}
     </Form.Control>
     <Form.Description>This is your company name.</Form.Description>

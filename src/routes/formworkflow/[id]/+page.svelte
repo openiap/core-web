@@ -2,16 +2,14 @@
     import { browser } from "$app/environment";
     import { goto } from "$app/navigation";
     import { base } from "$app/paths";
-    import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
+    import { CustomSuperDebug } from "$lib/customsuperdebug";
     import { auth } from "$lib/stores/auth.svelte.js";
     import { Formio } from "formiojs";
     import { onDestroy } from "svelte";
     import { toast } from "svelte-sonner";
-    import SuperDebug from "sveltekit-superforms";
 
     const { data } = $props();
 
-    let showdebug = $state(false);
     let form: any = null as any;
     let ref = $state(null) as any;
     let message = $state("");
@@ -350,17 +348,5 @@
     <div class="bootstrap-scope formio-dialog-content" bind:this={ref}></div>
 </div>
 
-{#if data.item != null && showdebug == true}
-    <SuperDebug data={data.item} />
-{/if}
-{#if data.form != null && showdebug == true}
-    <SuperDebug data={data.form} />
-{/if}
-
-<HotkeyButton
-    hidden
-    class="hidden"
-    aria-label="Toggle debug"
-    data-shortcut={"Control+d,Meta+d"}
-    onclick={() => (showdebug = !showdebug)}>Toggle debug</HotkeyButton
->
+<CustomSuperDebug formData={data.item} />
+<CustomSuperDebug formData={data.form} />

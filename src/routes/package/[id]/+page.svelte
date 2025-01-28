@@ -25,7 +25,6 @@
   const page = "package";
   let loading = $state(false);
   let fileData = $state(null);
-  let showdebug = $state(false);
   const { data } = $props();
   const form = superForm(defaults(zod(editFormSchema)), {
     dataType: "json",
