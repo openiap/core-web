@@ -29,9 +29,9 @@
     onUpdate: async ({ form, cancel }) => {
       if (form.valid) {
         try {
-          await auth.client.UpdateOne({
-            collectionname: "users",
-            item: form.data,
+          await auth.client.CustomCommand({
+            command: "ensurebilling",
+            data: JSON.stringify(form.data),
             jwt: auth.access_token,
           });
           toast.success("Billing account updated");
@@ -89,6 +89,26 @@ billing usage
   }}
 >
   Open Billing Portal
+</Button>
+<Button
+variant="outline"
+size="base"
+onclick={async () => {
+  try {
+    const link = await auth.client.CustomCommand({
+    command: "syncbillingaccount",
+    id: data.id,
+    jwt: auth.access_token,
+  });
+  toast.success("Billing account synced");
+  } catch (error:any) {
+    toast.error("Error opening billing portal", {
+      description: error.message,
+    });
+  }
+}}
+>
+Sync with Stripe
 </Button>
 {/if}
 </header>
