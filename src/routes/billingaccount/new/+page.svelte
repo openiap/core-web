@@ -22,9 +22,9 @@
     onUpdate: async ({ form, cancel }) => {
       if (form.valid) {
         try {
-          await auth.client.InsertOne({
-            collectionname: "users",
-            item: form.data,
+          await auth.client.CustomCommand({
+            command: "ensurebilling",
+            data: JSON.stringify(form.data),
             jwt: auth.access_token,
           });
           toast.success("Billand Account Created");

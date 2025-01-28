@@ -25,7 +25,9 @@
 
 
   let _billingid = "";
-  if(data.entities.length == 1) {
+  if(data.currentbilling != null) {
+    _billingid = data.currentbilling._id;
+  } else if(data.entities.length == 1) {
     _billingid = data.entities[0]._id;
   }
   let workspaces = $state(data.workspaces);
@@ -45,6 +47,9 @@
     onUpdate: async ({ form, cancel }) => {
       if (form.valid) {
         try {
+          if(billingid != null && billingid != "") {
+            form.data._billingid = billingid;
+          }
           await auth.client.CustomCommand({
             command: "ensureworkspace",
             data: JSON.stringify(form.data),
@@ -76,7 +81,7 @@
       let product = resource.products.find((p: any) => p.name == "Basic tier");
       if (product == null) throw new Error("Could not find basic tier product");
       let billing: Billing;
-      if (entities.length == 0) {
+      if (billingid == null || billingid == "") {
         let billingdata: any = {
           name: currentworkspace.name,
           email: auth.profile.email,
@@ -88,9 +93,6 @@
             jwt: auth.access_token,
           }),
         );
-        billingid = billing._id;
-      } else if (entities.length == 1) {
-        billing = entities[0];
         billingid = billing._id;
       }
       if (billingid == null || billingid == "") {
@@ -219,6 +221,16 @@
               {data.currentbilling?.name}
             </Button>
           {/if}
+
+          {#if entities.length > 1 && (currentworkspace._resourceusageid == "" || currentworkspace._resourceusageid == null)}
+          <CustomSelect
+            type="single"
+            triggerContent={billingname}
+            bind:value={billingid}
+            selectitems={entities}
+          />
+        {/if}
+
         </div>
       {/snippet}
     </Form.Control>
@@ -270,7 +282,7 @@
     <Card.Footer class="flex justify-between">
       <div></div>
       {#if currentworkspace == null || currentworkspace._productname != "Basic tier"}
-        {#if entities.length == 0}
+        {#if entities.length < 2}
           <HotkeyButton onclick={addplan}>Upgrade</HotkeyButton>
         {:else}
           <CustomSelect
