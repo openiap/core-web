@@ -14,10 +14,10 @@ export const load: PageLoad = async ({ parent }) => {
     if (collectionname == null || collectionname == "") {
         collectionname = "entities";
     }
-    if(browser) {
-        goto(base + "/entities/" + collectionname); 
-    } else {
-        throw redirect(307, base + "/entities/" + collectionname);
-    }
-    return collectionname;
+    // if(browser) {
+    //     goto(base + "/entities/" + collectionname); 
+    // } else {
+    //     throw redirect(307, base + "/entities/" + collectionname);
+    // }
+    return { collectionname };
 };
