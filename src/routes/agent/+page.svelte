@@ -75,6 +75,9 @@
     } else if ( filterby == "docker") {
       query = { _type: "agent", docker: true, }
     } else if (filterby == "pods") {
+      if(knownpods.length == 0){
+        await getPods(true);
+      }
       query = { _id: { $in: knownpods.map((x: any) => x.metadata.labels.agentid) } }
     }
     if(usersettings.currentworkspace != null && usersettings.currentworkspace != ""){
@@ -324,7 +327,6 @@
         onclick={async () => {
           filterby = "pods";
           await GetData();
-          await getPods(false);
         }}
       />
       <Label for="r3" class="cursor-pointer">Pods</Label>
