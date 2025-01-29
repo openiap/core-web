@@ -38,6 +38,7 @@
     });
 </script>
 
+{#if auth.config.workspace_enabled == true}
 <Sidebar.Menu>
     <Sidebar.MenuItem>
         <DropdownMenu.Root>
@@ -156,3 +157,6 @@
         </DropdownMenu.Root>
     </Sidebar.MenuItem>
 </Sidebar.Menu>
+{:else}
+OpenCore <small>{auth.config.version}</small>
+{/if}
