@@ -237,6 +237,7 @@
 			page_index = 0;
 			data.persist();
 			GetData();
+			GetCount();
 		} else if (_workspaceid != usersettings.currentworkspace) {
 			_workspaceid = usersettings.currentworkspace;
 			GetData();
