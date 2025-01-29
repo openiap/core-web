@@ -11,13 +11,23 @@
         returnObject = false,
         loading = false,
         class: className = "",
+        height = "h-8",
+        handleChangeFunction = () => {},
+        name = "Entity",
+        projection = {},
+        noitem = false,
         ...restProps
     } = $props();
+
+    let placeholder = `Select ${name}`;
 
     const triggerContent = $derived(async () => {
         let id;
         if (value == "") {
-            return "Select Entitiy";
+            return placeholder;
+        }
+        if (value == null) {
+            return placeholder;
         }
         if (returnObject) {
             id = value?._id;
@@ -32,7 +42,7 @@
         if (item != null) {
             return "(" + item._type + ") " + item.name;
         }
-        return "Select Entitiy";
+        return placeholder;
     });
 
     let entities: any[] = $state([]);
@@ -46,7 +56,25 @@
             query,
             top: 8,
             jwt: auth.access_token,
+            projection,
         });
+        if (noitem) {
+            if (name === "success queue" || name === "failed queue") {
+                entities.unshift({
+                    _id: "",
+                    name: `(no queue)`,
+                    value: null,
+                    _type: null,
+                } as any);
+            } else {
+                entities.unshift({
+                    _id: null,
+                    name: `(no ${name})`,
+                    value: null,
+                    _type: null,
+                } as any);
+            }
+        }
     }
     let isOpen = $state(false);
     function closeAndRefocusTrigger() {
@@ -57,7 +85,10 @@
 <Popover.Root bind:open={isOpen} {...restProps}>
     <Popover.Trigger
         disabled={loading}
-        class={"h-8 w-64 dark:bg-bw1000 flex items-center justify-between border rounded-[10px] px-3 py-1 dark:border-bw600 dark:text-bw500  dark:hover:bg-bw700 dark:hover:border-bw500 text-sm " +
+        class={" w-64 dark:bg-bw1000 flex items-center justify-between border rounded-[10px] px-3 py-1 dark:border-bw600 dark:text-bw500  dark:hover:bg-bw700 dark:hover:border-bw500 text-sm " +
+            " " +
+            height +
+            " " +
             className}
     >
         {#await triggerContent()}
@@ -76,7 +107,7 @@
 
         <Command.Root shouldFilter={false}>
             <Command.Input
-                placeholder="Search entity..."
+                {placeholder}
                 onkeyup={async (e) => {
                     // @ts-ignore
                     let value = e.target.value;
@@ -93,12 +124,14 @@
                             } else {
                                 value = item._id;
                             }
+                            handleChangeFunction();
                             closeAndRefocusTrigger();
                         }}
                         value={item._id}
                         class="text-sm"
                     >
-                        ({item._type}) {item.name}
+                        {item._type ? `(${item._type})` : ""}
+                        {item.name}
                     </Command.Item>
                 {/each}
             </Command.List>

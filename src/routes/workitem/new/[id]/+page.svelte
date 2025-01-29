@@ -1,0 +1,149 @@
+<script lang="ts">
+  import { goto } from "$app/navigation";
+  import { base } from "$app/paths";
+  import * as Form from "$lib/components/ui/form/index.js";
+  import { CustomInput } from "$lib/custominput/index.js";
+  import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
+  import { EntitySelector } from "$lib/entityselector/index.js";
+  import { ObjectInput } from "$lib/objectinput/index.js";
+  import { auth } from "$lib/stores/auth.svelte.js";
+  import { Check } from "lucide-svelte";
+  import { toast } from "svelte-sonner";
+  import { defaults, superForm } from "sveltekit-superforms";
+  import { zod } from "sveltekit-superforms/adapters";
+  import { newFormSchema } from "../../schema.js";
+
+  const key = "workitem";
+  let { data } = $props();
+  let loading = $state(false);
+  let errormessage = $state("");
+
+  const form = superForm(defaults(zod(newFormSchema)), {
+    dataType: "json",
+    validators: zod(newFormSchema),
+    SPA: true,
+    onUpdate: async ({ form, cancel }) => {
+      if (form.valid) {
+        loading = true;
+        try {
+          await auth.client.PushWorkitem({
+            wiqid: form.data.wiqid,
+            name: form.data.name,
+            payload: form.data.payload,
+            priority: form.data.priority,
+            jwt: auth.access_token,
+          });
+          toast.success("Workitem added");
+          goto(base + `/${key}`);
+        } catch (error: any) {
+          errormessage = error.message;
+          toast.error("Error", {
+            description: error.message,
+          });
+          cancel();
+          loading = false;
+        } finally {
+        }
+      } else {
+        errormessage = "Form is invalid";
+      }
+    },
+  });
+  const { form: formData, enhance, message } = form;
+  $formData.wiqid = data.id === "new" ? "" : data.id || "";
+</script>
+
+{#if errormessage && errormessage != ""}
+  {errormessage}
+{/if}
+
+{#if message && $message != ""}
+  {$message}
+{/if}
+
+<form method="POST" use:enhance>
+  <Form.Field {form} name="name" class="mb-7">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Name</Form.Label>
+        <CustomInput
+          placeholder="Type name"
+          disabled={loading}
+          {...props}
+          bind:value={$formData.name}
+        />
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field>
+
+  <Form.Field {form} name="wiqid" class="mb-7">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Queue</Form.Label>
+        <EntitySelector
+          collectionname="mq"
+          bind:value={$formData.wiqid}
+          basefilter={{ _type: "workitemqueue" }}
+          class="w-64"
+          name="queue"
+        />
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field>
+
+  <Form.Field {form} name="payload" class="mb-7">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Payload</Form.Label>
+        <ObjectInput bind:value={$formData.payload} class="w-64" name="queue" />
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field>
+
+  <!-- <Form.Field {form} name="retries" class="mb-7">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Retries</Form.Label>
+        <CustomInput
+          placeholder="Type name"
+          disabled={loading}
+          {...props}
+          bind:value={$formData.retries}
+          type="number"
+        />
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field> -->
+
+  <Form.Field {form} name="priority" class="mb-7">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Priority</Form.Label>
+        <CustomInput
+          placeholder="Type name"
+          disabled={loading}
+          {...props}
+          bind:value={$formData.priority}
+          type="number"
+        />
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field>
+
+  <Form.Button
+    disabled={loading}
+    aria-label="Add"
+    variant="success"
+    size="base"
+  >
+    <Check />
+    Add {key}</Form.Button
+  >
+</form>
+
+<CustomSuperDebug {formData} />

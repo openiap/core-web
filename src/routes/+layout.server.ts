@@ -10,7 +10,7 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 	const { protocol, domain, client_id, profile, access_token } = locals as any;
 	let { wsurl } = locals as any;
 	const { origin } = url;
-	let workspaces:Workspace[] = [];
+	let workspaces: Workspace[] = [];
 	let total_count = 99999;
 	const page = url.pathname;
 	try {
@@ -22,7 +22,7 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 		datacomponent.loadsettings(page);
 		switch (page) {
 			case base + "/agent":
-				if(usersettings.currentworkspace != null && usersettings.currentworkspace != ""){
+				if (usersettings.currentworkspace != null && usersettings.currentworkspace != "") {
 					entities = await datacomponent.GetData(page, "agents", { _type: "agent", _workspaceid: usersettings.currentworkspace }, access_token);
 					total_count = await datacomponent.GetCount(page, "agents", { _type: "agent", _workspaceid: usersettings.currentworkspace }, access_token);
 				} else {
@@ -31,10 +31,10 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 				}
 				break;
 			case base + "/auditlog":
-				entities = await datacomponent.GetData(page, "audit", { }, access_token);
-				total_count = await datacomponent.GetCount(page, "audit", { }, access_token);
+				entities = await datacomponent.GetData(page, "audit", {}, access_token);
+				total_count = await datacomponent.GetCount(page, "audit", {}, access_token);
 				break;
-		case base + "/client":
+			case base + "/client":
 				entities = JSON.parse(await auth.client.CustomCommand({ command: "getclients", jwt: access_token, }));
 				total_count = entities.length;
 				break;
@@ -103,8 +103,16 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 				total_count = await datacomponent.GetCount(page, "users", { _type: "user" }, access_token);
 				break;
 			case base + "/workitem":
-				entities = await datacomponent.GetData(page, "workitems", { }, access_token, false);
-				total_count = await datacomponent.GetCount(page, "workitems", { }, access_token, false);
+				entities = await datacomponent.GetData(page, "workitems", {}, access_token, false);
+				total_count = await datacomponent.GetCount(page, "workitems", {}, access_token, false);
+				break;
+			case base + `/workitem/${params.id}`:
+				entities = await datacomponent.GetData(page, "workitems", { wiqid: params.id }, access_token, false);
+				total_count = await datacomponent.GetCount(page, "workitems", { wiqid: params.id }, access_token, false);
+				break;
+			case base + "/workitemqueue":
+				entities = await datacomponent.GetData(page, "mq", { _type: "workitemqueue" }, access_token, false);
+				total_count = await datacomponent.GetCount(page, "mq", { _type: "workitemqueue" }, access_token, false);
 				break;
 			case base + "/workspace":
 				entities = await datacomponent.GetData(page, "users", { _type: "workspace" }, access_token, false);

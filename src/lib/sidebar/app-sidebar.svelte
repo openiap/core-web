@@ -34,6 +34,7 @@
 	const home = new SidebarItem("Home", `${base}/`, false);
 	const agent = new SidebarItem("Agents", `${base}/agent`, false);
 	const workitem = new SidebarItem("Workitems", `${base}/workitem`, false);
+	const workitemqueue = new SidebarItem("Workitem queue", `${base}/workitemqueue`, false);
 	const formworkflow = new SidebarItem(
 		"Form workflows",
 		`${base}/formworkflow`,
@@ -54,6 +55,7 @@
 		home,
 		agent,
 		workitem,
+		workitemqueue,
 		formworkflow,
 		rpaworkflow,
 		grafana,

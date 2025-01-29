@@ -17,16 +17,16 @@
 
   let collectionname = "workitems";
   let page = "workitem";
-  let query = {};
 
   let { data } = $props();
+  let query = { wiqid: data.id };
   datacomponent.parsesettings(data.settings);
   let searchstring = $state(datacomponent.settings.searchstring);
   let selected_items = $state([]);
   let entities = $state(data.entities);
   let showWarning = $state(false);
   let deleteData: any = $state({});
-  let queue: any = $state("");
+  let queue: any = $state(data.id);
 
   async function deleteitem(item: any) {
     const deletecount = await auth.client.DeleteOne({
@@ -78,7 +78,7 @@
   }
 </script>
 
-<div class="flex justify-between gap-2">
+<div class="flex justify-between">
   <div class="flex gap-2 w-full">
     <SearchInput bind:searchstring />
     <EntitySelector
@@ -94,8 +94,7 @@
       size="sm"
       variant="base"
       aria-label="Filter"
-      class="border-dashed"
-      disabled={!queue}
+      class="border-dashed dark:text-bw600"
       onclick={() => {
         searchstring = "";
         entities = data.entities;
@@ -120,7 +119,7 @@
     size="sm"
     variant="base"
     aria-label="add"
-    onclick={() => goto(base + `/${page}/new/${queue ? queue : "new"}`)}
+    onclick={() => goto(base + `/${page}/new`)}
   >
     <Plus />
     Add {page}</HotkeyButton

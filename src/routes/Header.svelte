@@ -43,8 +43,11 @@
 				{#each pagename().split("/") as page, index}
 					<Breadcrumb.Item class="hidden md:block text-bw500">
 						{#if pagename().split("/").length - 1 !== index}
-							<Breadcrumb.Link href="{base}/{page.trim()}"
-								>{page.trim()}</Breadcrumb.Link
+							<Breadcrumb.Link
+								href="{base}/{pagename()
+									.split('/')
+									.splice(0, index + 1)
+									.join('/')}">{page.trim()}</Breadcrumb.Link
 							>
 						{:else}
 							<div class="font-bold text-[16px] dark:text-bw100">
@@ -53,7 +56,6 @@
 						{/if}
 					</Breadcrumb.Item>
 					{#if pagename().split("/").length - 1 !== index}
-						<!-- <Breadcrumb.Separator class="hidden md:block" /> -->
 						<div class="hidden md:block dark:text-bw500">/</div>
 					{/if}
 				{/each}
