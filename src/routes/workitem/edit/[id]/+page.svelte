@@ -32,8 +32,14 @@
       if (form.valid) {
         loading = true;
         try {
-          // @ts-ignore
-          form.data.nextrun = new Date(form.data.nextrun);
+          if( form.data.nextruns){
+            // @ts-ignore
+            form.data.nextrun = new Date(form.data.nextrun);
+          }
+          if( form.data.lastrun){
+            // @ts-ignore
+            form.data.lastrun = new Date(form.data.lastrun);
+          }
 
           await auth.client.UpdateWorkitem({
             jwt: auth.access_token,

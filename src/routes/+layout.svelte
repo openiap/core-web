@@ -102,13 +102,9 @@
 					class="border border-gray-300 bg-white dark:border-bw500 dark:bg-bw800 rounded-xl mb-4 mx-4 h-full overflow-auto"
 				>
 					{#if auth.isAuthenticated == true || auth.isAuthenticated == false}
-						{#if pagename() == "entities"}
+						<main>
 							{@render children()}
-						{:else}
-							<main>
-								{@render children()}
-							</main>
-						{/if}
+						</main>
 					{/if}
 				</div>
 			</div>
