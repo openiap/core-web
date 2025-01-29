@@ -5,6 +5,8 @@
 </script>
 
 <script lang="ts">
+    import { browser } from "$app/environment";
+
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
@@ -73,6 +75,7 @@
     } else if ( filterby == "docker") {
       query = { _type: "agent", docker: true, }
     } else if (filterby == "pods") {
+      query = { _id: { $in: knownpods.map((x: any) => x.metadata.labels.agentid) } }
     }
     if(usersettings.currentworkspace != null && usersettings.currentworkspace != ""){
       query._workspaceid = usersettings.currentworkspace;
@@ -88,6 +91,10 @@
       entities = _entities.filter((x: any) =>
         knownpods.some((y: any) => x._id === y.metadata.labels.agentid),
       );
+      for(let i = 0; i < entities.length; i++){
+        let item = entities[i];
+        getStatus(item);
+      }
     } else {
       entities = _entities;
     }
@@ -115,7 +122,6 @@
         }
       }
     }
-    GetData();
     if (!haderror) {
       toast.success(
         "Successfully deleted " + selected_items.length + " agent(s)",
@@ -201,7 +207,7 @@
           }),
         );
       }
-      if (clients.length == 0) {
+      if (clients.length == 0 || force == true) {
         clients = JSON.parse(
           await auth.client.CustomCommand({
             command: "getclients",
@@ -213,7 +219,6 @@
       for (var x = 0; x < entities.length; x++) {
         getStatus(entities[x]);
       }
-      entities = entities;
     } catch (error: any) {
       toast.error("Error while getting pods", {
         description: error.message,
@@ -232,8 +237,7 @@
       toast.success("Deleted successfully", {
         description: "",
       });
-      GetData();
-
+      await GetData();
       await getPods(false);
       usersettings.persist();
     } catch (error: any) {
@@ -242,7 +246,9 @@
       });
     }
   }
-  getPods(false);
+  if(browser) {
+    getPods(false);
+  }
 </script>
 
 <div class="flex justify-between">
@@ -285,7 +291,7 @@
       size="sm"
       variant="base"
       onclick={async () => {
-        GetData();
+        await GetData();
         await getPods(true);
       }}
     >
@@ -304,24 +310,11 @@
         id="r1"
         onclick={async () => {
           filterby = "all";
-          GetData();
-          getPods(false);
+          await GetData();
+          await getPods(false);
         }}
       />
       <Label for="r1" class="cursor-pointer">All</Label>
-    </div>
-    <div class="flex items-center space-x-2">
-      <RadioGroup.Item
-        class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
-        value="Daemon"
-        id="r2"
-        onclick={async () => {
-          filterby = "daemon";
-          GetData();
-          getPods(false);
-        }}
-      />
-      <Label for="r2" class="cursor-pointer">Daemon</Label>
     </div>
     <div class="flex items-center space-x-2">
       <RadioGroup.Item
@@ -330,11 +323,24 @@
         id="r3"
         onclick={async () => {
           filterby = "pods";
-          GetData();
-          getPods(false);
+          await GetData();
+          await getPods(false);
         }}
       />
       <Label for="r3" class="cursor-pointer">Pods</Label>
+    </div>
+    <div class="flex items-center space-x-2">
+      <RadioGroup.Item
+        class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
+        value="Daemon"
+        id="r2"
+        onclick={async () => {
+          filterby = "daemon";
+          await GetData();
+          await getPods(false);
+        }}
+      />
+      <Label for="r2" class="cursor-pointer">Daemon</Label>
     </div>
     <div class="flex items-center space-x-2">
       <RadioGroup.Item
@@ -343,8 +349,8 @@
         id="r4"
         onclick={async () => {
           filterby = "docker";
-          GetData();
-          getPods(false);
+          await GetData();
+          await getPods(false);
         }}
       />
       <Label for="r4" class="cursor-pointer">Docker</Label>
@@ -356,8 +362,8 @@
         id="r5"
         onclick={async () => {
           filterby = "assistant";
-          GetData();
-          getPods(false);
+          await GetData();
+          await getPods(false);
         }}
       />
       <Label for="r5" class="cursor-pointer">Assistant</Label>
@@ -379,6 +385,8 @@
   {#snippet status(item: any)}
     {#if item && item.status}
       <StatusCard bind:title={item.status as string} />
+    {:else}
+      <StatusCard title="missing" />
     {/if}
   {/snippet}
   {#snippet _productname(item: any)}
