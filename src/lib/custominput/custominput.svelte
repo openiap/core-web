@@ -11,6 +11,7 @@
 		disabled = false,
 		placeholder = "Type here",
 		onchangefunction = null,
+		multiple = false,
 	} = $props();
 
 	function getClass() {
@@ -34,4 +35,5 @@
 	{type}
 	class={getClass()}
 	onchange={onchangefunction}
+	{multiple}
 />

@@ -14,7 +14,6 @@ export const editFormSchema = z.object({
   payload: z.any(),
   retries: z.number().int(),
   priority: z.number().int(),
-  state: z.string(),
-  // nextrun: z.string(),
+  files: z.any(),
 }).passthrough();
 export type EditFormSchema = typeof editFormSchema;

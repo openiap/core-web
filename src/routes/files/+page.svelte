@@ -5,18 +5,17 @@
 </script>
 
 <script lang="ts">
-  import { Entities } from "$lib/entities/index.js";
-  import { Download, Pencil, Trash2 } from "lucide-svelte";
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
+  import { CustomInput } from "$lib/custominput";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
-  import Input from "$lib/components/ui/input/input.svelte";
+  import { Entities } from "$lib/entities/index.js";
   import { SearchInput } from "$lib/searchinput";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
+  import { Download, Pencil, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
-  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
-  import { CustomInput } from "$lib/custominput";
 
   let { data } = $props();
   datacomponent.parsesettings(data.settings);
@@ -132,35 +131,6 @@
     }
   }
 </script>
-
-<!-- <div class="mb-4">
-  <div class="mb-2">Upload New File</div>
-  <div class="flex space-x-2">
-    <CustomInput
-      height="h-7"
-      disabled={loading}
-      type="file"
-      bind:value={fileData}
-      onchangefunction={handleChange}
-    />
-    <HotkeyButton
-      size="sm"
-      disabled={loading || !fileData}
-      onclick={() => (fileData = null)}
-      aria-label="Delete"
-    >
-      Delete
-    </HotkeyButton>
-    <HotkeyButton
-      size="sm"
-      disabled={loading || !fileData}
-      onclick={uploadFile}
-      aria-label="Upload"
-    >
-      Upload
-    </HotkeyButton>
-  </div>
-</div> -->
 
 <div class="flex justify-between">
   <div class="flex gap-2 w-full">

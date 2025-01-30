@@ -1,6 +1,6 @@
 <script lang="ts">
     import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-    import Button from "$lib/components/ui/button/button.svelte";
+    import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
 
     let {
         showWarning = $bindable(false),
@@ -64,21 +64,21 @@
             </AlertDialog.Description>
         </AlertDialog.Header>
         <AlertDialog.Footer>
-            <Button
+            <HotkeyButton
                 tabindex={0}
-                variant="outline"
+                variant="base"
                 onclick={async () => {
                     await oncancel();
                     showWarning = false;
-                }}>Cancel</Button
+                }}>Cancel</HotkeyButton
             >
-            <Button
+            <HotkeyButton
                 tabindex={1}
-                variant="destructive"
+                variant="danger"
                 onclick={async () => {
                     await onaccept();
                     showWarning = false;
-                }}>{buttonaname}</Button
+                }}>{buttonaname}</HotkeyButton
             >
         </AlertDialog.Footer>
     </AlertDialog.Content>
