@@ -257,6 +257,10 @@ class entitiesdata {
 				return "Product";
 			case "_billingid":
 				return "Billing ID";
+			case "errortype":
+				return "Error type";
+			case "wiq":
+				return "Queue";
 			default:
 				if (header.name != null && header.name != "") {
 					return header.name;
@@ -266,17 +270,28 @@ class entitiesdata {
 	}
 	defaultcolumnnames(page: string) {
 		switch (page) {
+			case "/ui/user":
+			case "/user":
 			case "user":
 				return ["_id", "name", "username", "email", "lastseen", "_created"];
+			case "/ui/role":
+			case "/role":
 			case "role":
 				return ["_id", "name", "members", "_created"];
+			case "/ui/workitem":
 			case "/workitem":
 			case "workitem":
-				return ["name", "state", "retries", "priority", "wiq", "lastrun", "_created"];
+				return ["name", "state", "errortype", "retries", "priority", "wiq", "lastrun", "_created"];
+			case "/ui/resource":
+			case "/resource":
 			case "resource":
 				return ["name", "_created", "_modified"];
+			case "/ui/provider":
+			case "/provider":
 			case "provider":
 				return ["name", "provider", "_created", "_modified"];
+			case "/ui/mailhistory":
+			case "/mailhistory":
 			case "mailhistory":
 				return [
 					"_id",
@@ -286,6 +301,8 @@ class entitiesdata {
 					"lastseen",
 					"_created",
 				];
+			case "/ui/hdrobot":
+			case "/hdrobot":
 			case "hdrobot":
 				return ["name", "_created", "_modified"];
 			case "formresource":

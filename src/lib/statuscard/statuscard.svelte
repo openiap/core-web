@@ -29,8 +29,33 @@
                     "bg-yellow-200 dark:bg-darkbgyellow dark:text-darktextyellow border-[1px] border-darkborderyellow";
                 break;
             case "deleting":
+            case "pending":
                 bgcolor =
                     "bg-orange-200 dark:bg-darkbgorange dark:text-darktextorange border-[1px] border-darkborderorange";
+                break;
+            case "No error":
+                bgcolor =
+                " bg-purple-200 dark:bg-darkbgpurple dark:text-darktextpurple border-[1px] border-darkborderpurple";
+                break;
+            case "successful":
+                bgcolor =
+                    "bg-green-200 dark:bg-darkbggreen dark:text-darktextgreen border-[1px] border-darkbordergreen";
+                break;
+            case "failed":
+                bgcolor =
+                    "bg-red-200 dark:bg-darkbgred dark:text-darktextred border-[1px] border-darkborderred";
+                break;
+            case "new":
+                bgcolor =
+                    "bg-orange-200 dark:bg-darkbgorange dark:text-darktextorange border-[1px] border-darkborderorange";
+                break;
+            case "application":
+                bgcolor =
+                "bg-red-200 dark:bg-darkbgred dark:text-darktextred border-[1px] border-darkborderred";
+                break;
+            case "business":
+                bgcolor =
+                "bg-red-200 dark:bg-darkbgred dark:text-darktextred border-[1px] border-darkborderred";
                 break;
             default:
                 bgcolor =

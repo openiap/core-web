@@ -14,6 +14,7 @@
   import { Filter, Pencil, Plus, Trash2, X } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { page as sveltepage } from "$app/state";
+    import { StatusCard } from "$lib/statuscard/index.js";
 
   let collectionname = "workitems";
   let page = "workitem";
@@ -137,6 +138,20 @@
   bind:selected_items
   bind:entities
 >
+  {#snippet state(item: any)}
+    {#if item != null && item.state != null  && item.state != ""}
+    <StatusCard bind:title={item.state as string} />
+    {:else}
+    <StatusCard title="Unknown" />
+    {/if}
+  {/snippet}
+  {#snippet errortype(item: any)}
+    {#if item != null && item.errortype != null  && item.errortype != ""}
+    <StatusCard bind:title={item.errortype as string} />
+    {:else}
+    <StatusCard title="No error" />
+    {/if}
+  {/snippet}
   {#snippet action(item: any)}
     <div class="flex items-center space-x-2">
       <HotkeyButton

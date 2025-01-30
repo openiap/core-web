@@ -76,16 +76,22 @@ class authState {
         if (this.client == null) {
             global.WebSocket = ws;
             this.client = new openiap(wsurl, "");
-            await this.client.connect(true);
-            this.client.onDisconnected = async () => {
-                console.log("**** serverinit.onDisconnected");
-                this.isConnected = false;
-            }
-            this.client.onConnected = async () => {
-                console.log("**** serverinit.onConnected");
+            try {
+                await this.client.connect(true);
+                this.client.onDisconnected = async () => {
+                    console.log("**** serverinit.onDisconnected");
+                    this.isConnected = false;
+                }
+                this.client.onConnected = async () => {
+                    console.log("**** serverinit.onConnected");
+                    this.isConnected = true;
+                }
                 this.isConnected = true;
+            } catch (error) {
+                console.error("Failed to connect to server", error);
+                this.isConnected = false;
+                this.isAuthenticated = false;
             }
-            this.isConnected = true;
         }
     }
     async serverloaduser(client_id: string, origin: string, cookies: any) {
@@ -168,12 +174,18 @@ class authState {
             return;
         }
         if (this.client == null) {
-            this.client = new openiap(wsurl, access_token);
-            const user = await this.client.connect(true);
-            this.isConnected = true;
-            this.connectWaitingPromisses.forEach((resolve: any) => {
-                resolve();
-            });
+            try {
+                this.client = new openiap(wsurl, access_token);
+                const user = await this.client.connect(true);
+                this.isConnected = true;
+                this.connectWaitingPromisses.forEach((resolve: any) => {
+                    resolve();
+                });
+            } catch (error) {
+                debugger;
+                console.error("Failed to connect to server", error);
+                this.isConnected = false;                
+            }
         } else {
             await new Promise((resolve) => {
                 this.connectWaitingPromisses.push(resolve);
