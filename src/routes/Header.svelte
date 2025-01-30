@@ -71,6 +71,7 @@
 				variant="icon"
 				size="icon"
 				aria-label="Visit us at Github"
+				title="Github"
 			>
 				<Github />
 			</HotkeyButton>
@@ -79,6 +80,7 @@
 				size="icon"
 				aria-label="Clear cookies"
 				onclick={reset}
+				title="Clear filters and settings"
 			>
 				<Trash2 />
 			</HotkeyButton>
@@ -87,6 +89,7 @@
 				variant="icon"
 				size="icon"
 				aria-label="Toggle darkmode"
+				title="Toggle theme"
 			>
 				<Sun
 					class="rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"

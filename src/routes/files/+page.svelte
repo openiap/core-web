@@ -133,7 +133,7 @@
   }
 </script>
 
-<div class="mb-4">
+<!-- <div class="mb-4">
   <div class="mb-2">Upload New File</div>
   <div class="flex space-x-2">
     <CustomInput
@@ -160,9 +160,30 @@
       Upload
     </HotkeyButton>
   </div>
-</div>
+</div> -->
 
-<SearchInput bind:searchstring />
+<div class="flex justify-between">
+  <div class="flex gap-2 w-full">
+    <SearchInput bind:searchstring />
+  </div>
+  <div class="flex space-x-5">
+    <CustomInput
+      height="h-7"
+      disabled={loading}
+      type="file"
+      bind:value={fileData}
+      onchangefunction={handleChange}
+    />
+    <HotkeyButton
+      size="sm"
+      disabled={loading || !fileData}
+      onclick={uploadFile}
+      aria-label="Upload"
+    >
+      Upload
+    </HotkeyButton>
+  </div>
+</div>
 
 <Entities
   {collectionname}

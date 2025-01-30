@@ -34,6 +34,9 @@
         } else {
             id = value;
         }
+        if(id == null) {
+            return placeholder;
+        }
         let item = await auth.client.FindOne<any>({
             collectionname,
             query: { _id: id },
@@ -59,10 +62,10 @@
             projection,
         });
         if (noitem) {
-            if (name === "success queue" || name === "failed queue") {
+            if (name === "workitem queue") {
                 entities.unshift({
                     _id: "",
-                    name: `(no queue)`,
+                    name: `(no workitem queue)`,
                     value: null,
                     _type: null,
                 } as any);
