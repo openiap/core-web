@@ -182,7 +182,6 @@ class authState {
                     resolve();
                 });
             } catch (error) {
-                debugger;
                 console.error("Failed to connect to server", error);
                 this.isConnected = false;                
             }
