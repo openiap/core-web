@@ -32,14 +32,6 @@
   let showWarning = $state(false);
   let deleteData: any = $state({});
 
-  $effect(() => {
-    datacomponent
-      .GetData(page, collectionname, query(), auth.access_token)
-      .then((d) => {
-        entities = d;
-      });
-  });
-
   async function deleteitem(item: any) {
     try {
       await auth.client.CustomCommand({
