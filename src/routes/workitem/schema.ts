@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const newFormSchema = z.object({
-  name: z.string().min(2).default("test-"),
+  name: z.string().min(2),
   wiqid: z.string().min(2),
   payload: z.any(),
   priority: z.number().int().default(2),
