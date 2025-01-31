@@ -8,6 +8,7 @@
         type = "default",
         oncancel = (item: any) => {},
         onaccept = (item: any) => {},
+        disabled = false,
         ...restProps
     } = $props();
 
@@ -67,17 +68,19 @@
             <HotkeyButton
                 tabindex={0}
                 variant="base"
+                {disabled}
                 onclick={async () => {
-                    await oncancel();
                     showWarning = false;
+                    await oncancel();
                 }}>Cancel</HotkeyButton
             >
             <HotkeyButton
                 tabindex={1}
                 variant="danger"
+                {disabled}
                 onclick={async () => {
-                    await onaccept();
                     showWarning = false;
+                    await onaccept();
                 }}>{buttonaname}</HotkeyButton
             >
         </AlertDialog.Footer>
