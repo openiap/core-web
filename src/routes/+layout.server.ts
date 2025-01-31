@@ -51,8 +51,8 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 				total_count = await datacomponent.GetCount(page, "users", { _type: "customer" }, access_token, false);
 				break;
 			case base + `/billingaccount/${params.id}/billing`:
-				entities = await auth.client.Query({ collectionname: "config", query: { _type: "resourceusage", "customerid": params.id }, jwt: access_token });
-				total_count = await auth.client.Count({ collectionname: "config", query: { _type: "resourceusage", "customerid": params.id }, jwt: access_token });
+				entities = JSON.parse(await auth.client.CustomCommand({ id: params.id, command: "getcustomerresources", jwt: access_token }));
+				total_count = entities.length
 				break;
 			case base + "/files":
 				entities = await datacomponent.GetData(page, "fs.files", {}, access_token);
@@ -129,9 +129,10 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 				total_count = await datacomponent.GetCount(page, "users", { _type: "member" }, access_token, false);
 				break;
 			case base + `/workspace/${params.id}/billing`:
-				entities = await auth.client.Query({ collectionname: "config", query: { _type: "resourceusage", "workspaceid": params.id }, jwt: access_token });
-				total_count = await auth.client.Count({ collectionname: "config", query: { _type: "resourceusage", "workspaceid": params.id }, jwt: access_token });
+				entities = JSON.parse(await auth.client.CustomCommand({ id: params.id, command: "getworkspaceresources", jwt: access_token }));
+				total_count = entities.length
 				break;
+
 			case base + "/workspace/invites":
 				const userid = auth.profile.sub;
 				const email = auth.profile.email;
