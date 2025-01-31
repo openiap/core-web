@@ -179,12 +179,15 @@
 
   {#if files.length > 0}
     <div class="mb-7">
-      <div>files:</div>
+      <div class="mb-2">New files:</div>
       {#each files as file, index}
         <div class="flex space-x-2 mb-2">
           <div>
-            {// @ts-ignore
-            file.name}
+            {`${index + 1}. 
+              ${
+                // @ts-ignore
+                file.name
+              }`}
           </div>
           <HotkeyButton
             size="icon"

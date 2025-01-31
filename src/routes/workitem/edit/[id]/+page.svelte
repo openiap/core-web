@@ -284,7 +284,7 @@
 
   {#if $formData.files.length > 0}
     <div class="mb-7">
-      Current files:
+      <div class="mb-2">Current files:</div>
       {#each $formData.files as file, index}
         <div class="flex space-x-2 mb-2">
           <div>
@@ -295,7 +295,7 @@
                 class="w-16 h-16 object-cover"
               />
             {:else} -->
-              {`${index + 1}) ${file.filename}`}
+            {`${index + 1}. ${file.filename}`}
             <!-- {/if} -->
           </div>
           <HotkeyButton
@@ -325,12 +325,15 @@
 
   {#if files.length > 0}
     <div class="mb-7">
-      files:
+      <div class="mb-2">New files:</div>
       {#each files as file, index}
         <div class="flex space-x-2 mb-2">
           <div>
-            {// @ts-ignore
-            file.name}
+            {`${index + 1}. 
+            ${
+              // @ts-ignore
+              file.name
+            }`}
           </div>
           <HotkeyButton
             size="icon"
