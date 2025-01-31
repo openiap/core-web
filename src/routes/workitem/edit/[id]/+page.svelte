@@ -19,6 +19,7 @@
   let errormessage = $state("");
   let files = $state([]);
   let filedata: Array<{ filename: string; _id: string }> = $state([]);
+  let images = $state([]);
 
   const { data } = $props();
   const form = superForm(defaults(zod(editFormSchema)), {
@@ -123,68 +124,27 @@
     }
   }
 
-  // async function viewImage1(id: string) {
-  //   var item: object = await auth.client.FindOne({
-  //     collectionname: "fs.files",
-  //     query: { _id: id },
-  //     jwt: auth.access_token,
-  //   });
-  //   console.log(item);
-  //   if (item) {
-  //     if (item?.filename && item?.metadata?.name) {
-  //       var filecontent: any = await auth.client.DownloadFile({
-  //         // @ts-ignore
-  //         id: item._id,
-  //         jwt: auth.access_token,
-  //       });
-  //       console.log("filecontent", filecontent);
-  //       var blob = new Blob([filecontent], { type: item.contentType });
-  //       var link = document.createElement("a");
-  //       link.href = window.URL.createObjectURL(blob);
-  //       link.download = item.filename || item.metadata.name;
-  //       link.click();
-  //     }
-  //   }
-  // }
+  async function viewImage(fileId: string): Promise<void> {
+    if (!fileId) return;
+    try {
+      const filecontent: any = await auth.client.DownloadFile({
+        id: fileId,
+        jwt: auth.access_token,
+      });
+      if (!filecontent) return;
 
-  // async function viewImage(fileId: string): Promise<string> {
-  //   if (!fileId) return "";
-  //   // var imageData: any = await auth.client.FindOne({
-  //   //   collectionname: "fs.files",
-  //   //   query: { _id: fileId },
-  //   //   jwt: auth.access_token,
-  //   // });
-  //   // console.log("imageData", imageData);
-
-  //   try {
-  //     const filecontent: any = await auth.client.DownloadFile({
-  //       id: fileId,
-  //       jwt: auth.access_token,
-  //     });
-
-  //     if (!filecontent) return "";
-
-  //     // Create a Blob from the file content
-  //     const blob = new Blob([filecontent], { type: "image/png" }); // Adjust MIME type accordingly
-  //     const image_url = URL.createObjectURL(blob);
-  //     console.log("image_url", image_url);
-  //     // Generate an object URL
-  //     return image_url;
-  //   } catch (error) {
-  //     console.error("Error loading image", error);
-  //     return "";
-  //   }
-  //   return "";
-  // }
-
-  function b64toBlob(b64Data: string, contentType: string) {
-    const byteCharacters = atob(b64Data);
-    const byteNumbers = new Array(byteCharacters.length);
-    for (let i = 0; i < byteCharacters.length; i++) {
-      byteNumbers[i] = byteCharacters.charCodeAt(i);
+      // Create a Blob from the file content
+      const blob = new Blob([filecontent], { type: "image/png" }); // Adjust MIME type accordingly
+      console.log("blob", blob);
+      const image_url = URL.createObjectURL(blob);
+      console.log("image_url", image_url);
+      const element = document.getElementById(fileId);
+      if (element == null) return;
+      element.setAttribute("src", image_url);
+      element.classList.remove("hidden");
+    } catch (error) {
+      console.error("Error loading image", error);
     }
-    const byteArray = new Uint8Array(byteNumbers);
-    return new Blob([byteArray], { type: contentType });
   }
 </script>
 
@@ -288,15 +248,18 @@
       {#each $formData.files as file, index}
         <div class="flex space-x-2 mb-2">
           <div>
-            <!-- {#if file.filename.match(/\.(jpeg|jpg|gif|png)$/) && index === 0}
+            {#if file.filename.match(/\.(jpeg|jpg|gif|png)$/)}
+              {#await viewImage(file._id)}
+                <span class="hidden"></span>
+              {/await}
               <img
-                src={viewImage(file._id)}
+                id={file._id}
                 alt={file.filename}
-                class="w-16 h-16 object-cover"
+                class="w-16 h-16 object-cover hidden"
               />
-            {:else} -->
-            {`${index + 1}. ${file.filename}`}
-            <!-- {/if} -->
+            {:else}
+              {`${index + 1}. ${file.filename}`}
+            {/if}
           </div>
           <HotkeyButton
             onclick={() => downloadFile(file)}
