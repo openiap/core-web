@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const newFormSchema = z.object({
-  name: z.string().min(2).default("nabeel"),
+  name: z.string().min(2),
 
   projectid: z.string().nullable(),
 

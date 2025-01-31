@@ -4,6 +4,7 @@
 <script lang="ts">
   import { goto, replaceState } from "$app/navigation";
   import { base } from "$app/paths";
+  import { page as sveltepage } from "$app/state";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
@@ -11,15 +12,14 @@
   import { SearchInput } from "$lib/searchinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
-  import { Filter, Pencil, Plus, Trash2, X } from "lucide-svelte";
+  import { Pencil, Plus, Trash2, X } from "lucide-svelte";
   import { toast } from "svelte-sonner";
-  import { page as sveltepage } from "$app/state";
 
   let collectionname = "workitems";
   let page = "workitem";
 
   let { data } = $props();
-  let query = { wiqid: data.id };
+  let query = $state({ wiqid: data.id });
   datacomponent.parsesettings(data.settings);
   let searchstring = $state(datacomponent.settings.searchstring);
   let selected_items = $state([]);

@@ -14,13 +14,14 @@
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../../schema.js";
 
+  const { data } = $props();
   const key = "workitem";
   let loading = $state(false);
   let errormessage = $state("");
-  let files = $state([]);
+  let files: Array<File> = $state([]);
   let filedata: Array<{ filename: string; _id: string }> = $state([]);
+  let imagesSize = $state(data.itemSize || []);
 
-  const { data } = $props();
   const form = superForm(defaults(zod(editFormSchema)), {
     dataType: "json",
     validators: zod(editFormSchema),
@@ -76,9 +77,7 @@
           reader.onload = async (e) => {
             try {
               const content = new Uint8Array(reader.result as ArrayBuffer);
-              // @ts-ignore
               const name = file.name;
-              // @ts-ignore
               const type = file.type;
               const id = await auth.client.UploadFile(
                 name,
@@ -123,68 +122,23 @@
     }
   }
 
-  // async function viewImage1(id: string) {
-  //   var item: object = await auth.client.FindOne({
-  //     collectionname: "fs.files",
-  //     query: { _id: id },
-  //     jwt: auth.access_token,
-  //   });
-  //   console.log(item);
-  //   if (item) {
-  //     if (item?.filename && item?.metadata?.name) {
-  //       var filecontent: any = await auth.client.DownloadFile({
-  //         // @ts-ignore
-  //         id: item._id,
-  //         jwt: auth.access_token,
-  //       });
-  //       console.log("filecontent", filecontent);
-  //       var blob = new Blob([filecontent], { type: item.contentType });
-  //       var link = document.createElement("a");
-  //       link.href = window.URL.createObjectURL(blob);
-  //       link.download = item.filename || item.metadata.name;
-  //       link.click();
-  //     }
-  //   }
-  // }
-
-  // async function viewImage(fileId: string): Promise<string> {
-  //   if (!fileId) return "";
-  //   // var imageData: any = await auth.client.FindOne({
-  //   //   collectionname: "fs.files",
-  //   //   query: { _id: fileId },
-  //   //   jwt: auth.access_token,
-  //   // });
-  //   // console.log("imageData", imageData);
-
-  //   try {
-  //     const filecontent: any = await auth.client.DownloadFile({
-  //       id: fileId,
-  //       jwt: auth.access_token,
-  //     });
-
-  //     if (!filecontent) return "";
-
-  //     // Create a Blob from the file content
-  //     const blob = new Blob([filecontent], { type: "image/png" }); // Adjust MIME type accordingly
-  //     const image_url = URL.createObjectURL(blob);
-  //     console.log("image_url", image_url);
-  //     // Generate an object URL
-  //     return image_url;
-  //   } catch (error) {
-  //     console.error("Error loading image", error);
-  //     return "";
-  //   }
-  //   return "";
-  // }
-
-  function b64toBlob(b64Data: string, contentType: string) {
-    const byteCharacters = atob(b64Data);
-    const byteNumbers = new Array(byteCharacters.length);
-    for (let i = 0; i < byteCharacters.length; i++) {
-      byteNumbers[i] = byteCharacters.charCodeAt(i);
+  async function viewImage(fileId: string): Promise<void> {
+    if (!fileId) return;
+    try {
+      const filecontent: any = await auth.client.DownloadFile({
+        id: fileId,
+        jwt: auth.access_token,
+      });
+      if (!filecontent) return;
+      const blob = new Blob([filecontent], { type: filecontent.contentType });
+      const image_url = URL.createObjectURL(blob);
+      const element = document.getElementById(fileId);
+      if (element == null) return;
+      element.setAttribute("src", image_url);
+      element.classList.remove("hidden");
+    } catch (error) {
+      console.error("Error loading image", error);
     }
-    const byteArray = new Uint8Array(byteNumbers);
-    return new Blob([byteArray], { type: contentType });
   }
 </script>
 
@@ -284,27 +238,49 @@
 
   {#if $formData.files.length > 0}
     <div class="mb-7">
-      Current files:
+      <div class="mb-2">Current files:</div>
       {#each $formData.files as file, index}
-        <div class="flex space-x-2 mb-2">
-          <div>
-            <!-- {#if file.filename.match(/\.(jpeg|jpg|gif|png)$/) && index === 0}
-              <img
-                src={viewImage(file._id)}
-                alt={file.filename}
-                class="w-16 h-16 object-cover"
-              />
-            {:else} -->
-              {`${index + 1}) ${file.filename}`}
-            <!-- {/if} -->
+        <div class="mb-2">
+          <div class="flex space-x-2 mb-2">
+            <div>
+              {`${index + 1}. ${file.filename}`}
+            </div>
+            <HotkeyButton
+              onclick={() => downloadFile(file)}
+              title="download"
+              aria-label="download"
+              size="tableicon"
+              variant="icon"><Download /></HotkeyButton
+            >
           </div>
-          <HotkeyButton
-            onclick={() => downloadFile(file)}
-            title="download"
-            aria-label="download"
-            size="tableicon"
-            variant="icon"><Download /></HotkeyButton
-          >
+          {#if file.filename.match(/\.(jpeg|jpg|gif|png)$/)}
+            {#await viewImage(file._id)}
+              <span class="hidden"></span>
+            {/await}
+            <a
+              href=""
+              onclick={() => {
+                imagesSize[index] = !imagesSize[index];
+                if (imagesSize[index]) {
+                  const element = document.getElementById(file._id);
+                  if (element === null) return;
+                  element.classList.remove("w-16");
+                  element.classList.remove("h-16");
+                } else {
+                  const element = document.getElementById(file._id);
+                  if (element === null) return;
+                  element.classList.add("w-16");
+                  element.classList.add("h-16");
+                }
+              }}
+            >
+              <img
+                id={file._id}
+                alt={file.filename}
+                class={"object-cover hidden w-16 h-16"}
+              />
+            </a>
+          {/if}
         </div>
       {/each}
     </div>
@@ -318,19 +294,39 @@
       type="file"
       multiple={true}
       onchangefunction={(e: any) => {
-        files = e.target.files;
+        const copyFiles = e.target.files;
+        const existingFileNames = $formData.files.map(
+          (file: any) => file.filename,
+        );
+
+        let tempFiles: Array<File> = [];
+
+        for (let i = 0; i < copyFiles.length; i++) {
+          if (existingFileNames.includes(copyFiles[i].name)) {
+            toast.error("Error", {
+              description: `File with name ${copyFiles[i].name} already exists.`,
+            });
+          } else {
+            tempFiles = [...tempFiles, copyFiles[i]];
+          }
+        }
+        files = tempFiles;
       }}
     />
   </div>
 
   {#if files.length > 0}
+    {console.log("files", JSON.stringify(files))}
     <div class="mb-7">
-      files:
+      <div class="mb-2">New files:</div>
       {#each files as file, index}
         <div class="flex space-x-2 mb-2">
           <div>
-            {// @ts-ignore
-            file.name}
+            {`${index + 1}. 
+            ${
+              // @ts-ignore
+              file.name
+            }`}
           </div>
           <HotkeyButton
             size="icon"
