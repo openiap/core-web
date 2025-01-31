@@ -5,7 +5,7 @@
 </script>
 
 <script lang="ts">
-    import { browser } from "$app/environment";
+  import { browser } from "$app/environment";
 
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
@@ -44,6 +44,7 @@
   let entities = $state(data.entities);
   let showWarning = $state(false);
   let deleteData: any = $state({});
+  let loading = $state(false);
   let knownpods: any = [];
   let clients: any = [];
   let filterby: "all" | "daemon" | "pods" | "docker" | "assistant" = "all";
@@ -66,74 +67,100 @@
     }
   }
   async function GetData() {
-    let query:any = { _type: "agent" };
-    if (filterby == "all") {
-    } else if (filterby == "daemon") {
-      query = { _type: "agent", daemon: true, }
-    } else if (filterby == "assistant") {
-      query = { _type: "agent", assistant: true, }
-    } else if ( filterby == "docker") {
-      query = { _type: "agent", docker: true, }
-    } else if (filterby == "pods") {
-      if(knownpods.length == 0){
-        await getPods(true);
+    loading = true;
+    try {
+      let query: any = { _type: "agent" };
+      if (filterby == "all") {
+      } else if (filterby == "daemon") {
+        query = { _type: "agent", daemon: true };
+      } else if (filterby == "assistant") {
+        query = { _type: "agent", assistant: true };
+      } else if (filterby == "docker") {
+        query = { _type: "agent", docker: true };
+      } else if (filterby == "pods") {
+        if (knownpods.length == 0) {
+          await getPods(true);
+        }
+        query = {
+          _id: { $in: knownpods.map((x: any) => x.metadata.labels.agentid) },
+        };
       }
-      query = { _id: { $in: knownpods.map((x: any) => x.metadata.labels.agentid) } }
-    }
-    if(usersettings.currentworkspace != null && usersettings.currentworkspace != ""){
-      query._workspaceid = usersettings.currentworkspace;
-    }
-    const _entities = await datacomponent.GetData(
+      if (
+        usersettings.currentworkspace != null &&
+        usersettings.currentworkspace != ""
+      ) {
+        query._workspaceid = usersettings.currentworkspace;
+      }
+      const _entities = await datacomponent.GetData(
         page,
         collectionname,
         query,
         auth.access_token,
-    );
-    console.log(_entities, query);
-    if (filterby == "pods") {
-      entities = _entities.filter((x: any) =>
-        knownpods.some((y: any) => x._id === y.metadata.labels.agentid),
       );
-      for(let i = 0; i < entities.length; i++){
-        let item = entities[i];
-        getStatus(item);
+      console.log(_entities, query);
+      if (filterby == "pods") {
+        entities = _entities.filter((x: any) =>
+          knownpods.some((y: any) => x._id === y.metadata.labels.agentid),
+        );
+        for (let i = 0; i < entities.length; i++) {
+          let item = entities[i];
+          getStatus(item);
+        }
+      } else {
+        entities = _entities;
       }
-    } else {
-      entities = _entities;
+    } catch (error: any) {
+      toast.error("Error while getting data", {
+        description: error.message,
+      });
+    } finally {
+      loading = false;
     }
-
   }
   async function deleteitems(ids: string[]) {
     let haderror = false;
-    for (let i = 0; i < ids.length; i++) {
-      let id = ids[i];
-      var item = entities.find((x: any) => x._id == id);
-      if (item) {
-        try {
-          await auth.client.CustomCommand({
-            command: "deleteagent",
-            id: item._id,
-            name: item.slug,
-            jwt: auth.access_token,
-          });
-        } catch (error: any) {
-          haderror = true;
-          toast.error("Error while deleting", {
-            description: error.message,
-          });
-          return;
+    loading = true;
+    showWarning = false;
+    let counter = 0;
+    try {
+      for (let i = 0; i < ids.length; i++) {
+        let id = ids[i];
+        var item = entities.find((x: any) => x._id == id);
+        if (item) {
+          try {
+            await auth.client.CustomCommand({
+              command: "deleteagent",
+              id: item._id,
+              name: item.slug,
+              jwt: auth.access_token,
+            });
+            counter++;
+            entities = entities.filter((x: any) => x._id != item._id);
+            selected_items = selected_items.filter((x: any) => x != item._id);
+          } catch (error: any) {
+            haderror = true;
+            toast.error("Error while deleting", {
+              description: error.message,
+            });
+            return;
+          }
         }
       }
+      if (!haderror) {
+        toast.success(
+          "Successfully deleted " + counter + " agent(s)",
+          {
+            description: "",
+          },
+        );
+      }
+    } catch (error: any) {
+      toast.error("Error while deleting", {
+        description: error.message,
+      });
+    } finally {
+      loading = false;
     }
-    if (!haderror) {
-      toast.success(
-        "Successfully deleted " + selected_items.length + " agent(s)",
-        {
-          description: "",
-        },
-      );
-    }
-    selected_items = [];
     usersettings.persist();
   }
   function single_item_click(item: any) {
@@ -199,8 +226,8 @@
       }
     }
   }
-
   async function getPods(force: boolean) {
+    loading = true;
     try {
       if (knownpods.length == 0 || force == true) {
         knownpods = JSON.parse(
@@ -226,17 +253,22 @@
       toast.error("Error while getting pods", {
         description: error.message,
       });
+    } finally {
+      loading = false;
     }
   }
 
   async function handleAccept() {
+    loading = true;
     try {
+      showWarning = false;
       await auth.client.CustomCommand({
         command: "deleteagent",
         id: deleteData._id,
         name: deleteData.slug,
         jwt: auth.access_token,
       });
+      selected_items = [];
       toast.success("Deleted successfully", {
         description: "",
       });
@@ -247,9 +279,12 @@
       toast.error("Error while deleting", {
         description: error.message,
       });
+    } finally {
+      showWarning = false;
+      loading = false;
     }
   }
-  if(browser) {
+  if (browser) {
     getPods(false);
   }
 </script>
@@ -273,6 +308,7 @@
       size="sm"
       variant="base"
       aria-label="add"
+      disabled={loading}
       onclick={() => goto(base + `/${page}/new`)}
     >
       <Plus />
@@ -283,6 +319,7 @@
       title="package"
       size="sm"
       variant="base"
+      disabled={loading}
       onclick={() => goto(base + `/package`)}
     >
       <Box />
@@ -293,6 +330,7 @@
       title="reload"
       size="sm"
       variant="base"
+      disabled={loading}
       onclick={async () => {
         await GetData();
         await getPods(true);
@@ -311,6 +349,7 @@
         class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
         value="All"
         id="r1"
+        disabled={loading}
         onclick={async () => {
           filterby = "all";
           await GetData();
@@ -324,6 +363,7 @@
         class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
         value="Pods"
         id="r3"
+        disabled={loading}
         onclick={async () => {
           filterby = "pods";
           await GetData();
@@ -336,6 +376,7 @@
         class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
         value="Daemon"
         id="r2"
+        disabled={loading}
         onclick={async () => {
           filterby = "daemon";
           await GetData();
@@ -349,6 +390,7 @@
         class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
         value="Docker"
         id="r4"
+        disabled={loading}
         onclick={async () => {
           filterby = "docker";
           await GetData();
@@ -362,6 +404,7 @@
         class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
         value="Assistant"
         id="r5"
+        disabled={loading}
         onclick={async () => {
           filterby = "assistant";
           await GetData();
@@ -405,6 +448,7 @@
         title="start"
         size="tableicon"
         variant="icon"
+        disabled={loading}
         onclick={async () => {
           try {
             await auth.client.CustomCommand({
@@ -431,6 +475,7 @@
         title="stop"
         size="tableicon"
         variant="icon"
+        disabled={loading}
         onclick={async () => {
           try {
             await auth.client.CustomCommand({
@@ -457,6 +502,7 @@
         title="debug"
         size="tableicon"
         variant="icon"
+        disabled={loading}
         onclick={() => goto(base + `/${page}/${item._id}/run`)}
       >
         <Wrench />
@@ -469,6 +515,7 @@
         <DropdownMenu.Content class="w-44">
           <DropdownMenu.Item
             class="cursor-pointer"
+            disabled={loading}
             onclick={() => single_item_click(item)}
           >
             <div class="flex items-center">
@@ -493,6 +540,7 @@
 
           <DropdownMenu.Item
             class="cursor-pointer"
+            disabled={loading}
             onclick={() => goto(base + `/user/${item.runas}`)}
           >
             <div class="flex items-center">
@@ -503,6 +551,7 @@
           <DropdownMenu.Separator />
           <DropdownMenu.Item
             class="cursor-pointer hover:bg-opacity-50"
+            disabled={loading}
             onclick={() => {
               deleteData = item;
               showWarning = !showWarning;
@@ -519,5 +568,5 @@
   {/snippet}
 </Entities>
 
-<Warningdialogue bind:showWarning type="delete" onaccept={handleAccept}
+<Warningdialogue bind:showWarning type="delete" onaccept={handleAccept} disabled={loading}
 ></Warningdialogue>
