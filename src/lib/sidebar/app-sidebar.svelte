@@ -100,10 +100,17 @@
 		`${base}/workspace/invites`,
 		false,
 	);
+	const allworkspaces = new SidebarItem(
+		"All Workspaces",
+		"", 
+		`${base}/workspace`,
+		false,
+	);
 	const workspace = new SidebarCategory("Workspace", false, [
 		members,
 		invitemember,
 		memberships,
+		allworkspaces
 	]);
 	const entities = new SidebarItem("Entities", "g e", `${base}/entities`, false);
 	const clients = new SidebarItem("Clients", "g c", `${base}/client`, false);
@@ -123,7 +130,7 @@
 	const config = new SidebarItem("Config", "", `${base}/configuration`, true);
 	const billingaccounts = new SidebarItem(
 		"Billing accounts",
-		"", 
+		"g b", 
 		`${base}/billingaccount`,
 		true,
 	);
