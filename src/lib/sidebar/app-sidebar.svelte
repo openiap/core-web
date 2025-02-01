@@ -33,6 +33,7 @@
 			this.url = url;
 			this.hidden = hidden;
 			this.external = external;
+			const me = this;
 			if(this.shortcut != null && this.shortcut != "" && browser){
 				const array = this.shortcut.split(",");
 				for (let i = 0; i < array.length; i++) {
@@ -43,7 +44,12 @@
 						} else {
 							e.returnValue = false;
 						}
-						window.location.href = url;
+						if(me.url.startsWith("/")){
+							goto(me.url);
+						} else if (me.url != "") {
+							window.open(me.url, "_blank");
+							// window.location.href = me.url;
+						}
 					});
 				}
 			}
@@ -67,8 +73,8 @@
 	);
 	const grafana = new SidebarItem(
 		"Grafana",
-		"", 
-		`https://grafana.app.openiap.io/`,
+		"g f", 
+		``,
 		false,
 		true,
 	);
@@ -107,7 +113,7 @@
 	const providers = new SidebarItem("Providers", "", `${base}/provider`, false);
 	const resources = new SidebarItem("Resources", "", `${base}/resource`, true);
 	const auditlogs = new SidebarItem("Audit logs", "", `${base}/auditlog`, false);
-	const console = new SidebarItem("Console", "", `${base}/console`, true);
+	const consoleitem = new SidebarItem("Console", "", `${base}/console`, true);
 	const credentials = new SidebarItem(
 		"Credentials",
 		"", 
@@ -144,7 +150,7 @@
 		providers,
 		resources,
 		auditlogs,
-		console,
+		consoleitem,
 		credentials,
 		config,
 		billingaccounts,
@@ -164,6 +170,7 @@
 	import { MessageSquare, Bot } from "lucide-svelte";
 	import IconRenderer from "./IconRenderer.svelte";
     import { browser } from "$app/environment";
+    import { goto } from "$app/navigation";
 
 	// Extend the ComponentProps type to include the workspaces property
 	type ExtendedComponentProps = ComponentProps<typeof Sidebar.Root> & {
@@ -215,7 +222,7 @@
 			x.endsWith("admins"),
 		);
 		resources.hidden = !isAdmin;
-		console.hidden = !isAdmin;
+		consoleitem.hidden = !isAdmin;
 		config.hidden = !isAdmin;
 		providers.hidden = !isAdmin;
 		formresources.hidden = !isWorkspaceAdmin;
