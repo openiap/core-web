@@ -144,6 +144,7 @@
 		}
 	}
 	async function GetCount() {
+		const page = $componentpage?.url?.pathname;
 		total_count = await data.GetCount(
 			page,
 			collectionname,
@@ -196,6 +197,7 @@
 		}
 	}
 	function SetHeaders() {
+		const page = $componentpage?.url?.pathname;
 		EnsureDefaultHeaders(page);
 		let foundfirst = false;
 		let lastindex = -1;
@@ -262,6 +264,7 @@
 			usersettings.entities_collectionname = collectionname;
 			data.settings.page_index = page_index;
 			data.persist();
+			const page = $componentpage?.url?.pathname;
 			data.loadsettings(page);
 			total_count = 99999;
 			_collectionname = collectionname;

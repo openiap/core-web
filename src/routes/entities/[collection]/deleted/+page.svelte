@@ -10,7 +10,7 @@
   import Searchinput from "$lib/searchinput/searchinput.svelte";
   import { auth } from "$lib/stores/auth.svelte";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
-  import { Folder, History, Pencil, Plus } from "lucide-svelte";
+  import { Folder, Pencil, Plus } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
@@ -25,21 +25,6 @@
   let selected_items = $state([]);
   let collections: any[] = $state(data.collections);
   let entities = $state(data.entities);
-  async function deleteitem(item: any) {
-    const deletecount = await auth.client.DeleteOne({
-      id: item._id,
-      collectionname,
-      jwt: auth.access_token,
-    });
-    if (deletecount == 1) {
-      ref.reload();
-      selected_items = selected_items.filter((i) => i !== item._id);
-    } else {
-      toast.error("Error while deleting", {
-        description: "Error while deleting",
-      });
-    }
-  }
   function collectionvariant(name: string): any {
     return name == collectionname ? "entityselected" : "entitydefault";
   }
@@ -47,11 +32,11 @@
     collectionname = name;
     // usersettings.entities_collectionname = name;
     // datacomponent.persist();
-    sveltepage.url.pathname = base + `/entities/${collectionname}`;
+    sveltepage.url.pathname = base + `/entities/${collectionname}/deleted`;
     replaceState(sveltepage.url, sveltepage.state);
   }
   function single_item_click(item: any) {
-    goto(base + `/entities/${collectionname}/edit/${item._id}`);
+    goto(base + `/entities/${collectionname}/history/${item.id}`);
   }
 </script>
 
@@ -85,15 +70,6 @@
       <div class="flex gap-2 w-full">
     <Searchinput bind:searchstring />
     </div>
-    <HotkeyButton
-    data-shortcut="n,ins"
-    onclick={() => {
-      goto(base + `/entities/${collectionname}/new`);
-    }}
-  >
-  <Plus />
-    Add to {collectionname}</HotkeyButton
-  >
 </div>
   
     <Entities
@@ -101,30 +77,13 @@
       {query}
       page={page()}
       total_count={data.total_count}
+      multi_select={false}
       bind:searchstring
       bind:selected_items
       bind:entities
       {single_item_click}
       bind:this={ref}
     >
-      {#snippet action(item: any)}
-        <HotkeyButton
-          aria-label="history"
-          onclick={() => goto(base + `/entities/${collectionname}/history/${item._id}`)}
-          size="tableicon"
-          variant="icon"
-        >
-          <History />
-        </HotkeyButton>
-        <HotkeyButton
-          aria-label="edit"
-          onclick={() => single_item_click(item)}
-          size="tableicon"
-          variant="icon"
-        >
-          <Pencil />
-        </HotkeyButton>
-      {/snippet}
     </Entities>
   </div>
 </div>

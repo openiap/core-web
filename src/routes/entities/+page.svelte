@@ -11,7 +11,7 @@
   import Searchinput from "$lib/searchinput/searchinput.svelte";
   import { auth } from "$lib/stores/auth.svelte";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
-  import { Folder, Pencil, Plus } from "lucide-svelte";
+  import { Folder, History, Pencil, Plus } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
@@ -116,6 +116,14 @@
       bind:this={ref}
     >
       {#snippet action(item: any)}
+        <HotkeyButton
+          aria-label="history"
+          onclick={() => goto(base + `/entities/${collectionname}/history/${item._id}`)}
+          size="tableicon"
+          variant="icon"
+        >
+          <History />
+        </HotkeyButton>
         <HotkeyButton
           aria-label="edit"
           onclick={() => single_item_click(item)}

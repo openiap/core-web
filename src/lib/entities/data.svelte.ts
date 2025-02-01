@@ -73,6 +73,15 @@ class entitiesdata {
 				entities = await this.GetData(page, usersettings.entities_collectionname, { }, access_token);
 				total_count = await this.GetCount(page, usersettings.entities_collectionname, { }, access_token);
 				break;
+			case base + `/entities/${usersettings.entities_collectionname}/deleted`:
+				entities = await this.GetData(page, usersettings.entities_collectionname + "_hist", {_deleted: {"$exists": true } }, access_token);
+				total_count = await this.GetCount(page, usersettings.entities_collectionname + "_hist", { }, access_token);
+				break;
+			case base + `/entities/${usersettings.entities_collectionname}/history/${id}`:
+				console.log("history", id);
+				entities = await this.GetData(page, usersettings.entities_collectionname + "_hist", { id }, access_token);
+				total_count = await this.GetCount(page, usersettings.entities_collectionname + "_hist", { id }, access_token);
+				break;
 			case base + "/files":
 				entities = await this.GetData(page, "fs.files", {}, access_token);
 				total_count = await this.GetCount(page, "fs.files", {}, access_token);
@@ -170,7 +179,7 @@ class entitiesdata {
 	}
 
 	async GetData(page: string, collectionname: string, query: any, access_token: string, workspacefilter: boolean = true) {
-		let orderby = this.getOrderBy();
+		let orderby = this.getOrderBy(page, collectionname);
 		let usequery = this.createQuery(this.settings.searchstring, query);
 		let top = this.pagesize;
 		let skip = this.settings.page_index * top;
@@ -275,7 +284,7 @@ class entitiesdata {
 		this.settings.headers = result;
 		usersettings.persist();
 	}
-	private getOrderBy() {
+	private getOrderBy(page: string, collectionname: string) {
 		const orderby: { [key: string]: number } = {};
 		let ordered = this.settings.headers
 			.filter((x) => x.order != "")
@@ -289,6 +298,14 @@ class entitiesdata {
 			}
 		}
 		if (Object.keys(orderby).length == 0) {
+			if(collectionname.indexOf("_hist") > -1) {
+				if(page.indexOf("/history/") > -1) {
+					return { _version: -1 };
+				} else {
+					return { _deleted: -1 };
+				}
+				
+			}
 			return { _id: -1 };
 		}
 		return orderby;
@@ -378,6 +395,8 @@ class entitiesdata {
 		switch (value) {
 			case "_id":
 				return "ID";
+			case "id":
+				return "ID*";
 			case "name":
 				return "Name";
 			case "type":
@@ -402,6 +421,12 @@ class entitiesdata {
 				return "Modified by";
 			case "_modifiedbyid":
 				return "Modified by ID";
+			case "_deleted":
+				return "Deleted";
+			case "_deletedby":
+				return "Deleted by";
+			case "_deletedbyid":
+				return "Deleted by ID";
 			case "_productname":
 				return "Product";
 			case "_billingid":
@@ -484,6 +509,14 @@ class entitiesdata {
 			case "entities-cvr":
 				return ["name", "cvr", "virksomhedsformkort", "sidstOpdateret", "stiftelsesDato", "ophoersDato", "cvrstatus"];
 			default:
+				if(page.indexOf("/history/") > -1) {
+					console.log("Unknown history page", page);
+					return ["_id", "name", "_createdby", "_modified", "_deleted", "_version"];
+				} else if(page.endsWith("/deleted")) {
+					console.log("Unknown deleted page", page);
+					return ["_id", "name", "_type", "_deleted", "_deletedby", "_created", "_version"];
+				}
+				console.log("Unknown page", page);
 				return ["_id", "name", "_type", "_createdby", "_created"];
 		}
 	}
