@@ -4,6 +4,9 @@
 	import pkg from "oidc-client";
 	// import { Volleyball } from "lucide-svelte";
 	import Mousetrap from 'mousetrap';
+	import { driverObj, agentTour, baseTour, entitiesTour } from "./onboarding.js";
+	import { driver } from "driver.js";
+	import "driver.js/dist/driver.css";
 
 	class SidebarCategory {
 		title: string = $state("");
@@ -18,18 +21,21 @@
 	class SidebarItem {
 		title: string = $state("");
 		shortcut: string = $state("");
+		classname: string = $state("");
 		url: string = $state("");
 		hidden: boolean = $state(false);
 		external: boolean = $state(false);
 		constructor(
 			title: string,
 			shortcut: string,
+			classname: string,
 			url: string,
 			hidden: boolean,
 			external: boolean = false,
 		) {
 			this.title = title;
 			this.shortcut = shortcut;
+			this.classname = classname;
 			this.url = url;
 			this.hidden = hidden;
 			this.external = external;
@@ -54,20 +60,27 @@
 				}
 			}
 		}
+		isActive(url: string) {
+			if(url === this.url) return true;
+			if((url + "/").startsWith(this.url + "/")) return true;
+			return false;
+		}
 	}
-	const home = new SidebarItem("Home", "g h", `${base}/`, false);
-	const agent = new SidebarItem("Agents", "g a", `${base}/agent`, false);
-	const workitem = new SidebarItem("Workitems", "g w", `${base}/workitem`, false);
-	const workitemqueue = new SidebarItem("Workitem queue", "", `${base}/workitemqueue`, false);
+	const home = new SidebarItem("Home", "g h", "tourhome", `${base}/`, false);
+	const agent = new SidebarItem("Agents", "g a", "touragents", `${base}/agent`, false);
+	const workitem = new SidebarItem("Workitems", "g w", "tourworkitems", `${base}/workitem`, false);
+	const workitemqueue = new SidebarItem("Workitem queue", "", "tourworkitemqueues", `${base}/workitemqueue`, false);
 	const formworkflow = new SidebarItem(
 		"Form workflows",
 		"", 
+		"tourformworkflow", 
 		`${base}/formworkflow`,
 		false,
 	);
 	const rpaworkflow = new SidebarItem(
 		"RPA Workflows",
 		"", 
+		"tourrpaworkflow", 
 		`${base}/rpaworkflow`,
 		false,
 	);
@@ -75,6 +88,7 @@
 		"Grafana",
 		"g f", 
 		``,
+		"tourgrafana",
 		false,
 		true,
 	);
@@ -87,22 +101,25 @@
 		rpaworkflow,
 		grafana,
 	]);
-	const members = new SidebarItem("Members", "", `${base}/members`, false);
+	const members = new SidebarItem("Members", "", "tourmembers", `${base}/members`, false);
 	const invitemember = new SidebarItem(
 		"Invite Member",
 		"", 
+		"tourinvitemember", 
 		`${base}/members`,
 		false,
 	);
 	const memberships = new SidebarItem(
 		"My Memberships",
 		"", 
+		"tourmemberships", 
 		`${base}/workspace/invites`,
 		false,
 	);
 	const allworkspaces = new SidebarItem(
 		"All Workspaces",
 		"", 
+		"tourallworkspaces", 
 		`${base}/workspace`,
 		false,
 	);
@@ -112,39 +129,43 @@
 		memberships,
 		allworkspaces
 	]);
-	const entities = new SidebarItem("Entities", "g e", `${base}/entities`, false);
-	const clients = new SidebarItem("Clients", "g c", `${base}/client`, false);
-	const users = new SidebarItem("Users", "g u", `${base}/user`, false);
-	const roles = new SidebarItem("Roles", "g r", `${base}/role`, false);
-	const forms = new SidebarItem("Forms", "", `${base}/form`, false);
-	const providers = new SidebarItem("Providers", "", `${base}/provider`, false);
-	const resources = new SidebarItem("Resources", "", `${base}/resource`, true);
-	const auditlogs = new SidebarItem("Audit logs", "", `${base}/auditlog`, false);
-	const consoleitem = new SidebarItem("Console", "", `${base}/console`, true);
+	const entities = new SidebarItem("Entities", "g e", "tourentities", `${base}/entities`, false);
+	const clients = new SidebarItem("Clients", "g c", "tourclients", `${base}/client`, false);
+	const users = new SidebarItem("Users", "g u", "tourusers", `${base}/user`, false);
+	const roles = new SidebarItem("Roles", "g r", "tourroles", `${base}/role`, false);
+	const forms = new SidebarItem("Forms", "", "tourforms", `${base}/form`, false);
+	const providers = new SidebarItem("Providers", "", "tourproviders", `${base}/provider`, false);
+	const resources = new SidebarItem("Resources", "", "tourresources", `${base}/resource`, true);
+	const auditlogs = new SidebarItem("Audit logs", "", "touraudit", `${base}/auditlog`, false);
+	const consoleitem = new SidebarItem("Console", "", "tourconsole", `${base}/console`, true);
 	const credentials = new SidebarItem(
 		"Credentials",
 		"", 
+		"tourcredentials", 
 		`${base}/credential`,
 		false,
 	);
-	const config = new SidebarItem("Config", "", `${base}/configuration`, true);
+	const config = new SidebarItem("Config", "", "tourconfig", `${base}/configuration`, true);
 	const billingaccounts = new SidebarItem(
 		"Billing accounts",
 		"g b", 
+		"tourbillingaccounts", 
 		`${base}/billingaccount`,
 		true,
 	);
-	const files = new SidebarItem("Files", "", `${base}/files`, false);
+	const files = new SidebarItem("Files", "", "tourfiles", `${base}/files`, false);
 	const formresources = new SidebarItem(
 		"Form Resources",
 		"", 
+		"tourformresources", 
 		`${base}/formresource`,
 		true,
 	);
-	const hdrobots = new SidebarItem("HD Robots", "", `${base}/hdrobot`, true);
+	const hdrobots = new SidebarItem("HD Robots", "", "tourhdrobots", `${base}/hdrobot`, true);
 	const mailhistory = new SidebarItem(
 		"Mail History",
 		"", 
+		"tourmailhistory", 
 		`${base}/mailhistory`,
 		true,
 	);
@@ -262,6 +283,28 @@
 			}
 		}
 	}
+	if(browser) {
+		Mousetrap.bind("?", function(e) {
+			console.log("Starting tour", $page.url.pathname);
+			if(agent.isActive($page.url.pathname)){
+				driverObj.setSteps(agentTour);
+				driverObj.drive();
+			} else if(home.isActive($page.url.pathname)){
+				driverObj.setSteps(baseTour);
+				driverObj.drive();
+			} else if(entities.isActive($page.url.pathname)){
+				driverObj.setSteps(entitiesTour);
+				driverObj.drive();
+			} else {
+				driverObj.highlight({
+					popover: {
+						title: "No tour available",
+						description: "No tour available for this page",
+					},
+				})
+			}
+		});
+	}
 	loadMenu();
 	$effect(() => {
 		loadMenu();
@@ -271,7 +314,7 @@
 <Sidebar.Root
 	bind:ref
 	{...restProps}
-	class="border-r border-white dark:border-bw900"
+	class="border-r border-white dark:border-bw900 toursidebar"
 >
 	<div class="my-2.5 mx-3 h-full overflow-auto">
 		<Sidebar.Header class="ms-6">
@@ -299,17 +342,14 @@
 											class="rounded-[10px] hover:rounded-[10px] dark:text-bw300"
 										>
 											<Sidebar.MenuButton
-												isActive={$page.url.pathname ===
-													item.url}
-												class={$page.url.pathname ===
-												item.url
-													? "dark:bg-bw700 dark:text-bw100"
-													: "dark:hover:border-[1px] dark:hover:border-bw500 dark:hover:bg-bw850 dark:hover:text-bw100"}
+												isActive={item.isActive($page.url.pathname)}
+												class={item.isActive($page.url.pathname)
+													? "dark:bg-bw700 dark:text-bw100 " + item.classname
+													: "dark:hover:border-[1px] dark:hover:border-bw500 dark:hover:bg-bw850 dark:hover:text-bw100 " + item.classname}
 											>
 												{#snippet child({ props })}
 													{#if item.external}
-														<a
-															href={item.url}
+														<a href={item.url}
 															{...props}
 															target="_blank"
 															rel="noopener noreferrer"
@@ -320,8 +360,7 @@
 															{item.title}</a
 														>
 													{:else}
-														<a
-															href={item.url}
+														<a href={item.url}
 															{...props}
 														>
 															<IconRenderer
