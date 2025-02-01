@@ -70,14 +70,8 @@ class entitiesdata {
 				entities = await this.GetData(page, "openrpa", { _type: "credential" }, access_token);
 				total_count = await this.GetCount(page, "openrpa", { _type: "credential" }, access_token);
 			case base + `/entities/${usersettings.entities_collectionname}`:
-				//usersettings.entities_collectionname = collection;
 				entities = await this.GetData(page, usersettings.entities_collectionname, { }, access_token);
 				total_count = await this.GetCount(page, usersettings.entities_collectionname, { }, access_token);
-				if(entities.length > 0) {
-					console.log("entities", entities[0]._id, entities[0].name);
-				} else {
-					console.log("entities", entities.length);
-				}
 				break;
 			case base + "/files":
 				entities = await this.GetData(page, "fs.files", {}, access_token);
@@ -182,11 +176,9 @@ class entitiesdata {
 		let skip = this.settings.page_index * top;
 
 		if (auth.isConnected == false) {
-			console.log("not connected");
 			return [];
 		}
 		if (collectionname == null || collectionname == "") {
-			console.log("no collectionname");
 			return [];
 		}
 		let queryas = undefined;
@@ -209,9 +201,9 @@ class entitiesdata {
 			jwt: access_token,
 		});
 		if (Object.keys(query).length <= 3) {
-			console.log("collectionname1", collectionname, "page:", this.settings.page, "idx:", this.settings.page_index, "res:", entities.length, "skip:", skip, "query:", query, "token:", access_token?.substring(0, 10));
+			console.log("collectionname", collectionname, "page:", this.settings.page, "idx:", this.settings.page_index, "res:", entities.length, "skip:", skip, "query:", query, "token:", access_token?.substring(0, 10));
 		} else {
-			console.log("collectionname2", collectionname, "page:", this.settings.page, "idx:", this.settings.page_index, "res:", entities.length, "skip:", skip, "token:", access_token?.substring(0, 10));
+			console.log("collectionname", collectionname, "page:", this.settings.page, "idx:", this.settings.page_index, "res:", entities.length, "skip:", skip, "token:", access_token?.substring(0, 10));
 		}
 		return entities;
 	}

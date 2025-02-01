@@ -3,6 +3,7 @@
 	import { page } from "$app/stores";
 	import pkg from "oidc-client";
 	// import { Volleyball } from "lucide-svelte";
+	import Mousetrap from 'mousetrap';
 
 	class SidebarCategory {
 		title: string = $state("");
@@ -16,37 +17,57 @@
 	}
 	class SidebarItem {
 		title: string = $state("");
+		shortcut: string = $state("");
 		url: string = $state("");
 		hidden: boolean = $state(false);
 		external: boolean = $state(false);
 		constructor(
 			title: string,
+			shortcut: string,
 			url: string,
 			hidden: boolean,
 			external: boolean = false,
 		) {
 			this.title = title;
+			this.shortcut = shortcut;
 			this.url = url;
 			this.hidden = hidden;
 			this.external = external;
+			if(this.shortcut != null && this.shortcut != "" && browser){
+				const array = this.shortcut.split(",");
+				for (let i = 0; i < array.length; i++) {
+					const key = array[i];
+					Mousetrap.bind(array[i], function(e) {
+						if (e.preventDefault) {
+							e.preventDefault();
+						} else {
+							e.returnValue = false;
+						}
+						window.location.href = url;
+					});
+				}
+			}
 		}
 	}
-	const home = new SidebarItem("Home", `${base}/`, false);
-	const agent = new SidebarItem("Agents", `${base}/agent`, false);
-	const workitem = new SidebarItem("Workitems", `${base}/workitem`, false);
-	const workitemqueue = new SidebarItem("Workitem queue", `${base}/workitemqueue`, false);
+	const home = new SidebarItem("Home", "g h", `${base}/`, false);
+	const agent = new SidebarItem("Agents", "g a", `${base}/agent`, false);
+	const workitem = new SidebarItem("Workitems", "g w", `${base}/workitem`, false);
+	const workitemqueue = new SidebarItem("Workitem queue", "", `${base}/workitemqueue`, false);
 	const formworkflow = new SidebarItem(
 		"Form workflows",
+		"", 
 		`${base}/formworkflow`,
 		false,
 	);
 	const rpaworkflow = new SidebarItem(
 		"RPA Workflows",
+		"", 
 		`${base}/rpaworkflow`,
 		false,
 	);
 	const grafana = new SidebarItem(
 		"Grafana",
+		"", 
 		`https://grafana.app.openiap.io/`,
 		false,
 		true,
@@ -60,14 +81,16 @@
 		rpaworkflow,
 		grafana,
 	]);
-	const members = new SidebarItem("Members", `${base}/members`, false);
+	const members = new SidebarItem("Members", "", `${base}/members`, false);
 	const invitemember = new SidebarItem(
 		"Invite Member",
+		"", 
 		`${base}/members`,
 		false,
 	);
 	const memberships = new SidebarItem(
 		"My Memberships",
+		"", 
 		`${base}/workspace/invites`,
 		false,
 	);
@@ -76,35 +99,39 @@
 		invitemember,
 		memberships,
 	]);
-	const entities = new SidebarItem("Entities", `${base}/entities`, false);
-	const clients = new SidebarItem("Clients", `${base}/client`, false);
-	const users = new SidebarItem("Users", `${base}/user`, false);
-	const roles = new SidebarItem("Roles", `${base}/role`, false);
-	const forms = new SidebarItem("Forms", `${base}/form`, false);
-	const providers = new SidebarItem("Providers", `${base}/provider`, false);
-	const resources = new SidebarItem("Resources", `${base}/resource`, true);
-	const auditlogs = new SidebarItem("Audit logs", `${base}/auditlog`, false);
-	const console = new SidebarItem("Console", `${base}/console`, true);
+	const entities = new SidebarItem("Entities", "g e", `${base}/entities`, false);
+	const clients = new SidebarItem("Clients", "g c", `${base}/client`, false);
+	const users = new SidebarItem("Users", "g u", `${base}/user`, false);
+	const roles = new SidebarItem("Roles", "g r", `${base}/role`, false);
+	const forms = new SidebarItem("Forms", "", `${base}/form`, false);
+	const providers = new SidebarItem("Providers", "", `${base}/provider`, false);
+	const resources = new SidebarItem("Resources", "", `${base}/resource`, true);
+	const auditlogs = new SidebarItem("Audit logs", "", `${base}/auditlog`, false);
+	const console = new SidebarItem("Console", "", `${base}/console`, true);
 	const credentials = new SidebarItem(
 		"Credentials",
+		"", 
 		`${base}/credential`,
 		false,
 	);
-	const config = new SidebarItem("Config", `${base}/configuration`, true);
+	const config = new SidebarItem("Config", "", `${base}/configuration`, true);
 	const billingaccounts = new SidebarItem(
 		"Billing accounts",
+		"", 
 		`${base}/billingaccount`,
 		true,
 	);
-	const files = new SidebarItem("Files", `${base}/files`, false);
+	const files = new SidebarItem("Files", "", `${base}/files`, false);
 	const formresources = new SidebarItem(
 		"Form Resources",
+		"", 
 		`${base}/formresource`,
 		true,
 	);
-	const hdrobots = new SidebarItem("HD Robots", `${base}/hdrobot`, true);
+	const hdrobots = new SidebarItem("HD Robots", "", `${base}/hdrobot`, true);
 	const mailhistory = new SidebarItem(
 		"Mail History",
+		"", 
 		`${base}/mailhistory`,
 		true,
 	);
@@ -136,6 +163,7 @@
 	import NavWorkspace from "./nav-workspace.svelte";
 	import { MessageSquare, Bot } from "lucide-svelte";
 	import IconRenderer from "./IconRenderer.svelte";
+    import { browser } from "$app/environment";
 
 	// Extend the ComponentProps type to include the workspaces property
 	type ExtendedComponentProps = ComponentProps<typeof Sidebar.Root> & {

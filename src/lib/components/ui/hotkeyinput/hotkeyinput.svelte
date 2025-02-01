@@ -3,7 +3,8 @@
 	import type { WithElementRef } from "bits-ui";
 
 	import { cn } from "$lib/utils.js";
-	import { install, uninstall } from "@github/hotkey";
+	// import { install, uninstall } from "@github/hotkey";
+	import Mousetrap from 'mousetrap';
 	import { onMount } from "svelte";
 	import { onDestroy } from "svelte";
 
@@ -18,15 +19,31 @@
 		$effect(() => {
 			if(ref == null) return;
 			if(ref.dataset && ref.dataset.shortcut) {
-				install(ref, ref.dataset.shortcut)
+				// install(ref, ref.dataset.shortcut)
+				const array = ref.dataset.shortcut.split(",");
+				for (let i = 0; i < array.length; i++) {
+					const key = array[i];
+					Mousetrap.bind(array[i], function(e) {
+						if (e.preventDefault) {
+							e.preventDefault();
+						} else {
+							e.returnValue = false;
+						}
+						ref?.click();
+					});
+				}
 			}
-
 		});
 	});
 	onDestroy(() => {
 		if(ref == null) return;
 		if(ref.dataset && ref.dataset.shortcut) {
-			uninstall(ref)
+			// uninstall(ref)
+			const array = ref.dataset.shortcut.split(",");
+			for (let i = 0; i < array.length; i++) {
+				const key = array[i];
+				Mousetrap.unbind(key);
+			}
 		}
 	});
 </script>

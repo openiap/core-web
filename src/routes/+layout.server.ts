@@ -25,7 +25,6 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 		entities = entitiesdata;
 		total_count = totalcount;
 		let settings = datacomponent.getpagesettingsreactless();
-		// console.log("page:", page, "count:", entities.length, "total:", total_count, "workspace count:", workspaces.length);
 		return { protocol, domain, client_id, page, profile, access_token, wsurl, origin, entities, workspaces, id, settings, total_count };
 	} catch (error) {
 		console.error(error);

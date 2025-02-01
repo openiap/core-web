@@ -73,21 +73,19 @@
 		$effect(() => {
 			if (ref == null) return;
 			if (ref.dataset && ref.dataset.shortcut) {
+				// install(ref, ref.dataset.shortcut);
 				const array = ref.dataset.shortcut.split(",");
 				for (let i = 0; i < array.length; i++) {
 					const key = array[i];
-					console.log("register", key);
 					Mousetrap.bind(array[i], function(e) {
 						if (e.preventDefault) {
 							e.preventDefault();
 						} else {
 							e.returnValue = false;
 						}
-						console.log(key);
 						ref?.click();
 					});
 				}
-				// install(ref, ref.dataset.shortcut);
 			}
 		});
 	});
@@ -98,10 +96,8 @@
 			const array = ref.dataset.shortcut.split(",");
 			for (let i = 0; i < array.length; i++) {
 				const key = array[i];
-				console.log("unregister", key);
 				Mousetrap.unbind(key);
 			}
-		
 		}
 	});
 </script>
