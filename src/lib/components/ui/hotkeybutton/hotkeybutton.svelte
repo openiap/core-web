@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import { install, uninstall } from "@github/hotkey";
+	// import { install, uninstall } from "@github/hotkey";
 	import Mousetrap from 'mousetrap';
 
 	import type { WithElementRef } from "bits-ui";
