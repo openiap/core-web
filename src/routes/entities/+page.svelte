@@ -11,7 +11,7 @@
   import Searchinput from "$lib/searchinput/searchinput.svelte";
   import { auth } from "$lib/stores/auth.svelte";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
-  import { Folder, Pencil } from "lucide-svelte";
+  import { Folder, Pencil, Plus } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
@@ -59,7 +59,7 @@
     replaceState(sveltepage.url, sveltepage.state);
   }
   function single_item_click(item: any) {
-    goto(base + `/entities/${collectionname}/${item._id}`);
+    goto(base + `/entities/${collectionname}/edit/${item._id}`);
   }
 </script>
 
@@ -89,7 +89,21 @@
     </ScrollArea>
   </div>
   <div id="div2" class="ms-6 flex-1">
+    <div class="flex justify-between">
+      <div class="flex gap-2 w-full">
     <Searchinput bind:searchstring />
+    </div>
+    <HotkeyButton
+    data-shortcut="n,ins"
+    onclick={() => {
+      goto(base + `/entities/${collectionname}/new`);
+    }}
+  >
+  <Plus />
+  Add to {collectionname}</HotkeyButton
+  >
+</div>
+  
     <Entities
       {collectionname}
       {query}

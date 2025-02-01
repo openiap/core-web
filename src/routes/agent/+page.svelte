@@ -309,10 +309,11 @@
       variant="base"
       aria-label="add"
       disabled={loading}
+      class="touraddagent"
       onclick={() => goto(base + `/${page}/new`)}
     >
       <Plus />
-      Add {page}</HotkeyButton
+      Add agent</HotkeyButton
     >
     <HotkeyButton
       aria-label="packages"

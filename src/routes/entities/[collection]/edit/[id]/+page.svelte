@@ -13,7 +13,7 @@
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
-  import { editFormSchema } from "../schema.js";
+  import { editFormSchema } from "../../schema.js";
 
   let loading = $state(false);
   let errormessage = $state("");
