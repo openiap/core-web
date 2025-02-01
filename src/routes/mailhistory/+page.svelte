@@ -14,6 +14,7 @@
   import { Eye, Pencil } from "lucide-svelte";
 
   let { data } = $props();
+  let ref: any;
   datacomponent.parsesettings(data.settings);
   let searchstring = $state(datacomponent.settings.searchstring);
   let selected_items = $state([]);
@@ -35,6 +36,7 @@
   total_count={data.total_count}
   bind:selected_items
   bind:entities
+  bind:this={ref}
 >
   {#snippet action(item: any)}
     <HotkeyButton

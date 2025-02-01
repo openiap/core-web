@@ -15,7 +15,13 @@
   import SuperDebug, { superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newWorkspaceSchema } from "../schema.js";
-    import Button from "$lib/components/ui/button/button.svelte";
+  import Button from "$lib/components/ui/button/button.svelte";
+
+  import * as RadioGroup from "$lib/components/ui/radio-group/index.js";
+  import { Label } from "$lib/components/ui/label/index.js";
+  import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
+  import { buttonVariants } from "$lib/components/ui/button/index.js";
+  import Input from "$lib/components/ui/input/input.svelte";
 
   const key = "workspace";
   let showdebug = $state(false);
@@ -23,18 +29,22 @@
   const { data } = $props();
   let currentworkspace = $state(data.currentworkspace);
 
+  let nameprompt = $state(false);
+  let newbillingaccountname = $state(auth.profile.name + "s Billing Account");
+  let newbillingaccountcurrency = $state("");
 
   let _billingid = "";
-  if(data.currentbilling != null) {
+  if (data.currentbilling != null) {
     _billingid = data.currentbilling._id;
-  } else if(data.entities.length == 1) {
-    _billingid = data.entities[0]._id;
   }
+  // } else if (data.entities.length == 1) {
+  //   _billingid = data.entities[0]._id;
+  // }
   let workspaces = $state(data.workspaces);
   let billingid = $state(_billingid);
   let entities = $state(data.entities);
   const billingname = $derived(() => {
-    if (billingid == null || billingid == "") return "Billing Account";
+    if (billingid == null || billingid == "") return "Create new";
     let entity = entities.find((e) => e._id == billingid);
     if (entity == null) return "???";
     return entity.name;
@@ -47,9 +57,7 @@
     onUpdate: async ({ form, cancel }) => {
       if (form.valid) {
         try {
-          if(billingid != null && billingid != "") {
-            form.data._billingid = billingid;
-          }
+          form.data._billingid = billingid;
           await auth.client.CustomCommand({
             command: "ensureworkspace",
             data: JSON.stringify(form.data),
@@ -67,6 +75,50 @@
   });
   const { form: formData, enhance, message } = form;
 
+  async function createbillingaccount() {
+    if (currentworkspace == null) {
+      toast.error("No workspace selected");
+      return;
+    }
+    if (newbillingaccountname == null || newbillingaccountname.trim() == "") {
+      toast.error("Please enter a name for the billing account");
+      newbillingaccountname = auth.profile.name + "s Billing Account";
+      return;
+    }
+    let billingdata: any = {
+      name: newbillingaccountname,
+      currency: $state.snapshot(newbillingaccountcurrency),
+      email: auth.profile.email,
+    };
+    try {
+      const billing = JSON.parse(
+        await auth.client.CustomCommand({
+          command: "ensurebilling",
+          data: JSON.stringify(billingdata),
+          jwt: auth.access_token,
+        }),
+      );
+      toast.success("Billing account created", {
+        description: billing.name,
+      });
+      currentworkspace._billingid = billing._id;
+      currentworkspace._billingid = billingid;
+      await auth.client.CustomCommand({
+        command: "ensureworkspace",
+        data: JSON.stringify(currentworkspace),
+        jwt: auth.access_token,
+      });
+
+      billingid = billing._id;
+      await addplan();
+    } catch (error: any) {
+      toast.error("Error creating billing account", {
+        description: error.message,
+      });
+    } finally {
+      nameprompt = false;
+    }
+  }
   async function addplan() {
     let id = currentworkspace?._id;
     try {
@@ -81,6 +133,11 @@
       let product = resource.products.find((p: any) => p.name == "Basic tier");
       if (product == null) throw new Error("Could not find basic tier product");
       let billing: Billing;
+
+      if (billingid == null || billingid == "") {
+        nameprompt = true;
+        return;
+      }
       if (billingid == null || billingid == "") {
         let billingdata: any = {
           name: currentworkspace.name,
@@ -113,7 +170,10 @@
         }),
       );
       if (link != null && link != "") {
+        usersettings.currentworkspace = currentworkspace._id;
+        await usersettings.dopersist();
         document.location.href = link;
+        return;
       }
       entities = await datacomponent.GetData(
         "workspace",
@@ -136,6 +196,7 @@
           jwt: auth.access_token,
         });
         usersettings.currentworkspace = id;
+        usersettings.persist();
       }
     }
   }
@@ -192,6 +253,27 @@
         <Form.Label>Workspace Name</Form.Label>
         <div class="flex space-x-5">
           <CustomInput {...props} bind:value={$formData.name} />
+          {#if entities.length > 0}
+            {#if currentworkspace._resourceusageid == "" || currentworkspace._resourceusageid == null}
+              <span>Linked to billing account</span>
+              <CustomSelect
+                type="single"
+                triggerContent={billingname}
+                bind:value={billingid}
+                selectitems={[{ name: "Create new", _id: "" }, ...entities]}
+              />
+            {:else if currentworkspace._billingid != null && currentworkspace._billingid != ""}
+              <span>Linked to billing account</span>
+              <Button
+                variant="outline"
+                size="base"
+                onclick={() =>
+                  goto(base + "/billingaccount/" + currentworkspace._billingid)}
+              >
+                {billingname()}
+              </Button>
+            {/if}
+          {/if}
           <Form.Button
             disabled={loading}
             aria-label="Update workspace"
@@ -201,36 +283,30 @@
             <Check />
             Update workspace</Form.Button
           >
+
           {#if data.currentbilling != null}
             <Button
               variant="outline"
               size="base"
               onclick={() =>
-                goto(base + "/workspace/" + currentworkspace._id + "/billing")
-              }
+                goto(base + "/workspace/" + currentworkspace._id + "/billing")}
             >
-              Billing
+              Show billing usage for {currentworkspace.name}
             </Button>
-            <Button
-              variant="outline"
-              size="base"
-              onclick={() =>
-                goto(base + "/billingaccount/" + data.currentbilling?._id + "/billing")
-              }
-            >
-              {data.currentbilling?.name}
-            </Button>
+            <!-- <Button
+            variant="outline"
+            size="base"
+            onclick={() =>
+              goto(
+                base +
+                  "/billingaccount/" +
+                  data.currentbilling?._id +
+                  "/billing",
+              )}
+          >
+            {data.currentbilling?.name}
+          </Button> -->
           {/if}
-
-          {#if entities.length > 1 && (currentworkspace._resourceusageid == "" || currentworkspace._resourceusageid == null)}
-          <CustomSelect
-            type="single"
-            triggerContent={billingname}
-            bind:value={billingid}
-            selectitems={entities}
-          />
-        {/if}
-
         </div>
       {/snippet}
     </Form.Control>
@@ -281,30 +357,12 @@
     </Card.Content>
     <Card.Footer class="flex justify-between">
       <div></div>
-      {#if currentworkspace == null || currentworkspace._productname != "Basic tier"}
-        {#if entities.length < 2}
-          <HotkeyButton onclick={addplan}>Upgrade</HotkeyButton>
-        {:else}
-          <CustomSelect
-            type="single"
-            triggerContent={billingname}
-            bind:value={billingid}
-            selectitems={entities}
-          />
-          <HotkeyButton class="ms-2" onclick={addplan} variant="success"
-            >Upgrade</HotkeyButton
-          >
-        {/if}
-      {:else if currentworkspace._productname == "Basic tier"}
-        <HotkeyButton
-          onclick={() =>
-            goto(
-              base +
-                "/billingaccount/" +
-                currentworkspace._billingid +
-                "/billing",
-            )}>Billing</HotkeyButton
-        >
+      {#if currentworkspace == null || currentworkspace._resourceusageid == null || currentworkspace._resourceusageid == ""}
+        <HotkeyButton onclick={addplan}>Upgrade</HotkeyButton>
+      {:else if currentworkspace._productname != "Basic tier"}
+        <HotkeyButton onclick={addplan}>Downgrade</HotkeyButton>
+      {:else}
+        <HotkeyButton>Current</HotkeyButton>
       {/if}
     </Card.Footer>
   </Card.Root>
@@ -339,6 +397,41 @@
   hidden
   class="hidden"
   aria-label="Toggle debug"
-  data-shortcut={"Control+d,Meta+d"}
+  data-shortcut={"ctrl+d,meta+d"}
   onclick={() => (showdebug = !showdebug)}>Toggle debug</HotkeyButton
 >
+
+<AlertDialog.Root open={nameprompt}>
+  <AlertDialog.Content>
+    <AlertDialog.Header>
+      <AlertDialog.Title>Create Billing Account</AlertDialog.Title>
+      <AlertDialog.Description>
+        Please type the name of your new billing account.
+        <Input bind:value={newbillingaccountname} />
+        <Label>Select currency</Label>
+        <RadioGroup.Root bind:value={newbillingaccountcurrency}>
+          <div class="flex items-center space-x-2">
+            <RadioGroup.Item value="eur" id="r1" />
+            <Label for="r1">EUR</Label>
+          </div>
+          <div class="flex items-center space-x-2">
+            <RadioGroup.Item value="usd" id="r2" />
+            <Label for="r2">USD</Label>
+          </div>
+          <div class="flex items-center space-x-2">
+            <RadioGroup.Item value="dkk" id="r3" />
+            <Label for="r3">DKK</Label>
+          </div>
+          <div class="flex items-center space-x-2">
+            <RadioGroup.Item value="" id="r3" />
+            <Label for="r3">Auto</Label>
+          </div>
+        </RadioGroup.Root>
+      </AlertDialog.Description>
+    </AlertDialog.Header>
+    <AlertDialog.Footer>
+      <HotkeyButton onclick={() => (nameprompt = false)}>Cancel</HotkeyButton>
+      <HotkeyButton onclick={createbillingaccount}>Continue</HotkeyButton>
+    </AlertDialog.Footer>
+  </AlertDialog.Content>
+</AlertDialog.Root>

@@ -15,6 +15,6 @@
 	hidden
 	class="hidden"
 	aria-label="Toggle debug"
-	data-shortcut={"Control+d,Meta+d"}
+	data-shortcut={"ctrl+d,meta+d"}
 	onclick={() => (showdebug = !showdebug)}
 />

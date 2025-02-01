@@ -12,6 +12,7 @@
   import { MapPinHouse, User } from "lucide-svelte";
 
   let { data } = $props();
+  let ref: any;
   datacomponent.parsesettings(data.settings);
   let searchstring = $state(datacomponent.settings.searchstring);
   let entities = $state(data.entities);
@@ -29,6 +30,7 @@
   {single_item_click}
   total_count={data.total_count}
   bind:entities
+  bind:this={ref}
 >
   {#snippet action(item: any)}
     <HotkeyButton

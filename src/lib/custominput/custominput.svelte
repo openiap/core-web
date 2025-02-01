@@ -31,7 +31,7 @@
 	{placeholder}
 	bind:value
 	{disabled}
-	data-shortcut={"Control+f,Meta+f"}
+	data-shortcut={"ctrl+f,meta+f"}
 	{type}
 	class={getClass()}
 	onchange={onchangefunction}

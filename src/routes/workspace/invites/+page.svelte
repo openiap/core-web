@@ -31,6 +31,7 @@
   };
   let selected_items = $state([]);
   let entities = $state(data.entities);
+  let ref: any;
   let showWarning = $state(false);
   let deleteData: any = $state({});
 
@@ -52,12 +53,7 @@
       toast.success("Deleted successfully", {
         description: "",
       });
-      entities = await datacomponent.GetData(
-        page,
-        collectionname,
-        query,
-        auth.access_token,
-      );
+      ref.reload();
     } catch (error: any) {
       toast.error("Error while deleting", {
         description: error.message,
@@ -88,6 +84,7 @@
   total_count={data.total_count}
   bind:selected_items
   bind:entities
+  bind:this={ref}
 >
   {#snippet action(item: any)}
     <HotkeyButton

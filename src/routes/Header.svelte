@@ -113,7 +113,7 @@
 					variant="success"
 					aria-label="Signin"
 					onclick={login}
-					data-shortcut={"Control+q,Meta+q"}>Signin</HotkeyButton
+					data-shortcut={"ctrl+q,meta+q"}>Signin</HotkeyButton
 				>
 			{/if}
 		</div>

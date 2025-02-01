@@ -18,6 +18,7 @@
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
+  let ref: any;
   datacomponent.parsesettings(data.settings);
   let searchstring = $state(datacomponent.settings.searchstring);
   let selected_items = $state([]);
@@ -38,12 +39,7 @@
       }
 
       selected_items = selected_items.filter((i) => i !== item._id);
-      entities = await datacomponent.GetData(
-        page,
-        collectionname,
-        query,
-        auth.access_token,
-      );
+      ref.reload();
       toast.success("Deleted successfully", {
         description: "",
       });
@@ -67,13 +63,8 @@
           await usersettings.dopersist();
         }
       }
-      entities = await datacomponent.GetData(
-        page,
-        collectionname,
-        query,
-        auth.access_token,
-      );
       selected_items = [];
+      ref.reload();
       toast.success("Deleted " + ids.length + " items successfully", {
         description: "",
       });
@@ -133,6 +124,7 @@
   total_count={data.total_count}
   bind:selected_items
   bind:entities
+  bind:this={ref}
 >
   {#snippet action(item: any)}
     <HotkeyButton

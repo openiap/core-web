@@ -12,13 +12,10 @@ export const load: PageServerLoad = async ({ parent }) => {
     }
     let page = "entities-" + collectionname;
     data.loadsettings(page);
-    let searchstring = data.settings.searchstring;
     try {
-        const entities = await data.GetData(page, collectionname, {}, access_token);
         const collections = await auth.client.ListCollections({ jwt: access_token });
-        const total_count = await data.GetCount(page, collectionname, {}, access_token);
-        return { entities, collections, collectionname, searchstring, total_count };
+        return { collections, collectionname };
     } catch (error) {
-        return { entities: [], collections: [], collectionname, searchstring, total_count: 99999 };
+        return { collections: [], collectionname };
     }
 };

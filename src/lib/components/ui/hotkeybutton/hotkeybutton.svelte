@@ -1,5 +1,7 @@
 <script lang="ts" module>
 	import { install, uninstall } from "@github/hotkey";
+	import Mousetrap from 'mousetrap';
+
 	import type { WithElementRef } from "bits-ui";
 	import { onDestroy, onMount } from "svelte";
 	import type {
@@ -71,14 +73,35 @@
 		$effect(() => {
 			if (ref == null) return;
 			if (ref.dataset && ref.dataset.shortcut) {
-				install(ref, ref.dataset.shortcut);
+				const array = ref.dataset.shortcut.split(",");
+				for (let i = 0; i < array.length; i++) {
+					const key = array[i];
+					console.log("register", key);
+					Mousetrap.bind(array[i], function(e) {
+						if (e.preventDefault) {
+							e.preventDefault();
+						} else {
+							e.returnValue = false;
+						}
+						console.log(key);
+						ref?.click();
+					});
+				}
+				// install(ref, ref.dataset.shortcut);
 			}
 		});
 	});
 	onDestroy(() => {
 		if (ref == null) return;
 		if (ref.dataset && ref.dataset.shortcut) {
-			uninstall(ref);
+			// uninstall(ref);
+			const array = ref.dataset.shortcut.split(",");
+			for (let i = 0; i < array.length; i++) {
+				const key = array[i];
+				console.log("unregister", key);
+				Mousetrap.unbind(key);
+			}
+		
 		}
 	});
 </script>

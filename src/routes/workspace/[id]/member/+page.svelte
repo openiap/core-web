@@ -18,6 +18,7 @@
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
+  let ref: any;
   datacomponent.parsesettings(data.settings);
   usersettings.currentworkspace = data.id as any;
   let searchstring = $state(datacomponent.settings?.searchstring);
@@ -43,12 +44,7 @@
       toast.success("Deleted successfully", {
         description: "",
       });
-      entities = await datacomponent.GetData(
-        page,
-        collectionname,
-        query(),
-        auth.access_token,
-      );
+      ref.reload();
     } catch (error: any) {
       toast.error("Error while deleting", {
         description: error.message,
@@ -64,12 +60,7 @@
           jwt: auth.access_token,
         });
       }
-      entities = await datacomponent.GetData(
-        page,
-        collectionname,
-        query(),
-        auth.access_token,
-      );
+      ref.reload();
       selected_items = [];
       toast.success("Deleted " + ids.length + " items successfully", {
         description: "",
@@ -117,6 +108,7 @@
   total_count={data.total_count}
   bind:selected_items
   bind:entities
+  bind:this={ref}
 >
   {#snippet status(item: any)}
     {#if item.status == "pending"}
@@ -156,13 +148,7 @@
             description: error.message,
           });
         }
-        // Run again to "reset"
-        entities = await datacomponent.GetData(
-          page,
-          collectionname,
-          query(),
-          auth.access_token,
-        );
+        ref.reload();
       }}
     />
   {/snippet}

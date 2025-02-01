@@ -85,7 +85,7 @@
                         aria-label="Signout"
                         onclick={logout}
                         variant="ghostfull"
-                        data-shortcut={"Control+q,Meta+q"}
+                        data-shortcut={"ctrl+q,meta+q"}
                     >
                         <div>Signout</div>
                     </HotkeyButton>

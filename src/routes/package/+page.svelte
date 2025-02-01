@@ -17,6 +17,7 @@
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
+  let ref: any;
   datacomponent.parsesettings(data.settings);
   let searchstring = $state(datacomponent.settings.searchstring);
   let selected_items = $state([]);
@@ -37,12 +38,7 @@
       toast.success("Deleted successfully", {
         description: "",
       });
-      entities = await datacomponent.GetData(
-        page,
-        collectionname,
-        query,
-        auth.access_token,
-      );
+      ref.reload();
     } catch (error: any) {
       toast.error("Error while deleting", {
         description: error.message,
@@ -85,6 +81,7 @@
   total_count={data.total_count}
   bind:selected_items
   bind:entities
+  bind:this={ref}
 >
   {#snippet action(item: any)}
     <HotkeyButton

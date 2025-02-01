@@ -24,7 +24,7 @@
 					<Pagination.PrevButton class={buttonClass}>
 						<HotkeyButton
 							href="#"
-							data-shortcut="ArrowLeft"
+							data-shortcut="left"
 							variant="ghostfull"
 							disabled={!total_count || page_index + 1 === 1}
 						>
@@ -53,7 +53,7 @@
 					<Pagination.NextButton class={buttonClass}>
 						<HotkeyButton
 							href="#"
-							data-shortcut="ArrowRight"
+							data-shortcut="right"
 							variant="ghostfull"
 							disabled={!total_count ||
 								currentPage === Math.ceil(total_count / 5)}

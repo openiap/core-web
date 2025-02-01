@@ -14,13 +14,14 @@
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
+  let ref: any;
   datacomponent.parsesettings(data.settings);
 
   let collectionname = $state("");
   collectionname = data.collectionname;
   let page = $derived(() => "entities-" + collectionname);
   let query = {};
-  let searchstring = $state(data.searchstring);
+  let searchstring = $state(datacomponent.settings.searchstring);
   let selected_items = $state([]);
   let collections: any[] = $state(data.collections);
   let entities = $state(data.entities);
@@ -31,7 +32,7 @@
       jwt: auth.access_token,
     });
     if (deletecount == 1) {
-      entities = entities.filter((entity: any) => entity._id != item._id);
+      ref.reload();
       selected_items = selected_items.filter((i) => i !== item._id);
     } else {
       toast.error("Error while deleting", {
@@ -44,8 +45,8 @@
   }
   function selectcollection(name: string) {
     collectionname = name;
-    usersettings.entities_collectionname = name;
-    datacomponent.persist();
+    // usersettings.entities_collectionname = name;
+    // datacomponent.persist();
     sveltepage.url.pathname = base + `/entities/${collectionname}`;
     replaceState(sveltepage.url, sveltepage.state);
   }
@@ -90,6 +91,7 @@
       bind:selected_items
       bind:entities
       {single_item_click}
+      bind:this={ref}
     >
       {#snippet action(item: any)}
         <HotkeyButton
@@ -106,7 +108,7 @@
 </div>
 
 <HotkeyButton
-  data-shortcut="ArrowUp"
+  data-shortcut="up"
   onclick={() => {
     let index = collections.findIndex((x) => x.name == collectionname);
     if (index > 0) {
@@ -117,7 +119,7 @@
   class="hidden">Previous</HotkeyButton
 >
 <HotkeyButton
-  data-shortcut="ArrowDown"
+  data-shortcut="down"
   onclick={() => {
     let index = collections.findIndex((x) => x.name == collectionname);
     if (index < collections.length - 1) {

@@ -23,7 +23,17 @@
 	import { toast } from "svelte-sonner";
 	import { data } from "./data.svelte.js";
 	import IconRenderer from "./IconRenderer.svelte";
+	import { page as componentpage } from "$app/stores";
 
+	export async function reload () {
+			const id = $componentpage?.params?.id;
+			const page = $componentpage?.url?.pathname;
+			const { entities: entitiesdata, total_count: totalcount } = await data.Fetch(page, id, auth.access_token);
+			entities = entitiesdata;
+			total_count = totalcount;
+			detectColumns();
+			SetHeaders();
+		}
 	let {
 		page = "entities",
 		query = {},
@@ -109,14 +119,21 @@
 	async function GetData() {
 		loading = true;
 		try {
-			const _entities = await data.GetData(
-				page,
-				collectionname,
-				query,
-				auth.access_token,
-			);
-			entities = _entities;
+			const id = $componentpage?.params?.id;
+			const page = $componentpage?.url?.pathname;
+			const { entities: entitiesdata, total_count: totalcount } = await data.Fetch(page, id, auth.access_token);
+			entities = entitiesdata;
+			total_count = totalcount;
 			detectColumns();
+			SetHeaders();
+			// const _entities = await data.GetData(
+			// 	page,
+			// 	collectionname,
+			// 	query,
+			// 	auth.access_token,
+			// );
+			// entities = _entities;
+			// detectColumns();
 			return entities;
 		} catch (error: any) {
 			toast.error("Error while loading data", {
@@ -558,7 +575,7 @@
 	<HotkeyButton
 		disabled={selected_items.length === 0}
 		onclick={() => (showWarning = true)}
-		data-shortcut="Delete"
+		data-shortcut="del"
 		size="base"
 		variant="danger"
 		class="bg-red-500 text-white"
@@ -657,7 +674,7 @@
 	<HotkeyButton
 		size="base"
 		variant="base"
-		data-shortcut="ArrowLeft"
+		data-shortcut="left"
 		onclick={() => {
 			page_index = page_index - 1;
 			data.settings.page_index = page_index;
@@ -688,7 +705,7 @@
 	<HotkeyButton
 		size="base"
 		variant="base"
-		data-shortcut="ArrowRight"
+		data-shortcut="right"
 		onclick={() => {
 			page_index = page_index + 1;
 			data.settings.page_index = page_index;
@@ -708,7 +725,7 @@
 </div>
 
 <HotkeyButton
-	data-shortcut="Control+a,Meta+a"
+	data-shortcut="ctrl+a,meta+a"
 	onclick={() => {
 		if (!is_all_selected()) {
 			entities.map((x) => {

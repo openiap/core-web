@@ -1,4 +1,5 @@
 import { browser } from "$app/environment";
+import { base } from "$app/paths";
 import { auth } from "$lib/stores/auth.svelte";
 import { type sort } from "$lib/stores/usersettings.svelte";
 import { usersettings, type pageSettings, type SettingsTableHeader } from "$lib/stores/usersettings.svelte.js";
@@ -29,6 +30,151 @@ class entitiesdata {
 	errormessage = "";
 	pagesize = $state(13);
 
+	async Fetch(page: string, id: string | undefined, access_token: string): Promise<{ entities: any[], total_count: number }> {
+		let entities: any[] = [], total_count: number = 0;
+		switch (page) {
+			case base + "/agent":
+				if (usersettings.currentworkspace != null && usersettings.currentworkspace != "") {
+					entities = await this.GetData(page, "agents", { _type: "agent", _workspaceid: usersettings.currentworkspace }, access_token);
+					total_count = await this.GetCount(page, "agents", { _type: "agent", _workspaceid: usersettings.currentworkspace }, access_token);
+				} else {
+					entities = await this.GetData(page, "agents", { _type: "agent" }, access_token);
+					total_count = await this.GetCount(page, "agents", { _type: "agent" }, access_token);
+				}
+				break;
+			case base + "/auditlog":
+				entities = await this.GetData(page, "audit", {}, access_token);
+				total_count = await this.GetCount(page, "audit", {}, access_token);
+				break;
+			case base + "/client":
+				entities = JSON.parse(await auth.client.CustomCommand({ command: "getclients", jwt: access_token, }));
+				total_count = entities.length;
+				break;
+			case base + "/console":
+				entities = await this.GetData(page, "config", { _type: "config" }, access_token, false);
+				total_count = entities.length;
+				break;
+			case base + "/credential":
+				entities = await this.GetData(page, "openrpa", { _type: "credential" }, access_token);
+				total_count = await this.GetCount(page, "openrpa", { _type: "credential" }, access_token);
+				break;
+			case base + "/billingaccount":
+				entities = await this.GetData(page, "users", { _type: "customer" }, access_token, false);
+				total_count = await this.GetCount(page, "users", { _type: "customer" }, access_token, false);
+				break;
+			case base + `/billingaccount/${id}/billing`:
+				entities = JSON.parse(await auth.client.CustomCommand({ id: id, command: "getcustomerresources", jwt: access_token }));
+				total_count = entities.length
+				break;
+			case base + "/entities":
+				entities = await this.GetData(page, "openrpa", { _type: "credential" }, access_token);
+				total_count = await this.GetCount(page, "openrpa", { _type: "credential" }, access_token);
+			case base + `/entities/${usersettings.entities_collectionname}`:
+				//usersettings.entities_collectionname = collection;
+				entities = await this.GetData(page, usersettings.entities_collectionname, { }, access_token);
+				total_count = await this.GetCount(page, usersettings.entities_collectionname, { }, access_token);
+				if(entities.length > 0) {
+					console.log("entities", entities[0]._id, entities[0].name);
+				} else {
+					console.log("entities", entities.length);
+				}
+				break;
+			case base + "/files":
+				entities = await this.GetData(page, "fs.files", {}, access_token);
+				total_count = await this.GetCount(page, "fs.files", {}, access_token);
+				break;
+			case base + "/form":
+				entities = await this.GetData(page, "forms", { _type: "form" }, access_token);
+				total_count = await this.GetCount(page, "forms", { _type: "form" }, access_token);
+				break;
+			case base + "/formworkflow":
+				entities = await this.GetData(page, "workflow", { _type: "workflow", web: true }, access_token);
+				total_count = await this.GetCount(page, "workflow", { _type: "workflow", web: true }, access_token);
+				break;
+			case base + "/formresource":
+				entities = await this.GetData(page, "forms", { _type: "resource" }, access_token);
+				total_count = await this.GetCount(page, "forms", { _type: "resource" }, access_token);
+				break;
+			case base + "/hdrobot":
+				entities = await this.GetData(page, "openrpa", { _type: "unattendedclient" }, access_token);
+				total_count = await this.GetCount(page, "openrpa", { _type: "unattendedclient" }, access_token);
+				break;
+			case base + "/mailhistory":
+				entities = await this.GetData(page, "mailhist", {}, access_token);
+				total_count = await this.GetCount(page, "mailhist", {}, access_token);
+				break;
+			case base + "/package":
+				entities = await this.GetData(page, "agents", { _type: "package" }, access_token);
+				total_count = await this.GetCount(page, "agents", { _type: "package" }, access_token);
+				break;
+			case base + "/provider":
+				entities = await this.GetData(page, "config", { _type: "provider" }, access_token);
+				total_count = await this.GetCount(page, "config", { _type: "provider" }, access_token);
+				break;
+			case base + "/resource":
+				entities = await this.GetData(page, "config", { _type: "resource" }, access_token, false);
+				total_count = await this.GetCount(page, "config", { _type: "resource" }, access_token, false);
+				break;
+			case base + "/role":
+				entities = await this.GetData(page, "users", { _type: "role" }, access_token);
+				total_count = await this.GetCount(page, "users", { _type: "role" }, access_token);
+				break;
+			case base + "/rpaworkflow":
+				entities = await this.GetData(page, "openrpa", { _type: "workflow" }, access_token);
+				total_count = await this.GetCount(page, "openrpa", { _type: "workflow" }, access_token);
+				break;
+			case base + "/user":
+				entities = await this.GetData(page, "users", { _type: "user" }, access_token);
+				total_count = await this.GetCount(page, "users", { _type: "user" }, access_token);
+				break;
+			case base + "/workitem":
+				entities = await this.GetData(page, "workitems", {}, access_token, false);
+				total_count = await this.GetCount(page, "workitems", {}, access_token, false);
+				break;
+			case base + `/workitem/${id}`:
+				entities = await this.GetData(page, "workitems", { wiqid: id }, access_token, false);
+				total_count = await this.GetCount(page, "workitems", { wiqid: id }, access_token, false);
+				break;
+			case base + "/workitemqueue":
+				entities = await this.GetData(page, "mq", { _type: "workitemqueue" }, access_token, false);
+				total_count = await this.GetCount(page, "mq", { _type: "workitemqueue" }, access_token, false);
+				break;
+			case base + "/workspace":
+				entities = await this.GetData(page, "users", { _type: "workspace" }, access_token, false);
+				total_count = await this.GetCount(page, "users", { _type: "workspace" }, access_token, false);
+				break;
+			case base + `/workspace/${id}/member`:
+				usersettings.currentworkspace = id as any;
+				entities = await this.GetData(page, "users", { _type: "member", workspaceid: id, status: { "$ne": "rejected" } }, access_token);
+				total_count = await this.GetCount(page, "users", { _type: "member", workspaceid: id, status: { "$ne": "rejected" } }, access_token);
+				break;
+			case base + `/workspace/${id}/member`:
+				usersettings.currentworkspace = id as any;
+				entities = await this.GetData(page, "users", { _type: "member" }, access_token, false);
+				total_count = await this.GetCount(page, "users", { _type: "member" }, access_token, false);
+				break;
+			case base + `/workspace/${id}/billing`:
+				entities = JSON.parse(await auth.client.CustomCommand({ id: id, command: "getworkspaceresources", jwt: access_token }));
+				total_count = entities.length
+				break;
+
+			case base + "/workspace/invites":
+				const userid = auth.profile.sub;
+				const email = auth.profile.email;
+				// const basequery = { _type: "member", "status": { "$in": ["pending", "rejected"] } };
+				const basequery = { _type: "member" };
+				let query: any = { ...basequery, ...{ "$or": [{ "userid": userid }, { "email": email }] } };
+				entities = await this.GetData(page, "users", query, access_token, false);
+				total_count = await this.GetCount(page, "users", query, access_token, false);
+				break;
+			default:
+				console.log("Unknown page", page, id);
+				break;
+		}
+		// console.log("page:", page, "count:", entities.length, "total:", total_count);
+		return { entities, total_count };
+	}
+
 	async GetData(page: string, collectionname: string, query: any, access_token: string, workspacefilter: boolean = true) {
 		let orderby = this.getOrderBy();
 		let usequery = this.createQuery(this.settings.searchstring, query);
@@ -36,32 +182,37 @@ class entitiesdata {
 		let skip = this.settings.page_index * top;
 
 		if (auth.isConnected == false) {
+			console.log("not connected");
 			return [];
 		}
 		if (collectionname == null || collectionname == "") {
+			console.log("no collectionname");
 			return [];
 		}
 		let queryas = undefined;
-		if(workspacefilter == true) {
-			if(usersettings.currentworkspace != null && usersettings.currentworkspace != "") {
-				queryas = usersettings.currentworkspace;
+		if (workspacefilter == true) {
+			if (this.settings.searchstring.length == 24 && this.settings.searchstring.match(/^[0-9a-fA-F]{24}$/)) {
+			} else {
+				if (usersettings.currentworkspace != null && usersettings.currentworkspace != "") {
+					queryas = usersettings.currentworkspace;
+				}
 			}
 		}
 		const entities = await auth.client.Query<any>({
 			collectionname: collectionname,
 			query: usequery,
 			orderby: orderby,
-			projection: {"Xaml": 0, "xml": 0}, // exclude Xaml (openrpa workflows) and xml (openrpa instance state) fields
+			projection: { "Xaml": 0, "xml": 0 }, // exclude Xaml (openrpa workflows) and xml (openrpa instance state) fields
 			skip: skip,
 			top: top,
 			queryas,
 			jwt: access_token,
 		});
-		// if (Object.keys(query).length <= 3) {
-		// 	console.log("collectionname", collectionname, "page:", this.settings.page, "idx:", this.settings.page_index, "res:", entities.length, "skip:", skip, "query:", query, "token:", access_token?.substring(0, 10));
-		// } else {
-		// 	console.log("collectionname", collectionname, "page:", this.settings.page, "idx:", this.settings.page_index, "res:", entities.length, "skip:", skip, "token:", access_token?.substring(0, 10));
-		// }
+		if (Object.keys(query).length <= 3) {
+			console.log("collectionname1", collectionname, "page:", this.settings.page, "idx:", this.settings.page_index, "res:", entities.length, "skip:", skip, "query:", query, "token:", access_token?.substring(0, 10));
+		} else {
+			console.log("collectionname2", collectionname, "page:", this.settings.page, "idx:", this.settings.page_index, "res:", entities.length, "skip:", skip, "token:", access_token?.substring(0, 10));
+		}
 		return entities;
 	}
 	async GetCount(page: string, collectionname: string, query: any, access_token: string, workspacefilter: boolean = true) {
@@ -72,10 +223,13 @@ class entitiesdata {
 		if (collectionname == null || collectionname == "") {
 			return total_count;
 		}
+		if(!browser) {
+			return total_count;
+		}
 		let usequery = this.createQuery(this.settings.searchstring, query);
 		let queryas = undefined;
-		if(workspacefilter == true) {
-			if(usersettings.currentworkspace != null && usersettings.currentworkspace != "") {
+		if (workspacefilter == true) {
+			if (usersettings.currentworkspace != null && usersettings.currentworkspace != "") {
 				queryas = usersettings.currentworkspace;
 			}
 		}
@@ -100,7 +254,7 @@ class entitiesdata {
 		usersettings.persist();
 	}
 	parsesettings(raw: any) {
-		if(raw == null) {
+		if (raw == null) {
 			return;
 		}
 		usersettings.loadpage(raw);
@@ -197,7 +351,10 @@ class entitiesdata {
 		if (searchstring == null || searchstring == "") {
 			return q;
 		}
-		if (searchstring.indexOf("{") == 0) {
+
+		if (searchstring.length == 24 && searchstring.match(/^[0-9a-fA-F]{24}$/)) {
+			q["_id"] = searchstring;
+		} else if (searchstring.indexOf("{") == 0) {
 			if (searchstring.lastIndexOf("}") == searchstring.length - 1) {
 				try {
 					q = this.parseJson(searchstring, null, null);

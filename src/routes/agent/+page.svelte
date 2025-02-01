@@ -38,6 +38,7 @@
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
+  let ref: any;
   datacomponent.parsesettings(data.settings);
   let searchstring = $state(datacomponent.settings.searchstring);
   let selected_items = $state([]);
@@ -135,8 +136,8 @@
               jwt: auth.access_token,
             });
             counter++;
-            entities = entities.filter((x: any) => x._id != item._id);
             selected_items = selected_items.filter((x: any) => x != item._id);
+            GetData();
           } catch (error: any) {
             haderror = true;
             toast.error("Error while deleting", {
@@ -426,6 +427,7 @@
   total_count={data.total_count}
   bind:selected_items
   bind:entities
+  bind:this={ref}
 >
   {#snippet status(item: any)}
     {#if item && item.status}
