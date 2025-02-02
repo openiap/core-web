@@ -12,6 +12,7 @@
   import { toast } from "svelte-sonner";
 
   const { data } = $props();
+  let loading = $state(false);
   let entities: ResourceUsage[] = $state(data.entities);
   let resources: Resource[] = $state(data.resources);
   let key = $state(0);
@@ -19,28 +20,35 @@
   let sheetresource = $state<Resource>(null as any);
 
   async function GetData() {
-    entities = await auth.client.Query<ResourceUsage>({
-      collectionname: "config",
-      query: {
-        _type: "resourceusage",
-        workspaceid: usersettings.currentworkspace,
-      },
-      jwt: auth.access_token,
-    });
-    resources = await auth.client.Query<Resource>({
-      collectionname: "config",
-      query: {
-        _type: "resource",
-        target: { $in: ["workspace", "agent", "member"] },
-      },
-      jwt: auth.access_token,
-    });
-    cleanResources();
-    key++;
+    try {
+      loading = true;
+      entities = await auth.client.Query<ResourceUsage>({
+        collectionname: "config",
+        query: {
+          _type: "resourceusage",
+          workspaceid: usersettings.currentworkspace,
+        },
+        jwt: auth.access_token,
+      });
+      resources = await auth.client.Query<Resource>({
+        collectionname: "config",
+        query: {
+          _type: "resource",
+          target: { $in: ["workspace", "agent", "member"] },
+        },
+        jwt: auth.access_token,
+      });
+      cleanResources();
+      key++;
+    } catch (error: any) {
+      toast.error("Error loading data", { description: error.message });
+    } finally {
+      loading = false;
+    }
   }
 
   const canincrease = $derived((resource: Resource, product: Product) => {
-    // return true;
+    if (loading) return false;
     if (product.allowdirectassign == false) return false;
     if (resource.allowdirectassign == false) return false;
     if (resource.assign == "singlevariant") {
@@ -69,6 +77,7 @@
   });
   async function increment(resource: Resource, product: Product) {
     try {
+      loading = true;
       let target: any = null;
       if (resource.target == "customer") {
         target = data.billingaccount;
@@ -103,10 +112,13 @@
       toast.error("Error assigning resource", {
         description: error.message,
       });
+    } finally {
+      loading = false;
     }
   }
   async function decrement(resource: Resource, product: Product) {
     try {
+      loading = true;
       let target: any = null;
       if (resource == null) throw new Error("Resource not found");
       if (product == null) throw new Error("Product not found");
@@ -170,10 +182,13 @@
       toast.error("Error unassigning resource", {
         description: error.message,
       });
+    } finally {
+      loading = false;
     }
   }
   async function removeresourceusage(resourceusage: ResourceUsage) {
     try {
+      loading = true;
       await auth.client.CustomCommand({
         command: "removeresourceusage",
         id: resourceusage._id,
@@ -185,6 +200,8 @@
       toast.error("Error unassigning resource", {
         description: error.message,
       });
+    } finally {
+      loading = false;
     }
   }
   function quantity(resource: Resource, product: Product) {
@@ -281,6 +298,7 @@
                       <Button
                         variant="outline"
                         size="base"
+                        disabled={loading}
                         onclick={() => increment(resource, product)}
                         >Increase</Button
                       >
@@ -296,7 +314,7 @@
                     <Button
                       variant="outline"
                       size="base"
-                      disabled={quantity(resource, product) == 0}
+                      disabled={quantity(resource, product) == 0 || loading}
                       onclick={() => decrement(resource, product)}
                       >Decrease</Button
                     >
@@ -311,6 +329,7 @@
         <Button
           variant="outline"
           size="base"
+          disabled={loading}
           onclick={() => {
             sheetresource = resource;
             toggleSheet = true;
@@ -342,6 +361,7 @@
                 <Button
                   variant="outline"
                   size="base"
+                  disabled={loading}
                   onclick={() => removeresourceusage(resource)}
                 >
                   <Trash />
@@ -356,6 +376,7 @@
       <Button
         variant="outline"
         size="base"
+        disabled={loading}
         onclick={() => {
           toggleSheet = false;
         }}

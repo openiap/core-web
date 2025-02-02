@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { goto } from "$app/navigation";
-    import { base } from "$app/paths";
+  import { goto } from "$app/navigation";
+  import { base } from "$app/paths";
   import Button from "$lib/components/ui/button/button.svelte";
   import * as Card from "$lib/components/ui/card/index.js";
   import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
@@ -8,10 +8,11 @@
   import { auth } from "$lib/stores/auth.svelte.js";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import { Resource, ResourceUsage, type Product } from "$lib/types.svelte.js";
-  import { Check, LucideBadgeDollarSign, Minus, Plus, Trash } from "lucide-svelte";
+  import { LucideBadgeDollarSign, Minus, Plus, Trash } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   const { data } = $props();
+  let loading = $state(false);
   let entities: ResourceUsage[] = $state(data.entities);
   let resources: Resource[] = $state(data.resources);
   let key = $state(0);
@@ -19,22 +20,30 @@
   let sheetresource = $state<Resource>(null as any);
 
   async function GetData() {
-    entities = await auth.client.Query<ResourceUsage>({
-      collectionname: "config",
-      query: { _type: "resourceusage", customerid: data.id },
-      jwt: auth.access_token,
-    });
-    resources = await auth.client.Query<Resource>({
-      collectionname: "config",
-      query: { _type: "resource" },
-      jwt: auth.access_token,
-    });
-    cleanResources();
-    key++;
+    try {
+      loading = true;
+      entities = await auth.client.Query<ResourceUsage>({
+        collectionname: "config",
+        query: { _type: "resourceusage", customerid: data.id },
+        jwt: auth.access_token,
+      });
+      resources = await auth.client.Query<Resource>({
+        collectionname: "config",
+        query: { _type: "resource" },
+        jwt: auth.access_token,
+      });
+      cleanResources();
+      key++;
+    } catch (error: any) {
+      toast.error("Error getting data", {
+        description: error.message,
+      });
+    } finally {
+      loading = false;
+    }
   }
 
   const canincrease = $derived((resource: Resource, product: Product) => {
-    // return true;
     if (product.allowdirectassign == false) return false;
     if (resource.allowdirectassign == false) return false;
     if (resource.assign == "singlevariant") {
@@ -47,10 +56,7 @@
         return false;
       }
     }
-    if (
-      product.assign == "single" ||
-      product.assign == "metered"
-    ) {
+    if (product.assign == "single" || product.assign == "metered") {
       let exists = entities.find(
         (x) =>
           x.resourceid == resource._id &&
@@ -66,6 +72,7 @@
   });
   async function increment(resource: Resource, product: Product) {
     try {
+      loading = true;
       let target: any = null;
       if (resource.target == "customer") {
         target = data.billingaccount;
@@ -100,10 +107,13 @@
       toast.error("Error assigning resource", {
         description: error.message,
       });
+    } finally {
+      loading = false;
     }
   }
   async function decrement(resource: Resource, product: Product) {
     try {
+      loading = true;
       let target: any = null;
       if (resource == null) throw new Error("Resource not found");
       if (product == null) throw new Error("Product not found");
@@ -150,8 +160,10 @@
           throw new Error("Remove plan from agent page or click Detail Usage");
         }
       }
-      if(resourceusage == null) {
-        throw new Error("Failed finding resource. Click Detail Usage to remove");
+      if (resourceusage == null) {
+        throw new Error(
+          "Failed finding resource. Click Detail Usage to remove",
+        );
       }
       await auth.client.CustomCommand({
         command: "removeresourceusage",
@@ -164,10 +176,13 @@
       toast.error("Error unassigning resource", {
         description: error.message,
       });
+    } finally {
+      loading = false;
     }
   }
   async function removeresourceusage(resourceusage: ResourceUsage) {
     try {
+      loading = true;
       await auth.client.CustomCommand({
         command: "removeresourceusage",
         id: resourceusage._id,
@@ -179,6 +194,8 @@
       toast.error("Error unassigning resource", {
         description: error.message,
       });
+    } finally {
+      loading = false;
     }
   }
   function quantity(resource: Resource, product: Product) {
@@ -204,19 +221,21 @@
     return quantity;
   }
   function cleanResources() {
-    for(let i = 0; i < resources.length; i++) {
+    for (let i = 0; i < resources.length; i++) {
       let resource = resources[i];
-      for(let y = 0; y < resource.products.length; y++) {
+      for (let y = 0; y < resource.products.length; y++) {
         let product = resource.products[y];
         let remove = product.deprecated && quantity(resource, product) == 0;
-        if(remove) {
+        if (remove) {
           resource.products.splice(y, 1);
           y--;
         }
       }
 
-      let remove = (resource.deprecated && rquantity(resource) == 0) || resource.products.length == 0;
-      if(remove) {
+      let remove =
+        (resource.deprecated && rquantity(resource) == 0) ||
+        resource.products.length == 0;
+      if (remove) {
         resources.splice(i, 1);
         i--;
       }
@@ -224,33 +243,36 @@
   }
   cleanResources();
 </script>
+
 <header>
   <Button
     variant="outline"
     size="base"
+    disabled={loading}
     onclick={() => {
       goto(base + "/billingaccount/" + data.billingaccount?._id);
     }}
   >
-  {data?.billingaccount?.name}
+    {data?.billingaccount?.name}
   </Button> 's billing usage.
   {#if data.billingaccount?.stripeid != null && data.billingaccount?.stripeid != ""}
     <Button
       variant="outline"
       size="base"
+      disabled={loading}
       onclick={async () => {
         try {
           const link = await auth.client.CustomCommand({
-          command: "getbillingportallink",
-          id: data.billingaccount._id,
-          jwt: auth.access_token,
-        });
-        if(link != null && link != "") {
-          document.location.href = link.split('"').join("");
-        } else {
-          toast.error("Error opening billing portal");
-        }        
-        } catch (error:any) {
+            command: "getbillingportallink",
+            id: data.billingaccount._id,
+            jwt: auth.access_token,
+          });
+          if (link != null && link != "") {
+            document.location.href = link.split('"').join("");
+          } else {
+            toast.error("Error opening billing portal");
+          }
+        } catch (error: any) {
           toast.error("Error opening billing portal", {
             description: error.message,
           });
@@ -260,27 +282,27 @@
       Open Billing Portal
     </Button>
     <Button
-    variant="outline"
-    size="base"
-    onclick={async () => {
-      try {
-        const link = await auth.client.CustomCommand({
-        command: "syncbillingaccount",
-        id: data.billingaccount._id,
-        jwt: auth.access_token,
-      });
-      toast.success("Billing account synced");
-      } catch (error:any) {
-        toast.error("Error opening billing portal", {
-          description: error.message,
-        });
-      }
-    }}
-  >
-    Sync with Stripe
-  </Button>
+      variant="outline"
+      size="base"
+      disabled={loading}
+      onclick={async () => {
+        try {
+          const link = await auth.client.CustomCommand({
+            command: "syncbillingaccount",
+            id: data.billingaccount._id,
+            jwt: auth.access_token,
+          });
+          toast.success("Billing account synced");
+        } catch (error: any) {
+          toast.error("Error opening billing portal", {
+            description: error.message,
+          });
+        }
+      }}
+    >
+      Sync with Stripe
+    </Button>
   {/if}
-
 </header>
 
 <div class="flex flex-wrap gap-4">
@@ -309,6 +331,7 @@
                       <Button
                         variant="outline"
                         size="base"
+                        disabled={loading}
                         onclick={() => increment(resource, product)}
                         ><Plus /></Button
                       >
@@ -324,7 +347,7 @@
                     <Button
                       variant="outline"
                       size="base"
-                      disabled={quantity(resource, product) == 0}
+                      disabled={quantity(resource, product) == 0 || loading}
                       onclick={() => decrement(resource, product)}
                       ><Minus /></Button
                     >
@@ -339,7 +362,7 @@
         <Button
           variant="outline"
           size="base"
-          disabled={rquantity(resource) == 0}
+          disabled={rquantity(resource) == 0 || loading}
           onclick={() => {
             sheetresource = resource;
             toggleSheet = true;
@@ -371,6 +394,7 @@
                 <Button
                   variant="outline"
                   size="base"
+                  disabled={loading}
                   onclick={() => removeresourceusage(resource)}
                 >
                   <Trash />
@@ -385,6 +409,7 @@
       <Button
         variant="outline"
         size="base"
+        disabled={loading}
         onclick={() => {
           toggleSheet = false;
         }}
