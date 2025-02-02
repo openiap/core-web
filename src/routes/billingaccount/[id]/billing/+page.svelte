@@ -8,7 +8,7 @@
   import { auth } from "$lib/stores/auth.svelte.js";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import { Resource, ResourceUsage, type Product } from "$lib/types.svelte.js";
-  import { LucideBadgeDollarSign, Minus, Plus, Trash } from "lucide-svelte";
+  import { Clock, LucideBadgeDollarSign, Minus, Plus, Trash } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   const { data } = $props();
@@ -192,6 +192,25 @@
       await GetData();
     } catch (error: any) {
       toast.error("Error unassigning resource", {
+        description: error.message,
+      });
+    } finally {
+      loading = false;
+    }
+  }
+  async function addhours(resourceusage: ResourceUsage) {
+    try {
+      loading = true;
+      await auth.client.CustomCommand({
+        command: "reportresourceusage",
+        id: resourceusage._id,
+        data: JSON.stringify({quantity: 1}),
+        jwt: auth.access_token,
+      });
+      toast.success("Hours added");
+      await GetData();
+    } catch (error: any) {
+      toast.error("Error adding hours", {
         description: error.message,
       });
     } finally {
@@ -399,6 +418,16 @@
                 >
                   <Trash />
                 </Button>
+                {#if resource.product.assign == "single" || resource.product.assign == "metered"}
+                <Button
+                  variant="outline"
+                  size="base"
+                  disabled={loading}
+                  onclick={() => addhours(resource)}
+                >
+                  <Clock />
+                </Button>
+                {/if}
               </p>
             </div>
           </div>
