@@ -7,6 +7,8 @@
 	let lastinput = new Date();
 	let timeout:any = null;
 	$effect(() => {
+		_searchstring;
+		searchstring;
 		if (new Date().getTime() - lastinput.getTime() > debounc) {
 			if(timeout != null) clearTimeout(timeout);
 			searchstring = _searchstring;
@@ -14,7 +16,7 @@
 		} else {
 			if(timeout != null) clearTimeout(timeout);
 			lastinput = new Date();
-			timeout = setTimeout(() => {
+			timeout = setTimeout(async () => {
 				searchstring = _searchstring;
 				timeout = null;
 				lastinput = new Date();
