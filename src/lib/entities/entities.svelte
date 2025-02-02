@@ -616,12 +616,6 @@
 			bind:open={toggleSheet}
 			onOpenChange={onSelectColumnsOpenChange}
 		>
-			<!-- <Sheet.Trigger
-				class={buttonVariants({ variant: "new", size: "new" })}
-			>
-				<Check />
-				Select columns</Sheet.Trigger
-			> -->
 			<Sheet.Content>
 				<Sheet.Header>
 					<Sheet.Title>Select columns</Sheet.Title>
@@ -662,20 +656,6 @@
 		</Sheet.Root>
 	{/if}
 </div>
-
-<!-- <Custompagination
-	controlledPage
-	{page_index}
-	{total_count}
-	page={page_index + 1}
-	pagename={page}
-	onPageChange={(p: any) => {
-		page_index = p - 1;
-		data.settings.page_index = page_index;
-		data.persist();
-		GetData();
-	}}
-/> -->
 
 <div class="flex justify-between items-center dark:text-bw300">
 	<HotkeyButton
@@ -756,7 +736,6 @@
 	hidden={true}
 />
 
-<!-- <CustomSuperDebug formData={tableheaders} /> -->
 <CustomSuperDebug formData={entities} />
 
 <Warningdialogue bind:showWarning type="deleteall" onaccept={handleAccept}

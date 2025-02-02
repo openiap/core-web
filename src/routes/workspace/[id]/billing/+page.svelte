@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
-    import { base } from "$app/paths";
-import Button from "$lib/components/ui/button/button.svelte";
+  import { base } from "$app/paths";
+  import Button from "$lib/components/ui/button/button.svelte";
   import * as Card from "$lib/components/ui/card/index.js";
   import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
   import * as Sheet from "$lib/components/ui/sheet/index.js";
@@ -21,7 +21,10 @@ import Button from "$lib/components/ui/button/button.svelte";
   async function GetData() {
     entities = await auth.client.Query<ResourceUsage>({
       collectionname: "config",
-      query: { _type: "resourceusage", workspaceid: usersettings.currentworkspace },
+      query: {
+        _type: "resourceusage",
+        workspaceid: usersettings.currentworkspace,
+      },
       jwt: auth.access_token,
     });
     resources = await auth.client.Query<Resource>({
@@ -50,10 +53,7 @@ import Button from "$lib/components/ui/button/button.svelte";
         return false;
       }
     }
-    if (
-      product.assign == "single" ||
-      product.assign == "metered"
-    ) {
+    if (product.assign == "single" || product.assign == "metered") {
       let exists = entities.find(
         (x) =>
           x.resourceid == resource._id &&
@@ -125,7 +125,7 @@ import Button from "$lib/components/ui/button/button.svelte";
         });
         target = data.workspace;
         if (target == null) throw new Error("Please select a Workspace first");
-        
+
         let usage = entities.filter(
           (x) =>
             x.workspaceid == usersettings.currentworkspace &&
@@ -154,8 +154,10 @@ import Button from "$lib/components/ui/button/button.svelte";
           throw new Error("Remove plan from agent page or click Detail Usage");
         }
       }
-      if(resourceusage == null) {
-        throw new Error("Failed finding resource. Click Detail Usage to remove");
+      if (resourceusage == null) {
+        throw new Error(
+          "Failed finding resource. Click Detail Usage to remove",
+        );
       }
       await auth.client.CustomCommand({
         command: "removeresourceusage",
@@ -209,19 +211,21 @@ import Button from "$lib/components/ui/button/button.svelte";
     return quantity;
   }
   function cleanResources() {
-    for(let i = 0; i < resources.length; i++) {
+    for (let i = 0; i < resources.length; i++) {
       let resource = resources[i];
-      for(let y = 0; y < resource.products.length; y++) {
+      for (let y = 0; y < resource.products.length; y++) {
         let product = resource.products[y];
         let remove = product.deprecated && quantity(resource, product) == 0;
-        if(remove) {
+        if (remove) {
           resource.products.splice(y, 1);
           y--;
         }
       }
 
-      let remove = (resource.deprecated && rquantity(resource) == 0) || resource.products.length == 0;
-      if(remove) {
+      let remove =
+        (resource.deprecated && rquantity(resource) == 0) ||
+        resource.products.length == 0;
+      if (remove) {
         resources.splice(i, 1);
         i--;
       }
@@ -230,7 +234,8 @@ import Button from "$lib/components/ui/button/button.svelte";
   cleanResources();
 </script>
 
-<header>Linked to 
+<header>
+  Linked to
   <Button
     variant="outline"
     size="base"
@@ -238,16 +243,16 @@ import Button from "$lib/components/ui/button/button.svelte";
       goto(base + "/billingaccount/" + data.billingaccount?._id);
     }}
   >
-  {data?.billingaccount?.name}
+    {data?.billingaccount?.name}
   </Button> 's <Button
-  variant="outline"
-  size="base"
-  onclick={() => {
-    goto(base + "/billingaccount/" + data.billingaccount?._id + "/billing");
-  }}
->
-billing usage
-</Button>
+    variant="outline"
+    size="base"
+    onclick={() => {
+      goto(base + "/billingaccount/" + data.billingaccount?._id + "/billing");
+    }}
+  >
+    billing usage
+  </Button>
 </header>
 
 <div class="flex flex-wrap gap-4">
@@ -319,8 +324,6 @@ billing usage
   {/each}
 </div>
 
-<!-- <SuperDebug data={{entities, resources}} />
- -->
 <Sheet.Root bind:open={toggleSheet}>
   <Sheet.Content>
     <Sheet.Header>
@@ -337,12 +340,12 @@ billing usage
               <p class="text-muted-foreground text-sm">
                 {resource.name}
                 <Button
-                variant="outline"
-                size="base"
-                onclick={() => removeresourceusage(resource)}
-              >
-                <Trash />
-              </Button>
+                  variant="outline"
+                  size="base"
+                  onclick={() => removeresourceusage(resource)}
+                >
+                  <Trash />
+                </Button>
               </p>
             </div>
           </div>

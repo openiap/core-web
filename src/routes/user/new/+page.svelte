@@ -224,7 +224,6 @@
       <Form.Field {form} name="federationids">
         <Form.Control>
           {#snippet children({ props })}
-            <!-- <Form.Label>Federation id {index + 1}</Form.Label> -->
             {#if $formData.federationids}
               <div class="flex items-center justify-start">
                 <CustomInput

@@ -339,7 +339,6 @@
     />
     <link rel="stylesheet" href="{base}/formio-dialog-content.css" />
     <link rel="stylesheet" href="{base}/formio.form.min.css" />
-    <!-- <link rel="stylesheet" href="{base}/formio.builder.min.css" /> -->
 </svelte:head>
 <div>
     {message}

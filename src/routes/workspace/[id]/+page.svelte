@@ -2,6 +2,7 @@
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import type { Billing } from "$lib/billing.svelte.js";
+  import Button from "$lib/components/ui/button/button.svelte";
   import * as Card from "$lib/components/ui/card/index.js";
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
@@ -15,32 +16,24 @@
   import SuperDebug, { superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newWorkspaceSchema } from "../schema.js";
-  import Button from "$lib/components/ui/button/button.svelte";
 
-  import * as RadioGroup from "$lib/components/ui/radio-group/index.js";
-  import { Label } from "$lib/components/ui/label/index.js";
   import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-  import { buttonVariants } from "$lib/components/ui/button/index.js";
   import Input from "$lib/components/ui/input/input.svelte";
+  import { Label } from "$lib/components/ui/label/index.js";
+    import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
 
   const key = "workspace";
-  let showdebug = $state(false);
-  let loading = $state(false);
   const { data } = $props();
+  let loading = $state(false);
   let currentworkspace = $state(data.currentworkspace);
 
   let nameprompt = $state(false);
   let newbillingaccountname = $state(auth.profile.name + "s Billing Account");
-  let newbillingaccountcurrency = $state("");
 
   let _billingid = "";
   if (data.currentbilling != null) {
     _billingid = data.currentbilling._id;
   }
-  // } else if (data.entities.length == 1) {
-  //   _billingid = data.entities[0]._id;
-  // }
-  let workspaces = $state(data.workspaces);
   let billingid = $state(_billingid);
   let entities = $state(data.entities);
   const billingname = $derived(() => {
@@ -87,9 +80,9 @@
     }
     let billingdata: any = {
       name: newbillingaccountname,
-      currency: $state.snapshot(newbillingaccountcurrency),
       email: auth.profile.email,
     };
+    loading = true;
     try {
       const billing = JSON.parse(
         await auth.client.CustomCommand({
@@ -117,11 +110,13 @@
       });
     } finally {
       nameprompt = false;
+      loading = false;
     }
   }
   async function addplan() {
     let id = currentworkspace?._id;
     try {
+      loading = true;
       if (currentworkspace == null) throw new Error("No workspace selected");
       usersettings.currentworkspace = "";
       let resource = await auth.client.FindOne<any>({
@@ -189,6 +184,7 @@
         description: error.message,
       });
     } finally {
+      loading = false;
       if (id != null) {
         currentworkspace = await auth.client.FindOne({
           collectionname: "users",
@@ -203,6 +199,7 @@
   async function removeplan() {
     let id = currentworkspace?._id;
     try {
+      loading = true;
       if (currentworkspace == null) throw new Error("No workspace selected");
       if (
         currentworkspace._resourceusageid == null ||
@@ -230,6 +227,7 @@
         description: error.message,
       });
     } finally {
+      loading = false;
       currentworkspace = await auth.client.FindOne({
         collectionname: "users",
         query: { _id: id },
@@ -244,9 +242,6 @@
   {$message}
 {/if}
 <form method="POST" use:enhance>
-  <!-- TODO: I don't beleive we should have ACL on this page ? -->
-  <!-- <Acl bind:value={$formData} /> -->
-
   <Form.Field {form} name="name" class="mb-7">
     <Form.Control>
       {#snippet children({ props })}
@@ -267,6 +262,7 @@
               <Button
                 variant="outline"
                 size="base"
+                disabled={loading}
                 onclick={() =>
                   goto(base + "/billingaccount/" + currentworkspace._billingid)}
               >
@@ -288,24 +284,12 @@
             <Button
               variant="outline"
               size="base"
+              disabled={loading}
               onclick={() =>
                 goto(base + "/workspace/" + currentworkspace._id + "/billing")}
             >
               Show billing usage for {currentworkspace.name}
             </Button>
-            <!-- <Button
-            variant="outline"
-            size="base"
-            onclick={() =>
-              goto(
-                base +
-                  "/billingaccount/" +
-                  data.currentbilling?._id +
-                  "/billing",
-              )}
-          >
-            {data.currentbilling?.name}
-          </Button> -->
           {/if}
         </div>
       {/snippet}
@@ -313,10 +297,7 @@
     <Form.FieldErrors />
   </Form.Field>
 </form>
-{#if formData != null && showdebug == true}
-  <SuperDebug data={currentworkspace} theme="vscode" />
-  <SuperDebug data={formData} theme="vscode" />
-{/if}
+<CustomSuperDebug {formData} />
 
 <div class="flex justify-around">
   <Card.Root class="w-[350px] h-[500px] flex flex-col justify-around">
@@ -337,7 +318,9 @@
       {#if currentworkspace == null || currentworkspace._resourceusageid == null || currentworkspace._resourceusageid == ""}
         <HotkeyButton>Current</HotkeyButton>
       {:else}
-        <HotkeyButton onclick={removeplan}>Downgrade</HotkeyButton>
+        <HotkeyButton disabled={loading} onclick={removeplan}
+          >Downgrade</HotkeyButton
+        >
       {/if}
     </Card.Footer>
   </Card.Root>
@@ -358,9 +341,12 @@
     <Card.Footer class="flex justify-between">
       <div></div>
       {#if currentworkspace == null || currentworkspace._resourceusageid == null || currentworkspace._resourceusageid == ""}
-        <HotkeyButton onclick={addplan}>Upgrade</HotkeyButton>
+        <HotkeyButton disabled={loading} onclick={addplan}>Upgrade</HotkeyButton
+        >
       {:else if currentworkspace._productname != "Basic tier"}
-        <HotkeyButton onclick={addplan}>Downgrade</HotkeyButton>
+        <HotkeyButton disabled={loading} onclick={addplan}
+          >Downgrade</HotkeyButton
+        >
       {:else}
         <HotkeyButton>Current</HotkeyButton>
       {/if}
@@ -380,6 +366,7 @@
       <div></div>
       <HotkeyButton
         size="lg"
+        disabled={loading}
         onclick={() =>
           window.open(
             "https://calendar.app.google/aoU5qv1gX6ocHnAH8",
@@ -393,14 +380,6 @@
   </Card.Root>
 </div>
 
-<HotkeyButton
-  hidden
-  class="hidden"
-  aria-label="Toggle debug"
-  data-shortcut={"ctrl+d,meta+d"}
-  onclick={() => (showdebug = !showdebug)}>Toggle debug</HotkeyButton
->
-
 <AlertDialog.Root open={nameprompt}>
   <AlertDialog.Content>
     <AlertDialog.Header>
@@ -409,29 +388,15 @@
         Please type the name of your new billing account.
         <Input bind:value={newbillingaccountname} />
         <Label>Select currency</Label>
-        <RadioGroup.Root bind:value={newbillingaccountcurrency}>
-          <div class="flex items-center space-x-2">
-            <RadioGroup.Item value="eur" id="r1" />
-            <Label for="r1">EUR</Label>
-          </div>
-          <div class="flex items-center space-x-2">
-            <RadioGroup.Item value="usd" id="r2" />
-            <Label for="r2">USD</Label>
-          </div>
-          <div class="flex items-center space-x-2">
-            <RadioGroup.Item value="dkk" id="r3" />
-            <Label for="r3">DKK</Label>
-          </div>
-          <div class="flex items-center space-x-2">
-            <RadioGroup.Item value="" id="r3" />
-            <Label for="r3">Auto</Label>
-          </div>
-        </RadioGroup.Root>
       </AlertDialog.Description>
     </AlertDialog.Header>
     <AlertDialog.Footer>
-      <HotkeyButton onclick={() => (nameprompt = false)}>Cancel</HotkeyButton>
-      <HotkeyButton onclick={createbillingaccount}>Continue</HotkeyButton>
+      <HotkeyButton disabled={loading} onclick={() => (nameprompt = false)}
+        >Cancel</HotkeyButton
+      >
+      <HotkeyButton disabled={loading} onclick={createbillingaccount}
+        >Continue</HotkeyButton
+      >
     </AlertDialog.Footer>
   </AlertDialog.Content>
 </AlertDialog.Root>

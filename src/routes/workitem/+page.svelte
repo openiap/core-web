@@ -18,7 +18,7 @@
 
   let collectionname = "workitems";
   let page = "workitem";
-  let query = {};
+  let query = $state({});
 
   let { data } = $props();
   let ref: any;
@@ -103,15 +103,6 @@
       <X />
       Clear</HotkeyButton
     >
-    <!-- <HotkeyButton
-      size="sm"
-      variant="base"
-      aria-label="Filter"
-      class="border-dashed dark:text-bw600"
-    >
-      <Filter />
-      Filter</HotkeyButton
-    > -->
   </div>
 
   <HotkeyButton

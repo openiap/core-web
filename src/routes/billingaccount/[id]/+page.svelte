@@ -110,9 +110,6 @@ Sync with Stripe
 {/if}
 </header>
 <form method="POST" use:enhance>
-  <!-- TODO: I don't beleive we should have ACL on this page ? -->
-  <!-- <Acl bind:value={$formData} /> -->
-
   <Form.Field {form} name="name">
     <Form.Control>
       {#snippet children({ props })}

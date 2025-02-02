@@ -3,16 +3,15 @@
   import { base } from "$app/paths";
   import { page } from "$app/stores";
   import Button from "$lib/components/ui/button/button.svelte";
-  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
+  import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
+  import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import { toast } from "svelte-sonner";
-  import SuperDebug, { superForm } from "sveltekit-superforms";
+  import { superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { memberSchema } from "../../../schema.js";
-    import { usersettings } from "$lib/stores/usersettings.svelte.js";
 
   const key = "workspace";
-  let showdebug = $state(false);
   const { data } = $props();
   const form = superForm(data.form, {
     dataType: "json",
@@ -22,7 +21,11 @@
 
   async function accept() {
     try {
-      if($formData.userid != "65cb30c40ff51e174095573c" && auth.isAuthenticated == false) {
+      if (
+        // guest user
+        $formData.userid != "65cb30c40ff51e174095573c" && 
+        auth.isAuthenticated == false
+      ) {
         window.localStorage.setItem("redirect", window.location.pathname);
         auth.login();
         return;
@@ -61,42 +64,28 @@
       });
     }
   }
-  let status = $page.status
+  let status = $page.status;
 </script>
 
 {#if $message}
-  <div 
-    class:success={status == 200} 
-    class:error={status >= 400}
-  >
+  <div class:success={status == 200} class:error={status >= 400}>
     {$message}
   </div>
 {/if}
 {#if $formData.workspacename}
-
-<form method="POST" use:enhance>
-  {#if $formData.status == "pending"}
-    {$formData.invitedbyname} has invited you to join {$formData.workspacename}.<br
-    />
-    <br />
-    <Button variant="outline" onclick={accept}>Accept</Button>
-    <Button variant="outline" onclick={decline}>Decline</Button>
-  {:else if $formData.status == "accepted"}
-    You have accepted the invitation to join {$formData.workspacename}.<br />
-  {:else if $formData.status == "rejected"}
-    You have declined the invitation to join {$formData.workspacename}.<br />
-    <Button variant="outline" onclick={accept}>Accept</Button>
-  {/if}
-</form>
+  <form method="POST" use:enhance>
+    {#if $formData.status == "pending"}
+      {$formData.invitedbyname} has invited you to join {$formData.workspacename}.<br
+      />
+      <br />
+      <Button variant="outline" onclick={accept}>Accept</Button>
+      <Button variant="outline" onclick={decline}>Decline</Button>
+    {:else if $formData.status == "accepted"}
+      You have accepted the invitation to join {$formData.workspacename}.<br />
+    {:else if $formData.status == "rejected"}
+      You have declined the invitation to join {$formData.workspacename}.<br />
+      <Button variant="outline" onclick={accept}>Accept</Button>
+    {/if}
+  </form>
 {/if}
-{#if formData != null && showdebug == true}
-  <SuperDebug data={formData} theme="vscode" />
-{/if}
-
-<HotkeyButton
-  hidden
-  class="hidden"
-  aria-label="Toggle debug"
-  data-shortcut={"control+d,meta+d"}
-  onclick={() => (showdebug = !showdebug)}>Toggle debug</HotkeyButton
->
+<CustomSuperDebug {formData} />

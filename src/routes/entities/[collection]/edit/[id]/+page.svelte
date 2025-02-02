@@ -60,10 +60,6 @@
   {errormessage}
 {/if}
 
-<!-- <div>
-  Edit {collection}
-</div> -->
-
 <form method="POST" use:enhance>
   <Form.Button
     class="mb-4"

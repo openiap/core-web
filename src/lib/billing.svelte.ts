@@ -7,5 +7,4 @@ export class Billing {
     public admins: string = "";
     public stripeid: string = "";
     public subscriptionid: string = "";
-    public currency: "" | "usd" | "eur" | "dkk" = "";
 }

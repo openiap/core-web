@@ -27,6 +27,7 @@
   import type { Workspace } from "../../workspace/schema.js";
   import { randomname } from "../helper.js";
   import { editFormSchema } from "../schema.js";
+    import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
 
   const ansi_up = new AnsiUp();
 
@@ -38,7 +39,6 @@
   let loading = $state(false);
   let packageData: any = $state(null);
   let errormessage = $state("");
-  let showdebug = $state(false);
   let showWarning = $state(false);
   let showWarningAgentDelete = $state(false);
   let deleteData: any = $state({});
@@ -417,8 +417,6 @@
     }
   }
 </script>
-
-<!-- <SuperDebug data={formData} theme="vscode" /> -->
 
 <div class="px-6">
   {#if errormessage && errormessage != ""}
@@ -910,17 +908,7 @@
     on the customer page to increase the limit.
   </div>
 
-  {#if formData != null && showdebug == true}
-    <SuperDebug data={formData} theme="vscode" />
-  {/if}
-
-  <HotkeyButton
-    hidden
-    class="hidden"
-    aria-label="Toggle debug"
-    data-shortcut={"ctrl+d,meta+d"}
-    onclick={() => (showdebug = !showdebug)}>Toggle debug</HotkeyButton
-  >
+  <CustomSuperDebug {formData} />
 
   <Warningdialogue bind:showWarning type="delete" onaccept={handleAccept}
   ></Warningdialogue>
