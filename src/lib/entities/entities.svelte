@@ -1,5 +1,4 @@
 <script lang="ts" module>
-	import { buttonVariants } from "$lib/components/ui/button/index.js";
 	import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
 	import * as Sheet from "$lib/components/ui/sheet/index.js";
 	import { Switch } from "$lib/components/ui/switch/index.js";
@@ -12,6 +11,7 @@
 
 <script lang="ts">
 	import { browser } from "$app/environment";
+	import { page as componentpage } from "$app/stores";
 	import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
 	import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
 	import { CustomCheckbox } from "$lib/customcheckbox/index.js";
@@ -23,17 +23,17 @@
 	import { toast } from "svelte-sonner";
 	import { data } from "./data.svelte.js";
 	import IconRenderer from "./IconRenderer.svelte";
-	import { page as componentpage } from "$app/stores";
 
-	export async function reload () {
-			const id = $componentpage?.params?.id;
-			const page = $componentpage?.url?.pathname;
-			const { entities: entitiesdata, total_count: totalcount } = await data.Fetch(page, id, auth.access_token);
-			entities = entitiesdata;
-			total_count = totalcount;
-			detectColumns();
-			SetHeaders();
-		}
+	export async function reload() {
+		const id = $componentpage?.params?.id;
+		const page = $componentpage?.url?.pathname;
+		const { entities: entitiesdata, total_count: totalcount } =
+			await data.Fetch(page, id, auth.access_token);
+		entities = entitiesdata;
+		total_count = totalcount;
+		detectColumns();
+		SetHeaders();
+	}
 	let {
 		page = "entities",
 		query = {},
@@ -41,10 +41,12 @@
 		searchstring = $bindable(""),
 		collectionname = "entities",
 		selected_items = $bindable([]),
+		loading = $bindable(false),
 		total_count,
 		caption = "",
 		delete_selected = async (ids: string[]) => {
 			try {
+				loading = true;
 				for (let id of ids) {
 					const deletecount = await auth.client.DeleteOne({
 						id: id,
@@ -71,6 +73,8 @@
 				toast.error("Error while deleting", {
 					description: error.message,
 				});
+			} finally {
+				loading = false;
 			}
 		},
 		single_item_click = (item: any) => {},
@@ -89,7 +93,6 @@
 	let actionheadclass = $state("");
 	selected_items = data.settings.selected_items;
 	let toggleSheet = $state(false);
-	let loading = $state(false);
 
 	function detectColumns() {
 		if (entities.length > 0) {
@@ -121,7 +124,8 @@
 		try {
 			const id = $componentpage?.params?.id;
 			const page = $componentpage?.url?.pathname;
-			const { entities: entitiesdata, total_count: totalcount } = await data.Fetch(page, id, auth.access_token);
+			const { entities: entitiesdata, total_count: totalcount } =
+				await data.Fetch(page, id, auth.access_token);
 			entities = entitiesdata;
 			total_count = totalcount;
 			detectColumns();

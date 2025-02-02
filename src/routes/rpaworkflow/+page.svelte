@@ -8,17 +8,14 @@
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import Button from "$lib/components/ui/button/button.svelte";
-  import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
   import Searchinput from "$lib/searchinput/searchinput.svelte";
-  import { auth } from "$lib/stores/auth.svelte.js";
-  import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
-  import { Pencil, Plus, Trash2 } from "lucide-svelte";
-  import { toast } from "svelte-sonner";
+  import { Pencil } from "lucide-svelte";
 
   let { data } = $props();
   let ref: any;
+  let loading = $state(false);
   datacomponent.parsesettings(data.settings);
   let searchstring = $state(datacomponent.settings.searchstring);
   let selected_items = $state([]);
@@ -40,11 +37,13 @@
   bind:selected_items
   bind:entities
   bind:this={ref}
+  bind:loading
 >
   {#snippet action(item: any)}
     <div class="flex items-center space-x-2">
       <Button
         aria-label="edit"
+        disabled={loading}
         onclick={() => single_item_click(item)}
         size="icon"
         variant="secondary"

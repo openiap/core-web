@@ -19,6 +19,7 @@
 
   let { data } = $props();
   let ref: any;
+  let loading = $state(false);
   datacomponent.parsesettings(data.settings);
   usersettings.currentworkspace = data.id as any;
   let searchstring = $state(datacomponent.settings?.searchstring);
@@ -109,11 +110,13 @@
   bind:selected_items
   bind:entities
   bind:this={ref}
+  bind:loading
 >
   {#snippet status(item: any)}
     {#if item.status == "pending"}
       <HotkeyButton
         aria-label="Copy invite link"
+        disabled={loading}
         onclick={() => copylink(item.workspaceid, item.token)}
         size="sm"
       >
@@ -155,6 +158,7 @@
   {#snippet action(item: any)}
     <HotkeyButton
       aria-label="Delete"
+      disabled={loading}
       onclick={() => {
         deleteData = item;
         showWarning = !showWarning;

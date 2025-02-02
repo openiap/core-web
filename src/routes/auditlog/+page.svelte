@@ -15,6 +15,7 @@
 
   let { data } = $props();
   let ref: any;
+  let loading = $state(false);
   datacomponent.parsesettings(data.settings);
   let searchstring = $state(datacomponent.settings.searchstring);
   let entities = $state(data.entities);
@@ -35,11 +36,13 @@
   total_count={data.total_count}
   bind:entities
   bind:this={ref}
+  bind:loading
 >
   {#snippet action(item: any)}
     <HotkeyButton
       title="View on map"
       aria-label="view"
+      disabled={loading}
       onclick={() => {
         window.open(
           `https://www.iplocation.net/?query=${item.remoteip}`,
@@ -52,6 +55,7 @@
     <HotkeyButton
       title="Edit"
       aria-label="edit"
+      disabled={loading}
       onclick={() => single_item_click(item)}
       size="tableicon"
       variant="icon"

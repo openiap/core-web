@@ -15,6 +15,7 @@
 
   let { data } = $props();
   let ref: any;
+  let loading = $state(false);
   datacomponent.parsesettings(data.settings);
   let searchstring = $state(datacomponent.settings.searchstring);
   let selected_items = $state([]);
@@ -37,10 +38,12 @@
   bind:selected_items
   bind:entities
   bind:this={ref}
+  bind:loading
 >
   {#snippet action(item: any)}
     <HotkeyButton
       aria-label="view"
+      disabled={loading}
       onclick={() => single_item_click(item)}
       size="tableicon"
       variant="icon"
@@ -51,6 +54,7 @@
     <HotkeyButton
       title="edit"
       aria-label="edit"
+      disabled={loading}
       onclick={() => goto(base + `/user/${item._createdbyid}`)}
       size="tableicon"
       variant="icon"

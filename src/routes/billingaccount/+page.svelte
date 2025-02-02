@@ -21,9 +21,11 @@
   let page = "billingaccount";
   let collectionname = "users";
   let query = { _type: "customer" };
+  let loading = $state(false);
 
   async function deleteitem(item: any) {
     try {
+      loading = true;
       await auth.client.CustomCommand({
         command: "removebilling",
         id: item._id,
@@ -35,6 +37,8 @@
       toast.error("Error while deleting", {
         description: error.message,
       });
+    } finally {
+      loading = false;
     }
   }
   function single_item_click(item: any) {
@@ -65,6 +69,7 @@
   <HotkeyButton
     size="sm"
     variant="base"
+    disabled={loading}
     aria-label="Create Billing Account"
     onclick={() => goto(base + `/billingaccount/new`)}
   >
@@ -83,11 +88,13 @@
   bind:selected_items
   bind:entities
   bind:this={ref}
+  bind:loading
 >
   {#snippet action(item: any)}
     <HotkeyButton
       aria-label="Billing"
       onclick={() => open_billing(item)}
+      disabled={loading}
       size="tableicon"
       variant="icon"
     >
@@ -96,6 +103,7 @@
     <HotkeyButton
       aria-label="Edit"
       onclick={() => single_item_click(item)}
+      disabled={loading}
       size="tableicon"
       variant="icon"
     >
@@ -103,6 +111,7 @@
     </HotkeyButton>
     <HotkeyButton
       aria-label="Delete"
+      disabled={loading}
       onclick={() => {
         deleteData = item;
         showWarning = !showWarning;

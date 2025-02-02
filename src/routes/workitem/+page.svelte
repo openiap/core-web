@@ -4,17 +4,17 @@
 <script lang="ts">
   import { goto, replaceState } from "$app/navigation";
   import { base } from "$app/paths";
+  import { page as sveltepage } from "$app/state";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
   import { EntitySelector } from "$lib/entityselector";
   import { SearchInput } from "$lib/searchinput/index.js";
+  import { StatusCard } from "$lib/statuscard/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
-  import { Filter, Pencil, Plus, Trash2, X } from "lucide-svelte";
+  import { Pencil, Plus, Trash2, X } from "lucide-svelte";
   import { toast } from "svelte-sonner";
-  import { page as sveltepage } from "$app/state";
-    import { StatusCard } from "$lib/statuscard/index.js";
 
   let collectionname = "workitems";
   let page = "workitem";
@@ -22,6 +22,7 @@
 
   let { data } = $props();
   let ref: any;
+  let loading = $state(false);
   datacomponent.parsesettings(data.settings);
   let searchstring = $state(datacomponent.settings.searchstring);
   let selected_items = $state([]);
@@ -92,7 +93,7 @@
       variant="base"
       aria-label="Filter"
       class="border-dashed"
-      disabled={!queue}
+      disabled={!queue || loading}
       onclick={() => {
         searchstring = "";
         queue = "";
@@ -116,6 +117,7 @@
   <HotkeyButton
     size="sm"
     variant="base"
+    disabled={loading}
     aria-label="add"
     onclick={() => goto(base + `/${page}/new/${queue ? queue : "new"}`)}
   >
@@ -134,25 +136,27 @@
   bind:selected_items
   bind:entities
   bind:this={ref}
+  bind:loading
 >
   {#snippet state(item: any)}
-    {#if item != null && item.state != null  && item.state != ""}
-    <StatusCard bind:title={item.state as string} />
+    {#if item != null && item.state != null && item.state != ""}
+      <StatusCard bind:title={item.state as string} />
     {:else}
-    <StatusCard title="Unknown" />
+      <StatusCard title="Unknown" />
     {/if}
   {/snippet}
   {#snippet errortype(item: any)}
-    {#if item != null && item.errortype != null  && item.errortype != ""}
-    <StatusCard bind:title={item.errortype as string} />
+    {#if item != null && item.errortype != null && item.errortype != ""}
+      <StatusCard bind:title={item.errortype as string} />
     {:else}
-    <StatusCard title="No error" />
+      <StatusCard title="No error" />
     {/if}
   {/snippet}
   {#snippet action(item: any)}
     <div class="flex items-center space-x-2">
       <HotkeyButton
         aria-label="edit"
+        disabled={loading}
         onclick={() => single_item_click(item)}
         size="tableicon"
         variant="icon"
@@ -161,6 +165,7 @@
       </HotkeyButton>
       <HotkeyButton
         aria-label="delete"
+        disabled={loading}
         onclick={() => {
           deleteData = item;
           showWarning = !showWarning;

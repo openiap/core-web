@@ -1,6 +1,6 @@
-import { driver, type DriveStep } from "driver.js";
-import { base } from "$app/paths";
 import { goto } from "$app/navigation";
+import { base } from "$app/paths";
+import { driver, type DriveStep } from "driver.js";
 export const driverObj = driver({
     showProgress: true,
     stagePadding: 0,

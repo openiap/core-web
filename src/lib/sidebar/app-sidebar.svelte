@@ -3,10 +3,14 @@
 	import { page } from "$app/stores";
 	import pkg from "oidc-client";
 	// import { Volleyball } from "lucide-svelte";
-	import Mousetrap from 'mousetrap';
-	import { driverObj, agentTour, baseTour, entitiesTour } from "./onboarding.js";
-	import { driver } from "driver.js";
 	import "driver.js/dist/driver.css";
+	import Mousetrap from "mousetrap";
+	import {
+	    agentTour,
+	    baseTour,
+	    driverObj,
+	    entitiesTour,
+	} from "./onboarding.js";
 
 	class SidebarCategory {
 		title: string = $state("");
@@ -40,17 +44,17 @@
 			this.hidden = hidden;
 			this.external = external;
 			const me = this;
-			if(this.shortcut != null && this.shortcut != "" && browser){
+			if (this.shortcut != null && this.shortcut != "" && browser) {
 				const array = this.shortcut.split(",");
 				for (let i = 0; i < array.length; i++) {
 					const key = array[i];
-					Mousetrap.bind(array[i], function(e) {
+					Mousetrap.bind(array[i], function (e) {
 						if (e.preventDefault) {
 							e.preventDefault();
 						} else {
 							e.returnValue = false;
 						}
-						if(me.url.startsWith("/")){
+						if (me.url.startsWith("/")) {
 							goto(me.url);
 						} else if (me.url != "") {
 							window.open(me.url, "_blank");
@@ -61,32 +65,50 @@
 			}
 		}
 		isActive(url: string) {
-			if(url === this.url) return true;
-			if((url + "/").startsWith(this.url + "/")) return true;
+			if (url === this.url) return true;
+			if ((url + "/").startsWith(this.url + "/")) return true;
 			return false;
 		}
 	}
 	const home = new SidebarItem("Home", "g h", "tourhome", `${base}/`, false);
-	const agent = new SidebarItem("Agents", "g a", "touragents", `${base}/agent`, false);
-	const workitem = new SidebarItem("Workitems", "g w", "tourworkitems", `${base}/workitem`, false);
-	const workitemqueue = new SidebarItem("Workitem queue", "", "tourworkitemqueues", `${base}/workitemqueue`, false);
+	const agent = new SidebarItem(
+		"Agents",
+		"g a",
+		"touragents",
+		`${base}/agent`,
+		false,
+	);
+	const workitem = new SidebarItem(
+		"Workitems",
+		"g w",
+		"tourworkitems",
+		`${base}/workitem`,
+		false,
+	);
+	const workitemqueue = new SidebarItem(
+		"Workitem queue",
+		"",
+		"tourworkitemqueues",
+		`${base}/workitemqueue`,
+		false,
+	);
 	const formworkflow = new SidebarItem(
 		"Form workflows",
-		"", 
-		"tourformworkflow", 
+		"",
+		"tourformworkflow",
 		`${base}/formworkflow`,
 		false,
 	);
 	const rpaworkflow = new SidebarItem(
 		"RPA Workflows",
-		"", 
-		"tourrpaworkflow", 
+		"",
+		"tourrpaworkflow",
 		`${base}/rpaworkflow`,
 		false,
 	);
 	const grafana = new SidebarItem(
 		"Grafana",
-		"g f", 
+		"g f",
 		``,
 		"tourgrafana",
 		false,
@@ -101,25 +123,31 @@
 		rpaworkflow,
 		grafana,
 	]);
-	const members = new SidebarItem("Members", "", "tourmembers", `${base}/members`, false);
+	const members = new SidebarItem(
+		"Members",
+		"",
+		"tourmembers",
+		`${base}/members`,
+		false,
+	);
 	const invitemember = new SidebarItem(
 		"Invite Member",
-		"", 
-		"tourinvitemember", 
+		"",
+		"tourinvitemember",
 		`${base}/members`,
 		false,
 	);
 	const memberships = new SidebarItem(
 		"My Memberships",
-		"", 
-		"tourmemberships", 
+		"",
+		"tourmemberships",
 		`${base}/workspace/invites`,
 		false,
 	);
 	const allworkspaces = new SidebarItem(
 		"All Workspaces",
-		"", 
-		"tourallworkspaces", 
+		"",
+		"tourallworkspaces",
 		`${base}/workspace`,
 		false,
 	);
@@ -127,45 +155,117 @@
 		members,
 		invitemember,
 		memberships,
-		allworkspaces
+		allworkspaces,
 	]);
-	const entities = new SidebarItem("Entities", "g e", "tourentities", `${base}/entities`, false);
-	const clients = new SidebarItem("Clients", "g c", "tourclients", `${base}/client`, false);
-	const users = new SidebarItem("Users", "g u", "tourusers", `${base}/user`, false);
-	const roles = new SidebarItem("Roles", "g r", "tourroles", `${base}/role`, false);
-	const forms = new SidebarItem("Forms", "", "tourforms", `${base}/form`, false);
-	const providers = new SidebarItem("Providers", "", "tourproviders", `${base}/provider`, false);
-	const resources = new SidebarItem("Resources", "", "tourresources", `${base}/resource`, true);
-	const auditlogs = new SidebarItem("Audit logs", "", "touraudit", `${base}/auditlog`, false);
-	const consoleitem = new SidebarItem("Console", "", "tourconsole", `${base}/console`, true);
+	const entities = new SidebarItem(
+		"Entities",
+		"g e",
+		"tourentities",
+		`${base}/entities`,
+		false,
+	);
+	const clients = new SidebarItem(
+		"Clients",
+		"g c",
+		"tourclients",
+		`${base}/client`,
+		false,
+	);
+	const users = new SidebarItem(
+		"Users",
+		"g u",
+		"tourusers",
+		`${base}/user`,
+		false,
+	);
+	const roles = new SidebarItem(
+		"Roles",
+		"g r",
+		"tourroles",
+		`${base}/role`,
+		false,
+	);
+	const forms = new SidebarItem(
+		"Forms",
+		"",
+		"tourforms",
+		`${base}/form`,
+		false,
+	);
+	const providers = new SidebarItem(
+		"Providers",
+		"",
+		"tourproviders",
+		`${base}/provider`,
+		false,
+	);
+	const resources = new SidebarItem(
+		"Resources",
+		"",
+		"tourresources",
+		`${base}/resource`,
+		true,
+	);
+	const auditlogs = new SidebarItem(
+		"Audit logs",
+		"",
+		"touraudit",
+		`${base}/auditlog`,
+		false,
+	);
+	const consoleitem = new SidebarItem(
+		"Console",
+		"",
+		"tourconsole",
+		`${base}/console`,
+		true,
+	);
 	const credentials = new SidebarItem(
 		"Credentials",
-		"", 
-		"tourcredentials", 
+		"",
+		"tourcredentials",
 		`${base}/credential`,
 		false,
 	);
-	const config = new SidebarItem("Config", "", "tourconfig", `${base}/configuration`, true);
+	const config = new SidebarItem(
+		"Config",
+		"",
+		"tourconfig",
+		`${base}/configuration`,
+		true,
+	);
 	const billingaccounts = new SidebarItem(
 		"Billing accounts",
-		"g b", 
-		"tourbillingaccounts", 
+		"g b",
+		"tourbillingaccounts",
 		`${base}/billingaccount`,
 		true,
 	);
-	const files = new SidebarItem("Files", "", "tourfiles", `${base}/files`, false);
+	const files = new SidebarItem(
+		"Files",
+		"",
+		"tourfiles",
+		`${base}/files`,
+		false,
+	);
 	const formresources = new SidebarItem(
 		"Form Resources",
-		"", 
-		"tourformresources", 
+		"",
+		"tourformresources",
 		`${base}/formresource`,
 		true,
 	);
-	const hdrobots = new SidebarItem("HD Robots", "", "tourhdrobots", `${base}/hdrobot`, true);
+	const hdrobots = new SidebarItem(
+		"HD Robots",
+		"",
+		"tourhdrobots",
+		`${base}/hdrobot`,
+		true,
+	);
 	const mailhistory = new SidebarItem(
 		"Mail History",
-		"", 
-		"tourmailhistory", 
+		"",
+		"tourmailhistory",
 		`${base}/mailhistory`,
 		true,
 	);
@@ -190,15 +290,14 @@
 </script>
 
 <script lang="ts">
+	import { browser } from "$app/environment";
+	import { goto } from "$app/navigation";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import { auth } from "$lib/stores/auth.svelte";
 	import type { ComponentProps } from "svelte";
 	import type { Workspace } from "../../routes/workspace/schema";
-	import NavWorkspace from "./nav-workspace.svelte";
-	import { MessageSquare, Bot } from "lucide-svelte";
 	import IconRenderer from "./IconRenderer.svelte";
-    import { browser } from "$app/environment";
-    import { goto } from "$app/navigation";
+	import NavWorkspace from "./nav-workspace.svelte";
 
 	// Extend the ComponentProps type to include the workspaces property
 	type ExtendedComponentProps = ComponentProps<typeof Sidebar.Root> & {
@@ -283,16 +382,16 @@
 			}
 		}
 	}
-	if(browser) {
-		Mousetrap.bind("?", function(e) {
+	if (browser) {
+		Mousetrap.bind("?", function (e) {
 			console.log("Starting tour", $page.url.pathname);
-			if(agent.isActive($page.url.pathname)){
+			if (agent.isActive($page.url.pathname)) {
 				driverObj.setSteps(agentTour);
 				driverObj.drive();
-			} else if(home.isActive($page.url.pathname)){
+			} else if (home.isActive($page.url.pathname)) {
 				driverObj.setSteps(baseTour);
 				driverObj.drive();
-			} else if(entities.isActive($page.url.pathname)){
+			} else if (entities.isActive($page.url.pathname)) {
 				driverObj.setSteps(entitiesTour);
 				driverObj.drive();
 			} else {
@@ -301,7 +400,7 @@
 						title: "No tour available",
 						description: "No tour available for this page",
 					},
-				})
+				});
 			}
 		});
 	}
@@ -342,14 +441,21 @@
 											class="rounded-[10px] hover:rounded-[10px] dark:text-bw300"
 										>
 											<Sidebar.MenuButton
-												isActive={item.isActive($page.url.pathname)}
-												class={item.isActive($page.url.pathname)
-													? "dark:bg-bw700 dark:text-bw100 " + item.classname
-													: "dark:hover:border-[1px] dark:hover:border-bw500 dark:hover:bg-bw850 dark:hover:text-bw100 " + item.classname}
+												isActive={item.isActive(
+													$page.url.pathname,
+												)}
+												class={item.isActive(
+													$page.url.pathname,
+												)
+													? "dark:bg-bw700 dark:text-bw100 " +
+														item.classname
+													: "dark:hover:border-[1px] dark:hover:border-bw500 dark:hover:bg-bw850 dark:hover:text-bw100 " +
+														item.classname}
 											>
 												{#snippet child({ props })}
 													{#if item.external}
-														<a href={item.url}
+														<a
+															href={item.url}
 															{...props}
 															target="_blank"
 															rel="noopener noreferrer"
@@ -360,7 +466,8 @@
 															{item.title}</a
 														>
 													{:else}
-														<a href={item.url}
+														<a
+															href={item.url}
 															{...props}
 														>
 															<IconRenderer

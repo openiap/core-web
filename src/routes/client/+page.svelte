@@ -13,6 +13,7 @@
 
   let { data } = $props();
   let ref: any;
+  let loading = $state(false);
   datacomponent.parsesettings(data.settings);
   let searchstring = $state(datacomponent.settings.searchstring);
   let entities = $state(data.entities);
@@ -31,11 +32,13 @@
   total_count={data.total_count}
   bind:entities
   bind:this={ref}
+  bind:loading
 >
   {#snippet action(item: any)}
     <HotkeyButton
       title="go to user"
       aria-label="go to user"
+      disabled={loading}
       onclick={() => goto(base + `/user/${item.user._id}`)}
       size="tableicon"
       variant="icon"><User /></HotkeyButton
@@ -43,6 +46,7 @@
     <HotkeyButton
       title="View on map"
       aria-label="view"
+      disabled={loading}
       onclick={() => {
         window.open(
           `https://www.iplocation.net/?query=${item.remoteip}`,

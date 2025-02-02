@@ -70,12 +70,12 @@ class entitiesdata {
 				entities = await this.GetData(page, "openrpa", { _type: "credential" }, access_token);
 				total_count = await this.GetCount(page, "openrpa", { _type: "credential" }, access_token);
 			case base + `/entities/${usersettings.entities_collectionname}`:
-				entities = await this.GetData(page, usersettings.entities_collectionname, { }, access_token);
-				total_count = await this.GetCount(page, usersettings.entities_collectionname, { }, access_token);
+				entities = await this.GetData(page, usersettings.entities_collectionname, {}, access_token);
+				total_count = await this.GetCount(page, usersettings.entities_collectionname, {}, access_token);
 				break;
 			case base + `/entities/${usersettings.entities_collectionname}/deleted`:
-				entities = await this.GetData(page, usersettings.entities_collectionname + "_hist", {_deleted: {"$exists": true } }, access_token);
-				total_count = await this.GetCount(page, usersettings.entities_collectionname + "_hist", { }, access_token);
+				entities = await this.GetData(page, usersettings.entities_collectionname + "_hist", { _deleted: { "$exists": true } }, access_token);
+				total_count = await this.GetCount(page, usersettings.entities_collectionname + "_hist", {}, access_token);
 				break;
 			case base + `/entities/${usersettings.entities_collectionname}/history/${id}`:
 				console.log("history", id);
@@ -224,7 +224,7 @@ class entitiesdata {
 		if (collectionname == null || collectionname == "") {
 			return total_count;
 		}
-		if(!browser) {
+		if (!browser) {
 			return total_count;
 		}
 		let usequery = this.createQuery(this.settings.searchstring, query);
@@ -299,13 +299,13 @@ class entitiesdata {
 			}
 		}
 		if (Object.keys(orderby).length == 0) {
-			if(collectionname.indexOf("_hist") > -1) {
-				if(page.indexOf("/history/") > -1) {
+			if (collectionname.indexOf("_hist") > -1) {
+				if (page.indexOf("/history/") > -1) {
 					return { _version: -1 };
 				} else {
 					return { _deleted: -1 };
 				}
-				
+
 			}
 			return { _id: -1 };
 		}
@@ -538,10 +538,10 @@ class entitiesdata {
 			case "entities-cvr":
 				return ["name", "cvr", "virksomhedsformkort", "sidstOpdateret", "stiftelsesDato", "ophoersDato", "cvrstatus"];
 			default:
-				if(page.indexOf("/history/") > -1) {
+				if (page.indexOf("/history/") > -1) {
 					console.log("Unknown history page", page);
 					return ["_id", "name", "_createdby", "_modified", "_deleted", "_version"];
-				} else if(page.endsWith("/deleted")) {
+				} else if (page.endsWith("/deleted")) {
 					console.log("Unknown deleted page", page);
 					return ["_id", "name", "_type", "_deleted", "_deletedby", "_created", "_version"];
 				}

@@ -147,12 +147,9 @@
         }
       }
       if (!haderror) {
-        toast.success(
-          "Successfully deleted " + counter + " agent(s)",
-          {
-            description: "",
-          },
-        );
+        toast.success("Successfully deleted " + counter + " agent(s)", {
+          description: "",
+        });
       }
     } catch (error: any) {
       toast.error("Error while deleting", {
@@ -428,6 +425,7 @@
   bind:selected_items
   bind:entities
   bind:this={ref}
+  bind:loading
 >
   {#snippet status(item: any)}
     {#if item && item.status}
@@ -570,5 +568,9 @@
   {/snippet}
 </Entities>
 
-<Warningdialogue bind:showWarning type="delete" onaccept={handleAccept} disabled={loading}
+<Warningdialogue
+  bind:showWarning
+  type="delete"
+  onaccept={handleAccept}
+  disabled={loading}
 ></Warningdialogue>

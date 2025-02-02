@@ -8,13 +8,11 @@
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
   import Searchinput from "$lib/searchinput/searchinput.svelte";
-  import { auth } from "$lib/stores/auth.svelte";
-  import { usersettings } from "$lib/stores/usersettings.svelte.js";
-  import { Folder, Pencil, Plus } from "lucide-svelte";
-  import { toast } from "svelte-sonner";
+  import { Folder } from "lucide-svelte";
 
   let { data } = $props();
   let ref: any;
+  let loading = $state(false);
   datacomponent.parsesettings(data.settings);
 
   let collectionname = $state("");
@@ -52,6 +50,7 @@
           <HotkeyButton
             class="w-full justify-start"
             size="entity"
+            disabled={loading}
             variant={collectionvariant(collection.name)}
             onclick={(e) => {
               selectcollection(collection.name);
@@ -68,10 +67,10 @@
   <div id="div2" class="ms-6 flex-1">
     <div class="flex justify-between">
       <div class="flex gap-2 w-full">
-    <Searchinput bind:searchstring />
+        <Searchinput bind:searchstring />
+      </div>
     </div>
-</div>
-  
+
     <Entities
       {collectionname}
       {query}
@@ -83,8 +82,8 @@
       bind:entities
       {single_item_click}
       bind:this={ref}
-    >
-    </Entities>
+      bind:loading
+    ></Entities>
   </div>
 </div>
 

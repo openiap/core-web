@@ -17,6 +17,7 @@
 
   let { data } = $props();
   let ref: any;
+  let loading = $state(false);
   datacomponent.parsesettings(data.settings);
   let searchstring = $state(datacomponent.settings.searchstring);
   let selected_items = $state([]);
@@ -42,7 +43,10 @@
   }
   async function createcommon() {
     try {
-      auth.client.CustomCommand({ command: "createcommonresources", jwt: auth.access_token, });
+      auth.client.CustomCommand({
+        command: "createcommonresources",
+        jwt: auth.access_token,
+      });
       toast.success("Created common resources", {
         description: "",
       });
@@ -61,6 +65,7 @@
     <HotkeyButton
       size="sm"
       variant="base"
+      disabled={loading}
       aria-label="Filter"
       class="border-dashed dark:text-bw600"
     >
@@ -72,6 +77,7 @@
   <HotkeyButton
     size="sm"
     variant="base"
+    disabled={loading}
     aria-label="add"
     onclick={createcommon}
   >
@@ -90,10 +96,12 @@
   bind:selected_items
   bind:entities
   bind:this={ref}
+  bind:loading
 >
   {#snippet action(item: any)}
     <HotkeyButton
       aria-label="delete"
+      disabled={loading}
       onclick={() => deleteitem(item)}
       size="tableicon"
       variant="danger"

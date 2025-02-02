@@ -20,6 +20,7 @@
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
+  let loading = $state(false);
   datacomponent.parsesettings(data.settings);
   let searchstring = $state(datacomponent.settings.searchstring);
 
@@ -85,10 +86,12 @@
   bind:selected_items
   bind:entities
   bind:this={ref}
+  bind:loading
 >
   {#snippet action(item: any)}
     <HotkeyButton
       aria-label="Delete"
+      disabled={loading}
       onclick={() => {
         deleteData = item;
         showWarning = !showWarning;

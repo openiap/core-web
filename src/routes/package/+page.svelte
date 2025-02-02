@@ -18,6 +18,7 @@
 
   let { data } = $props();
   let ref: any;
+  let loading = $state(false);
   datacomponent.parsesettings(data.settings);
   let searchstring = $state(datacomponent.settings.searchstring);
   let selected_items = $state([]);
@@ -53,6 +54,7 @@
     <HotkeyButton
       size="sm"
       variant="base"
+      disabled={loading}
       aria-label="Filter"
       class="border-dashed dark:text-bw600"
     >
@@ -64,6 +66,7 @@
   <HotkeyButton
     size="sm"
     variant="base"
+    disabled={loading}
     aria-label="add"
     onclick={() => goto(base + `/${page}/new`)}
   >
@@ -82,10 +85,12 @@
   bind:selected_items
   bind:entities
   bind:this={ref}
+  bind:loading
 >
   {#snippet action(item: any)}
     <HotkeyButton
       aria-label="Edit"
+      disabled={loading}
       onclick={() => single_item_click(item)}
       size="tableicon"
       variant="icon"
@@ -94,6 +99,7 @@
     </HotkeyButton>
     <HotkeyButton
       aria-label="Delete"
+      disabled={loading}
       onclick={() => {
         deleteData = item;
         showWarning = !showWarning;

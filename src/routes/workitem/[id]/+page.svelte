@@ -19,6 +19,7 @@
   let page = "workitem";
 
   let { data } = $props();
+  let loading = $state(false);
   let query = $state({ wiqid: data.id });
   datacomponent.parsesettings(data.settings);
   let searchstring = $state(datacomponent.settings.searchstring);
@@ -84,6 +85,7 @@
     <EntitySelector
       height="h-7"
       collectionname="mq"
+      disabled={loading}
       bind:value={queue}
       basefilter={{ _type: "workitemqueue" }}
       class="w-64"
@@ -93,6 +95,7 @@
     <HotkeyButton
       size="sm"
       variant="base"
+      disabled={loading}
       aria-label="Filter"
       class="border-dashed dark:text-bw600"
       onclick={() => {
@@ -118,6 +121,7 @@
   <HotkeyButton
     size="sm"
     variant="base"
+    disabled={loading}
     aria-label="add"
     onclick={() => goto(base + `/${page}/new`)}
   >
@@ -135,11 +139,13 @@
   total_count={data.total_count}
   bind:selected_items
   bind:entities
+  bind:loading
 >
   {#snippet action(item: any)}
     <div class="flex items-center space-x-2">
       <HotkeyButton
         aria-label="edit"
+        disabled={loading}
         onclick={() => single_item_click(item)}
         size="tableicon"
         variant="icon"
@@ -148,6 +154,7 @@
       </HotkeyButton>
       <HotkeyButton
         aria-label="delete"
+        disabled={loading}
         onclick={() => {
           deleteData = item;
           showWarning = !showWarning;

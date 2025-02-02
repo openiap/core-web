@@ -15,6 +15,7 @@
 
   let { data } = $props();
   let ref: any;
+  let loading = $state(false);
   datacomponent.parsesettings(data.settings);
 
   let collectionname = $state("");
@@ -67,6 +68,7 @@
           <HotkeyButton
             class="w-full justify-start"
             size="entity"
+            disabled={loading}
             variant={collectionvariant(collection.name)}
             onclick={(e) => {
               selectcollection(collection.name);
@@ -87,6 +89,7 @@
     </div>
     <HotkeyButton
     data-shortcut="n,ins"
+    disabled={loading}
     onclick={() => {
       goto(base + `/entities/${collectionname}/new`);
     }}
@@ -106,10 +109,12 @@
       bind:entities
       {single_item_click}
       bind:this={ref}
+      bind:loading
     >
       {#snippet action(item: any)}
         <HotkeyButton
           aria-label="history"
+          disabled={loading}
           onclick={() => goto(base + `/entities/${collectionname}/history/${item._id}`)}
           size="tableicon"
           variant="icon"
@@ -118,6 +123,7 @@
         </HotkeyButton>
         <HotkeyButton
           aria-label="edit"
+          disabled={loading}
           onclick={() => single_item_click(item)}
           size="tableicon"
           variant="icon"
