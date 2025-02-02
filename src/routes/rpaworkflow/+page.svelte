@@ -23,39 +23,8 @@
   let searchstring = $state(datacomponent.settings.searchstring);
   let selected_items = $state([]);
   let entities = $state(data.entities);
-  let showWarning = $state(false);
-  let deleteData: any = $state({});
-
-  async function deleteitem(item: any) {
-    const deletecount = await auth.client.DeleteOne({
-      id: item._id,
-      collectionname,
-      jwt: auth.access_token,
-    });
-    if (deletecount == 1) {
-      selected_items = selected_items.filter((i) => i !== item._id);
-      ref.reload();
-    } else {
-      toast.error("Error while deleting", {
-        description: "Error while deleting",
-      });
-    }
-  }
   function single_item_click(item: any) {
     goto(base + `/entities/hdrobots/${item._id}`);
-  }
-  async function handleAccept() {
-    try {
-      await deleteitem(deleteData);
-      toast.success("Deleted successfully", {
-        description: "",
-      });
-      ref.reload();
-    } catch (error: any) {
-      toast.error("Error while deleting", {
-        description: error.message,
-      });
-    }
   }
 </script>
 
@@ -66,6 +35,7 @@
   bind:searchstring
   {page}
   {single_item_click}
+  multi_select={false}
   total_count={data.total_count}
   bind:selected_items
   bind:entities
@@ -81,20 +51,6 @@
       >
         <Pencil />
       </Button>
-      <Button
-        aria-label="delete"
-        onclick={() => {
-          deleteData = item;
-          showWarning = !showWarning;
-        }}
-        size="icon"
-        variant="destructive"
-      >
-        <Trash2 />
-      </Button>
     </div>
   {/snippet}
 </Entities>
-
-<Warningdialogue bind:showWarning type="delete" onaccept={handleAccept}
-></Warningdialogue>
