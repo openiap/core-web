@@ -210,12 +210,12 @@
 				header.cellclass = "truncate overflow-ellipsis font-medium";
 			} else if (header.show == true) {
 				if (rest["action"] == null) lastindex = i;
-				header.headclass = "w-[100px]";
+				header.headclass = "w-[110px]";
 				header.cellclass = "truncate overflow-ellipsis";
 			}
 		}
 		if (lastindex > -1) {
-			tableheaders[lastindex].headclass = "text-right w-[100px]";
+			tableheaders[lastindex].headclass = "text-right w-[110px]";
 			actioncellclass = "";
 			actionheadclass = "";
 		} else {
