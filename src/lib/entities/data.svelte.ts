@@ -191,7 +191,7 @@ class entitiesdata {
 			return [];
 		}
 		let queryas = undefined;
-		if (workspacefilter == true) {
+		if (workspacefilter == true && ["cvr", "cvrfinancial", "cvrperson", "dbusage"].indexOf(collectionname) == -1) {
 			if (this.settings.searchstring.length == 24 && this.settings.searchstring.match(/^[0-9a-fA-F]{24}$/)) {
 			} else {
 				if (usersettings.currentworkspace != null && usersettings.currentworkspace != "") {
@@ -229,7 +229,7 @@ class entitiesdata {
 		}
 		let usequery = this.createQuery(this.settings.searchstring, query);
 		let queryas = undefined;
-		if (workspacefilter == true) {
+		if (workspacefilter == true && ["cvr", "cvrfinancial", "cvrperson", "dbusage"].indexOf(collectionname) == -1) {
 			if (usersettings.currentworkspace != null && usersettings.currentworkspace != "") {
 				queryas = usersettings.currentworkspace;
 			}
@@ -242,12 +242,13 @@ class entitiesdata {
 				queryas,
 			});
 		} else if (browser) {
-			total_count = await auth.client.Count({
-				collectionname,
-				query: usequery,
-				jwt: access_token,
-				queryas,
-			});
+			total_count = 99999;
+			// total_count = await auth.client.Count({
+			// 	collectionname,
+			// 	query: usequery,
+			// 	jwt: access_token,
+			// 	queryas,
+			// });
 		}
 		return total_count;
 	}
@@ -479,33 +480,61 @@ class entitiesdata {
 			case "/hdrobot":
 			case "hdrobot":
 				return ["name", "_created", "_modified"];
+			case "/ui/formresource":
+			case "/formresource":
 			case "formresource":
 				return ["name", "collection", "_createdby", "_created", "_modified"];
+			case "/ui/files":
+			case "/files":
 			case "files":
 				return ["filename", "metadata.name", "length", "metadata._created"];
+			case "/ui/billingaccount":
+			case "/billingaccount":
 			case "billingaccount":
 				return ["name", "dbusage", "_created", "_modified"];
+			case "/ui/credential":
+			case "/credential":
 			case "credential":
 				return ["name", "username", "_created", "_modified"];
+			case "/ui/client":
+			case "/client":
 			case "client":
 				return ["id", "name", "clientagent", "clientversion", "_created", "remoteip"];
+			case "/ui/auditlog":
+			case "/auditlog":
 			case "auditlog":
 				return ["_id", "name", "_type", "impostorname", "clientagent", "clientversion", "remoteip", "_created"];
+			case "/ui/agent":
+			case "/agent":
 			case "agent":
 				return ["name", "image", "os", "_productname", "_createdby", "status"];
+			case "/ui/package":
+			case "/package":
 			case "package":
 				return ["name", "language", "_createdby", "_created"];
+			case "/ui/workspace":
+			case "/workspace":
 			case "workspace":
 				return ["name", "_productname", "_created", "_modified"];
+			case `/ui/workspace/${usersettings?.currentworkspace}/member`:
+			case "/member":
 			case "member":
 				return ["name", "status", "role", "_modified"];
 			case "/workspace/invites":
+			case "/ui/invites":
+			case "/invites":
 			case "invites":
 				return ["workspacename", "status", "role"];
+			case "/ui/formworkflow":
+			case "/formworkflow":
 			case "formworkflow":
 				return ["name", "_created"];
+			case "/ui/rpaworkflow":
+			case "/rpaworkflow":
 			case "rpaworkflow":
 				return ["name", "_createdby", "_modified", "runtime"];
+			case "/ui/entities/cvr":
+			case "/entities/cvr":
 			case "entities-cvr":
 				return ["name", "cvr", "virksomhedsformkort", "sidstOpdateret", "stiftelsesDato", "ophoersDato", "cvrstatus"];
 			default:
