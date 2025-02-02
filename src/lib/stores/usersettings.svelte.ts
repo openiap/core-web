@@ -137,7 +137,7 @@ class _usersettings implements userSettings {
         if (this.persisttimer != null) {
             clearTimeout(this.persisttimer);
         }
-        this.persisttimer = setTimeout(() => this.dopersist(), 1000);
+        this.persisttimer = setTimeout(async () => this.dopersist(), 1000);
     }
     async dopersist() {
         this.persisttimer = null;

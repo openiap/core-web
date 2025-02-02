@@ -87,7 +87,7 @@
       .then((watchid: any) => {});
   }
   function saveconfig(e: any) {
-    setTimeout(() => {
+    setTimeout(async () => {
       auth.client
         .UpdateOne({
           collectionname: "config",

@@ -80,14 +80,14 @@
       // @ts-ignore
       if (Formio == null || typeof Formio.builder !== "function") {
         console.log("Formio not loaded, try again in 200ms");
-        setTimeout(() => {
+        setTimeout(async () => {
           createfrom();
         }, 200);
         return;
       }
     } catch (error) {
       console.log("Formio not loaded, try again in 200ms");
-      setTimeout(() => {
+      setTimeout(async () => {
         createfrom();
       }, 200);
       return;

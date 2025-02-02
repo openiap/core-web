@@ -222,13 +222,13 @@
         try {
             // @ts-ignore
             if (Formio == null || typeof Formio.builder !== "function") {
-                setTimeout(() => {
+                setTimeout(async () => {
                     createfrom();
                 }, 200);
                 return;
             }
         } catch (error) {
-            setTimeout(() => {
+            setTimeout(async () => {
                 createfrom();
             }, 200);
             return;

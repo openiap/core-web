@@ -21,7 +21,7 @@
   let collectionname = $state("");
   collectionname = data.collectionname;
   if(browser) {
-    setTimeout(() => {
+    setTimeout(async () => {
       sveltepage.url.pathname = base + `/entities/${data.collectionname}`;
       replaceState(sveltepage.url, sveltepage.state);
     }, 100);
