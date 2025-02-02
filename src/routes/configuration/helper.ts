@@ -44,6 +44,7 @@ const settings = [
     { "name": "stripe_force_vat", "type": "boolean", "default": false },
     { "name": "stripe_force_checkout", "type": "boolean", "default": false },
     { "name": "stripe_allow_promotion_codes", "type": "boolean", "default": true },
+    { "name": "stripe_log_eventhook", "type": "boolean", "default": true },
     { "name": "ensure_indexes", "type": "boolean", "default": true },
     { "name": "text_index_name_fields", "type": "string[]", "default": ["name", "_names"] },
     { "name": "auto_create_users", "type": "boolean", "default": false },
