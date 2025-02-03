@@ -75,7 +75,6 @@
           <HotkeyButton
             class="w-full justify-start"
             size="entity"
-            disabled={loading}
             variant={collectionvariant(collection.name)}
             onclick={(e) => {
               selectcollection(collection.name);
