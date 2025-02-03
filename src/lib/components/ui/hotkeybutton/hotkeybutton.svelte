@@ -19,7 +19,7 @@
 				ghost: "hover:bg-accent hover:text-accent-foreground",
 				link: "text-primary underline-offset-4 hover:underline",
 				ghostfull: "",
-				icon: "dark:text-bw300 dark:hover:bg-bw700 border-[1px] border-transparent dark:hover:border-bw500",
+				icon: "bg-bw200 dark:text-bw300 dark:bg-bw700 dark:hover:bg-bw700 border-[1px] border-transparent dark:hover:border-bw500",
 				success:
 					"border-[1px] dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:bg-darkbggreen dark:hover:bg-darkbghovergreen",
 				refresh:

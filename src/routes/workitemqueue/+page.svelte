@@ -10,6 +10,7 @@
   import { SearchInput } from "$lib/searchinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
+  import { client } from "@openiap/jsapi/dist/client.js";
   import { Eraser, Filter, Pencil, Plus, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
@@ -62,7 +63,13 @@
     }
   }
 
-  function purgeData() {
+  async function purgeData(item: any) {
+    item.purge = true;
+    await auth.client.UpdateOne({
+      collectionname: "mq",
+      item,
+      jwt: auth.access_token,
+    });
     toast.success("Data purged");
   }
 </script>
@@ -120,7 +127,7 @@
       <HotkeyButton
         aria-label="purge"
         disabled={loading}
-        onclick={() => purgeData()}
+        onclick={() => purgeData(item)}
         size="tableicon"
         variant="icon"
       >

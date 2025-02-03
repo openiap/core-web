@@ -46,12 +46,14 @@
     --ring: 222.2 84% 4.9%;
     --radius: 0.5rem;
     --sidebar-background: 0 0% 96%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-foreground: 210 8% 5%;
+    --sidebar-primary: 210 8% 5%;
     --sidebar-primary-foreground: 0 0% 96%;
-    --sidebar-accent: 220 6% 20%;
-    --sidebar-accent-foreground: 180 100% 99%;
-    --sidebar-border: 220 13% 91%;
+    /* selected color */
+    --sidebar-accent: 0 0% 85%;
+    /* text color */
+    --sidebar-accent-foreground: 210 8% 5%;
+    --sidebar-border: 218 6% 36%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
