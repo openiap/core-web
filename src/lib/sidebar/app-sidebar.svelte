@@ -435,10 +435,10 @@
 						{/if}
 						<Sidebar.GroupContent>
 							<Sidebar.Menu>
-								{#each group.items as item (item.title)}
+							{#each group.items as item (item.title)}
 									{#if !item.hidden}
 										<Sidebar.MenuItem
-											class="rounded-[10px] hover:rounded-[10px] dark:text-bw300"
+											class="rounded-[10px] hover:rounded-[10px]"
 										>
 											<Sidebar.MenuButton
 												isActive={item.isActive(

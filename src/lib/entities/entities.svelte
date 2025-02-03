@@ -458,10 +458,10 @@
 			<Table.Caption>{caption}</Table.Caption>
 		{/if}
 		<Table.Header>
-			<Table.Row class="dark:bg-bw900 rounded-[10px]">
+			<Table.Row class="bg-bw200 dark:bg-bw900 rounded-[10px]">
 				{#if multi_select}
 					<Table.Head
-						class="w-8 dark:text-bw200 rounded-tl-[10px]"
+						class="w-8 text-bw950 dark:text-bw200 rounded-tl-[10px]"
 						role="cell"
 						><CustomCheckbox
 							arialabel="Select all"
@@ -473,7 +473,7 @@
 				{#each tableheaders as head, index}
 					{#if head.show}
 						<Table.Head
-							class={head.headclass + " dark:text-bw200"}
+							class={head.headclass + " text-bw950 dark:text-bw200"}
 							role="cell"
 							draggable="true"
 							onclick={(e) => toggleSort(e, head.field)}
@@ -498,7 +498,7 @@
 				{/each}
 				{#if rest["action"]}
 					<Table.Head
-						class="dark:text-bw200 rounded-tr-[10px] {actionheadclass}"
+						class="text-bw950 dark:text-bw200 rounded-tr-[10px] {actionheadclass}"
 					>
 						<div class="flex items-center justify-right">
 							<IconRenderer title="Action" />
