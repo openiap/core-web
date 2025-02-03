@@ -16,6 +16,7 @@ const config: Config = {
 		},
 		extend: {
 			colors: {
+				test: '#EF4444',
 				bw50: "#FDFDFD",
 				bw100: "#EEEFF1",
 				bw200: "#D9D9D9",
@@ -28,33 +29,56 @@ const config: Config = {
 				bw850: "#232529",
 				bw900: "#191A1E",
 				bw950: "#0C0D0E",
-
 				bw1000: "#282A2F",
 
+				lighttableheader: "#E6E6E6",
+
+				// entities page
+				lightentities: "#61929A",
+				lightentitiesselected: "#46818A",
+				darkentities: "#46686D",
+				darkentitiesselected: "#304A4E",
+
+				// Green Button
 				darkbggreen: "#304E46",
 				darkbghovergreen: "#426A5F",
 				darktextgreen: "#DDEFE6",
 				darkbordergreen: "#56846D",
+				lightbggreen: "#BDE9CF",
+				lighthovergreen: "#96D5AF",
+				lighttextgreen: "#145A41",
+				lightbordergreen: "#7CD29B",
 
-				darkentities:"#46686D",
-				darkentitiesselected:"#304A4E",
-
+				// Green red
 				darkbgred: "#4E3030",
 				darkbghoverred: "#614242",
 				darktextred: "#EFDEDD",
 				darkborderred: "#886260",
+				lightbgred: "#E1B3AE",
+				lighthoverred: "#CE8B84",
+				lighttextred: "#501611",
+				lightborderred: "#D37C7C",
 
 				darkbgpurple: "#49304E",
 				darktextpurple: "#EFDDED",
 				darkborderpurple: "#815E88",
+				lightbgpurple: "#EBC3EC",
+				lighttextpurple: "#501052",
+				lightborderpurple: "#BE79C0",
 
 				darkbgyellow: "#5C4D3B",
 				darktextyellow: "#F4E3CE",
 				darkborderyellow: "#B09777",
+				lightbgyellow: "#FAF4C7",
+				lighttextyellow: "#675810",
+				lightborderyellow: "#D4C44F",
 
 				darkbgorange: "#5C4D3B",
 				darktextorange: "#F4E3CE",
 				darkborderorange: "#B09777",
+				// lightbgorange: "#F4E3CE",
+				// lighttextorange: "#F4E3CE",
+				// lightborderorange: "#F4E3CE",
 
 				border: "hsl(var(--border) / <alpha-value>)",
 				input: "hsl(var(--input) / <alpha-value>)",
@@ -130,6 +154,9 @@ const config: Config = {
 				"accordion-down": "accordion-down 0.2s ease-out",
 				"accordion-up": "accordion-up 0.2s ease-out",
 				"caret-blink": "caret-blink 1.25s ease-out infinite",
+			},
+			boxShadow: {
+				soft: '0px 2px 4px rgba(0, 0, 0, 0.15)', // Custom shadow
 			},
 		},
 	},

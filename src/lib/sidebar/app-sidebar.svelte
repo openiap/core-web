@@ -449,7 +449,7 @@
 												)
 													? "dark:bg-bw700 dark:text-bw100 " +
 														item.classname
-													: "dark:hover:border-[1px] dark:hover:border-bw500 dark:hover:bg-bw850 dark:hover:text-bw100 " +
+													: "border-[1px] border-transparent hover:bg-bw100 hover:border-[1px] hover:border-bw600 hover:bg-inherit dark:hover:border-bw500 dark:hover:bg-bw850 dark:hover:text-bw400 " +
 														item.classname}
 											>
 												{#snippet child({ props })}

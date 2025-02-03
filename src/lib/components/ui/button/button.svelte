@@ -21,7 +21,8 @@
 				ghost: "hover:bg-accent hover:text-accent-foreground",
 				link: "text-primary underline-offset-4 hover:underline",
 				success:
-					"border-[1px] dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:bg-darkbggreen dark:hover:bg-darkbghovergreen",
+					"border bg-lightbggreen hover:bg-lighthovergreen dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:bg-darkbggreen dark:hover:bg-darkbghovergreen",
+				danger: "border bg-lightbgred hover:bg-lighthoverred dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:bg-darkbgred dark:hover:bg-darkbghoverred",
 			},
 			size: {
 				default: "h-10 px-4 py-2",

@@ -67,9 +67,8 @@
 <div class="flex items-start justify-between">
   <div
     id="div1"
-    class="w-full max-w-max flex-shrink-0 hidden sm:block p-2.5 rounded-[10px] dark:bg-bw900"
+    class="w-full max-w-max flex-shrink-0 hidden sm:block p-2.5 rounded-[10px] bg-bw100 dark:bg-bw900"
   >
-    <small class="ps-4">{collectionname}</small>
     <ScrollArea class="max-h-[79.5vh] w-[266px] overflow-auto ">
       <div class="pt-0 p-4">
         {#each collections as collection}
@@ -96,6 +95,7 @@
         <Searchinput bind:searchstring />
       </div>
       <HotkeyButton
+        size="sm"
         data-shortcut="n,ins"
         disabled={loading}
         onclick={() => {

@@ -300,14 +300,3 @@
 </form>
 
 <CustomSuperDebug {formData} />
-
-<!-- issues
-In some users object 
-1. Password key missing
-2. Email is null instead of string
-3. Disabled check is either null or missing ? might be wrong?
-Schema is conflicting with the data object hence edit user is not working 
-
--CURRENT SOLUTION
-Addded if checks to handle the missing keys in the object
--->

@@ -29,7 +29,7 @@
 	onValueChange={onValueChangeFunction}
 >
 	<Select.Trigger
-		class={"w-64 py-2 rounded-[10px] border dark:border-bw600 dark:placeholder-bw500 dark:text-bw400 dark:bg-bw800 focus:outline-none " +
+		class={"bg-bw50 w-64 py-2 rounded-[10px] border dark:border-bw600 dark:placeholder-bw500 dark:text-bw400 dark:bg-bw800 focus:outline-none " +
 			className}
 	>
 		{triggerContent()}

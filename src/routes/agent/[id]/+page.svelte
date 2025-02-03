@@ -20,14 +20,26 @@
   import Timezoneselector from "$lib/timezoneselector/timezoneselector.svelte";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import { AnsiUp } from "ansi_up";
-  import { Box, Check, RefreshCcw, Trash2, User } from "lucide-svelte";
+  import {
+    Box,
+    CalendarDays,
+    Check,
+    Gauge,
+    Hourglass,
+    Laptop,
+    RefreshCcw,
+    Tag,
+    Trash2,
+    User,
+    Zap,
+  } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import type { Workspace } from "../../workspace/schema.js";
   import { randomname } from "../helper.js";
   import { editFormSchema } from "../schema.js";
-    import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
+  import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
 
   const ansi_up = new AnsiUp();
 
@@ -428,81 +440,117 @@
   {/if}
 
   {#if resourceMonitor != null}
-    <div class="my-2">
-      <div>Resource monitor</div>
-      <div class="font-bold mb-4">
-        {resourceMonitor.metadata.name}
+    <div class="my-4 text-[14px] border rounded-[10px]">
+      <div
+        class="grid grid-cols-7 bg-lighttableheader rounded-tr-[10px] rounded-tl-[10px] border-b"
+      >
+        <div class="text-center p-2 col-span-2">
+          <div class="flex items-center">
+            <Tag class="h-3 w-3 mr-1" />
+            Name
+          </div>
+        </div>
+        <div class="text-center p-2 col-span-1">
+          <div class="flex items-center justify-center">
+            <Gauge class="h-4 w-4 mr-1" />
+            Status
+          </div>
+        </div>
+        <div class="text-center p-2 col-span-1">
+          <div class="flex items-center justify-center">
+            <Laptop class="h-4 w-4 mr-1" />
+            CPU
+          </div>
+        </div>
+        <div class="text-center p-2 col-span-1">
+          <div class="flex items-center justify-center">
+            <Zap class="h-4 w-4 mr-1" />
+            Mem
+          </div>
+        </div>
+        <div class="text-center p-2 col-span-2">
+          <div class="flex items-center justify-center">
+            <CalendarDays class="h-4 w-4 mr-1" />
+            Created
+          </div>
+        </div>
       </div>
-      <div class="grid grid-cols-6 items-center justify-center border rounded">
-        <div class="border-b text-center p-4 col-span-1">Status</div>
-        <div class="border-b text-center p-4 col-span-2">CPU</div>
-        <div class="border-b text-center p-4 col-span-2">Men</div>
-        <div class="border-b text-center p-4 col-span-1">Created</div>
+
+      <div class="grid grid-cols-7 border-b">
+        <div class="flex items-center p-4 col-span-2">
+          {resourceMonitor.metadata.name}
+        </div>
         <div class="flex items-center justify-center p-4 col-span-1">
           <Statuscard title={resourceMonitor.showstatus} />
         </div>
-        <div class="text-center p-4 col-span-2">
+        <div class="text-center p-4 col-span-1">
           {resourceMonitor?.metrics?.cpu +
             "/" +
             resourceMonitor?.spec?.containers[0]?.resources?.limits?.cpu}
         </div>
-        <div class="text-center p-4 col-span-2">
+        <div class="text-center p-4 col-span-1">
           {resourceMonitor?.metrics?.memory +
             "/" +
             resourceMonitor?.spec?.containers[0]?.resources?.limits?.memory}
         </div>
-        <div class="text-center p-4 col-span-1">
+        <div class="text-center p-4 col-span-2">
           {resourceMonitor?.metadata?.creationTimestamp}
         </div>
+      </div>
 
-        <div class="px-4 pb-4">
-          <HotkeyButton
-            variant="base"
-            size="base"
-            aria-label="Logs"
-            title="Logs"
-            onclick={async () => {
-              loading = true;
-              try {
-                instancelog = null;
-                var lines: any = await auth.client.CustomCommand({
-                  command: "getagentlog",
-                  id: data.item._id,
-                  name: resourceMonitor.metadata.name,
-                  jwt: auth.access_token,
-                });
-                lines = JSON.parse(lines);
-                if (lines != null) {
-                  lines = ansi_up.ansi_to_html(lines);
-                  lines = lines.split("\n");
-                  lines = lines.reverse();
-                } else {
-                  lines = [];
-                }
-                lines = lines.join("<br>");
-                instancelog = lines;
-                errormessage = "";
-              } catch (error: any) {
-                toast.error("Error while deleting", {
-                  description: error.message,
-                });
-                errormessage = error.message ? error.message : error;
-                instancelog = "";
+      <div class="p-2">
+        <HotkeyButton
+          variant="base"
+          size="base"
+          aria-label="Logs"
+          title="Logs"
+          onclick={async () => {
+            loading = true;
+            try {
+              instancelog = null;
+              var lines: any = await auth.client.CustomCommand({
+                command: "getagentlog",
+                id: data.item._id,
+                name: resourceMonitor.metadata.name,
+                jwt: auth.access_token,
+              });
+              lines = JSON.parse(lines);
+              if (lines != null) {
+                lines = ansi_up.ansi_to_html(lines);
+                lines = lines.split("\n");
+                lines = lines.reverse();
+              } else {
+                lines = [];
               }
-              loading = false;
-            }}>Logs</HotkeyButton
-          >
-          <HotkeyButton
-            class="ml-4"
-            variant="danger"
-            aria-label="Delete"
-            title="Delete"
-            onclick={() => {
-              showWarningAgentDelete = true;
-              deleteData = data.item;
-            }}>Delete</HotkeyButton
-          >
-        </div>
+              lines = lines.join("<br>");
+              instancelog = lines;
+              errormessage = "";
+            } catch (error: any) {
+              toast.error("Error while deleting", {
+                description: error.message,
+              });
+              errormessage = error.message ? error.message : error;
+              instancelog = "";
+            }
+            loading = false;
+          }}
+        >
+          <Hourglass />
+          Logs</HotkeyButton
+        >
+        <HotkeyButton
+          class="ml-4"
+          variant="danger"
+          aria-label="Delete"
+          title="Delete"
+          onclick={() => {
+            showWarningAgentDelete = true;
+            deleteData = data.item;
+          }}
+        >
+          <Trash2 />
+          Delete Item</HotkeyButton
+        >
       </div>
     </div>
   {/if}
@@ -520,6 +568,7 @@
       title="Save changes"
       variant="success"
       size="base"
+      class="mb-4"
     >
       <Check />
       Save Changes</Form.Button
