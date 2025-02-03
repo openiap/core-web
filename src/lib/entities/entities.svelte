@@ -19,7 +19,14 @@
 	import { auth } from "$lib/stores/auth.svelte.js";
 	import { usersettings } from "$lib/stores/usersettings.svelte.js";
 	import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
-	import { Check, CircleX, MoveLeft, MoveRight, Trash2 } from "lucide-svelte";
+	import {
+		Check,
+		CircleX,
+		MoveLeft,
+		MoveRight,
+		SquareMousePointer,
+		Trash2,
+	} from "lucide-svelte";
 	import { toast } from "svelte-sonner";
 	import { data } from "./data.svelte.js";
 	import IconRenderer from "./IconRenderer.svelte";
@@ -458,7 +465,7 @@
 			<Table.Caption>{caption}</Table.Caption>
 		{/if}
 		<Table.Header>
-			<Table.Row class="bg-bw200 dark:bg-bw900 rounded-[10px]">
+			<Table.Row class="bg-lighttableheader dark:bg-bw900 rounded-[10px]">
 				{#if multi_select}
 					<Table.Head
 						class="w-8 text-bw950 dark:text-bw200 rounded-tl-[10px]"
@@ -473,7 +480,8 @@
 				{#each tableheaders as head, index}
 					{#if head.show}
 						<Table.Head
-							class={head.headclass + " text-bw950 dark:text-bw200"}
+							class={head.headclass +
+								" text-bw950 dark:text-bw200"}
 							role="cell"
 							draggable="true"
 							onclick={(e) => toggleSort(e, head.field)}
@@ -585,7 +593,6 @@
 		data-shortcut="del"
 		size="base"
 		variant="danger"
-		class="bg-red-500 text-white"
 	>
 		<Trash2 />
 		Delete {selected_items.length} items</HotkeyButton
@@ -618,16 +625,27 @@
 		>
 			<Sheet.Content>
 				<Sheet.Header>
-					<Sheet.Title>Select columns</Sheet.Title>
+					<div class="flex items-center space-x-1.5 dark:text-bw50">
+						<SquareMousePointer class="h-4 w-4" />
+						<div class="text-[16px] dark:text-bw50">
+							Select columns
+						</div>
+					</div>
+					<div class="dark:text-bw400 text-[14px] w-[256px]">
+						Choose which columns to display in the table.
+					</div>
+					<!-- <Sheet.Title>
+						Select columns</Sheet.Title
+					>
 					<Sheet.Description>
-						Select what columns to show in the table.
-					</Sheet.Description>
+						Choose which columns to display in the table.
+					</Sheet.Description> -->
 				</Sheet.Header>
 				<div class="grid gap-4 py-4">
-					<ScrollArea class="max-h-[70vh]">
+					<ScrollArea class="max-h-[84vh]">
 						{#each tableheaders as head}
 							<div
-								class=" flex items-center space-x-4 rounded-md border p-4"
+								class="h-[36px] flex items-center rounded-[10px] border p-2.5 mb-1.5 mr-4"
 							>
 								<div class="flex-1 space-y-1">
 									<p class="text-muted-foreground text-sm">
@@ -642,16 +660,6 @@
 						{/each}
 					</ScrollArea>
 				</div>
-				<Sheet.Footer>
-					<HotkeyButton
-						size="base"
-						onclick={() => {
-							toggleSheet = false;
-						}}
-					>
-						Close
-					</HotkeyButton>
-				</Sheet.Footer>
 			</Sheet.Content>
 		</Sheet.Root>
 	{/if}
@@ -668,7 +676,7 @@
 			data.persist();
 			GetData();
 		}}
-		disabled={page_index <= 0}
+		disabled={page_index <= 0 || loading}
 	>
 		<div class="flex items-center space-x-2">
 			<div>
@@ -700,7 +708,8 @@
 			GetData();
 		}}
 		disabled={entities.length < data.pagesize ||
-			page_index * data.pagesize >= total_count}
+			page_index * data.pagesize >= total_count ||
+			loading}
 	>
 		<div class="flex items-center space-x-2">
 			<div>Next</div>

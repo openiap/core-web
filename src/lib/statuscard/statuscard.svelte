@@ -2,64 +2,61 @@
     let { title = $bindable("") } = $props();
     let bgcolor = "";
     title = title.toLowerCase();
+    const colors = {
+        red: "bg-lightbgred text-lighttextred border-lightborderred dark:bg-darkbgred dark:text-darktextred border-[1px] border-darkborderred",
+        green: "bg-lightbggreen text-lighttextgreen border-lightbordergreen dark:bg-darkbggreen dark:text-darktextgreen border-[1px] border-darkbordergreen",
+        yellow: "bg-lightbgyellow text-lighttextyellow border-lightborderyellow dark:bg-darkbgyellow dark:text-darktextyellow border-[1px] border-darkborderyellow",
+        orange: "bg-orange-200 dark:bg-darkbgorange dark:text-darktextorange border-[1px] border-darkborderorange",
+        purple: "bg-lightbgpurple text-lighttextpurple border-lightborderpurple dark:bg-darkbgpurple dark:text-darktextpurple border-[1px] border-darkborderpurple",
+    };
+    const { red, green, yellow, orange, purple } = colors;
+
     function renderClass() {
         switch (title) {
             case "running":
-                bgcolor =
-                    "bg-green-200 dark:bg-darkbggreen dark:text-darktextgreen border-[1px] border-darkbordergreen";
+                bgcolor = green;
                 break;
             case "stopped":
-                bgcolor =
-                    "bg-red-200 dark:bg-darkbgred dark:text-darktextred border-[1px] border-darkborderred";
+                bgcolor = red;
                 break;
             case "stopped crashloopbackoff":
-                bgcolor =
-                    "bg-red-200 dark:bg-darkbgred dark:text-darktextred border-[1px] border-darkborderred";
+                bgcolor = red;
                 break;
             case "unknown":
-                bgcolor =
-                    " bg-purple-200 dark:bg-darkbgpurple dark:text-darktextpurple border-[1px] border-darkborderpurple";
+                bgcolor = purple;
                 break;
             case "missing":
-                bgcolor =
-                    " bg-purple-200 dark:bg-darkbgpurple dark:text-darktextpurple border-[1px] border-darkborderpurple";
+                bgcolor = purple;
                 break;
             case "online":
-                bgcolor =
-                    "bg-yellow-200 dark:bg-darkbgyellow dark:text-darktextyellow border-[1px] border-darkborderyellow";
+                bgcolor = yellow;
                 break;
             case "deleting":
+                bgcolor = orange;
+                break;
             case "pending":
-                bgcolor =
-                    "bg-orange-200 dark:bg-darkbgorange dark:text-darktextorange border-[1px] border-darkborderorange";
+                bgcolor = orange;
                 break;
             case "No error":
-                bgcolor =
-                " bg-purple-200 dark:bg-darkbgpurple dark:text-darktextpurple border-[1px] border-darkborderpurple";
+                bgcolor = green;
                 break;
             case "successful":
-                bgcolor =
-                    "bg-green-200 dark:bg-darkbggreen dark:text-darktextgreen border-[1px] border-darkbordergreen";
+                bgcolor = green;
                 break;
             case "failed":
-                bgcolor =
-                    "bg-red-200 dark:bg-darkbgred dark:text-darktextred border-[1px] border-darkborderred";
+                bgcolor = red;
                 break;
             case "new":
-                bgcolor =
-                    "bg-orange-200 dark:bg-darkbgorange dark:text-darktextorange border-[1px] border-darkborderorange";
+                bgcolor = orange;
                 break;
             case "application":
-                bgcolor =
-                "bg-red-200 dark:bg-darkbgred dark:text-darktextred border-[1px] border-darkborderred";
+                bgcolor = red;
                 break;
             case "business":
-                bgcolor =
-                "bg-red-200 dark:bg-darkbgred dark:text-darktextred border-[1px] border-darkborderred";
+                bgcolor = red;
                 break;
             default:
-                bgcolor =
-                    " bg-purple-200 dark:bg-darkbgpurple dark:text-darktextpurple border-[1px] border-darkborderpurple";
+                bgcolor = purple;
                 break;
         }
         return (

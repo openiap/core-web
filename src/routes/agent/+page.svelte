@@ -509,7 +509,7 @@
       </HotkeyButton>
 
       <DropdownMenu.Root>
-        <DropdownMenu.Trigger class="dark:text-bw300"
+        <DropdownMenu.Trigger class="text-bw500 dark:text-bw300"
           ><Ellipsis /></DropdownMenu.Trigger
         >
         <DropdownMenu.Content class="w-44">

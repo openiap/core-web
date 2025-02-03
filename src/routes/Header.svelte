@@ -10,12 +10,13 @@
 	import NavUser from "$lib/sidebar/nav-user.svelte";
 	import { auth } from "$lib/stores/auth.svelte";
 	import { usersettings } from "$lib/stores/usersettings.svelte.js";
-	import { Github, Trash2 } from "lucide-svelte";
+	import { ArrowLeft, ArrowRight, Github, Trash2 } from "lucide-svelte";
 	import Moon from "lucide-svelte/icons/moon";
 	import Sun from "lucide-svelte/icons/sun";
 	import { toggleMode } from "mode-watcher";
 	import { capitalizeFirstLetter } from "../helper";
 
+	let isOpen = $state(false);
 	let pagename = $derived(() =>
 		$page.url.pathname.replace(base, "").replace("/", ""),
 	);
@@ -37,11 +38,20 @@
 >
 	<div class="flex items-center">
 		<Sidebar.Trigger class="-ml-1" />
+
+		<!-- <a href={""} type="button" onclick={() => (isOpen = !isOpen)}>
+			{#if isOpen}
+				<ArrowRight class="hidden md:block dark:text-bw500" />
+			{:else}
+				<ArrowLeft class="hidden md:block dark:text-bw500" />
+			{/if}
+		</a> -->
+
 		<Separator orientation="vertical" class="mr-2 h-4" />
 		<Breadcrumb.Root>
 			<Breadcrumb.List>
 				{#each pagename().split("/") as page, index}
-					<Breadcrumb.Item class="hidden md:block text-bw500">
+					<Breadcrumb.Item class="hidden md:block ">
 						{#if pagename().split("/").length - 1 !== index}
 							<Breadcrumb.Link
 								href="{base}/{pagename()
@@ -68,7 +78,7 @@
 			<HotkeyButton
 				onclick={() =>
 					window.open("https://github.com/openiap", "_blank")}
-				variant="icon"
+				variant="headericon"
 				size="icon"
 				aria-label="Visit us at Github"
 				title="Github"
@@ -76,7 +86,7 @@
 				<Github />
 			</HotkeyButton>
 			<HotkeyButton
-				variant="icon"
+				variant="headericon"
 				size="icon"
 				aria-label="Clear cookies"
 				onclick={reset}
@@ -86,7 +96,7 @@
 			</HotkeyButton>
 			<HotkeyButton
 				onclick={toggleMode}
-				variant="icon"
+				variant="headericon"
 				size="icon"
 				aria-label="Toggle darkmode"
 				title="Toggle theme"

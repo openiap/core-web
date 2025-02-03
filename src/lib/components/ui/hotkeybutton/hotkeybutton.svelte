@@ -1,6 +1,6 @@
 <script lang="ts" module>
 	// import { install, uninstall } from "@github/hotkey";
-	import Mousetrap from 'mousetrap';
+	import Mousetrap from "mousetrap";
 
 	import type { WithElementRef } from "bits-ui";
 	import { onDestroy, onMount } from "svelte";
@@ -14,19 +14,22 @@
 		base: "ring-offset-background focus-visible:ring-ring inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 ",
 		variants: {
 			variant: {
-				base: "border-[1px] dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:hover:bg-bw700 dark:bg-bw850 dark:text-bw200 border-[1px] border-bw600",
-				danger: "border-[1px] dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:bg-darkbgred dark:hover:bg-darkbghoverred",
+				base: "shadow-soft border border-bw300 hover:border-bw400 bg-50 hover:bg-bw100 text-bw950  dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:hover:bg-bw700 dark:bg-bw850 dark:text-bw200 border border-bw600",
+				danger: "border bg-lightbgred hover:bg-lighthoverred dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:bg-darkbgred dark:hover:bg-darkbghoverred",
 				ghost: "hover:bg-accent hover:text-accent-foreground",
 				link: "text-primary underline-offset-4 hover:underline",
 				ghostfull: "",
-				icon: "bg-bw200 dark:text-bw300 dark:bg-bw700 dark:hover:bg-bw700 border-[1px] border-transparent dark:hover:border-bw500",
+				icon: "text-bw500 hover:bg-bw200 hover:text-bw950 dark:text-bw300 dark:bg-bw700 dark:hover:bg-bw700 border border-transparent dark:hover:border-bw500",
+				headericon:
+					"text-bw600 bg-bw200 hover:bg-bw300 dark:text-bw300 dark:bg-bw700 dark:hover:bg-bw700 border border-transparent dark:hover:border-bw500",
 				success:
-					"border-[1px] dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:bg-darkbggreen dark:hover:bg-darkbghovergreen",
+					"border bg-lightbggreen hover:bg-lighthovergreen dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:bg-darkbggreen dark:hover:bg-darkbghovergreen",
 				refresh:
-					"border dark:border-bw600 dark:bg-bw850 dark:hover:bg-bw700 dark:hover:border-bw500",
-				entitydefault: "rounded-[0px] dark:hover:bg-darkentities",
+					"text-bw950	 bg-bw200 hover:bg-bw300 hover:border-bw500 border dark:border-bw600 dark:bg-bw850 dark:hover:bg-bw700 dark:hover:border-bw500",
+				entitydefault:
+					"rounded-[0px] hover:text-bw50 hover:bg-lightentities dark:hover:bg-darkentities",
 				entityselected:
-					"cursor-not-allowed rounded-[0px] bg-darkentitiesselected dark:bg-darkentitiesselected",
+					"cursor-not-allowed rounded-[0px] text-bw50 bg-lightentitiesselected dark:bg-darkentitiesselected",
 			},
 			size: {
 				base: "h-8 px-2.5 py-1.5 rounded-[10px]",
@@ -77,7 +80,7 @@
 				const array = ref.dataset.shortcut.split(",");
 				for (let i = 0; i < array.length; i++) {
 					const key = array[i];
-					Mousetrap.bind(array[i], function(e) {
+					Mousetrap.bind(array[i], function (e) {
 						if (e.preventDefault) {
 							e.preventDefault();
 						} else {
