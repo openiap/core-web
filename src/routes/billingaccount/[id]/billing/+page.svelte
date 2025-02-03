@@ -8,8 +8,18 @@
   import { auth } from "$lib/stores/auth.svelte.js";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import { Resource, ResourceUsage, type Product } from "$lib/types.svelte.js";
-  import { Clock, LucideBadgeDollarSign, Minus, Plus, Trash } from "lucide-svelte";
+  import {
+    Clock,
+    LucideBadgeDollarSign,
+    Minus,
+    Plus,
+    Trash,
+  } from "lucide-svelte";
   import { toast } from "svelte-sonner";
+  import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
+  import Input from "$lib/components/ui/input/input.svelte";
+  import { Label } from "$lib/components/ui/label/index.js";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
 
   const { data } = $props();
   let loading = $state(false);
@@ -18,6 +28,11 @@
   let key = $state(0);
   let toggleSheet = $state(false);
   let sheetresource = $state<Resource>(null as any);
+  let meterprompt = $state(false);
+  let meterusageprompt = $state(false);
+  let metervalue = $state(1);
+  let selectedmeter = $state<ResourceUsage>(null as any);
+  let metervalues: {quantity: number, result: any} = $state({quantity: 0, result: null});
 
   async function GetData() {
     try {
@@ -50,10 +65,17 @@
       let exists = entities.find(
         (x) =>
           x.resourceid == resource._id &&
-          x.product.stripeprice != product.stripeprice,
+          x.product.stripeprice == product.stripeprice,
       );
-      if (exists && exists.quantity > 0) {
-        return false;
+      if (!exists) { // if already exists, allow it
+        exists = entities.find(
+          (x) =>
+            x.resourceid == resource._id &&
+            x.product.stripeprice != product.stripeprice,
+        );
+        if (exists && exists.quantity > 0) {
+          return false;
+        }
       }
     }
     if (product.assign == "single" || product.assign == "metered") {
@@ -198,19 +220,20 @@
       loading = false;
     }
   }
-  async function addhours(resourceusage: ResourceUsage) {
+  async function addvalues(resourceusage: ResourceUsage) {
     try {
+      if (metervalue == 0) throw new Error("Value must be greater or less than 0");
       loading = true;
       await auth.client.CustomCommand({
         command: "reportresourceusage",
         id: resourceusage._id,
-        data: JSON.stringify({quantity: 1}),
+        data: JSON.stringify({ quantity: metervalue }),
         jwt: auth.access_token,
       });
-      toast.success("Hours added");
+      toast.success("Value successfully added");
       await GetData();
     } catch (error: any) {
-      toast.error("Error adding hours", {
+      toast.error("Error adding value", {
         description: error.message,
       });
     } finally {
@@ -261,6 +284,9 @@
     }
   }
   cleanResources();
+
+  let profileroles = auth.profile?.roles || [];
+  const isAdmin = profileroles.includes("admins");
 </script>
 
 <header>
@@ -409,7 +435,7 @@
           <div class=" flex items-center space-x-4 rounded-md border p-4">
             <div class="flex-1 space-y-1">
               <p class="text-muted-foreground text-sm">
-                {resource.name}
+                {resource.name}<br />
                 <Button
                   variant="outline"
                   size="base"
@@ -418,15 +444,43 @@
                 >
                   <Trash />
                 </Button>
-                {#if resource.product.assign == "single" || resource.product.assign == "metered"}
-                <Button
-                  variant="outline"
-                  size="base"
-                  disabled={loading}
-                  onclick={() => addhours(resource)}
-                >
-                  <Clock />
-                </Button>
+                {#if (resource.product.assign == "metered") && isAdmin}
+                  <Button
+                    variant="outline"
+                    size="base"
+                    disabled={loading}
+                    onclick={async () => {
+                      try {
+                        loading = true;
+                        metervalues = JSON.parse(await auth.client.CustomCommand({
+                          command: "getmeteredresourceusage",
+                          id: resource._id,
+                          jwt: auth.access_token,
+                        }));
+                        selectedmeter = resource;
+                        meterusageprompt = true;
+                      } catch (error:any) {
+                        toast.error("Error getting data", {
+                          description: error.message,
+                        });
+                      } finally {
+                        loading = false;
+                      }
+                    }}
+                  >
+                    <Clock />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="base"
+                    disabled={loading}
+                    onclick={() => {
+                      selectedmeter = resource;
+                      meterprompt = true;
+                    }}
+                  >
+                    <Clock />
+                  </Button>
                 {/if}
               </p>
             </div>
@@ -448,3 +502,44 @@
     </Sheet.Footer>
   </Sheet.Content>
 </Sheet.Root>
+
+<AlertDialog.Root bind:open={meterprompt}>
+  <AlertDialog.Content>
+    <AlertDialog.Header>
+      <AlertDialog.Title>Manually add value to meter</AlertDialog.Title>
+      <AlertDialog.Description>
+        Add to {selectedmeter.name}<br />
+        Please type the value to add to the meter
+        <Input bind:value={metervalue} type="number" />
+      </AlertDialog.Description>
+    </AlertDialog.Header>
+    <AlertDialog.Footer>
+      <HotkeyButton disabled={loading} onclick={() => (meterprompt = false)}
+        >Cancel</HotkeyButton
+      >
+      <HotkeyButton
+        disabled={loading}
+        onclick={() => {
+          addvalues(selectedmeter);
+          meterprompt = false;
+        }}>Continue</HotkeyButton
+      >
+    </AlertDialog.Footer>
+  </AlertDialog.Content>
+</AlertDialog.Root>
+<AlertDialog.Root bind:open={meterusageprompt}>
+  <AlertDialog.Content>
+    <AlertDialog.Header>
+      <AlertDialog.Title>Manually add value to meter</AlertDialog.Title>
+      <AlertDialog.Description>
+        Consumption for {selectedmeter.name}<br />
+        quantity: {metervalues.quantity}<br />        
+      </AlertDialog.Description>
+    </AlertDialog.Header>
+    <AlertDialog.Footer>
+      <HotkeyButton disabled={loading} onclick={() => (meterusageprompt = false)}
+        >Cancel</HotkeyButton
+      >
+    </AlertDialog.Footer>
+  </AlertDialog.Content>
+</AlertDialog.Root>

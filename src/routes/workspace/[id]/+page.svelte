@@ -248,6 +248,15 @@
         <Form.Label>Workspace Name</Form.Label>
         <div class="flex space-x-5">
           <CustomInput {...props} bind:value={$formData.name} />
+          <Form.Button
+            disabled={loading}
+            aria-label="Update workspace"
+            variant="success"
+            size="base"
+          >
+            <Check />
+            Update workspace</Form.Button
+          >
           {#if entities.length > 0}
             {#if currentworkspace._resourceusageid == "" || currentworkspace._resourceusageid == null}
               <span>Linked to billing account</span>
@@ -270,15 +279,6 @@
               </Button>
             {/if}
           {/if}
-          <Form.Button
-            disabled={loading}
-            aria-label="Update workspace"
-            variant="success"
-            size="base"
-          >
-            <Check />
-            Update workspace</Form.Button
-          >
 
           {#if data.currentbilling != null}
             <Button
@@ -387,7 +387,6 @@
       <AlertDialog.Description>
         Please type the name of your new billing account.
         <Input bind:value={newbillingaccountname} />
-        <Label>Select currency</Label>
       </AlertDialog.Description>
     </AlertDialog.Header>
     <AlertDialog.Footer>
