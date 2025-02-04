@@ -32,7 +32,10 @@
   let meterusageprompt = $state(false);
   let metervalue = $state(1);
   let selectedmeter = $state<ResourceUsage>(null as any);
-  let metervalues: {quantity: number, result: any} = $state({quantity: 0, result: null});
+  let metervalues: { quantity: number; result: any } = $state({
+    quantity: 0,
+    result: null,
+  });
 
   async function GetData() {
     try {
@@ -62,12 +65,21 @@
     if (product.allowdirectassign == false) return false;
     if (resource.allowdirectassign == false) return false;
     if (resource.assign == "singlevariant") {
+      // let exists = entities.find(
+      //   (x) =>
+      //     x.resourceid == resource._id &&
+      //     x.product.stripeprice == product.stripeprice,
+      // );
       let exists = entities.find(
-        (x) =>
-          x.resourceid == resource._id &&
-          x.product.stripeprice == product.stripeprice,
+      (x) =>
+        (x.resourceid == resource._id &&
+          x.product.stripeprice == product.stripeprice) ||
+        (x.product.lookup_key == product.lookup_key &&
+          product.lookup_key != null &&
+          product.lookup_key != ""),
       );
-      if (!exists) { // if already exists, allow it
+      if (!exists) {
+        // if already exists, allow it
         exists = entities.find(
           (x) =>
             x.resourceid == resource._id &&
@@ -79,14 +91,69 @@
       }
     }
     if (product.assign == "single" || product.assign == "metered") {
+      // let exists = entities.find(
+      //   (x) =>
+      //     x.resourceid == resource._id &&
+      //     x.product.stripeprice == product.stripeprice,
+      // );
       let exists = entities.find(
-        (x) =>
-          x.resourceid == resource._id &&
-          x.product.stripeprice == product.stripeprice,
+      (x) =>
+        (x.resourceid == resource._id &&
+          x.product.stripeprice == product.stripeprice) ||
+        (x.product.lookup_key == product.lookup_key &&
+          product.lookup_key != null &&
+          product.lookup_key != ""),
       );
       if (exists == null || exists.quantity == 0) {
         return true;
       } else {
+        return false;
+      }
+    }
+    return true;
+  });
+  const candecrease = $derived((resource: Resource, product: Product) => {
+    if (product.allowdirectassign == false) return false;
+    if (resource.allowdirectassign == false) return false;
+    if(resource.name == "Workspaces" && product.name == "Basic tier"){ 
+      //debugger;
+      console.log("entities", $state.snapshot(entities));
+      console.log("resourceid", resource._id);
+      console.log("stripeprice", product.stripeprice);
+    }
+    if (resource.assign == "singlevariant") {
+      // let exists = entities.find(
+      //   (x) =>
+      //     x.resourceid == resource._id &&
+      //     x.product.stripeprice == product.stripeprice,
+      // );
+      let exists = entities.find(
+      (x) =>
+        (x.resourceid == resource._id &&
+          x.product.stripeprice == product.stripeprice) ||
+        (x.product.lookup_key == product.lookup_key &&
+          product.lookup_key != null &&
+          product.lookup_key != ""),
+      );
+      if (exists == null || exists.quantity == 0) {
+        return false;
+      }
+    }
+    if (product.assign == "single" || product.assign == "metered") {
+      // let exists = entities.find(
+      //   (x) =>
+      //     x.resourceid == resource._id &&
+      //     x.product.stripeprice == product.stripeprice,
+      // );
+      let exists = entities.find(
+      (x) =>
+        (x.resourceid == resource._id &&
+          x.product.stripeprice == product.stripeprice) ||
+        (x.product.lookup_key == product.lookup_key &&
+          product.lookup_key != null &&
+          product.lookup_key != ""),
+      );
+      if (exists == null || exists.quantity == 0) {
         return false;
       }
     }
@@ -140,52 +207,23 @@
       if (resource == null) throw new Error("Resource not found");
       if (product == null) throw new Error("Product not found");
       let resourceusage: ResourceUsage = entities.find(
-        (x) =>
-          x.resourceid == resource._id &&
-          x.product.stripeprice == product.stripeprice,
+      (x) =>
+        (x.resourceid == resource._id &&
+          x.product.stripeprice == product.stripeprice) ||
+        (x.product.lookup_key == product.lookup_key &&
+          product.lookup_key != null &&
+          product.lookup_key != ""),
       ) as any;
-      if (resource.target == "customer") {
-        target = data.billingaccount;
-      } else if (resource.target == "workspace") {
-        data.workspace = await auth.client.FindOne({
-          collectionname: "users",
-          query: { _type: "workspace", _id: usersettings.currentworkspace },
-          jwt: auth.access_token,
-        });
-        target = data.workspace;
-        if (target == null) throw new Error("Please select a Workspace first");
-        let usage = entities.filter(
-          (x) =>
-            x.workspaceid == usersettings.currentworkspace &&
-            ((x.resourceid == resource._id &&
-              x.product.stripeprice == product.stripeprice) ||
-              (x.product.lookup_key == product.lookup_key &&
-                product.lookup_key != null &&
-                product.lookup_key != "")),
-        );
-        if (usage.length == 1) {
-          resourceusage = usage[0];
-        }
-      } else if (resource.target == "agent") {
-        let usage = entities.filter(
-          (x) =>
-            x.workspaceid == usersettings.currentworkspace &&
-            ((x.resourceid == resource._id &&
-              x.product.stripeprice == product.stripeprice) ||
-              (x.product.lookup_key == product.lookup_key &&
-                product.lookup_key != null &&
-                product.lookup_key != "")),
-        );
-        if (usage.length == 1) {
-          resourceusage = usage[0];
-        } else {
-          throw new Error("Remove plan from agent page or click Detail Usage");
-        }
-      }
       if (resourceusage == null) {
         throw new Error(
           "Failed finding resource. Click Detail Usage to remove",
         );
+      }
+      if (resource.target == "customer") {
+        target = data.billingaccount;
+      } else {
+        toast.error("Please click Detailed Usage to remove");
+        return;
       }
       await auth.client.CustomCommand({
         command: "removeresourceusage",
@@ -222,7 +260,8 @@
   }
   async function addvalues(resourceusage: ResourceUsage) {
     try {
-      if (metervalue == 0) throw new Error("Value must be greater or less than 0");
+      if (metervalue == 0)
+        throw new Error("Value must be greater or less than 0");
       loading = true;
       await auth.client.CustomCommand({
         command: "reportresourceusage",
@@ -378,24 +417,29 @@
                         size="base"
                         disabled={loading}
                         onclick={() => increment(resource, product)}
-                        ><Plus /></Button
-                      >
+                        ><Plus />
+                      </Button>
+                    {:else}
+                      <Button variant="outline" size="base" disabled={true}
+                        ><Plus />
+                      </Button>
+                    {/if}
+                    {#if candecrease(resource, product)}
+                      <Button
+                        variant="outline"
+                        size="base"
+                        disabled={loading}
+                        onclick={() => decrement(resource, product)}
+                        ><Minus />
+                      </Button>
                     {:else}
                       <Button
                         variant="outline"
                         size="base"
                         disabled={true}
-                        onclick={() => increment(resource, product)}
-                        ><Plus /></Button
-                      >
+                        ><Minus />
+                      </Button>
                     {/if}
-                    <Button
-                      variant="outline"
-                      size="base"
-                      disabled={quantity(resource, product) == 0 || loading}
-                      onclick={() => decrement(resource, product)}
-                      ><Minus /></Button
-                    >
                   </td>
                 </tr>
               {/key}
@@ -444,7 +488,7 @@
                 >
                   <Trash />
                 </Button>
-                {#if (resource.product.assign == "metered") && isAdmin}
+                {#if resource.product.assign == "metered" && isAdmin}
                   <Button
                     variant="outline"
                     size="base"
@@ -452,14 +496,16 @@
                     onclick={async () => {
                       try {
                         loading = true;
-                        metervalues = JSON.parse(await auth.client.CustomCommand({
-                          command: "getmeteredresourceusage",
-                          id: resource._id,
-                          jwt: auth.access_token,
-                        }));
+                        metervalues = JSON.parse(
+                          await auth.client.CustomCommand({
+                            command: "getmeteredresourceusage",
+                            id: resource._id,
+                            jwt: auth.access_token,
+                          }),
+                        );
                         selectedmeter = resource;
                         meterusageprompt = true;
-                      } catch (error:any) {
+                      } catch (error: any) {
                         toast.error("Error getting data", {
                           description: error.message,
                         });
@@ -533,12 +579,13 @@
       <AlertDialog.Title>Manually add value to meter</AlertDialog.Title>
       <AlertDialog.Description>
         Consumption for {selectedmeter.name}<br />
-        quantity: {metervalues.quantity}<br />        
+        quantity: {metervalues.quantity}<br />
       </AlertDialog.Description>
     </AlertDialog.Header>
     <AlertDialog.Footer>
-      <HotkeyButton disabled={loading} onclick={() => (meterusageprompt = false)}
-        >Cancel</HotkeyButton
+      <HotkeyButton
+        disabled={loading}
+        onclick={() => (meterusageprompt = false)}>Cancel</HotkeyButton
       >
     </AlertDialog.Footer>
   </AlertDialog.Content>

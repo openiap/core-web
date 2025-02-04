@@ -41,6 +41,47 @@
       loading = false;
     }
   }
+  async function deleteitems(ids: string[]) {
+    let haderror = false;
+    loading = true;
+    showWarning = false;
+    let counter = 0;
+    try {
+      for (let i = 0; i < ids.length; i++) {
+        let id = ids[i];
+        var item = entities.find((x: any) => x._id == id);
+        if (item) {
+          try {
+            await auth.client.CustomCommand({
+              command: "removebilling",
+              id: item._id,
+              jwt: auth.access_token,
+            });
+            counter++;
+            selected_items = selected_items.filter((x: any) => x != item._id);
+            ref.reload();
+          } catch (error: any) {
+            haderror = true;
+            toast.error("Error while deleting", {
+              description: error.message,
+            });
+            return;
+          }
+        }
+      }
+      if (!haderror) {
+        toast.success("Successfully deleted " + counter + " agent(s)", {
+          description: "",
+        });
+      }
+    } catch (error: any) {
+      toast.error("Error while deleting", {
+        description: error.message,
+      });
+    } finally {
+      loading = false;
+    }
+  }
   function single_item_click(item: any) {
     goto(base + `/billingaccount/${item._id}`);
   }
@@ -85,6 +126,7 @@
   {page}
   {single_item_click}
   total_count={data.total_count}
+  delete_selected={deleteitems}
   bind:selected_items
   bind:entities
   bind:this={ref}
