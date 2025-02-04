@@ -55,7 +55,59 @@
   let showWarningAgentDelete = $state(false);
   let deleteData: any = $state({});
   let instancelog: any = $state(null);
-  let resourceMonitor: any = data.resourceMonitor;
+
+  function parsePods(instances: any[]) {
+    for (let i = 0; i < instances.length; i++) {
+      const instance = instances[i];
+      if (instance) {
+        instance.showstatus = "unknown";
+        if (instance.status && instance.status.phase) {
+          instance.showstatus = instance.status.phase;
+        }
+        if (
+          instance.showstatus == "running" ||
+          instance.showstatus == "Running"
+        ) {
+          if (
+            instance.status != null &&
+            instance.status.containerStatuses != null &&
+            instance.status.containerStatuses.length > 0
+          ) {
+            instance.showstatus = instance.status.containerStatuses[0].started
+              ? "Running"
+              : "Stopped " +
+                instance.status.containerStatuses[0].state.waiting.reason;
+          }
+        }
+        if (instance.metadata.deletionTimestamp)
+          instance.showstatus = "Deleting";
+        console.log(instance.showstatus);
+      }
+    }
+  }
+  parsePods(data.instances);
+  let instances: any = $state(data.instances);
+  async function refreshPods() {
+    try {
+      loading = true;
+      let instancejson: any = await auth.client.CustomCommand({
+        command: "getagentpods",
+        id: data.item._id,
+        name: data.item.slug,
+        jwt: auth.access_token,
+      });
+      const _instances = JSON.parse(instancejson);
+      parsePods(_instances);
+      instances = _instances;
+    } catch (error: any) {
+      toast.error("Error while refreshing", {
+        description: error.message,
+      });
+    } finally {
+      loading = false;
+    }
+  }
+
   const form = superForm(defaults(zod(editFormSchema)), {
     dataType: "json",
     validators: zod(editFormSchema),
@@ -175,7 +227,7 @@
       }
     },
   });
-  if (data.item.stripeprice == null) {
+  if (data.item != null && data.item.stripeprice == null) {
     data.item.stripeprice = "";
   }
   const { form: formData, enhance, message, validateForm } = form;
@@ -413,15 +465,15 @@
   async function handleAcceptAgentDelete() {
     try {
       await auth.client.CustomCommand({
-        command: "deleteagent",
-        id: deleteData._id,
-        name: deleteData.slug,
+        command: "deleteagentpod",
+        id: data.item._id,
+        name: deleteData.metadata.name,
         jwt: auth.access_token,
       });
       toast.success("Deleted successfully", {
         description: "",
       });
-      goto(base + `/${page}`);
+      refreshPods();
     } catch (error: any) {
       toast.error("Error while deleting", {
         description: error.message,
@@ -439,121 +491,123 @@
     {$message}
   {/if}
 
-  {#if resourceMonitor != null}
-    <div class="my-4 text-[14px] border rounded-[10px]">
-      <div
-        class="grid grid-cols-7 bg-lighttableheader rounded-tr-[10px] rounded-tl-[10px] border-b"
-      >
-        <div class="text-center p-2 col-span-2">
-          <div class="flex items-center">
-            <Tag class="h-3 w-3 mr-1" />
-            Name
+  {#each instances as resourceMonitor}
+    {#if resourceMonitor != null}
+      <div class="my-4 text-[14px] border rounded-[10px]">
+        <div
+          class="grid grid-cols-7 bg-lighttableheader rounded-tr-[10px] rounded-tl-[10px] border-b"
+        >
+          <div class="text-center p-2 col-span-2">
+            <div class="flex items-center">
+              <Tag class="h-3 w-3 mr-1" />
+              Name
+            </div>
+          </div>
+          <div class="text-center p-2 col-span-1">
+            <div class="flex items-center justify-center">
+              <Gauge class="h-4 w-4 mr-1" />
+              Status
+            </div>
+          </div>
+          <div class="text-center p-2 col-span-1">
+            <div class="flex items-center justify-center">
+              <Laptop class="h-4 w-4 mr-1" />
+              CPU
+            </div>
+          </div>
+          <div class="text-center p-2 col-span-1">
+            <div class="flex items-center justify-center">
+              <Zap class="h-4 w-4 mr-1" />
+              Mem
+            </div>
+          </div>
+          <div class="text-center p-2 col-span-2">
+            <div class="flex items-center justify-center">
+              <CalendarDays class="h-4 w-4 mr-1" />
+              Created
+            </div>
           </div>
         </div>
-        <div class="text-center p-2 col-span-1">
-          <div class="flex items-center justify-center">
-            <Gauge class="h-4 w-4 mr-1" />
-            Status
-          </div>
-        </div>
-        <div class="text-center p-2 col-span-1">
-          <div class="flex items-center justify-center">
-            <Laptop class="h-4 w-4 mr-1" />
-            CPU
-          </div>
-        </div>
-        <div class="text-center p-2 col-span-1">
-          <div class="flex items-center justify-center">
-            <Zap class="h-4 w-4 mr-1" />
-            Mem
-          </div>
-        </div>
-        <div class="text-center p-2 col-span-2">
-          <div class="flex items-center justify-center">
-            <CalendarDays class="h-4 w-4 mr-1" />
-            Created
-          </div>
-        </div>
-      </div>
 
-      <div class="grid grid-cols-7 border-b">
-        <div class="flex items-center p-4 col-span-2">
-          {resourceMonitor.metadata.name}
+        <div class="grid grid-cols-7 border-b">
+          <div class="flex items-center p-4 col-span-2">
+            {resourceMonitor.metadata.name}
+          </div>
+          <div class="flex items-center justify-center p-4 col-span-1">
+            <Statuscard title={resourceMonitor.showstatus} />
+          </div>
+          <div class="text-center p-4 col-span-1">
+            {resourceMonitor?.metrics?.cpu +
+              "/" +
+              resourceMonitor?.spec?.containers[0]?.resources?.limits?.cpu}
+          </div>
+          <div class="text-center p-4 col-span-1">
+            {resourceMonitor?.metrics?.memory +
+              "/" +
+              resourceMonitor?.spec?.containers[0]?.resources?.limits?.memory}
+          </div>
+          <div class="text-center p-4 col-span-2">
+            {resourceMonitor?.metadata?.creationTimestamp}
+          </div>
         </div>
-        <div class="flex items-center justify-center p-4 col-span-1">
-          <Statuscard title={resourceMonitor.showstatus} />
-        </div>
-        <div class="text-center p-4 col-span-1">
-          {resourceMonitor?.metrics?.cpu +
-            "/" +
-            resourceMonitor?.spec?.containers[0]?.resources?.limits?.cpu}
-        </div>
-        <div class="text-center p-4 col-span-1">
-          {resourceMonitor?.metrics?.memory +
-            "/" +
-            resourceMonitor?.spec?.containers[0]?.resources?.limits?.memory}
-        </div>
-        <div class="text-center p-4 col-span-2">
-          {resourceMonitor?.metadata?.creationTimestamp}
-        </div>
-      </div>
 
-      <div class="p-2">
-        <HotkeyButton
-          variant="base"
-          size="base"
-          aria-label="Logs"
-          title="Logs"
-          onclick={async () => {
-            loading = true;
-            try {
-              instancelog = null;
-              var lines: any = await auth.client.CustomCommand({
-                command: "getagentlog",
-                id: data.item._id,
-                name: resourceMonitor.metadata.name,
-                jwt: auth.access_token,
-              });
-              lines = JSON.parse(lines);
-              if (lines != null) {
-                lines = ansi_up.ansi_to_html(lines);
-                lines = lines.split("\n");
-                lines = lines.reverse();
-              } else {
-                lines = [];
+        <div class="p-2">
+          <HotkeyButton
+            variant="base"
+            size="base"
+            aria-label="Logs"
+            title="Logs"
+            onclick={async () => {
+              loading = true;
+              try {
+                instancelog = null;
+                var lines: any = await auth.client.CustomCommand({
+                  command: "getagentlog",
+                  id: data.item._id,
+                  name: resourceMonitor.metadata.name,
+                  jwt: auth.access_token,
+                });
+                lines = JSON.parse(lines);
+                if (lines != null) {
+                  lines = ansi_up.ansi_to_html(lines);
+                  lines = lines.split("\n");
+                  lines = lines.reverse();
+                } else {
+                  lines = [];
+                }
+                lines = lines.join("<br>");
+                instancelog = lines;
+                errormessage = "";
+              } catch (error: any) {
+                toast.error("Error while deleting", {
+                  description: error.message,
+                });
+                errormessage = error.message ? error.message : error;
+                instancelog = "";
               }
-              lines = lines.join("<br>");
-              instancelog = lines;
-              errormessage = "";
-            } catch (error: any) {
-              toast.error("Error while deleting", {
-                description: error.message,
-              });
-              errormessage = error.message ? error.message : error;
-              instancelog = "";
-            }
-            loading = false;
-          }}
-        >
-          <Hourglass />
-          Logs</HotkeyButton
-        >
-        <HotkeyButton
-          class="ml-4"
-          variant="danger"
-          aria-label="Delete"
-          title="Delete"
-          onclick={() => {
-            showWarningAgentDelete = true;
-            deleteData = data.item;
-          }}
-        >
-          <Trash2 />
-          Delete Item</HotkeyButton
-        >
+              loading = false;
+            }}
+          >
+            <Hourglass />
+            Logs</HotkeyButton
+          >
+          <HotkeyButton
+            class="ml-4"
+            variant="danger"
+            aria-label="Delete"
+            title="Delete"
+            onclick={() => {
+              showWarningAgentDelete = true;
+              deleteData = resourceMonitor;
+            }}
+          >
+            <Trash2 />
+            Delete Item</HotkeyButton
+          >
+        </div>
       </div>
-    </div>
-  {/if}
+    {/if}
+  {/each}
   {#if instancelog != null}
     <div class="border rounded-xl p-2 my-2">
       <div>Logs</div>
@@ -572,6 +626,19 @@
     >
       <Check />
       Save Changes</Form.Button
+    >
+    <HotkeyButton
+      aria-label="Refresh"
+      title="Refresh"
+      variant="base"
+      size="base"
+      disabled={loading}
+      onclick={() => {
+        refreshPods();
+      }}
+    >
+      <RefreshCcw />
+      Refresh</HotkeyButton
     >
 
     <div class="flex items-center justify-between space-x-4">

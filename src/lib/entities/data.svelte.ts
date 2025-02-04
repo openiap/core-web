@@ -311,7 +311,7 @@ class entitiesdata {
 		}
 		return orderby;
 	}
-	private parseJson(txt: string, reviver: any, context: any) {
+	public parseJson(txt: string, reviver: any, context: any) {
 		context = context || 20;
 		try {
 			return JSON.parse(txt, reviver);
@@ -347,7 +347,7 @@ class entitiesdata {
 			throw e;
 		}
 	}
-	private safeEval(jsStr: string) {
+	public safeEval(jsStr: string) {
 		try {
 			return Function(`"use strict";return (` + jsStr + `)`)();
 		} catch (e: any) {

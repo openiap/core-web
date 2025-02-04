@@ -12,7 +12,7 @@
     const { red, green, yellow, orange, purple } = colors;
 
     function renderClass() {
-        switch (title) {
+        switch (title.toLowerCase()) {
             case "running":
                 bgcolor = green;
                 break;
