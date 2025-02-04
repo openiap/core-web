@@ -24,7 +24,8 @@
 }
 
 /* foreground = text */
-/* mutted = hover */
+/* muted = hover */
+/* accent = hover on popup */
 /* primary = inside checkbox, border + inside radio */
 /* secondary, accent = other colors eg 2nd color and hover for buttons mostly =  */
 /* ring = tab selection */
@@ -49,8 +50,8 @@
     /*--secondary: 0.0 84.2% 60.2%;
     --secondary-foreground: 0.0 84.2% 60.2%; */
 
-    /* --accent: 0.0 84.2% 60.2%;
-    --accent-foreground: 222.2 47.4% 11.2%; */
+    --accent: 0 0% 85%;
+    --accent-foreground: 210 8% 5%;
 
     /* --destructive: 0 72.2% 50.6%;
     --destructive-foreground: 210 40% 98%; */
@@ -87,9 +88,9 @@
     /* --secondary: 220 6% 20%;
     --secondary-foreground: 223 4% 64%; */
     /* Hover property */
-    /* --accent: 220 6% 20%;
+    --accent: 220 6% 20%;
     --accent-foreground: 223 4% 64%;
-    --destructive: 0 62.8% 30.6%;
+    /*--destructive: 0 62.8% 30.6%;
     --destructive-foreground: 223 4% 64%; */
     --ring: 223 4% 64%;
 
