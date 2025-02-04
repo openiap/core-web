@@ -22,6 +22,22 @@
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
 
   const { data } = $props();
+  // TODO: product hack for backward compatibility
+  for(let i = 0; i < data.resources.length; i++) {
+    const r = data.resources[i];
+    if(r.name == "Agent Instance") {
+        r.target = "agent" as any;
+    }
+    for(let y = 0; y < r.products.length; y++) {
+      const p = r.products[y];
+      if(r.target == "customer") {
+        p.assign = (p as any).customerassign;
+      }
+      if(r.target == "agent") {
+        p.assign = (p as any).customerassign;
+      }
+    }    
+  }
   let loading = $state(false);
   let entities: ResourceUsage[] = $state(data.entities);
   let resources: Resource[] = $state(data.resources);
