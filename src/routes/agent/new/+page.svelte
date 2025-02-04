@@ -99,7 +99,11 @@
               toast.success("Resource assigned");
             }
             goto(base + `/agent`);
-          } catch (error) {
+          } catch (error:any) {
+            toast.error("Error", {
+              description: error.message,
+            });
+            cancel();
             goto(base + `/agent/${newagent._id}`);
           }
         } catch (error: any) {
