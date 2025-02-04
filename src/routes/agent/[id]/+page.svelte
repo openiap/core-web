@@ -11,6 +11,7 @@
   import { CustomCheckbox } from "$lib/customcheckbox/index.js";
   import { CustomInput } from "$lib/custominput/index.js";
   import { CustomSelect } from "$lib/customselect/index.js";
+  import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { CustomSwitch } from "$lib/customswitch/index.js";
   import Entityselector from "$lib/entityselector/entityselector.svelte";
   import { ObjectInput } from "$lib/objectinput/index.js";
@@ -34,12 +35,11 @@
     Zap,
   } from "lucide-svelte";
   import { toast } from "svelte-sonner";
-  import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
+  import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import type { Workspace } from "../../workspace/schema.js";
   import { randomname } from "../helper.js";
   import { editFormSchema } from "../schema.js";
-  import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
 
   const ansi_up = new AnsiUp();
 
@@ -115,6 +115,7 @@
     onUpdate: async ({ form, cancel }) => {
       if (form.valid) {
         try {
+          loading = true;
           let workspace: Workspace | null = null;
           let product = products.find(
             (x: any) => x.stripeprice == form.data.stripeprice,
@@ -191,6 +192,12 @@
                   document.location.href = link;
                 }
               }
+            } else {
+              await auth.client.CustomCommand({
+                command: "removeresourceusage",
+                id: form.data._resourceusageid as any,
+                jwt: auth.access_token,
+              });
             }
           }
 
@@ -211,10 +218,9 @@
               description: error.message,
             });
             cancel();
-          } finally {
-            loading = false;
           }
         } catch (error: any) {
+          errormessage = error.message;
           toast.error("Error", {
             description: error.message,
           });
@@ -495,7 +501,7 @@
     {#if resourceMonitor != null}
       <div class="my-4 text-[14px] border rounded-[10px]">
         <div
-          class="grid grid-cols-7 bg-lighttableheader dark:bg-darktableheader rounded-tr-[10px] rounded-tl-[10px] border-b"
+          class="grid grid-cols-7 bg-lighttableheader rounded-tr-[10px] rounded-tl-[10px] border-b"
         >
           <div class="text-center p-2 col-span-2">
             <div class="flex items-center">
