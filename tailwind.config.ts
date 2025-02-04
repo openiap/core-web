@@ -32,6 +32,7 @@ const config: Config = {
 				bw1000: "#282A2F",
 
 				lighttableheader: "#E6E6E6",
+				darktableheader: "#1B1D21",
 
 				// entities page
 				lightentities: "#61929A",

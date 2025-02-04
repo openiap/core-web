@@ -25,7 +25,7 @@
 				success:
 					"border bg-lightbggreen hover:bg-lighthovergreen dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:bg-darkbggreen dark:hover:bg-darkbghovergreen",
 				refresh:
-					"text-bw950	 bg-bw200 hover:bg-bw300 hover:border-bw500 border dark:border-bw600 dark:bg-bw850 dark:hover:bg-bw700 dark:hover:border-bw500",
+					"text-bw950	bg-bw200 hover:bg-bw300 hover:border-bw500 border dark:border-bw600 dark:bg-bw850 dark:text-bw100 dark:hover:bg-bw700 dark:hover:border-bw500",
 				entitydefault:
 					"rounded-[0px] hover:text-bw50 hover:bg-lightentities dark:hover:bg-darkentities",
 				entityselected:

@@ -495,7 +495,7 @@
     {#if resourceMonitor != null}
       <div class="my-4 text-[14px] border rounded-[10px]">
         <div
-          class="grid grid-cols-7 bg-lighttableheader rounded-tr-[10px] rounded-tl-[10px] border-b"
+          class="grid grid-cols-7 bg-lighttableheader dark:bg-darktableheader rounded-tr-[10px] rounded-tl-[10px] border-b"
         >
           <div class="text-center p-2 col-span-2">
             <div class="flex items-center">
