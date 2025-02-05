@@ -102,6 +102,10 @@ class entitiesdata {
 				entities = await this.GetData(page, "openrpa", { _type: "unattendedclient" }, access_token);
 				total_count = await this.GetCount(page, "openrpa", { _type: "unattendedclient" }, access_token);
 				break;
+			case base + "/licensekey":
+				entities = await this.GetData(page, "config", { _type: "license" }, access_token, false);
+				total_count = await this.GetCount(page, "config", { _type: "license" }, access_token, false);
+				break;
 			case base + "/mailhistory":
 				entities = await this.GetData(page, "mailhist", {}, access_token);
 				total_count = await this.GetCount(page, "mailhist", {}, access_token);
@@ -465,6 +469,17 @@ class entitiesdata {
 			case "/provider":
 			case "provider":
 				return ["name", "provider", "_created", "_modified"];
+			case "/ui/licensekey":
+			case "/licensekey":
+			case "licensekey":
+				return [
+					"name",
+					"_productname",
+					"connections",
+					"workspaces",
+					"gitrepos",
+					"_created",
+				];
 			case "/ui/mailhistory":
 			case "/mailhistory":
 			case "mailhistory":

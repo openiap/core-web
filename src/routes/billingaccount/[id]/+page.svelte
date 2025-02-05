@@ -53,61 +53,71 @@
 {/if}
 
 <header>
-<Button
-  variant="outline"
-  size="base"
-  onclick={() => {
-    goto(base + "/billingaccount/" + data.id + "/billing");
-  }}
->
-billing usage
-</Button>
-{#if data.item?.stripeid != null && data.item?.stripeid != ""}
-<Button
-  variant="outline"
-  size="base"
-  onclick={async () => {
-    try {
-      const link = await auth.client.CustomCommand({
-      command: "getbillingportallink",
-      id: data.id,
-      jwt: auth.access_token,
-    });
-    if(link != null && link != "") {
-      document.location.href = link.split('"').join("");
-    } else {
-      toast.error("Error opening billing portal");
-    }        
-    } catch (error:any) {
-      toast.error("Error opening billing portal", {
-        description: error.message,
-      });
-    }
-  }}
->
-  Open Billing Portal
-</Button>
-<Button
-variant="outline"
-size="base"
-onclick={async () => {
-  try {
-    const link = await auth.client.CustomCommand({
-    command: "syncbillingaccount",
-    id: data.id,
-    jwt: auth.access_token,
-  });
-  toast.success("Billing account synced");
-  } catch (error:any) {
-    toast.error("Error opening billing portal", {
-      description: error.message,
-    });
-  }
-}}
->
-Sync with Stripe
-</Button>
-{/if}
+  <Button
+    variant="outline"
+    size="base"
+    onclick={() => {
+      goto(base + "/billingaccount/" + data.id + "/billing");
+    }}
+  >
+    billing usage
+  </Button>
+  <Button
+    variant="outline"
+    size="base"
+    onclick={() => {
+      goto(base + "/licensekey");
+    }}
+  >
+    Manage OpenCore Licenses
+  </Button>
+
+  {#if data.item?.stripeid != null && data.item?.stripeid != ""}
+    <Button
+      variant="outline"
+      size="base"
+      onclick={async () => {
+        try {
+          const link = await auth.client.CustomCommand({
+            command: "getbillingportallink",
+            id: data.id,
+            jwt: auth.access_token,
+          });
+          if (link != null && link != "") {
+            document.location.href = link.split('"').join("");
+          } else {
+            toast.error("Error opening billing portal");
+          }
+        } catch (error: any) {
+          toast.error("Error opening billing portal", {
+            description: error.message,
+          });
+        }
+      }}
+    >
+      Open Billing Portal
+    </Button>
+    <Button
+      variant="outline"
+      size="base"
+      onclick={async () => {
+        try {
+          const link = await auth.client.CustomCommand({
+            command: "syncbillingaccount",
+            id: data.id,
+            jwt: auth.access_token,
+          });
+          toast.success("Billing account synced");
+        } catch (error: any) {
+          toast.error("Error opening billing portal", {
+            description: error.message,
+          });
+        }
+      }}
+    >
+      Sync with Stripe
+    </Button>
+  {/if}
 </header>
 <form method="POST" use:enhance>
   <Form.Field {form} name="name">
@@ -134,4 +144,3 @@ Sync with Stripe
 </form>
 
 <CustomSuperDebug {formData} />
-
