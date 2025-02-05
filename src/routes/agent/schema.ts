@@ -12,7 +12,7 @@ export const newFormSchema = z.object({
   runas: z.string().default("").optional(),
   languages: z.array(z.string()).default([]),
   port: z.number().optional(),
-  stripeprice: z.string().optional(),
+  _stripeprice: z.string().optional(),
   schedules: z.array(z.object({
   })).default([]),
 });
@@ -29,7 +29,7 @@ export const editFormSchema = z.object({
   timezone: z.string().default(""),
   runas: z.string().min(2),
   languages: z.array(z.string()),
-  stripeprice: z.string().optional(),
+  _stripeprice: z.string().optional(),
   schedules: z.array(z.object({
     name: z.string(),
     packageid: z.string(),

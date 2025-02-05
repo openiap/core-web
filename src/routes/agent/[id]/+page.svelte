@@ -11,6 +11,7 @@
   import { CustomCheckbox } from "$lib/customcheckbox/index.js";
   import { CustomInput } from "$lib/custominput/index.js";
   import { CustomSelect } from "$lib/customselect/index.js";
+  import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { CustomSwitch } from "$lib/customswitch/index.js";
   import Entityselector from "$lib/entityselector/entityselector.svelte";
   import { ObjectInput } from "$lib/objectinput/index.js";
@@ -34,18 +35,17 @@
     Zap,
   } from "lucide-svelte";
   import { toast } from "svelte-sonner";
-  import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
+  import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import type { Workspace } from "../../workspace/schema.js";
   import { randomname } from "../helper.js";
   import { editFormSchema } from "../schema.js";
-  import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
 
   const ansi_up = new AnsiUp();
 
   const { data } = $props();
-  if (data.item != null && data.item.stripeprice == null) {
-    data.item.stripeprice = "";
+  if (data.item != null && data.item._stripeprice == null) {
+    data.item._stripeprice = "";
   }
   const page = "agent";
   let loading = $state(false);
@@ -115,9 +115,10 @@
     onUpdate: async ({ form, cancel }) => {
       if (form.valid) {
         try {
+          loading = true;
           let workspace: Workspace | null = null;
           let product = products.find(
-            (x: any) => x.stripeprice == form.data.stripeprice,
+            (x: any) => x.stripeprice == form.data._stripeprice,
           );
           if (auth.config.workspace_enabled) {
             if (
@@ -142,19 +143,30 @@
             // @ts-ignore
             form.data._workspaceid = workspace._id;
           }
-          if (form.data.stripeprice != null && form.data.stripeprice != "") {
+          if (form.data._stripeprice != null && form.data._stripeprice != "") {
             if (product == null) {
               throw new Error("Product not found");
             }
           }
+          const savethis = {...form.data};
+          delete savethis._stripeprice;
+          delete savethis._billingid;
+          delete savethis._resourceusageid;
+          delete savethis._productname;
+          await auth.client.UpdateOne({
+            collectionname,
+            item: savethis,
+            jwt: auth.access_token,
+          });
+          toast.success("Agent updated");
           if (
             workspace != null &&
-            data.item.stripeprice != form.data.stripeprice
+            data.item._stripeprice != form.data._stripeprice
           ) {
             if (
               workspace != null &&
-              form.data.stripeprice != null &&
-              form.data.stripeprice != ""
+              form.data._stripeprice != null &&
+              form.data._stripeprice != ""
             ) {
               if (product == null) {
                 throw new Error("Product not found");
@@ -191,30 +203,18 @@
                   document.location.href = link;
                 }
               }
+            } else {
+              await auth.client.CustomCommand({
+                command: "removeresourceusage",
+                id: form.data._resourceusageid as any,
+                jwt: auth.access_token,
+              });
             }
           }
-
-          try {
-            delete form.data._billingid;
-            delete form.data._resourceusageid;
-            delete form.data._productname;
-            await auth.client.UpdateOne({
-              collectionname,
-              item: { ...form.data },
-              jwt: auth.access_token,
-            });
-            toast.success("Agent updated");
-            goto(base + `/${page}`);
-          } catch (error: any) {
-            errormessage = error.message;
-            toast.error("Error", {
-              description: error.message,
-            });
-            cancel();
-          } finally {
-            loading = false;
-          }
+          goto(base + `/${page}`);
+         
         } catch (error: any) {
+          errormessage = error.message;
           toast.error("Error", {
             description: error.message,
           });
@@ -227,9 +227,6 @@
       }
     },
   });
-  if (data.item != null && data.item.stripeprice == null) {
-    data.item.stripeprice = "";
-  }
   const { form: formData, enhance, message, validateForm } = form;
   formData.set(data.item);
   validateForm({ update: true });
@@ -261,7 +258,7 @@
   if (data.agentInstance != null) {
     data.agentInstance.products = data.agentInstance.products.filter(
       (x: any) =>
-        x.deprecated != true || x.stripeprice == $formData.stripeprice,
+        x.deprecated != true || x.stripeprice == $formData._stripeprice,
     );
 
     products = [
@@ -280,7 +277,7 @@
 
   const triggerContentPlan = $derived(
     () =>
-      products.find((item: any) => item.stripeprice === $formData.stripeprice)
+      products.find((item: any) => item.stripeprice === $formData._stripeprice)
         ?.name ?? "Select an agent plan",
   );
 
@@ -363,7 +360,7 @@
     sizewarning = "";
     if (resource == null || products == null || products.length < 2) return; // no products, don't care
     var product = products.find(
-      (x: any) => x.stripeprice == $formData.stripeprice,
+      (x: any) => x.stripeprice == $formData._stripeprice,
     );
     if (product == null || product.stripeprice == "") product = null as any;
     var ram = product?.metadata?.resources?.limits?.memory;
@@ -495,7 +492,7 @@
     {#if resourceMonitor != null}
       <div class="my-4 text-[14px] border rounded-[10px]">
         <div
-          class="grid grid-cols-7 bg-lighttableheader dark:bg-darktableheader rounded-tr-[10px] rounded-tl-[10px] border-b"
+          class="grid grid-cols-7 bg-lighttableheader rounded-tr-[10px] rounded-tl-[10px] border-b"
         >
           <div class="text-center p-2 col-span-2">
             <div class="flex items-center">
@@ -698,14 +695,14 @@
         <Form.FieldErrors />
       </Form.Field>
 
-      <Form.Field {form} name="stripeprice" class="w-full">
+      <Form.Field {form} name="_stripeprice" class="w-full">
         <Form.Control>
           {#snippet children({ props })}
             <Form.Label>Plan</Form.Label>
             <CustomSelect
               {loading}
               {...props}
-              bind:value={$formData.stripeprice}
+              bind:value={$formData._stripeprice}
               onValueChangeFunction={PlanUpdated}
               selectitems={products}
               triggerContent={triggerContentPlan}

@@ -58,8 +58,8 @@ class authState {
     }
     async getConfig(wsurl: string, fetch: any) {
         let url = new URL(wsurl);
-        if(url.protocol == "wss:") url.protocol = "https:";
-        if(url.protocol == "ws:") url.protocol = "http:";
+        if (url.protocol == "wss:") url.protocol = "https:";
+        if (url.protocol == "ws:") url.protocol = "http:";
         url.pathname = "/config";
         let configurl = url.toString();
         let f = await fetch(configurl);
@@ -181,9 +181,20 @@ class authState {
                 this.connectWaitingPromisses.forEach((resolve: any) => {
                     resolve();
                 });
-            } catch (error) {
+            } catch (error: any) {
+                if (error.message.indexOf("due to missing jwt, and respond with error")) {
+                    // remove all cookies
+                    if (browser) {
+                        document.cookie.split(";").forEach(function (cookie) {
+                            let eqPos = cookie.indexOf("=");
+                            let name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                            document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+                            document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=;"; // Handle cookies without paths
+                        });
+                    }
+                }
                 console.error("Failed to connect to server", error);
-                this.isConnected = false;                
+                this.isConnected = false;
             }
         } else {
             await new Promise((resolve) => {
