@@ -461,7 +461,7 @@
 	class={`border border-bw500 rounded-[10px] ${
 		sidemenu.status
 			? `
-		${usersettings.currentpage.includes("entities") ? "w-[58vw]" : "w-[79vw]"}`
+		${usersettings.currentpage.includes("entities") ? "w-[59vw]" : "w-[79vw]"}`
 			: "w-full"
 	}`}
 >
