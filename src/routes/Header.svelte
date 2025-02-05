@@ -15,8 +15,8 @@
 	import Sun from "lucide-svelte/icons/sun";
 	import { toggleMode } from "mode-watcher";
 	import { capitalizeFirstLetter } from "../helper";
+	import { sidemenu } from "$lib/stores/sidemenu.svelte";
 
-	let isOpen = $state(false);
 	let pagename = $derived(() =>
 		$page.url.pathname.replace(base, "").replace("/", ""),
 	);
@@ -37,17 +37,26 @@
 	class="flex h-16 shrink-0 items-center justify-between px-4 rounded mx-2"
 >
 	<div class="flex items-center">
-		<Sidebar.Trigger class="-ml-1" />
+		<!-- <Sidebar.Trigger class="-ml-1" />
+		<Separator orientation="vertical" class="mr-2 h-4" /> -->
 
-		<!-- <a href={""} type="button" onclick={() => (isOpen = !isOpen)}>
-			{#if isOpen}
-				<ArrowRight class="hidden md:block dark:text-bw500" />
-			{:else}
+		<HotkeyButton
+			variant="headericon"
+			size="icon"
+			onclick={() => {
+				console.log(sidemenu.status);
+				sidemenu.status = !sidemenu.status;
+			}}
+			class="me-4"
+			title={sidemenu.status ? "Close sidebar" : "Open sidebar"}
+		>
+			{#if sidemenu.status}
 				<ArrowLeft class="hidden md:block dark:text-bw500" />
+			{:else}
+				<ArrowRight class="hidden md:block dark:text-bw500" />
 			{/if}
-		</a> -->
+		</HotkeyButton>
 
-		<Separator orientation="vertical" class="mr-2 h-4" />
 		<Breadcrumb.Root>
 			<Breadcrumb.List>
 				{#each pagename().split("/") as page, index}
