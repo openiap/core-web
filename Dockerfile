@@ -20,8 +20,8 @@ CMD [ "node", "build" ]
 
 # REMEMBER TO UPDATE svelte.config.js !!!!
 #
-# docker build -t cloudhack/core-web:0.0.36 -t cloudhack/core-web:latest . && docker run -it -p 80:3000 --rm cloudhack/core-web:0.0.36
-# docker build -t cloudhack/core-web:0.0.36 -t cloudhack/core-web:latest . && docker run -it -p 80:3000 --rm cloudhack/core-web:0.0.36
-# docker build -t cloudhack/core-web:0.0.36 -t cloudhack/core-web:latest . && docker push cloudhack/core-web:0.0.36 && docker push cloudhack/core-web:latest
+# docker build -t cloudhack/core-web:0.0.37 -t cloudhack/core-web:latest . && docker run -it -p 80:3000 --rm cloudhack/core-web:0.0.37
+# docker build -t cloudhack/core-web:0.0.37 -t cloudhack/core-web:latest . && docker run -it -p 80:3000 --rm cloudhack/core-web:0.0.37
+# docker build -t cloudhack/core-web:0.0.37 -t cloudhack/core-web:latest . && docker push cloudhack/core-web:0.0.37 && docker push cloudhack/core-web:latest
 
-# docker run -it -p 80:3000 --rm cloudhack/core-web:0.0.36
+# docker run -it -p 80:3000 --rm cloudhack/core-web:0.0.37
