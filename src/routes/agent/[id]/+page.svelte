@@ -44,8 +44,8 @@
   const ansi_up = new AnsiUp();
 
   const { data } = $props();
-  if (data.item != null && data.item.stripeprice == null) {
-    data.item.stripeprice = "";
+  if (data.item != null && data.item._stripeprice == null) {
+    data.item._stripeprice = "";
   }
   const page = "agent";
   let loading = $state(false);
@@ -118,7 +118,7 @@
           loading = true;
           let workspace: Workspace | null = null;
           let product = products.find(
-            (x: any) => x.stripeprice == form.data.stripeprice,
+            (x: any) => x.stripeprice == form.data._stripeprice,
           );
           if (auth.config.workspace_enabled) {
             if (
@@ -143,19 +143,30 @@
             // @ts-ignore
             form.data._workspaceid = workspace._id;
           }
-          if (form.data.stripeprice != null && form.data.stripeprice != "") {
+          if (form.data._stripeprice != null && form.data._stripeprice != "") {
             if (product == null) {
               throw new Error("Product not found");
             }
           }
+          const savethis = {...form.data};
+          delete savethis._stripeprice;
+          delete savethis._billingid;
+          delete savethis._resourceusageid;
+          delete savethis._productname;
+          await auth.client.UpdateOne({
+            collectionname,
+            item: savethis,
+            jwt: auth.access_token,
+          });
+          toast.success("Agent updated");
           if (
             workspace != null &&
-            data.item.stripeprice != form.data.stripeprice
+            data.item._stripeprice != form.data._stripeprice
           ) {
             if (
               workspace != null &&
-              form.data.stripeprice != null &&
-              form.data.stripeprice != ""
+              form.data._stripeprice != null &&
+              form.data._stripeprice != ""
             ) {
               if (product == null) {
                 throw new Error("Product not found");
@@ -200,25 +211,8 @@
               });
             }
           }
-
-          try {
-            delete form.data._billingid;
-            delete form.data._resourceusageid;
-            delete form.data._productname;
-            await auth.client.UpdateOne({
-              collectionname,
-              item: { ...form.data },
-              jwt: auth.access_token,
-            });
-            toast.success("Agent updated");
-            goto(base + `/${page}`);
-          } catch (error: any) {
-            errormessage = error.message;
-            toast.error("Error", {
-              description: error.message,
-            });
-            cancel();
-          }
+          goto(base + `/${page}`);
+         
         } catch (error: any) {
           errormessage = error.message;
           toast.error("Error", {
@@ -233,9 +227,6 @@
       }
     },
   });
-  if (data.item != null && data.item.stripeprice == null) {
-    data.item.stripeprice = "";
-  }
   const { form: formData, enhance, message, validateForm } = form;
   formData.set(data.item);
   validateForm({ update: true });
@@ -267,7 +258,7 @@
   if (data.agentInstance != null) {
     data.agentInstance.products = data.agentInstance.products.filter(
       (x: any) =>
-        x.deprecated != true || x.stripeprice == $formData.stripeprice,
+        x.deprecated != true || x.stripeprice == $formData._stripeprice,
     );
 
     products = [
@@ -286,7 +277,7 @@
 
   const triggerContentPlan = $derived(
     () =>
-      products.find((item: any) => item.stripeprice === $formData.stripeprice)
+      products.find((item: any) => item.stripeprice === $formData._stripeprice)
         ?.name ?? "Select an agent plan",
   );
 
@@ -369,7 +360,7 @@
     sizewarning = "";
     if (resource == null || products == null || products.length < 2) return; // no products, don't care
     var product = products.find(
-      (x: any) => x.stripeprice == $formData.stripeprice,
+      (x: any) => x.stripeprice == $formData._stripeprice,
     );
     if (product == null || product.stripeprice == "") product = null as any;
     var ram = product?.metadata?.resources?.limits?.memory;
@@ -704,14 +695,14 @@
         <Form.FieldErrors />
       </Form.Field>
 
-      <Form.Field {form} name="stripeprice" class="w-full">
+      <Form.Field {form} name="_stripeprice" class="w-full">
         <Form.Control>
           {#snippet children({ props })}
             <Form.Label>Plan</Form.Label>
             <CustomSelect
               {loading}
               {...props}
-              bind:value={$formData.stripeprice}
+              bind:value={$formData._stripeprice}
               onValueChangeFunction={PlanUpdated}
               selectitems={products}
               triggerContent={triggerContentPlan}

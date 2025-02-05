@@ -34,7 +34,7 @@
         loading = true;
         let workspace: Workspace | null = null;
         let product = products.find(
-          (x: any) => x.stripeprice == form.data.stripeprice,
+          (x: any) => x.stripeprice == form.data._stripeprice,
         );
         try {
           if (auth.config.workspace_enabled) {
@@ -61,13 +61,13 @@
             form.data._workspaceid = workspace._id;
           }
           let stripeprice = "";
-          if (form.data.stripeprice != null && form.data.stripeprice != "") {
+          if (form.data._stripeprice != null && form.data._stripeprice != "") {
             if (product == null) {
               throw new Error("Product not found");
             }
             stripeprice = product.stripeprice;
           }
-          form.data.stripeprice = "";
+          form.data._stripeprice = "";
 
           const newagent = await auth.client.InsertOne<any>({
             collectionname: "agents",
@@ -125,7 +125,7 @@
   $formData.name = randomname();
   $formData.slug = $formData.name;
   $formData.environment = {};
-  $formData.stripeprice = "";
+  $formData._stripeprice = "";
   $formData.image = auth.config.agent_images[0].image;
   $formData.runas = auth.profile.sub;
 
@@ -162,7 +162,7 @@
 
   const triggerContentPlan = $derived(
     () =>
-      products.find((item: any) => item.stripeprice === $formData.stripeprice)
+      products.find((item: any) => item.stripeprice === $formData._stripeprice)
         ?.name ?? "Select an agent plan",
   );
 
@@ -245,7 +245,7 @@
     sizewarning = "";
     if (resource == null || products == null || products.length < 2) return; // no products, don't care
     var product = products.find(
-      (x: any) => x.stripeprice == $formData.stripeprice,
+      (x: any) => x.stripeprice == $formData._stripeprice,
     );
     if (product == null || product.stripeprice == "") product = null as any;
     var ram: number = product?.metadata?.resources?.limits?.memory as any;
@@ -378,14 +378,14 @@
         <Form.FieldErrors />
       </Form.Field>
 
-      <Form.Field {form} name="stripeprice" class="w-full">
+      <Form.Field {form} name="_stripeprice" class="w-full">
         <Form.Control>
           {#snippet children({ props })}
             <Form.Label>Plan</Form.Label>
             <CustomSelect
               {loading}
               {...props}
-              bind:value={$formData.stripeprice}
+              bind:value={$formData._stripeprice}
               onValueChangeFunction={PlanUpdated}
               selectitems={products}
               triggerContent={triggerContentPlan}
