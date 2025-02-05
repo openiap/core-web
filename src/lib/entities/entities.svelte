@@ -17,6 +17,7 @@
 	import { CustomCheckbox } from "$lib/customcheckbox/index.js";
 	import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
 	import { auth } from "$lib/stores/auth.svelte.js";
+	import { sidemenu } from "$lib/stores/sidemenu.svelte.js";
 	import { usersettings } from "$lib/stores/usersettings.svelte.js";
 	import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
 	import {
@@ -456,7 +457,14 @@
 </script>
 
 <div class="text-red-500">{data.errormessage}</div>
-<div class="border border-bw500 rounded-[10px]">
+<div
+	class={`border border-bw500 rounded-[10px] ${
+		sidemenu.status
+			? `
+		${usersettings.currentpage.includes("entities") ? "w-[59vw]" : "w-[79vw]"}`
+			: "w-full"
+	}`}
+>
 	<Table.Root>
 		{#if entities.length === 0}
 			<Table.Caption class="mb-2 text-bw300">No data found.</Table.Caption
@@ -635,11 +643,11 @@
 						Choose which columns to display in the table.
 					</div>
 					<!-- <Sheet.Title>
-						Select columns</Sheet.Title
-					>
-					<Sheet.Description>
-						Choose which columns to display in the table.
-					</Sheet.Description> -->
+							Select columns</Sheet.Title
+						>
+						<Sheet.Description>
+							Choose which columns to display in the table.
+						</Sheet.Description> -->
 				</Sheet.Header>
 				<div class="grid gap-4 py-4">
 					<ScrollArea class="max-h-[84vh]">

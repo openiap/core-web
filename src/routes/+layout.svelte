@@ -8,6 +8,7 @@
 	import { data as datacomponent } from "$lib/entities/data.svelte.js";
 	import AppSidebar from "$lib/sidebar/app-sidebar.svelte";
 	import { auth } from "$lib/stores/auth.svelte";
+	import { sidemenu } from "$lib/stores/sidemenu.svelte";
 	import { usersettings } from "$lib/stores/usersettings.svelte";
 	import { ModeWatcher } from "mode-watcher";
 	import "../app.css";
@@ -87,9 +88,9 @@
 <ModeWatcher />
 {#if $page.url.pathname != base + "/login" && $page.url.pathname != base + "/loginscreen"}
 	<div
-		class="overflow-hidden flex flex-col w-full h-screen dark:text-bw100 font-custom"
+		class={`flex flex-col w-full h-screen dark:text-bw100 font-custom max-w-full`}
 	>
-		<Sidebar.Provider>
+		<Sidebar.Provider open={sidemenu.status}>
 			<AppSidebar
 				{workspaces}
 				{currentworkspace}
