@@ -1,42 +1,41 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
+  import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
   import Button from "$lib/components/ui/button/button.svelte";
   import * as Card from "$lib/components/ui/card/index.js";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
+  import Input from "$lib/components/ui/input/input.svelte";
   import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
   import * as Sheet from "$lib/components/ui/sheet/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import { Resource, ResourceUsage, type Product } from "$lib/types.svelte.js";
   import {
-    Clock,
-    LucideBadgeDollarSign,
-    Minus,
-    Plus,
-    Trash,
+      Clock,
+      LucideBadgeDollarSign,
+      Minus,
+      Plus,
+      Trash,
   } from "lucide-svelte";
   import { toast } from "svelte-sonner";
-  import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-  import Input from "$lib/components/ui/input/input.svelte";
-  import { Label } from "$lib/components/ui/label/index.js";
-  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
 
   const { data } = $props();
   // TODO: product hack for backward compatibility
-  for(let i = 0; i < data.resources.length; i++) {
+  for (let i = 0; i < data.resources.length; i++) {
     const r = data.resources[i];
-    if(r.name == "Agent Instance") {
-        r.target = "agent" as any;
+    if (r.name == "Agent Instance") {
+      r.target = "agent" as any;
     }
-    for(let y = 0; y < r.products.length; y++) {
+    for (let y = 0; y < r.products.length; y++) {
       const p = r.products[y];
-      if(r.target == "customer") {
+      if (r.target == "customer") {
         p.assign = (p as any).customerassign;
       }
-      if(r.target == "agent") {
+      if (r.target == "agent") {
         p.assign = (p as any).customerassign;
       }
-    }    
+    }
   }
   let loading = $state(false);
   let entities: ResourceUsage[] = $state(data.entities);
@@ -80,6 +79,7 @@
   const canincrease = $derived((resource: Resource, product: Product) => {
     if (product.allowdirectassign == false) return false;
     if (resource.allowdirectassign == false) return false;
+    if (resource.target != "customer") return false;
     if (resource.assign == "singlevariant") {
       // let exists = entities.find(
       //   (x) =>
@@ -87,12 +87,12 @@
       //     x.product.stripeprice == product.stripeprice,
       // );
       let exists = entities.find(
-      (x) =>
-        (x.resourceid == resource._id &&
-          x.product.stripeprice == product.stripeprice) ||
-        (x.product.lookup_key == product.lookup_key &&
-          product.lookup_key != null &&
-          product.lookup_key != ""),
+        (x) =>
+          (x.resourceid == resource._id &&
+            x.product.stripeprice == product.stripeprice) ||
+          (x.product.lookup_key == product.lookup_key &&
+            product.lookup_key != null &&
+            product.lookup_key != ""),
       );
       if (!exists) {
         // if already exists, allow it
@@ -113,12 +113,12 @@
       //     x.product.stripeprice == product.stripeprice,
       // );
       let exists = entities.find(
-      (x) =>
-        (x.resourceid == resource._id &&
-          x.product.stripeprice == product.stripeprice) ||
-        (x.product.lookup_key == product.lookup_key &&
-          product.lookup_key != null &&
-          product.lookup_key != ""),
+        (x) =>
+          (x.resourceid == resource._id &&
+            x.product.stripeprice == product.stripeprice) ||
+          (x.product.lookup_key == product.lookup_key &&
+            product.lookup_key != null &&
+            product.lookup_key != ""),
       );
       if (exists == null || exists.quantity == 0) {
         return true;
@@ -131,12 +131,14 @@
   const candecrease = $derived((resource: Resource, product: Product) => {
     if (product.allowdirectassign == false) return false;
     if (resource.allowdirectassign == false) return false;
-    if(resource.name == "Workspaces" && product.name == "Basic tier"){ 
+    if (resource.name == "Workspaces" && product.name == "Basic tier") {
       //debugger;
       console.log("entities", $state.snapshot(entities));
       console.log("resourceid", resource._id);
       console.log("stripeprice", product.stripeprice);
     }
+    if (quantity(resource, product) == 0) return false;
+    if (resource.target != "customer") return false;
     if (resource.assign == "singlevariant") {
       // let exists = entities.find(
       //   (x) =>
@@ -144,12 +146,12 @@
       //     x.product.stripeprice == product.stripeprice,
       // );
       let exists = entities.find(
-      (x) =>
-        (x.resourceid == resource._id &&
-          x.product.stripeprice == product.stripeprice) ||
-        (x.product.lookup_key == product.lookup_key &&
-          product.lookup_key != null &&
-          product.lookup_key != ""),
+        (x) =>
+          (x.resourceid == resource._id &&
+            x.product.stripeprice == product.stripeprice) ||
+          (x.product.lookup_key == product.lookup_key &&
+            product.lookup_key != null &&
+            product.lookup_key != ""),
       );
       if (exists == null || exists.quantity == 0) {
         return false;
@@ -162,12 +164,12 @@
       //     x.product.stripeprice == product.stripeprice,
       // );
       let exists = entities.find(
-      (x) =>
-        (x.resourceid == resource._id &&
-          x.product.stripeprice == product.stripeprice) ||
-        (x.product.lookup_key == product.lookup_key &&
-          product.lookup_key != null &&
-          product.lookup_key != ""),
+        (x) =>
+          (x.resourceid == resource._id &&
+            x.product.stripeprice == product.stripeprice) ||
+          (x.product.lookup_key == product.lookup_key &&
+            product.lookup_key != null &&
+            product.lookup_key != ""),
       );
       if (exists == null || exists.quantity == 0) {
         return false;
@@ -223,12 +225,12 @@
       if (resource == null) throw new Error("Resource not found");
       if (product == null) throw new Error("Product not found");
       let resourceusage: ResourceUsage = entities.find(
-      (x) =>
-        (x.resourceid == resource._id &&
-          x.product.stripeprice == product.stripeprice) ||
-        (x.product.lookup_key == product.lookup_key &&
-          product.lookup_key != null &&
-          product.lookup_key != ""),
+        (x) =>
+          (x.resourceid == resource._id &&
+            x.product.stripeprice == product.stripeprice) ||
+          (x.product.lookup_key == product.lookup_key &&
+            product.lookup_key != null &&
+            product.lookup_key != ""),
       ) as any;
       if (resourceusage == null) {
         throw new Error(
@@ -355,6 +357,16 @@
   >
     {data?.billingaccount?.name}
   </Button> 's billing usage.
+  <Button
+    variant="outline"
+    size="base"
+    onclick={() => {
+      goto(base + "/licensekey");
+    }}
+  >
+    Manage OpenCore Licenses
+  </Button>
+
   {#if data.billingaccount?.stripeid != null && data.billingaccount?.stripeid != ""}
     <Button
       variant="outline"
@@ -449,10 +461,7 @@
                         ><Minus />
                       </Button>
                     {:else}
-                      <Button
-                        variant="outline"
-                        size="base"
-                        disabled={true}
+                      <Button variant="outline" size="base" disabled={true}
                         ><Minus />
                       </Button>
                     {/if}
@@ -504,7 +513,7 @@
                 >
                   <Trash />
                 </Button>
-                {#if resource.product.assign == "metered" && isAdmin}
+                {#if resource.product.assign == "metered"}
                   <Button
                     variant="outline"
                     size="base"
@@ -532,6 +541,8 @@
                   >
                     <Clock />
                   </Button>
+                  {/if}
+                  {#if resource.product.assign == "metered" && isAdmin}
                   <Button
                     variant="outline"
                     size="base"
@@ -541,7 +552,7 @@
                       meterprompt = true;
                     }}
                   >
-                    <Clock />
+                    <Plus />
                   </Button>
                 {/if}
               </p>
