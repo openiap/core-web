@@ -634,6 +634,7 @@
       <Check />
       Save Changes</Form.Button
     >
+    {#if $formData.image != null && $formData.image != ""}
     <HotkeyButton
       aria-label="Refresh"
       title="Refresh"
@@ -647,6 +648,7 @@
       <RefreshCcw />
       Refresh</HotkeyButton
     >
+    {/if}
 
     <div class="flex items-center justify-between space-x-4">
       <Form.Field {form} name="name" class="w-full">
@@ -687,6 +689,7 @@
         <Form.FieldErrors />
       </Form.Field>
 
+      {#if $formData.image != null && $formData.image != ""}
       <Form.Field {form} name="image" class="w-full">
         <Form.Control>
           {#snippet children({ props })}
@@ -722,6 +725,11 @@
         </Form.Control>
         <Form.FieldErrors />
       </Form.Field>
+      {:else}
+        <!-- add 2, to keep aligned with cloud agents -->
+        <div class="w-full"></div>
+        <div class="w-full"></div>
+      {/if}
     </div>
 
     {#if sizewarningtitle != ""}
@@ -747,11 +755,13 @@
       <Form.FieldErrors />
     </Form.Field>
 
+    {#if $formData.image != null && $formData.image != ""}
     <Form.Field
       {form}
       name="autostart"
       class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
     >
+
       <Form.Control>
         {#snippet children({ props })}
           <div class="flex flex-col space-y-2">
@@ -843,6 +853,7 @@
       </Form.Control>
       <Form.FieldErrors />
     </Form.Field>
+    {/if}
 
     <Form.Field {form} name="runas">
       <Form.Control>
@@ -1022,6 +1033,7 @@
     {/if}
   </form>
 
+  {#if $formData.image != null && $formData.image != "" && data.agentInstance != null}
   <div class="italic text-gray-500 py-2">
     Agents using free plan will be shutdown after {data.agentInstance
       ?.defaultmetadata.runtime_hours} hours. Buy one or more products on the customer
@@ -1030,6 +1042,7 @@
     {data.agentInstance?.defaultmetadata.agentcount} free agents. Add more resources
     on the customer page to increase the limit.
   </div>
+  {/if}
 
   <CustomSuperDebug {formData} />
 
