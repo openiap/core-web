@@ -51,6 +51,14 @@
     },
   });
   const { form: formData, enhance, message } = form;
+  for(let i = 0; i < settings.length; i++) {
+    if (settings[i].type === "boolean") {
+      if ($formData[settings[i].name] == null) {
+        $formData[settings[i].name] = settings[i].default as boolean;
+      }
+    }
+  }
+
 </script>
 
 {#if message && $message != ""}
