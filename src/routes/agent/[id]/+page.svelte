@@ -143,6 +143,12 @@
               throw new Error("Workspace not found");
             }
             // @ts-ignore
+            if(form.data._acl == null) {
+              // @ts-ignore
+              form.data._acl = [];
+            }
+
+            // @ts-ignore
             form.data._acl = [...form.data._acl, ...workspace._acl];
             if(auth.config.workspace_enabled && workspace != null) {
               form.data._workspaceid = workspace._id;

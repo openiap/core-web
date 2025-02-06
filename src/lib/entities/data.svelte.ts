@@ -543,6 +543,7 @@ class entitiesdata {
 			case "workspace":
 				return ["name", "_productname", "_created", "_modified"];
 			case `/ui/workspace/${usersettings?.currentworkspace}/member`:
+			case `/workspace/${usersettings?.currentworkspace}/member`:
 			case "/member":
 			case "member":
 				return ["name", "status", "role", "_modified"];
