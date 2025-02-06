@@ -42,7 +42,7 @@
     }
   }
   function single_item_click(item: any) {
-    goto(base + `/${page}/${item._id}`);
+    goto(base + `/entities/config/edit/${item._id}`);
   }
   async function handleAccept() {
     try {
@@ -53,6 +53,22 @@
       ref.reload();
     } catch (error: any) {
       toast.error("Error while deleting", {
+        description: error.message,
+      });
+    }
+  }
+  async function createcommon() {
+    try {
+      auth.client.CustomCommand({
+        command: "createcommonresources",
+        jwt: auth.access_token,
+      });
+      toast.success("Created common resources", {
+        description: "",
+      });
+      ref.reload();
+    } catch (error: any) {
+      toast.error("Error while creating", {
         description: error.message,
       });
     }
@@ -82,10 +98,10 @@
     variant="base"
     disabled={loading}
     aria-label="add"
-    onclick={() => goto(base + `/${page}/new`)}
+    onclick={createcommon}
   >
     <Plus />
-    Add {page}</HotkeyButton
+    Create common</HotkeyButton
   >
 </div>
 
