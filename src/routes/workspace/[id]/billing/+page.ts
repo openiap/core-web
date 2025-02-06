@@ -6,8 +6,12 @@ import type { PageLoad } from "./$types.js";
 
 export const load: PageLoad = async ({ parent, params }) => {
   const { access_token } = await parent();
-  let resources = await auth.client.Query<Resource>({ collectionname: "config", query: { _type: "resource", target: { "$in": ["workspace", "agent", "member"] } }, jwt: access_token });
-  let workspace = await auth.client.FindOne<Workspace>({ collectionname: "users", query: { _id: params.id, _type: "workspace" }, jwt: access_token });
-  let billingaccount = await auth.client.FindOne<Billing>({ collectionname: "users", query: { _id: workspace._billingid, _type: "customer" }, jwt: access_token });
-  return { resources, billingaccount, workspace };
+  try {
+    let resources = await auth.client.Query<Resource>({ collectionname: "config", query: { _type: "resource", target: { "$in": ["workspace", "agent", "member"] } }, jwt: access_token });
+    let workspace = await auth.client.FindOne<Workspace>({ collectionname: "users", query: { _id: params.id, _type: "workspace" }, jwt: access_token });
+    let billingaccount = await auth.client.FindOne<Billing>({ collectionname: "users", query: { _id: workspace._billingid, _type: "customer" }, jwt: access_token });
+    return { resources, billingaccount, workspace };
+  } catch (error) {
+  }
+  return {resources: [], billingaccount: null, workspace: null};
 };

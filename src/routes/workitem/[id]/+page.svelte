@@ -48,12 +48,18 @@
     goto(base + `/${page}/edit/${item._id}`);
   }
   async function GetData() {
-    entities = await datacomponent.GetData(
+    try {
+      entities = await datacomponent.GetData(
       data.page,
       collectionname,
       query,
       auth.access_token,
     );
+    } catch (error:any) {
+      toast.error("Error getting data", {
+        description: error.message,
+      });
+    }
   }
   async function handleAccept() {
     try {

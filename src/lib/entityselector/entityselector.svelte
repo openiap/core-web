@@ -3,6 +3,7 @@
     import * as Popover from "$lib/components/ui/popover/index.js";
     import { auth } from "$lib/stores/auth.svelte";
     import { ChevronDown, ChevronUp } from "lucide-svelte";
+    import { toast } from "svelte-sonner";
 
     let {
         value = $bindable(),
@@ -54,13 +55,20 @@
         if (search != null && search != "") {
             query = { ...basefilter, name: { $regex: search, $options: "i" } };
         }
-        entities = await auth.client.Query({
-            collectionname,
-            query,
-            top: 8,
-            jwt: auth.access_token,
-            projection,
-        });
+        try {
+            entities = await auth.client.Query({
+                collectionname,
+                query,
+                top: 8,
+                jwt: auth.access_token,
+                projection,
+            });
+        } catch (error:any) {
+            toast.error("Error loading entities", {
+                description: error.message,
+            });
+            entities = [];
+        }
         if (noitem) {
             if (name === "workitem queue") {
                 entities.unshift({

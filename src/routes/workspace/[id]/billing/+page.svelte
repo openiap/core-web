@@ -95,7 +95,7 @@
           command: "createresourceusage",
           data: JSON.stringify({
             target,
-            billingid: data.billingaccount._id,
+            billingid: data.billingaccount?._id,
             workspaceid: usersettings.currentworkspace,
             resourceid: resource._id,
             productname: product.name,

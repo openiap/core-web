@@ -197,7 +197,7 @@
           command: "createresourceusage",
           data: JSON.stringify({
             target,
-            billingid: data.billingaccount._id,
+            billingid: data.billingaccount?._id,
             workspaceid: usersettings.currentworkspace,
             resourceid: resource._id,
             productname: product.name,
@@ -376,7 +376,7 @@
         try {
           const link = await auth.client.CustomCommand({
             command: "getbillingportallink",
-            id: data.billingaccount._id,
+            id: data.billingaccount?._id,
             jwt: auth.access_token,
           });
           if (link != null && link != "") {
@@ -401,7 +401,7 @@
         try {
           const link = await auth.client.CustomCommand({
             command: "syncbillingaccount",
-            id: data.billingaccount._id,
+            id: data.billingaccount?._id,
             jwt: auth.access_token,
           });
           toast.success("Billing account synced");

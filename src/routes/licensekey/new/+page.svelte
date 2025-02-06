@@ -33,7 +33,7 @@
             }),
           );
           toast.success("License added");
-          goto(base + `/${key}/${license._id}`);
+          goto(base + `/licensekey/${license._id}`);
         } catch (error: any) {
           errormessage = error.message;
           toast.error("Error", {
@@ -102,7 +102,7 @@
     <HotkeyButton
       size="lg"
       aria-label="Cancel"
-      onclick={() => goto(base + `/${key}`)}>Cancel</HotkeyButton
+      onclick={() => goto(base + `/licensekey`)}>Cancel</HotkeyButton
     >
   </div>
 </form>

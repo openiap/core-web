@@ -11,6 +11,7 @@
 	import { sidemenu } from "$lib/stores/sidemenu.svelte";
 	import { usersettings } from "$lib/stores/usersettings.svelte";
 	import { ModeWatcher } from "mode-watcher";
+	import { toast } from "svelte-sonner";
 	import "../app.css";
 	import Header from "./Header.svelte";
 	import type { Workspace } from "./workspace/schema.js";
@@ -27,12 +28,20 @@
 		$page.url.pathname.replace(base, "").replace("/", ""),
 	);
 	async function loadWorkspaces() {
-		workspaces = await auth.client.Query<Workspace>({
-			collectionname: "users",
-			query: { _type: "workspace" },
-			jwt: access_token,
-			top: 5,
-		});
+		try {
+			workspaces = await auth.client.Query<Workspace>({
+				collectionname: "users",
+				query: { _type: "workspace" },
+				jwt: access_token,
+				top: 5,
+			});
+		} catch (error: any) {
+			if (browser) {
+				toast.error("Error assigning resource", {
+					description: error.message,
+				});
+			}
+		}
 	}
 	async function update_currentworkspace(workspaceid: string) {
 		usersettings.currentworkspace = workspaceid;

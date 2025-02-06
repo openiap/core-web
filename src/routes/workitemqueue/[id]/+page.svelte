@@ -95,7 +95,7 @@
         } finally {
         }
       } else {
-        console.log(form.data);
+        console.log(form);
         errormessage = "Form is invalid";
       }
     },
