@@ -344,15 +344,15 @@
       <div class={cardDiv}>
         <Card.Content>
           <div class="flex">
-            <Check class="mr-4 p-0.5" />
+            <Check class="mr-4 " />
             5 members in your workspace.
           </div>
           <div class="flex">
-            <Check class="mr-4 p-0.5" />
+            <Check class="mr-4 " />
             1 cloud agent (4 hour runtime).
           </div>
           <div class="flex">
-            <Check class="mr-4 p-0.5" />
+            <Check class="mr-4 " />
             Support via our
             <a href="https://discourse.openiap.io/" target="_blank"
               >{` community forum`}</a
@@ -380,22 +380,22 @@
       <div class={cardDiv}>
         <Card.Content>
           <div class="flex">
-            <Check class="mr-4 p-0.5" />
+            <Check class="mr-4 " />
             25 members in your workspace
           </div>
           <div class="flex">
-            <Check class="mr-4 p-0.5" />
+            <Check class="mr-4 " />
             Priced agents that run 24/7
           </div>
           <div class="flex">
-            <Check class="mr-4 p-0.5" />
+            <Check class="mr-4 " />
             Support via our
             <a href="https://discourse.openiap.io/" target="_blank"
               >{` community forum`}</a
             >.
           </div>
           <div class="flex">
-            <Check class="mr-4 p-0.5" />
+            <Check class="mr-7" />
             Billing support (reach out via the e-mail used in your invoice)
           </div>
         </Card.Content>
@@ -422,15 +422,15 @@
       <div class={cardDiv}>
         <Card.Content>
           <div class="flex">
-            <Check class="mr-4 p-0.5" />
+            <Check class="mr-4 " />
             Everything in the previous tiers
           </div>
           <div class="flex">
-            <Check class="mr-4 p-0.5" />
+            <Check class="mr-4 " />
             Unlimited members
           </div>
           <div class="flex">
-            <Check class="mr-4 p-0.5" />
+            <Check class="mr-4 " />
             Discount on agents that run 24/7
           </div>
           <div class="flex">
@@ -438,7 +438,7 @@
             Billing support (reach out via the e-mail used in your invoice)
           </div>
           <div class="flex">
-            <Check class="mr-4 p-0.5" />
+            <Check class="mr-4 " />
             Unlimited api requests
           </div>
         </Card.Content>
