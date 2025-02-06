@@ -38,17 +38,21 @@
         );
         try {
           if (auth.config.workspace_enabled) {
-            if (
+            let _workspaceid = form.data._workspaceid;
+            if(_workspaceid == null || _workspaceid == "") {
+              if (
               usersettings.currentworkspace == null ||
               usersettings.currentworkspace == ""
             ) {
               throw new Error("You must select a workspace first");
             }
+            _workspaceid = usersettings.currentworkspace;
+            }
             workspace = await auth.client.FindOne({
               collectionname: "users",
               query: {
                 _type: "workspace",
-                _id: usersettings.currentworkspace,
+                _id: _workspaceid,
               },
               jwt: auth.access_token,
             });
@@ -56,8 +60,8 @@
               throw new Error("Workspace not found");
             }
             // @ts-ignore
-            form.data._acl = workspace._acl;
-            if(auth.config.workspace_enabled && (form.data._workspaceid == null || form.data._workspaceid == "")) {
+            form.data._acl = [...form.data._acl, ...workspace._acl];
+            if(auth.config.workspace_enabled && workspace != null) {
               form.data._workspaceid = workspace._id;
             }
           }

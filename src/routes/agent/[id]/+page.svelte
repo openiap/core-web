@@ -121,19 +121,21 @@
             (x: any) => x.stripeprice == form.data._stripeprice,
           );
           if (auth.config.workspace_enabled) {
-            if (
+            let _workspaceid = form.data._workspaceid;
+            if(_workspaceid == null || _workspaceid == "") {
+              if (
               usersettings.currentworkspace == null ||
               usersettings.currentworkspace == ""
             ) {
-              if(form.data._workspaceid == null || form.data._workspaceid == "") {
-                throw new Error("You must select a workspace first");
-              }
+              throw new Error("You must select a workspace first");
+            }
+            _workspaceid = usersettings.currentworkspace;
             }
             workspace = await auth.client.FindOne({
               collectionname: "users",
               query: {
                 _type: "workspace",
-                _id: usersettings.currentworkspace,
+                _id: _workspaceid,
               },
               jwt: auth.access_token,
             });

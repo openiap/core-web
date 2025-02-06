@@ -3,6 +3,7 @@ import { z } from 'zod';
 export const newFormSchema = z.object({
   name: z.string().min(2),
 
+  _workspaceid: z.string().nullable(),
   projectid: z.string().nullable(),
 
   maxretries: z.number().int().default(3),

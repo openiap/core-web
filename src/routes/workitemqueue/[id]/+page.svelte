@@ -5,12 +5,14 @@
   import { CustomInput } from "$lib/custominput/index.js";
   import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { EntitySelector } from "$lib/entityselector/index.js";
+  import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { Check } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../schema.js";
+    import type { Workspace } from "../../workspace/schema.js";
 
   const key = "workitemqueue";
   let loading = $state(false);
@@ -27,7 +29,36 @@
     onUpdate: async ({ form, cancel }) => {
       if (form.valid) {
         loading = true;
+        let workspace: Workspace | null = null;
         try {
+          if (auth.config.workspace_enabled) {
+            let _workspaceid = form.data._workspaceid;
+            if(_workspaceid == null || _workspaceid == "") {
+              if (
+              usersettings.currentworkspace == null ||
+              usersettings.currentworkspace == ""
+            ) {
+              throw new Error("You must select a workspace first");
+            }
+            _workspaceid = usersettings.currentworkspace;
+            }
+            workspace = await auth.client.FindOne({
+              collectionname: "users",
+              query: {
+                _type: "workspace",
+                _id: _workspaceid,
+              },
+              jwt: auth.access_token,
+            });
+            if (workspace == null) {
+              throw new Error("Workspace not found");
+            }
+            // @ts-ignore
+            form.data._acl = [...form.data._acl, ...workspace._acl];
+            if(auth.config.workspace_enabled && workspace != null) {
+              form.data._workspaceid = workspace._id;
+            }
+          }
           if (form.data.failed_wiqid) {
             const item: any = await auth.client.FindOne({
               collectionname: "mq",
@@ -99,7 +130,27 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Field {form} name="projectid" class="mb-7">
+  {#if auth.config.workspace_enabled}
+  <Form.Field {form} name="_workspaceid" class="mb-7">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Workspace</Form.Label>
+        <EntitySelector
+          collectionname="users"
+          bind:value={$formData._workspaceid}
+          basefilter={{ _type: "workspace" }}
+          projection={{ name: 1 }}
+          class="w-64"
+          name="project"
+          noitem={true}
+        />
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field>
+{/if}
+
+<Form.Field {form} name="projectid" class="mb-7">
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Project</Form.Label>
