@@ -458,7 +458,7 @@
 
 <div class="text-red-500">{data.errormessage}</div>
 
-<div class="overflow-hidden rounded-[10px] border">
+<div class="overflow-hidden rounded-[10px] border border-bw500">
 	<div
 		class={`border-bw500 rounded-[10px] ${
 			sidemenu.status
@@ -480,9 +480,7 @@
 					class="bg-lighttableheader hover:bg-lighttableheader dark:bg-bw900 dark:hover:bg-bw900 rounded-[10px] "
 				>
 					{#if multi_select}
-						<Table.Head
-							class="w-8 text-bw950 dark:text-bw200 rounded-tl-[10px]"
-							role="cell"
+						<Table.Head class="w-8 rounded-tl-[10px] " role="cell"
 							><CustomCheckbox
 								arialabel="Select all"
 								checked={is_all_selected()}
@@ -494,7 +492,7 @@
 						{#if head.show}
 							<Table.Head
 								class={head.headclass +
-									" text-bw950 dark:text-bw200"}
+									" text-bw950 dark:text-bw200 font-normal "}
 								role="cell"
 								draggable="true"
 								onclick={(e) => toggleSort(e, head.field)}
@@ -519,7 +517,7 @@
 					{/each}
 					{#if rest["action"]}
 						<Table.Head
-							class="text-bw950 dark:text-bw200 rounded-tr-[10px] {actionheadclass}"
+							class="text-bw950 dark:text-bw200 font-normal rounded-tr-[10px] {actionheadclass}"
 						>
 							<div class="flex items-center justify-end">
 								<IconRenderer title="Action" />
@@ -532,7 +530,7 @@
 			<Table.Body>
 				{#each entities as item}
 					<Table.Row
-						class="border-b border-bw500"
+						class="border-b border-bw500 text-bw950 dark:text-bw200"
 						ondblclick={() => {
 							single_item_click(item);
 						}}
@@ -660,7 +658,7 @@
 					<ScrollArea class="max-h-[84vh]">
 						{#each tableheaders as head}
 							<div
-								class="h-[36px] flex items-center rounded-[10px] border p-2.5 mb-1.5 mr-4"
+								class="h-[36px] flex items-center rounded-[10px] border border-bw500 p-2.5 mb-1.5 mr-4"
 							>
 								<div class="flex-1 space-y-1">
 									<p class="text-muted-foreground text-sm">

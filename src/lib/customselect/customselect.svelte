@@ -1,7 +1,6 @@
 <script lang="ts">
 	import * as Select from "$lib/components/ui/select";
-	function onvc(value: any) {
-	}
+	function onvc(value: any) {}
 	let {
 		class: className = "h-8",
 		value = $bindable(""),
@@ -12,12 +11,12 @@
 		selectitems = [],
 	} = $props();
 
-	function getValue(item:any) {
-		if(item == null) return "";
-		if(item._id != null) return item._id;
-		if(item.image != null) return item.image;
-		if(item.stripeprice != null) return item.stripeprice;
-		if(item.value != null) return item.value;
+	function getValue(item: any) {
+		if (item == null) return "";
+		if (item._id != null) return item._id;
+		if (item.image != null) return item.image;
+		if (item.stripeprice != null) return item.stripeprice;
+		if (item.value != null) return item.value;
 		return "";
 	}
 </script>
@@ -29,7 +28,7 @@
 	onValueChange={onValueChangeFunction}
 >
 	<Select.Trigger
-		class={"bg-bw50 w-64 py-2 rounded-[10px] border dark:border-bw600 dark:placeholder-bw500 dark:text-bw400 dark:bg-bw800 focus:outline-none " +
+		class={"shadow-soft dark:shadow-dark bg-bw50 w-64 py-2 rounded-[10px] border dark:border-bw600 dark:placeholder-bw500 dark:text-bw400 dark:bg-bw800 focus:outline-none " +
 			className}
 	>
 		{triggerContent()}

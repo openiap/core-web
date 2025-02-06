@@ -7,12 +7,13 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
-  import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
   import { SearchInput } from "$lib/searchinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
-  import { Filter, Plus, Trash2 } from "lucide-svelte";
+  import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
+  import { Filter, Pencil, Plus, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
@@ -22,6 +23,8 @@
   let searchstring = $state(datacomponent.settings.searchstring);
   let selected_items = $state([]);
   let entities = $state(data.entities);
+  let showWarning = $state(false);
+  let deleteData: any = $state({});
 
   async function deleteitem(item: any) {
     const deletecount = await auth.client.DeleteOne({
@@ -41,18 +44,15 @@
   function single_item_click(item: any) {
     goto(base + `/${page}/${item._id}`);
   }
-  async function createcommon() {
+  async function handleAccept() {
     try {
-      auth.client.CustomCommand({
-        command: "createcommonresources",
-        jwt: auth.access_token,
-      });
-      toast.success("Created common resources", {
+      await deleteitem(deleteData);
+      toast.success("Deleted successfully", {
         description: "",
       });
       ref.reload();
     } catch (error: any) {
-      toast.error("Error while creating", {
+      toast.error("Error while deleting", {
         description: error.message,
       });
     }
@@ -68,6 +68,9 @@
       disabled={loading}
       aria-label="Filter"
       class="border-dashed dark:text-bw600"
+      onclick={() => {
+        ref.reload();
+      }}
     >
       <Filter />
       Filter</HotkeyButton
@@ -79,10 +82,10 @@
     variant="base"
     disabled={loading}
     aria-label="add"
-    onclick={createcommon}
+    onclick={() => goto(base + `/${page}/new`)}
   >
     <Plus />
-    Create common</HotkeyButton
+    Add {page}</HotkeyButton
   >
 </div>
 
@@ -100,13 +103,28 @@
 >
   {#snippet action(item: any)}
     <HotkeyButton
+      aria-label="edit"
+      disabled={loading}
+      onclick={() => single_item_click(item)}
+      size="tableicon"
+      variant="icon"
+    >
+      <Pencil />
+    </HotkeyButton>
+    <HotkeyButton
+      variant="danger"
       aria-label="delete"
       disabled={loading}
-      onclick={() => deleteitem(item)}
+      onclick={() => {
+        deleteData = item;
+        showWarning = !showWarning;
+      }}
       size="tableicon"
-      variant="danger"
     >
       <Trash2 />
     </HotkeyButton>
   {/snippet}
 </Entities>
+
+<Warningdialogue bind:showWarning type="delete" onaccept={handleAccept}
+></Warningdialogue>

@@ -159,7 +159,8 @@ const config: Config = {
 				"caret-blink": "caret-blink 1.25s ease-out infinite",
 			},
 			boxShadow: {
-				soft: '0px 2px 4px rgba(0, 0, 0, 0.15)', // Custom shadow
+				light: '0px 2px 4px rgba(0, 0, 0, 0.15)', // Custom shadow
+				dark: '0px 4px 8px rgba(0, 0, 0, 0.2)', // Custom shadow
 			},
 		},
 	},

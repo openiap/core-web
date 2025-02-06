@@ -20,7 +20,7 @@
   import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
   import Input from "$lib/components/ui/input/input.svelte";
   import { Label } from "$lib/components/ui/label/index.js";
-    import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
+  import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
 
   const key = "workspace";
   const { data } = $props();
@@ -236,166 +236,249 @@
       if (id != null) usersettings.currentworkspace = id;
     }
   }
+
+  const cardRoot = "w-[346px] h-[430px] dark:bg-bw850 grid grid-rows-4";
+  const cardHeader = "text-center";
+  const cardTitle = "text-bw950 dark:text-bw100";
+  const cardDiv = "flex flex-col justify-between row-span-4";
 </script>
 
 {#if message && $message != ""}
   {$message}
 {/if}
-<form method="POST" use:enhance>
-  <Form.Field {form} name="name" class="mb-7">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Workspace Name</Form.Label>
-        <div class="flex space-x-5">
-          <CustomInput {...props} bind:value={$formData.name} />
-          <Form.Button
-            disabled={loading}
-            aria-label="Update workspace"
-            variant="success"
-            size="base"
-          >
-            <Check />
-            Update workspace</Form.Button
-          >
-          {#if entities.length > 0}
-            {#if currentworkspace._resourceusageid == "" || currentworkspace._resourceusageid == null}
-              <span>Linked to billing account</span>
-              <CustomSelect
-                type="single"
-                triggerContent={billingname}
-                bind:value={billingid}
-                selectitems={[{ name: "Create new", _id: "" }, ...entities]}
-              />
-            {:else if currentworkspace._billingid != null && currentworkspace._billingid != ""}
-              <span>Linked to billing account</span>
-              <Button
-                variant="outline"
-                size="base"
-                disabled={loading}
-                onclick={() =>
-                  goto(base + "/billingaccount/" + currentworkspace._billingid)}
-              >
-                {billingname()}
-              </Button>
-            {/if}
-          {/if}
 
-          {#if data.currentbilling != null}
-            <Button
-              variant="outline"
-              size="base"
+<div class="lg:m-6">
+  <form method="POST" use:enhance>
+    <Form.Field {form} name="name" class="mb-7">
+      <Form.Control>
+        {#snippet children({ props })}
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div class="grid grid-col-1 lg:grid-cols-1 gap-2">
+              <Form.Label>Workspace Name</Form.Label>
+              <div class="text-bw400">
+                Your are managing the workspace below
+              </div>
+              <div class="flex space-x-5">
+                <CustomInput {...props} bind:value={$formData.name} />
+                <!-- <Form.Button
               disabled={loading}
-              onclick={() =>
-                goto(base + "/workspace/" + currentworkspace._id + "/billing")}
+              aria-label="Update workspace"
+              variant="success"
+              size="base"
             >
-              Show billing usage for {currentworkspace.name}
-            </Button>
-          {/if}
-        </div>
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-</form>
-<CustomSuperDebug {formData} />
+              <Check />
+              Update workspace</Form.Button
+            > -->
+              </div>
+            </div>
 
-<div class="flex justify-around">
-  <Card.Root class="w-[350px] h-[500px] flex flex-col justify-around">
-    <Card.Header>
-      <Card.Title>Free tier</Card.Title>
-      <Card.Description>Testing the platform</Card.Description>
-    </Card.Header>
-    <Card.Content>
-      A workspace in the free tier will allow you to invite 5 members. You can
-      run one free cloud agent in your workspace, that will automatically be
-      turned off after 4 hours. You workspace will be subject to our fair use
-      policy, regarding api request, active connections and database usage.
-      Support though our <a href="https://discourse.openiap.io/" target="_blank"
-        >community forum</a
-      >.
-    </Card.Content>
-    <Card.Footer class="flex justify-between">
-      {#if currentworkspace == null || currentworkspace._resourceusageid == null || currentworkspace._resourceusageid == ""}
-        <HotkeyButton>Current</HotkeyButton>
-      {:else}
-        <HotkeyButton disabled={loading} onclick={removeplan}
-          >Downgrade</HotkeyButton
+            <div class="grid grid-col-1 lg:grid-cols-1 gap-2">
+              {#if entities.length > 0}
+                {#if currentworkspace._resourceusageid == "" || currentworkspace._resourceusageid == null}
+                  <Form.Label>Work Space Billing</Form.Label>
+                  <div class="text-bw400">
+                    Select a billing account for this workspace
+                  </div>
+                  <CustomSelect
+                    class="max-w-xs"
+                    type="single"
+                    triggerContent={billingname}
+                    bind:value={billingid}
+                    selectitems={[{ name: "Create new", _id: "" }, ...entities]}
+                  />
+                {:else if currentworkspace._billingid != null && currentworkspace._billingid != ""}
+                  <Form.Label>Work Space Billing</Form.Label>
+                  <div class="text-bw400">
+                    The current billing account for this workspace
+                  </div>
+                  <Button
+                    class="max-w-xs"
+                    variant="outline"
+                    size="base"
+                    disabled={loading}
+                    onclick={() =>
+                      goto(
+                        base + "/billingaccount/" + currentworkspace._billingid,
+                      )}
+                  >
+                    {billingname()}
+                  </Button>
+                {/if}
+              {/if}
+            </div>
+
+            <div class="grid grid-col-1 lg:grid-cols-1 gap-2">
+              {#if data.currentbilling != null}
+                <Form.Label>Billing Account</Form.Label>
+                <div class="text-bw400">
+                  Show billing details for this specific workspace
+                </div>
+                <Button
+                  class="max-w-xs"
+                  variant="outline"
+                  size="base"
+                  disabled={loading}
+                  onclick={() =>
+                    goto(
+                      base + "/workspace/" + currentworkspace._id + "/billing",
+                    )}
+                >
+                  Show billing usage for {currentworkspace.name}
+                </Button>
+              {/if}
+            </div>
+          </div>
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+  </form>
+
+  <div class="mb-4">Plans</div>
+  <div class="grid col-gap-4 row-gap-4 grid-cols-1 lg:grid-cols-3">
+    <Card.Root class={cardRoot}>
+      <Card.Header class={cardHeader}>
+        <Card.Title class={cardTitle}>Free</Card.Title>
+        <Card.Description>Great for trying things out</Card.Description>
+      </Card.Header>
+      <div class={cardDiv}>
+        <Card.Content>
+          <div class="flex">
+            <Check class="mr-4 p-0.5" />
+            5 members in your workspace.
+          </div>
+          <div class="flex">
+            <Check class="mr-4 p-0.5" />
+            1 cloud agent (4 hour runtime).
+          </div>
+          <div class="flex">
+            <Check class="mr-4 p-0.5" />
+            Support via our
+            <a href="https://discourse.openiap.io/" target="_blank"
+              >{` community forum`}</a
+            >.
+          </div>
+        </Card.Content>
+        <Card.Footer class="flex justify-between">
+          {#if currentworkspace == null || currentworkspace._resourceusageid == null || currentworkspace._resourceusageid == ""}
+            <HotkeyButton>Current</HotkeyButton>
+          {:else}
+            <HotkeyButton
+              disabled={loading}
+              onclick={removeplan}
+              variant="danger">Downgrade</HotkeyButton
+            >
+          {/if}
+        </Card.Footer>
+      </div>
+    </Card.Root>
+    <Card.Root class={cardRoot}>
+      <Card.Header class={cardHeader}>
+        <Card.Title class={cardTitle}>Basic</Card.Title>
+        <Card.Description>Starter package</Card.Description>
+      </Card.Header>
+      <div class={cardDiv}>
+        <Card.Content>
+          <div class="flex">
+            <Check class="mr-4 p-0.5" />
+            25 members in your workspace
+          </div>
+          <div class="flex">
+            <Check class="mr-4 p-0.5" />
+            Priced agents that run 24/7
+          </div>
+          <div class="flex">
+            <Check class="mr-4 p-0.5" />
+            Support via our
+            <a href="https://discourse.openiap.io/" target="_blank"
+              >{` community forum`}</a
+            >.
+          </div>
+          <div class="flex">
+            <Check class="mr-4 p-0.5" />
+            Billing support (reach out via the e-mail used in your invoice)
+          </div>
+        </Card.Content>
+        <Card.Footer class="flex justify-between">
+          {#if currentworkspace == null || currentworkspace._resourceusageid == null || currentworkspace._resourceusageid == ""}
+            <HotkeyButton disabled={loading} onclick={addplan} class="success"
+              >Upgrade</HotkeyButton
+            >
+          {:else if currentworkspace._productname != "Basic tier"}
+            <HotkeyButton disabled={loading} onclick={addplan} variant="danger"
+              >Downgrade</HotkeyButton
+            >
+          {:else}
+            <HotkeyButton>Current</HotkeyButton>
+          {/if}
+        </Card.Footer>
+      </div>
+    </Card.Root>
+    <Card.Root class={cardRoot}>
+      <Card.Header class={cardHeader}>
+        <Card.Title class={cardTitle}>Enterprise</Card.Title>
+        <Card.Description>Great for companies</Card.Description>
+      </Card.Header>
+      <div class={cardDiv}>
+        <Card.Content>
+          <div class="flex">
+            <Check class="mr-4 p-0.5" />
+            Everything in the previous tiers
+          </div>
+          <div class="flex">
+            <Check class="mr-4 p-0.5" />
+            Unlimited members
+          </div>
+          <div class="flex">
+            <Check class="mr-4 p-0.5" />
+            Discount on agents that run 24/7
+          </div>
+          <div class="flex">
+            <Check class="mr-7" />
+            Billing support (reach out via the e-mail used in your invoice)
+          </div>
+          <div class="flex">
+            <Check class="mr-4 p-0.5" />
+            Unlimited api requests
+          </div>
+        </Card.Content>
+        <Card.Footer class="flex justify-between">
+          <HotkeyButton
+            size="lg"
+            disabled={loading}
+            onclick={() =>
+              window.open(
+                "https://calendar.app.google/aoU5qv1gX6ocHnAH8",
+                "_blank",
+                "noopener,noreferrer",
+              )}
+          >
+            Contact us
+          </HotkeyButton>
+        </Card.Footer>
+      </div>
+    </Card.Root>
+  </div>
+
+  <AlertDialog.Root open={nameprompt}>
+    <AlertDialog.Content>
+      <AlertDialog.Header>
+        <AlertDialog.Title>Create Billing Account</AlertDialog.Title>
+        <AlertDialog.Description>
+          Please type the name of your new billing account.
+          <Input bind:value={newbillingaccountname} />
+        </AlertDialog.Description>
+      </AlertDialog.Header>
+      <AlertDialog.Footer>
+        <HotkeyButton disabled={loading} onclick={() => (nameprompt = false)}
+          >Cancel</HotkeyButton
         >
-      {/if}
-    </Card.Footer>
-  </Card.Root>
-  <Card.Root class="w-[350px] h-[500px] flex flex-col justify-around">
-    <Card.Header>
-      <Card.Title>Basic tier</Card.Title>
-      <Card.Description>Starter package</Card.Description>
-    </Card.Header>
-    <Card.Content>
-      You can invite up to 25 members to your workspace. You have the option to
-      buy tiered cloud agents, that can run 24/7. You workspace will be subject
-      to our fair use policy, regarding api request, active connections and
-      database usage. Support though our <a
-        href="https://discourse.openiap.io/"
-        target="_blank">community forum</a
-      >, for billing support please reach out using the email on the invoice.
-    </Card.Content>
-    <Card.Footer class="flex justify-between">
-      <div></div>
-      {#if currentworkspace == null || currentworkspace._resourceusageid == null || currentworkspace._resourceusageid == ""}
-        <HotkeyButton disabled={loading} onclick={addplan}>Upgrade</HotkeyButton
+        <HotkeyButton disabled={loading} onclick={createbillingaccount}
+          >Continue</HotkeyButton
         >
-      {:else if currentworkspace._productname != "Basic tier"}
-        <HotkeyButton disabled={loading} onclick={addplan}
-          >Downgrade</HotkeyButton
-        >
-      {:else}
-        <HotkeyButton>Current</HotkeyButton>
-      {/if}
-    </Card.Footer>
-  </Card.Root>
-  <Card.Root class="w-[350px] h-[500px] flex flex-col justify-around">
-    <Card.Header>
-      <Card.Title>Enterprise tier</Card.Title>
-      <Card.Description>Deluxe offering</Card.Description>
-    </Card.Header>
-    <Card.Content>
-      Please contact us for more information, to have unlimited members and api
-      requests. Access to support via email/online meetings. Discounts on cloud
-      agents.
-    </Card.Content>
-    <Card.Footer class="flex justify-between">
-      <div></div>
-      <HotkeyButton
-        size="lg"
-        disabled={loading}
-        onclick={() =>
-          window.open(
-            "https://calendar.app.google/aoU5qv1gX6ocHnAH8",
-            "_blank",
-            "noopener,noreferrer",
-          )}
-      >
-        Contact us
-      </HotkeyButton>
-    </Card.Footer>
-  </Card.Root>
+      </AlertDialog.Footer>
+    </AlertDialog.Content>
+  </AlertDialog.Root>
 </div>
 
-<AlertDialog.Root open={nameprompt}>
-  <AlertDialog.Content>
-    <AlertDialog.Header>
-      <AlertDialog.Title>Create Billing Account</AlertDialog.Title>
-      <AlertDialog.Description>
-        Please type the name of your new billing account.
-        <Input bind:value={newbillingaccountname} />
-      </AlertDialog.Description>
-    </AlertDialog.Header>
-    <AlertDialog.Footer>
-      <HotkeyButton disabled={loading} onclick={() => (nameprompt = false)}
-        >Cancel</HotkeyButton
-      >
-      <HotkeyButton disabled={loading} onclick={createbillingaccount}
-        >Continue</HotkeyButton
-      >
-    </AlertDialog.Footer>
-  </AlertDialog.Content>
-</AlertDialog.Root>
+<CustomSuperDebug {formData} />

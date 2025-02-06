@@ -108,7 +108,7 @@
   bind:loading
 >
   {#snippet action(item: any)}
-    <div class="flex items-center space-x-2">
+    <div class="flex items-center justify-end space-x-2">
       <CustomSwitch
         bind:checked={item.enabled}
         disabled={loading}

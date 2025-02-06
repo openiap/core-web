@@ -14,14 +14,14 @@
 		base: "ring-offset-background focus-visible:ring-ring inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 ",
 		variants: {
 			variant: {
-				base: "shadow-soft border border-bw300 hover:border-bw400 bg-50 hover:bg-bw100 text-bw950  dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:hover:bg-bw700 dark:bg-bw850 dark:text-bw200 border border-bw600",
+				base: "shadow-light border border-bw300 hover:border-bw400 bg-50 hover:bg-bw100 text-bw950  dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:hover:bg-bw700 dark:bg-bw850 dark:text-bw200 border border-bw600",
 				danger: "border bg-lightbgred hover:bg-lighthoverred dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:bg-darkbgred dark:hover:bg-darkbghoverred",
 				ghost: "hover:bg-accent hover:text-accent-foreground",
 				link: "text-primary underline-offset-4 hover:underline",
 				ghostfull: "",
 				icon: "text-bw500 hover:bg-bw200 hover:text-bw950 dark:text-bw300 dark:bg-bw700 dark:hover:bg-bw700 border border-transparent dark:hover:border-bw500",
 				headericon:
-					"shadow-soft border border-bw500 dark:border-transparent text-bw600 bg-bw200 hover:bg-bw300 dark:text-bw300 dark:bg-bw700 dark:hover:bg-bw700 border dark:hover:border-bw500",
+					"shadow-light dark:shadow-dark border border-bw500 dark:border-transparent text-bw600 bg-bw200 hover:bg-bw300 dark:text-bw300 dark:bg-bw700 dark:hover:bg-bw700 border dark:hover:border-bw500",
 				success:
 					"border bg-lightbggreen hover:bg-lighthovergreen dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:bg-darkbggreen dark:hover:bg-darkbghovergreen",
 				refresh:

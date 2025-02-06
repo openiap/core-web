@@ -81,13 +81,12 @@
                     {/snippet}
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content
-                    class="w-[--bits-dropdown-menu-anchor-width] min-w-56 rounded-lg shadow-soft bg-bw50 dark:bg-bw800"
+                    class="w-[--bits-dropdown-menu-anchor-width] min-w-56 rounded-lg shadow-light dark:shadow-dark bg-bw50 dark:bg-bw800"
                     align="start"
                     side={sidebar.isMobile ? "bottom" : "right"}
                     sideOffset={4}
                 >
-                    <DropdownMenu.Label
-                        class="text-muted-foreground font-bold "
+                    <DropdownMenu.Label class="text-muted-foreground font-bold "
                         >Workspaces</DropdownMenu.Label
                     >
                     {#each workspaces as workspace, index (workspace._id)}
