@@ -125,7 +125,9 @@
               usersettings.currentworkspace == null ||
               usersettings.currentworkspace == ""
             ) {
-              throw new Error("You must select a workspace first");
+              if(form.data._workspaceid == null || form.data._workspaceid == "") {
+                throw new Error("You must select a workspace first");
+              }
             }
             workspace = await auth.client.FindOne({
               collectionname: "users",
@@ -140,7 +142,7 @@
             }
             // @ts-ignore
             form.data._acl = [...form.data._acl, ...workspace._acl];
-            if(auth.config.workspace_enabled && (form.data._workspaceid == null || form.data._workspaceid == "")) {
+            if(auth.config.workspace_enabled && workspace != null) {
               form.data._workspaceid = workspace._id;
             }
           }
