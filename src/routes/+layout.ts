@@ -4,7 +4,7 @@ import { usersettings } from "$lib/stores/usersettings.svelte.js";
 import type { LayoutLoad } from "./$types.js";
 
 export const load: LayoutLoad = async ({ data, fetch, url, route, params }) => {
-	const { protocol, domain, client_id, profile } = data;
+	const { protocol, domain, client_id, profile, webcommit, webversion } = data;
 	let { wsurl } = data;
 	let code = "";
 	if(browser) {
@@ -21,5 +21,5 @@ export const load: LayoutLoad = async ({ data, fetch, url, route, params }) => {
 		} catch (error) {
 		}
 	}
-	return { ...data, code,  };
+	return { ...data, code, webcommit, webversion };
 };

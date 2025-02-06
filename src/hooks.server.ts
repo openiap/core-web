@@ -1,4 +1,4 @@
-import { web_client_id, web_domain, web_protocol } from '$env/static/private';
+import { web_client_id, web_domain, web_protocol, version, hash } from '$env/static/private';
 import { auth } from '$lib/stores/auth.svelte';
 import type { Handle, ServerInit } from '@sveltejs/kit';
 
@@ -8,6 +8,8 @@ export const init: ServerInit = async () => {
     let domain = process.env.web_domain;
     if (domain == null || domain == "") domain = web_domain;
 
+    console.log("Init core-web version", version, "git commit", hash);
+
     const baseurl = protocol + '://' + domain;
     let wsurl = baseurl.replace("https://", "wss://").replace("http://", "ws://") + "/ws/v2";
     if(process.env.web_wsapiurl != null && process.env.web_wsapiurl != "") {
@@ -15,6 +17,11 @@ export const init: ServerInit = async () => {
     }
     try {
         await auth.serverinit(wsurl, protocol, domain);
+        if(auth.config != null) {
+            auth.config.webcommit = hash;
+            auth.config.webversion = version;
+            console.log("Core-Web version", version, "git commit", hash, "Connected to open-core version", auth.config.version);
+        }
     } catch (error) {
         console.log("**** serverinit error", error);
     }

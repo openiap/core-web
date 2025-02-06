@@ -8,6 +8,8 @@ const { UserManager, WebStorageStateStore } = pkg;
 // @ts-ignore
 import ws from 'ws';
 class Config {
+    webversion: string = "";
+    webcommit: string = "";
     wshost: string = "";
     wsurl: string = "";
     domain: string = "";

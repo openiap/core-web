@@ -20,6 +20,7 @@
 	datacomponent.parsesettings(data.settings);
 	const { wsurl, protocol, domain, client_id, profile, origin } = data;
 	let { access_token } = data;
+	console.log("core-web version", data.webversion, "git commit", data.webcommit);
 
 	let _workspaces = data.workspaces;
 	let workspaces = $state(_workspaces);

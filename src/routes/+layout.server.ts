@@ -13,6 +13,8 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 	let workspaces: Workspace[] = [];
 	let total_count = 99999;
 	const page = url.pathname;
+	const webcommit = auth.config.webcommit;
+	const webversion = auth.config.webversion;
 	try {
 		await usersettings.dbload(access_token);
 		const shortpage = (route.id != null && route.id.indexOf("/") > -1 ? route.id.split("/")[1] : "");
@@ -25,9 +27,9 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 		entities = entitiesdata;
 		total_count = totalcount;
 		let settings = datacomponent.getpagesettingsreactless();
-		return { protocol, domain, client_id, page, profile, access_token, wsurl, origin, entities, workspaces, id, settings, total_count };
+		return { protocol, domain, client_id, page, profile, access_token, wsurl, origin, entities, workspaces, id, settings, total_count, webcommit, webversion };
 	} catch (error) {
 		console.error(error);
-		return { protocol, domain, client_id, page, profile, access_token, wsurl, origin, entities: [], workspaces: [], item: null, id: "", settings: {}, total_count };
+		return { protocol, domain, client_id, page, profile, access_token, wsurl, origin, entities: [], workspaces: [], item: null, id: "", settings: {}, total_count, webcommit, webversion };
 	}
 };
