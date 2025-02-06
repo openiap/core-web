@@ -31,14 +31,20 @@
     <Sidebar.MenuItem>
         <DropdownMenu.Root>
             <DropdownMenu.Trigger>
-                <Avatar.Root class="rounded-lg  h-8 w-8">
-                    <Avatar.Fallback class="rounded-xl text-sm"
-                        >{user.avatar}</Avatar.Fallback
+                <Avatar.Root
+                    class="rounded-[10px] h-7 w-7 border border-bw500 dark:border-transparent dark:hover:border-bw500  text-bw600"
+                >
+                    <div
+                        class="flex items-center justify-center text-sm h-full w-full bg-bw200 hover:bg-bw300 dark:text-bw300 dark:bg-bw700 dark:hover:bg-bw700"
                     >
+                        {user.avatar}
+                    </div>
+                    <!-- <Avatar.Fallback class="rounded-xl text-sm"
+                    ></Avatar.Fallback> -->
                 </Avatar.Root>
             </DropdownMenu.Trigger>
             <DropdownMenu.Content
-                class="w-[--bits-dropdown-menu-anchor-width] min-w-56 rounded-lg"
+                class="w-[--bits-dropdown-menu-anchor-width] min-w-56 rounded-lg lg:me-3 bg-bw50 dark:bg-bw800"
                 side={sidebar.isMobile ? "bottom" : "bottom"}
                 align="start"
                 sideOffset={4}

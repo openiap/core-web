@@ -7,9 +7,14 @@
     import { auth } from "$lib/stores/auth.svelte";
     import {
         Building,
+        Check,
         ChevronDown,
+        CircleCheck,
         DollarSignIcon,
         Pencil,
+        Rows3,
+        Ticket,
+        X,
     } from "lucide-svelte";
     import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
     import Plus from "lucide-svelte/icons/plus";
@@ -49,23 +54,23 @@
                     {#snippet child({ props })}
                         <Sidebar.MenuButton
                             {...props}
-                            class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground border-[1px] border-bw500 rounded-[10px] px-4 py-6"
+                            class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground border-[1px] border-bw500 rounded-[10px] px-4 py-6 bg-bw50 dark:bg-bw800 "
                         >
                             {#if activeWorkspacename() != ""}
                                 <Building />
                                 <div
-                                    class="grid flex-1 text-left text-sm leading-tight justify-between"
+                                    class="grid flex-1 text-left leading-tight justify-between"
                                 >
                                     <span class="truncate font-semibold">
                                         {activeWorkspacename()}
                                     </span>
-                                    <span class="truncate text-xs"
+                                    <span class="truncate text-xs text-bw400"
                                         >{activeWorkspace()?._productname}</span
                                     >
                                 </div>
                                 <ChevronsUpDown class="ml-auto" />
                             {:else}
-                                <div class="flex text-sm items-center">
+                                <div class="flex items-center">
                                     <span class="truncate font-semibold">
                                         Select workspace
                                     </span>
@@ -76,32 +81,40 @@
                     {/snippet}
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content
-                    class="w-[--bits-dropdown-menu-anchor-width] min-w-56 rounded-lg"
+                    class="w-[--bits-dropdown-menu-anchor-width] min-w-56 rounded-lg shadow-soft bg-bw50 dark:bg-bw800"
                     align="start"
                     side={sidebar.isMobile ? "bottom" : "right"}
                     sideOffset={4}
                 >
-                    <DropdownMenu.Label class="text-muted-foreground text-xs"
-                        >Workspace</DropdownMenu.Label
+                    <DropdownMenu.Label
+                        class="text-muted-foreground font-bold "
+                        >Workspaces</DropdownMenu.Label
                     >
                     {#each workspaces as workspace, index (workspace._id)}
                         <DropdownMenu.Item
                             onSelect={() => selectWorkspace(workspace)}
-                            class="gap-2 p-2"
+                            class={`gap-2 px-2 py-1`}
                         >
                             <div
-                                class="grid flex-1 text-left text-sm leading-tight justify-between"
+                                class="grid flex-1 text-left leading-tight justify-between"
                             >
                                 <span class="truncate font-semibold">
                                     {workspace.name}
                                 </span>
-                                <span class="truncate text-xs"
+                                <span class="truncate text-xs text-bw400"
                                     >{workspace._productname}</span
                                 >
                             </div>
+                            {#if workspace._id == currentworkspace}
+                                <div
+                                    class="bg-darkbordergreen text-bw50 rounded-full"
+                                >
+                                    <Check class="p-0.5" />
+                                </div>
+                            {/if}
                         </DropdownMenu.Item>
                     {/each}
-                    <DropdownMenu.Separator />
+                    <DropdownMenu.Separator class="mx-1" />
                     {#if workspaces.length > 0}
                         {#if currentworkspace != ""}
                             <DropdownMenu.Item
@@ -109,6 +122,7 @@
                                     selectWorkspace({ _id: "" } as any)}
                                 class="gap-2 p-2"
                             >
+                                <X />
                                 Unselect Workspace
                             </DropdownMenu.Item>
                         {/if}
@@ -116,9 +130,11 @@
                             onSelect={() => goto(base + "/workspace")}
                             class="gap-2 p-2"
                         >
+                            <Rows3 class="size-4" />
                             All Workspaces
                         </DropdownMenu.Item>
                     {/if}
+
                     {#if currentworkspace != ""}
                         <DropdownMenu.Item
                             onSelect={() =>
@@ -144,6 +160,8 @@
                             </DropdownMenu.Item>
                         {/if}
                     {/if}
+                    <DropdownMenu.Separator class="mx-1" />
+
                     <DropdownMenu.Item
                         class="gap-2 p-2 cursor-pointer"
                         onclick={() => goto(base + "/workspace/new")}

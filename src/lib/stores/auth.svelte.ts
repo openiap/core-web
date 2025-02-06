@@ -202,6 +202,9 @@ class authState {
             });
         }
     }
+    weburl(slug: string) {
+        return "//" + this.config.agent_domain_schema.replace("$slug$", slug)
+    }
 }
 
 let defaultstate = new authState();

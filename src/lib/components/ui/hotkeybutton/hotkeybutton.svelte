@@ -21,7 +21,7 @@
 				ghostfull: "",
 				icon: "text-bw500 hover:bg-bw200 hover:text-bw950 dark:text-bw300 dark:bg-bw700 dark:hover:bg-bw700 border border-transparent dark:hover:border-bw500",
 				headericon:
-					"text-bw600 bg-bw200 hover:bg-bw300 dark:text-bw300 dark:bg-bw700 dark:hover:bg-bw700 border border-transparent dark:hover:border-bw500",
+					"shadow-soft border border-bw500 dark:border-transparent text-bw600 bg-bw200 hover:bg-bw300 dark:text-bw300 dark:bg-bw700 dark:hover:bg-bw700 border dark:hover:border-bw500",
 				success:
 					"border bg-lightbggreen hover:bg-lighthovergreen dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:bg-darkbggreen dark:hover:bg-darkbghovergreen",
 				refresh:

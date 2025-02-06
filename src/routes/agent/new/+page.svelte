@@ -39,14 +39,14 @@
         try {
           if (auth.config.workspace_enabled) {
             let _workspaceid = form.data._workspaceid;
-            if(_workspaceid == null || _workspaceid == "") {
+            if (_workspaceid == null || _workspaceid == "") {
               if (
-              usersettings.currentworkspace == null ||
-              usersettings.currentworkspace == ""
-            ) {
-              throw new Error("You must select a workspace first");
-            }
-            _workspaceid = usersettings.currentworkspace;
+                usersettings.currentworkspace == null ||
+                usersettings.currentworkspace == ""
+              ) {
+                throw new Error("You must select a workspace first");
+              }
+              _workspaceid = usersettings.currentworkspace;
             }
             workspace = await auth.client.FindOne({
               collectionname: "users",
@@ -66,7 +66,7 @@
             }
             // @ts-ignore
             form.data._acl = [...form.data._acl, ...workspace._acl];
-            if(auth.config.workspace_enabled && workspace != null) {
+            if (auth.config.workspace_enabled && workspace != null) {
               form.data._workspaceid = workspace._id;
             }
           }
@@ -86,10 +86,7 @@
           });
           toast.success("Agent created");
           try {
-            if (
-              workspace &&
-              stripeprice != ""
-            ) {
+            if (workspace && stripeprice != "") {
               const { result, link } = JSON.parse(
                 await auth.client.CustomCommand({
                   command: "createresourceusage",
@@ -109,7 +106,7 @@
               toast.success("Resource assigned");
             }
             goto(base + `/agent`);
-          } catch (error:any) {
+          } catch (error: any) {
             toast.error("Error", {
               description: error.message,
             });
@@ -557,12 +554,15 @@
   </form>
 
   <div class="italic text-gray-500 py-2">
-    Agents using free plan will be shutdown after {data.agentInstance
-      ?.defaultmetadata.runtime_hours} hours. Buy one or more products on the customer
-    page, and then assign it to an agent to allow it to run 24/7. You are limited
-    to
-    {data.agentInstance?.defaultmetadata.agentcount} free agents. Add more resources
-    on the customer page to increase the limit.
+    <div>
+      Agents using free plan will be shutdown after {data.agentInstance
+        ?.defaultmetadata.runtime_hours} hours. Buy one or more products on the customer
+      page, and then assign it to an agent to allow it to run 24/7.
+    </div>
+    <div>
+      You are limited to {data.agentInstance?.defaultmetadata.agentcount} free agents.
+      Add more resources on the customer page to increase the limit.
+    </div>
   </div>
 
   <CustomSuperDebug {formData} />

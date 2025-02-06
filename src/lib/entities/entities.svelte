@@ -457,141 +457,148 @@
 </script>
 
 <div class="text-red-500">{data.errormessage}</div>
-<div
-	class={`border border-bw500 rounded-[10px] ${
-		sidemenu.status
-			? `
-		${usersettings.currentpage.includes("entities") ? "w-[59vw]" : "w-[79vw]"}`
-			: "w-full"
-	}`}
->
-	<Table.Root>
-		{#if entities.length === 0}
-			<Table.Caption class="mb-2 text-bw300">No data found.</Table.Caption
-			>
-		{:else if caption != ""}
-			<Table.Caption>{caption}</Table.Caption>
-		{/if}
-		<Table.Header>
-			<Table.Row class="bg-lighttableheader dark:bg-bw900 rounded-[10px]">
-				{#if multi_select}
-					<Table.Head
-						class="w-8 text-bw950 dark:text-bw200 rounded-tl-[10px]"
-						role="cell"
-						><CustomCheckbox
-							arialabel="Select all"
-							checked={is_all_selected()}
-							handleClick={ToogleAll}
-						/></Table.Head
-					>
-				{/if}
-				{#each tableheaders as head, index}
-					{#if head.show}
-						<Table.Head
-							class={head.headclass +
-								" text-bw950 dark:text-bw200"}
-							role="cell"
-							draggable="true"
-							onclick={(e) => toggleSort(e, head.field)}
-							ondragstart={(e) => ondragstart(e, head)}
-							{ondragover}
-							ondrop={(e) => ondrop(e, head)}
-							ontouchstart={(e) => ontouchstart(e, head)}
-							ontouchend={(e) => ontouchend(e, head)}
-							{ontouchmove}
-						>
-							<div class="flex items-center justify-right">
-								<IconRenderer title={head.field} />
-								{data.RenderHeaderName(head)}
-							</div>
-							{#if sortby(head.field) == "asc"}
-								<ArrowUp class="ml-2 h-4 w-4" />
-							{:else if sortby(head.field) == "desc"}
-								<ArrowDown class="ml-2 h-4 w-4" />
-							{/if}
-						</Table.Head>
-					{/if}
-				{/each}
-				{#if rest["action"]}
-					<Table.Head
-						class="text-bw950 dark:text-bw200 rounded-tr-[10px] {actionheadclass}"
-					>
-						<div class="flex items-center justify-right">
-							<IconRenderer title="Action" />
-							Action
-						</div>
-					</Table.Head>
-				{/if}
-			</Table.Row>
-		</Table.Header>
-		<Table.Body>
-			{#each entities as item}
+
+<div class="overflow-hidden rounded-[10px] border">
+	<div
+		class={`border-bw500 rounded-[10px] ${
+			sidemenu.status
+				? `
+			${usersettings.currentpage.includes("entities") ? "lg:w-[59vw]" : "lg:w-[79vw]"}`
+				: "lg:w-full"
+		}`}
+	>
+		<Table.Root>
+			{#if entities.length === 0}
+				<Table.Caption class="mb-2 text-bw300"
+					>No data found.</Table.Caption
+				>
+			{:else if caption != ""}
+				<Table.Caption>{caption}</Table.Caption>
+			{/if}
+			<Table.Header>
 				<Table.Row
-					class="border-b border-bw500"
-					ondblclick={() => {
-						single_item_click(item);
-					}}
+					class="bg-lighttableheader hover:bg-lighttableheader dark:bg-bw900 dark:hover:bg-bw900 rounded-[10px] "
 				>
 					{#if multi_select}
-						<Table.Cell
-							class="w-8"
-							onclick={() => ToggleSelect(item)}
+						<Table.Head
+							class="w-8 text-bw950 dark:text-bw200 rounded-tl-[10px]"
+							role="cell"
 							><CustomCheckbox
-								arialabel="Select item"
-								checked={selected_items.indexOf(item._id) > -1}
-							/></Table.Cell
+								arialabel="Select all"
+								checked={is_all_selected()}
+								handleClick={ToogleAll}
+							/></Table.Head
 						>
 					{/if}
-					{#each tableheaders as head}
+					{#each tableheaders as head, index}
 						{#if head.show}
-							{#if head.field == "name"}
-								<Table.Cell
-									class={head.cellclass}
-									onclick={() => {
-										if (
-											multi_select &&
-											selected_items.length > 0
-										) {
-											ToggleSelect(item);
-										} else {
-											single_item_click(item);
-										}
-									}}
-									>{RenderItemData(item, head.field)}
-								</Table.Cell>
-							{:else if rest[head.field] != null}
-								<Table.Cell class={head.cellclass}
-									>{@render rest[head.field](
-										item,
-									)}</Table.Cell
-								>
-							{:else}
-								<Table.Cell
-									class={head.cellclass}
-									onclick={() => {
-										if (multi_select) {
-											ToggleSelect(item);
-										} else {
-											single_item_click(item);
-										}
-									}}
-									>{RenderItemData(
-										item,
-										head.field,
-									)}</Table.Cell
-								>
-							{/if}
+							<Table.Head
+								class={head.headclass +
+									" text-bw950 dark:text-bw200"}
+								role="cell"
+								draggable="true"
+								onclick={(e) => toggleSort(e, head.field)}
+								ondragstart={(e) => ondragstart(e, head)}
+								{ondragover}
+								ondrop={(e) => ondrop(e, head)}
+								ontouchstart={(e) => ontouchstart(e, head)}
+								ontouchend={(e) => ontouchend(e, head)}
+								{ontouchmove}
+							>
+								<div class="flex items-center justify-right">
+									<IconRenderer title={head.field} />
+									{data.RenderHeaderName(head)}
+								</div>
+								{#if sortby(head.field) == "asc"}
+									<ArrowUp class="ml-2 h-4 w-4" />
+								{:else if sortby(head.field) == "desc"}
+									<ArrowDown class="ml-2 h-4 w-4" />
+								{/if}
+							</Table.Head>
 						{/if}
 					{/each}
 					{#if rest["action"]}
-						<Table.Cell class={actioncellclass}
-							>{@render rest["action"](item)}</Table.Cell
+						<Table.Head
+							class="text-bw950 dark:text-bw200 rounded-tr-[10px] {actionheadclass}"
 						>
+							<div class="flex items-center justify-end">
+								<IconRenderer title="Action" />
+								Action
+							</div>
+						</Table.Head>
 					{/if}
 				</Table.Row>
-			{/each}
-		</Table.Body>
-	</Table.Root>
+			</Table.Header>
+			<Table.Body>
+				{#each entities as item}
+					<Table.Row
+						class="border-b border-bw500"
+						ondblclick={() => {
+							single_item_click(item);
+						}}
+					>
+						{#if multi_select}
+							<Table.Cell
+								class="w-8"
+								onclick={() => ToggleSelect(item)}
+								><CustomCheckbox
+									arialabel="Select item"
+									checked={selected_items.indexOf(item._id) >
+										-1}
+								/></Table.Cell
+							>
+						{/if}
+						{#each tableheaders as head}
+							{#if head.show}
+								{#if head.field == "name"}
+									<Table.Cell
+										class={head.cellclass}
+										onclick={() => {
+											if (
+												multi_select &&
+												selected_items.length > 0
+											) {
+												ToggleSelect(item);
+											} else {
+												single_item_click(item);
+											}
+										}}
+										>{RenderItemData(item, head.field)}
+									</Table.Cell>
+								{:else if rest[head.field] != null}
+									<Table.Cell class={head.cellclass}
+										>{@render rest[head.field](
+											item,
+										)}</Table.Cell
+									>
+								{:else}
+									<Table.Cell
+										class={head.cellclass}
+										onclick={() => {
+											if (multi_select) {
+												ToggleSelect(item);
+											} else {
+												single_item_click(item);
+											}
+										}}
+										>{RenderItemData(
+											item,
+											head.field,
+										)}</Table.Cell
+									>
+								{/if}
+							{/if}
+						{/each}
+						{#if rest["action"]}
+							<Table.Cell class={actioncellclass}
+								>{@render rest["action"](item)}</Table.Cell
+							>
+						{/if}
+					</Table.Row>
+				{/each}
+			</Table.Body>
+		</Table.Root>
+	</div>
 </div>
 
 <div class="flex mt-5 mb-2.5 space-x-5 items-center">

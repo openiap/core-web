@@ -122,14 +122,14 @@
           );
           if (auth.config.workspace_enabled) {
             let _workspaceid = form.data._workspaceid;
-            if(_workspaceid == null || _workspaceid == "") {
+            if (_workspaceid == null || _workspaceid == "") {
               if (
-              usersettings.currentworkspace == null ||
-              usersettings.currentworkspace == ""
-            ) {
-              throw new Error("You must select a workspace first");
-            }
-            _workspaceid = usersettings.currentworkspace;
+                usersettings.currentworkspace == null ||
+                usersettings.currentworkspace == ""
+              ) {
+                throw new Error("You must select a workspace first");
+              }
+              _workspaceid = usersettings.currentworkspace;
             }
             workspace = await auth.client.FindOne({
               collectionname: "users",
@@ -143,14 +143,14 @@
               throw new Error("Workspace not found");
             }
             // @ts-ignore
-            if(form.data._acl == null) {
+            if (form.data._acl == null) {
               // @ts-ignore
               form.data._acl = [];
             }
 
             // @ts-ignore
             form.data._acl = [...form.data._acl, ...workspace._acl];
-            if(auth.config.workspace_enabled && workspace != null) {
+            if (auth.config.workspace_enabled && workspace != null) {
               form.data._workspaceid = workspace._id;
             }
           }
@@ -159,7 +159,7 @@
               throw new Error("Product not found");
             }
           }
-          const savethis = {...form.data};
+          const savethis = { ...form.data };
           delete savethis._stripeprice;
           delete savethis._billingid;
           delete savethis._resourceusageid;
@@ -223,7 +223,6 @@
             }
           }
           goto(base + `/${page}`);
-         
         } catch (error: any) {
           errormessage = error.message;
           toast.error("Error", {
@@ -503,7 +502,7 @@
     {#if resourceMonitor != null}
       <div class="my-4 text-[14px] border rounded-[10px]">
         <div
-          class="grid grid-cols-7 bg-lighttableheader rounded-tr-[10px] rounded-tl-[10px] border-b"
+          class="grid grid-cols-7 bg-lighttableheader dark:bg-darktableheader rounded-tr-[10px] rounded-tl-[10px] border-b"
         >
           <div class="text-center p-2 col-span-2">
             <div class="flex items-center">

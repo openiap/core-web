@@ -36,7 +36,7 @@
   :root {
     --background: 0 0% 96%;
     --foreground: 210 8% 5%;
-    --muted: 0 0% 85%;
+    --muted: 220 10% 94%;
     --muted-foreground: 210 8% 5%;
     --popover: 0 0% 96%;
     --popover-foreground: 210 8% 5%;
@@ -50,7 +50,7 @@
     /*--secondary: 0.0 84.2% 60.2%;
     --secondary-foreground: 0.0 84.2% 60.2%; */
 
-    --accent: 0 0% 85%;
+    --accent: 220 10% 94%;
     --accent-foreground: 210 8% 5%;
 
     /* --destructive: 0 72.2% 50.6%;

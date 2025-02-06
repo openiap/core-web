@@ -10,7 +10,13 @@
 	import NavUser from "$lib/sidebar/nav-user.svelte";
 	import { auth } from "$lib/stores/auth.svelte";
 	import { usersettings } from "$lib/stores/usersettings.svelte.js";
-	import { ArrowLeft, ArrowRight, Github, Trash2 } from "lucide-svelte";
+	import {
+		ArrowLeft,
+		ArrowRight,
+		Github,
+		PanelRight,
+		Trash2,
+	} from "lucide-svelte";
 	import Moon from "lucide-svelte/icons/moon";
 	import Sun from "lucide-svelte/icons/sun";
 	import { toggleMode } from "mode-watcher";
@@ -41,19 +47,19 @@
 		<Separator orientation="vertical" class="mr-2 h-4" /> -->
 
 		<HotkeyButton
-			variant="headericon"
+			variant="ghost"
 			size="icon"
 			onclick={() => {
-				console.log(sidemenu.status);
 				sidemenu.status = !sidemenu.status;
+				console.log(sidemenu.status);
 			}}
-			class="me-4"
+			class="me-4 text-bw500"
 			title={sidemenu.status ? "Close sidebar" : "Open sidebar"}
 		>
 			{#if sidemenu.status}
-				<ArrowLeft class="hidden md:block dark:text-bw500" />
+				<PanelRight class="hidden md:block dark:text-bw500" />
 			{:else}
-				<ArrowRight class="hidden md:block dark:text-bw500" />
+				<PanelRight class="hidden md:block dark:text-bw500" />
 			{/if}
 		</HotkeyButton>
 

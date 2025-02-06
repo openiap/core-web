@@ -14,7 +14,7 @@
   import { auth } from "$lib/stores/auth.svelte";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import { WarningDialogue } from "$lib/warningdialogue/index.js";
-  import { Folder, History, Pencil, Plus, Trash2 } from "lucide-svelte";
+  import { Folder, History, Pencil, Plus, RefreshCcw, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
@@ -169,6 +169,10 @@
         <Searchinput bind:searchstring />
       </div>
       <div class="flex gap-2">
+        <HotkeyButton size="sm" disabled={loading} onclick={getCollections}>
+          <RefreshCcw />
+          Refresh</HotkeyButton
+        >
         <HotkeyButton
           size="sm"
           variant="danger"

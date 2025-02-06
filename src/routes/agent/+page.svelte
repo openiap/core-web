@@ -507,14 +507,26 @@
       >
         <Wrench />
       </HotkeyButton>
+      <HotkeyButton
+        aria-label="debug"
+        title="Open in web"
+        size="tableicon"
+        variant="icon"
+        disabled={(item.webserver != true && item.webserver != "true") ||
+          (item.status != "running" && item.status != "Running") ||
+          loading}
+        onclick={() => window.open(auth.weburl(item.slug), "_blank")}
+      >
+        <Webhook />
+      </HotkeyButton>
 
       <DropdownMenu.Root>
         <DropdownMenu.Trigger class="text-bw500 dark:text-bw300"
           ><Ellipsis /></DropdownMenu.Trigger
         >
-        <DropdownMenu.Content class="w-44">
+        <DropdownMenu.Content class="w-44 mr-6 bg-bw50 dark:bg-bw800">
           <DropdownMenu.Item
-            class="cursor-pointer"
+            class="cursor-pointer border border-transparent hover:border-bw500 rounded-[10px]"
             disabled={loading}
             onclick={() => single_item_click(item)}
           >
@@ -524,14 +536,19 @@
             </div>
           </DropdownMenu.Item>
 
-          <DropdownMenu.Item class="cursor-pointer">
+          <!-- <DropdownMenu.Item class="cursor-pointer">
             <div class="flex items-center">
               <Webhook class="mr-2 size-4" />
               <span>Webhook</span>
             </div>
-          </DropdownMenu.Item>
+          </DropdownMenu.Item> -->
 
-          <DropdownMenu.Item class="cursor-pointer">
+          <DropdownMenu.Item
+            class="cursor-pointer border border-transparent hover:border-bw500 rounded-[10px]"
+            onclick={() => {
+              toast.error("Not implemented yet", {});
+            }}
+          >
             <div class="flex items-center">
               <Receipt class="mr-2 size-4" />
               <span>Billing</span>
@@ -539,7 +556,7 @@
           </DropdownMenu.Item>
 
           <DropdownMenu.Item
-            class="cursor-pointer"
+            class="cursor-pointer border border-transparent hover:border-bw500 rounded-[10px]"
             disabled={loading}
             onclick={() => goto(base + `/user/${item.runas}`)}
           >
@@ -550,7 +567,7 @@
           </DropdownMenu.Item>
           <DropdownMenu.Separator />
           <DropdownMenu.Item
-            class="cursor-pointer hover:bg-opacity-50"
+            class="cursor-pointer border border-transparent hover:border-bw500 rounded-[10px] hover:bg-opacity-50"
             disabled={loading}
             onclick={() => {
               deleteData = item;
