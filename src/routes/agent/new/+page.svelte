@@ -57,8 +57,9 @@
             }
             // @ts-ignore
             form.data._acl = workspace._acl;
-            // @ts-ignore
-            form.data._workspaceid = workspace._id;
+            if(auth.config.workspace_enabled && (form.data._workspaceid == null || form.data._workspaceid == "")) {
+              form.data._workspaceid = workspace._id;
+            }
           }
           let stripeprice = "";
           if (form.data._stripeprice != null && form.data._stripeprice != "") {
