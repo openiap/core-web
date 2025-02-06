@@ -18,7 +18,7 @@ const config = {
 			envPrefix: ''
 		}),
 		paths: {
-			base: "",
+			base: "/ui",
 			relative: false
 		},
 	},
