@@ -60,7 +60,7 @@
               throw new Error("Workspace not found");
             }
             // @ts-ignore
-            if(form.data._acl == null) {
+            if (form.data._acl == null) {
               // @ts-ignore
               form.data._acl = [];
             }
@@ -324,6 +324,7 @@
       title="Create agent"
       variant="success"
       size="base"
+      class="mb-4"
     >
       <Check />
       Create agent</Form.Button
@@ -427,101 +428,96 @@
       <Form.FieldErrors />
     </Form.Field>
 
-    <Form.Field
-      {form}
-      name="autostart"
-      class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
-    >
-      <Form.Control>
-        {#snippet children({ props })}
-          <div class="flex flex-col space-y-2">
-            <Form.Label>Auto Start</Form.Label>
-            <Form.Description>
-              If enabled, the user is autostart and cannot signin
-            </Form.Description>
-            <div class="flex items-center space-x-4">
-              <Customswitch
-                disabled={loading}
-                bind:checked={$formData.autostart}
-                {...props}
-                aria-readonly
-              />
-              <span> {$formData.autostart ? "On" : "Off"} </span>
+    <div class="grid grid-cols-2 lg:grid-cols-4">
+      <Form.Field
+        {form}
+        name="autostart"
+        class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
+      >
+        <Form.Control>
+          {#snippet children({ props })}
+            <div class="flex flex-col space-y-2">
+              <Form.Label>Auto Start</Form.Label>
+              <Form.Description></Form.Description>
+              <div class="flex items-center space-x-4">
+                <Customswitch
+                  disabled={loading}
+                  bind:checked={$formData.autostart}
+                  {...props}
+                  aria-readonly
+                />
+                <span> {$formData.autostart ? "On" : "Off"} </span>
+              </div>
             </div>
-          </div>
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
+          {/snippet}
+        </Form.Control>
+        <Form.FieldErrors />
+      </Form.Field>
 
-    <Form.Field
-      {form}
-      name="webserver"
-      class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
-    >
-      <Form.Control>
-        {#snippet children({ props })}
-          <div class="flex flex-col space-y-2">
-            <Form.Label>Web Server</Form.Label>
-            <Form.Description>
-              If enabled, the user is webserver and cannot signin
-            </Form.Description>
-            <div class="flex space-x-4">
-              <Customswitch
-                disabled={loading}
-                bind:checked={$formData.webserver}
-                {...props}
-              />
-              <span> {$formData.webserver ? "On" : "Off"} </span>
+      <Form.Field
+        {form}
+        name="webserver"
+        class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
+      >
+        <Form.Control>
+          {#snippet children({ props })}
+            <div class="flex flex-col space-y-2">
+              <Form.Label>Web Server</Form.Label>
+              <Form.Description></Form.Description>
+              <div class="flex space-x-4">
+                <Customswitch
+                  disabled={loading}
+                  bind:checked={$formData.webserver}
+                  {...props}
+                />
+                <span> {$formData.webserver ? "On" : "Off"} </span>
+              </div>
             </div>
-          </div>
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
+          {/snippet}
+        </Form.Control>
+        <Form.FieldErrors />
+      </Form.Field>
 
-    <Form.Field
-      {form}
-      name="sleep"
-      class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
-    >
-      <Form.Control>
-        {#snippet children({ props })}
-          <div class="flex flex-col space-y-2">
-            <Form.Label>Sleep</Form.Label>
-            <Form.Description>
-              If enabled, the user is sleep and cannot signin
-            </Form.Description>
-            <div class="flex space-x-4">
-              <Customswitch
-                disabled={loading}
-                bind:checked={$formData.sleep}
-                {...props}
-                aria-readonly
-              />
-              <span> {$formData.sleep ? "On" : "Off"} </span>
+      <Form.Field
+        {form}
+        name="sleep"
+        class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
+      >
+        <Form.Control>
+          {#snippet children({ props })}
+            <div class="flex flex-col space-y-2">
+              <Form.Label>Sleep</Form.Label>
+              <Form.Description></Form.Description>
+              <div class="flex space-x-4">
+                <Customswitch
+                  disabled={loading}
+                  bind:checked={$formData.sleep}
+                  {...props}
+                  aria-readonly
+                />
+                <span> {$formData.sleep ? "On" : "Off"} </span>
+              </div>
             </div>
-          </div>
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
-
-    <Form.Field {form} name="timezone" class="mb-4">
-      <Form.Control>
-        {#snippet children({ props })}
-          <div class="flex flex-col items-start space-y-2">
-            <Form.Label>Timezone</Form.Label>
-            <Timezoneselector
-              disabled={loading}
-              {...props}
-              bind:value={$formData.timezone}
-            />
-          </div>
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
+          {/snippet}
+        </Form.Control>
+        <Form.FieldErrors />
+      </Form.Field>
+      <Form.Field {form} name="timezone" class="mb-4">
+        <Form.Control>
+          {#snippet children({ props })}
+            <div class="flex flex-col items-start space-y-2">
+              <Form.Label class="mb-1">Timezone</Form.Label>
+              <Timezoneselector
+                disabled={loading}
+                {...props}
+                bind:value={$formData.timezone}
+              />
+            </div>
+          {/snippet}
+        </Form.Control>
+        <Form.FieldErrors />
+      </Form.Field>
+    </div>
 
     <Form.Field {form} name="runas" class="mb-4">
       <Form.Control>

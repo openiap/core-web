@@ -836,7 +836,7 @@
           <Form.Control>
             {#snippet children({ props })}
               <div class="flex flex-col items-start space-y-2">
-                <Form.Label>Timezone</Form.Label>
+                <Form.Label class="mb-1">Timezone</Form.Label>
                 <Timezoneselector
                   disabled={loading}
                   {...props}
