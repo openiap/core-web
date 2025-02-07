@@ -52,13 +52,13 @@
   {$message}
 {/if}
 
-<header>
+<header class="mb-4">
   <HotkeyButton
     onclick={() => {
       goto(base + "/billingaccount/" + data.id + "/billing");
     }}
   >
-    billing usage
+    All billing usage
   </HotkeyButton>
   <HotkeyButton
     onclick={() => {

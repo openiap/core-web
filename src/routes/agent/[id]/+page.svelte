@@ -22,17 +22,18 @@
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import { AnsiUp } from "ansi_up";
   import {
-    Box,
-    CalendarDays,
-    Check,
-    Gauge,
-    Hourglass,
-    Laptop,
-    RefreshCcw,
-    Tag,
-    Trash2,
-    User,
-    Zap,
+      Box,
+      CalendarDays,
+      Check,
+      Gauge,
+      Hourglass,
+      Laptop,
+      RefreshCcw,
+      Tag,
+      Trash2,
+      User,
+      Webhook,
+      Zap,
   } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
@@ -644,9 +645,23 @@
         onclick={() => {
           refreshPods();
         }}
+        class="mr-4"
       >
         <RefreshCcw />
         Refresh</HotkeyButton
+      >
+      <HotkeyButton
+        aria-label="Open in Web"
+        title="Open in Web"
+        variant="base"
+        size="base"
+        disabled={$formData.webserver != true ||
+          instances.find((x: any) => x.showstatus === "running") ||
+          loading}
+        onclick={() => window.open(auth.weburl($formData.slug), "_blank")}
+      >
+        <Webhook />
+        Open in Web</HotkeyButton
       >
     {/if}
 

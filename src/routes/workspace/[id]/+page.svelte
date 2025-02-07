@@ -24,6 +24,7 @@
 
   const key = "workspace";
   const { data } = $props();
+  let _workspaceid = data.currentworkspace._id;
   let loading = $state(false);
   let currentworkspace = $state(data.currentworkspace);
 
@@ -241,6 +242,17 @@
   const cardHeader = "text-center";
   const cardTitle = "text-bw950 dark:text-bw100";
   const cardDiv = "flex flex-col justify-between row-span-4";
+
+  $effect(() => {
+    if (
+      usersettings.currentworkspace != "" &&
+      _workspaceid != usersettings.currentworkspace
+    ) {
+      // goto(base + "/workspace/" + usersettings.currentworkspace);
+      // window.location.href = base + "/workspace/" + usersettings.currentworkspace;
+      goto(base + "/workspace/" + usersettings.currentworkspace + "/redirect");
+    }
+  });
 </script>
 
 {#if message && $message != ""}

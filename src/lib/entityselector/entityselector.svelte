@@ -17,6 +17,7 @@
         name = "Entity",
         projection = {},
         noitem = false,
+        width = "w-64",
         ...restProps
     } = $props();
 
@@ -35,7 +36,7 @@
         } else {
             id = value;
         }
-        if(id == null) {
+        if (id == null) {
             return placeholder;
         }
         let item = await auth.client.FindOne<any>({
@@ -63,7 +64,7 @@
                 jwt: auth.access_token,
                 projection,
             });
-        } catch (error:any) {
+        } catch (error: any) {
             toast.error("Error loading entities", {
                 description: error.message,
             });
@@ -96,9 +97,11 @@
 <Popover.Root bind:open={isOpen} {...restProps}>
     <Popover.Trigger
         disabled={loading}
-        class={" w-64 dark:bg-bw1000 flex items-center justify-between border rounded-[10px] px-3 py-1 dark:border-bw600 dark:text-bw500  dark:hover:bg-bw700 dark:hover:border-bw500 text-sm " +
+        class={"dark:bg-bw1000 flex items-center justify-between border rounded-[10px] px-3 py-1 dark:border-bw600 dark:text-bw500  dark:hover:bg-bw700 dark:hover:border-bw500 text-sm " +
             " " +
             height +
+            " " +
+            width +
             " " +
             className}
     >

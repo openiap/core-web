@@ -110,6 +110,7 @@
       {#snippet children({ props })}
         <Form.Label>Name</Form.Label>
         <CustomInput
+          width="w-1/3"
           placeholder="Type name"
           disabled={loading}
           {...props}
@@ -125,6 +126,7 @@
       {#snippet children({ props })}
         <Form.Label>Queue</Form.Label>
         <EntitySelector
+          width="w-1/3"
           collectionname="mq"
           bind:value={$formData.wiqid}
           basefilter={{ _type: "workitemqueue" }}
@@ -140,7 +142,7 @@
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Payload</Form.Label>
-        <ObjectInput bind:value={$formData.payload} class="w-64" name="queue" />
+        <ObjectInput bind:value={$formData.payload} class="h-36" name="queue" />
       {/snippet}
     </Form.Control>
     <Form.FieldErrors />

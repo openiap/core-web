@@ -255,28 +255,10 @@
 
 <header>
   <div>
-    <h1 class="font-semibold mb-2">Billing Account</h1>
     <div class="text-bw500 mb-2">
-      This workspace has the following billing account tied to it:
+      This is the billable useage for "{data?.billingaccount?.name}"
     </div>
-    <HotkeyButton
-      class="mb-2"
-      onclick={() => {
-        goto(base + "/billingaccount/" + data.billingaccount?._id);
-      }}
-    >
-      <ReceiptText />
-      {data?.billingaccount?.name}'s Billing account
-    </HotkeyButton>
   </div>
-  <HotkeyButton
-    class="mb-2"
-    onclick={() => {
-      goto(base + "/billingaccount/" + data.billingaccount?._id + "/billing");
-    }}
-  >
-    billing usage
-  </HotkeyButton>
 </header>
 
 <div class="flex flex-wrap gap-4">

@@ -140,24 +140,9 @@
                                 goto(base + "/workspace/" + currentworkspace)}
                             class="gap-2 p-2 text-muted-foreground font-medium"
                         >
-                            <Pencil class="size-4" />
-                            Edit {activeWorkspacename()}
+                            <DollarSignIcon class="size-4" />
+                            Billing for {activeWorkspacename()}
                         </DropdownMenu.Item>
-                        {#if hasBilling()}
-                            <DropdownMenu.Item
-                                onSelect={() =>
-                                    goto(
-                                        base +
-                                            "/workspace/" +
-                                            currentworkspace +
-                                            "/billing",
-                                    )}
-                                class="gap-2 p-2 text-muted-foreground font-medium"
-                            >
-                                <DollarSignIcon class="size-4" />
-                                Billing for {activeWorkspacename()}
-                            </DropdownMenu.Item>
-                        {/if}
                     {/if}
                     <DropdownMenu.Separator class="mx-1" />
 

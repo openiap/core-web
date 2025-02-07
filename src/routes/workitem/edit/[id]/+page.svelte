@@ -151,43 +151,61 @@
 {/if}
 
 <form method="POST" use:enhance>
-  <Form.Field {form} name="name" class="mb-7">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Name</Form.Label>
-        <CustomInput
-          placeholder="Type name"
-          disabled={loading}
-          {...props}
-          bind:value={$formData.name}
-        />
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
+  <div class="grid lg:grid-cols-2">
+    <Form.Field {form} name="name" class="mb-4">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Name</Form.Label>
+          <CustomInput
+            width="w-2/3"
+            placeholder="Type name"
+            disabled={loading}
+            {...props}
+            bind:value={$formData.name}
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
 
-  <div class="mb-7">
-    <div class="mb-2">State</div>
-    <div class="text-bw400">
-      {$formData.state}
-    </div>
+    <Form.Field {form} name="queue" class="mb-4">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Queue</Form.Label>
+          <EntitySelector
+            width="w-2/3"
+            collectionname="mq"
+            bind:value={$formData.wiqid}
+            basefilter={{ _type: "workitemqueue" }}
+            class="w-64"
+            name="queue"
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
   </div>
 
-  <Form.Field {form} name="queue" class="mb-7">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Queue</Form.Label>
-        <EntitySelector
-          collectionname="mq"
-          bind:value={$formData.wiqid}
-          basefilter={{ _type: "workitemqueue" }}
-          class="w-64"
-          name="queue"
-        />
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
+  <div class="flex space-x-5">
+    <div class="mb-4">
+      <div class="mb-2">State</div>
+      <div class="text-bw400">
+        {$formData.state}
+      </div>
+    </div>
+    <div class="mb-4">
+      <div class="mb-2">Retries</div>
+      <div class="text-bw400">
+        {$formData.retries}
+      </div>
+    </div>
+    <div class="mb-4">
+      <div class="mb-2">Priority</div>
+      <div class="text-bw400">
+        {$formData.priority}
+      </div>
+    </div>
+  </div>
 
   <Form.Field {form} name="payload" class="mb-7">
     <Form.Control>
@@ -196,40 +214,8 @@
         <ObjectInput
           bind:value={$formData.payload}
           basefilter={{ _type: "workitemqueue" }}
-          class="w-64 m-h-full"
+          class="h-36"
           name="queue"
-        />
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-
-  <Form.Field {form} name="retries" class="mb-7">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Retries</Form.Label>
-        <CustomInput
-          placeholder="Type name"
-          disabled={loading}
-          {...props}
-          bind:value={$formData.retries}
-          type="number"
-        />
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-
-  <Form.Field {form} name="priority" class="mb-7">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Priority</Form.Label>
-        <CustomInput
-          placeholder="Type name"
-          disabled={loading}
-          {...props}
-          bind:value={$formData.priority}
-          type="number"
         />
       {/snippet}
     </Form.Control>
@@ -347,6 +333,7 @@
   {/if}
 
   <Form.Button
+    class=""
     variant="success"
     size="base"
     disabled={loading}

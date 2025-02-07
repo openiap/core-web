@@ -355,74 +355,11 @@
 
 <header class="mb-6">
   <div>
-    <h1 class="font-semibold mb-2">Billing Account</h1>
     <div class="text-bw500 mb-2">
       Detailed billing information for all workspaces attached to this billing
       account.
     </div>
-    <div class="flex items-center space-x-4 mb-4">
-      <HotkeyButton
-        onclick={() => {
-          goto(base + "/billingaccount/" + data.billingaccount?._id);
-        }}
-      >
-        <ReceiptText />
-        {data?.billingaccount?.name}'s Billing account
-      </HotkeyButton>
-      <HotkeyButton
-        onclick={() => {
-          goto(base + "/licensekey");
-        }}
-      >
-        Manage OpenCore Licenses
-      </HotkeyButton>
-    </div>
   </div>
-
-  {#if data.billingaccount?.stripeid != null && data.billingaccount?.stripeid != ""}
-    <HotkeyButton
-      disabled={loading}
-      onclick={async () => {
-        try {
-          const link = await auth.client.CustomCommand({
-            command: "getbillingportallink",
-            id: data.billingaccount?._id,
-            jwt: auth.access_token,
-          });
-          if (link != null && link != "") {
-            document.location.href = link.split('"').join("");
-          } else {
-            toast.error("Error opening billing portal");
-          }
-        } catch (error: any) {
-          toast.error("Error opening billing portal", {
-            description: error.message,
-          });
-        }
-      }}
-    >
-      Open Billing Portal
-    </HotkeyButton>
-    <HotkeyButton
-      disabled={loading}
-      onclick={async () => {
-        try {
-          const link = await auth.client.CustomCommand({
-            command: "syncbillingaccount",
-            id: data.billingaccount?._id,
-            jwt: auth.access_token,
-          });
-          toast.success("Billing account synced");
-        } catch (error: any) {
-          toast.error("Error opening billing portal", {
-            description: error.message,
-          });
-        }
-      }}
-    >
-      Sync with Stripe
-    </HotkeyButton>
-  {/if}
 </header>
 
 <div class="grid lg:grid-cols-3 gap-4 lg:gap-10">
