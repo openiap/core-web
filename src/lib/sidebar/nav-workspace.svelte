@@ -9,6 +9,7 @@
         Building,
         Check,
         ChevronDown,
+        ChevronRight,
         CircleCheck,
         DollarSignIcon,
         Pencil,
@@ -75,7 +76,7 @@
                                         Select workspace
                                     </span>
                                 </div>
-                                <ChevronDown class="ml-auto" />
+                                <ChevronRight class="ml-auto" />
                             {/if}
                         </Sidebar.MenuButton>
                     {/snippet}
