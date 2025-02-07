@@ -629,25 +629,25 @@
       title="Save changes"
       variant="success"
       size="base"
-      class="mb-4"
+      class="mb-4 mr-4"
     >
       <Check />
       Save Changes</Form.Button
     >
     {#if $formData.image != null && $formData.image != ""}
-    <HotkeyButton
-      aria-label="Refresh"
-      title="Refresh"
-      variant="base"
-      size="base"
-      disabled={loading}
-      onclick={() => {
-        refreshPods();
-      }}
-    >
-      <RefreshCcw />
-      Refresh</HotkeyButton
-    >
+      <HotkeyButton
+        aria-label="Refresh"
+        title="Refresh"
+        variant="base"
+        size="base"
+        disabled={loading}
+        onclick={() => {
+          refreshPods();
+        }}
+      >
+        <RefreshCcw />
+        Refresh</HotkeyButton
+      >
     {/if}
 
     <div class="flex items-center justify-between space-x-4">
@@ -690,41 +690,41 @@
       </Form.Field>
 
       {#if $formData.image != null && $formData.image != ""}
-      <Form.Field {form} name="image" class="w-full">
-        <Form.Control>
-          {#snippet children({ props })}
-            <Form.Label>Image</Form.Label>
-            <CustomSelect
-              type="single"
-              {loading}
-              {...props}
-              bind:value={$formData.image}
-              onValueChangeFunction={ImageUpdated}
-              selectitems={images}
-              triggerContent={triggerContentImage}
-            />
-          {/snippet}
-        </Form.Control>
-        <Form.FieldErrors />
-      </Form.Field>
+        <Form.Field {form} name="image" class="w-full">
+          <Form.Control>
+            {#snippet children({ props })}
+              <Form.Label>Image</Form.Label>
+              <CustomSelect
+                type="single"
+                {loading}
+                {...props}
+                bind:value={$formData.image}
+                onValueChangeFunction={ImageUpdated}
+                selectitems={images}
+                triggerContent={triggerContentImage}
+              />
+            {/snippet}
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
 
-      <Form.Field {form} name="_stripeprice" class="w-full">
-        <Form.Control>
-          {#snippet children({ props })}
-            <Form.Label>Plan</Form.Label>
-            <CustomSelect
-              {loading}
-              {...props}
-              bind:value={$formData._stripeprice}
-              onValueChangeFunction={PlanUpdated}
-              selectitems={products}
-              triggerContent={triggerContentPlan}
-              type="single"
-            />
-          {/snippet}
-        </Form.Control>
-        <Form.FieldErrors />
-      </Form.Field>
+        <Form.Field {form} name="_stripeprice" class="w-full">
+          <Form.Control>
+            {#snippet children({ props })}
+              <Form.Label>Plan</Form.Label>
+              <CustomSelect
+                {loading}
+                {...props}
+                bind:value={$formData._stripeprice}
+                onValueChangeFunction={PlanUpdated}
+                selectitems={products}
+                triggerContent={triggerContentPlan}
+                type="single"
+              />
+            {/snippet}
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
       {:else}
         <!-- add 2, to keep aligned with cloud agents -->
         <div class="w-full"></div>
@@ -756,103 +756,98 @@
     </Form.Field>
 
     {#if $formData.image != null && $formData.image != ""}
-    <Form.Field
-      {form}
-      name="autostart"
-      class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
-    >
+      <div class="grid grid-cols-4">
+        <Form.Field
+          {form}
+          name="autostart"
+          class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
+        >
+          <Form.Control>
+            {#snippet children({ props })}
+              <div class="flex flex-col space-y-2">
+                <Form.Label>Auto Start</Form.Label>
+                <Form.Description></Form.Description>
+                <div class="flex items-center space-x-4">
+                  <CustomSwitch
+                    disabled={loading}
+                    bind:checked={$formData.autostart}
+                    {...props}
+                    aria-readonly
+                  />
+                  <span> {$formData.autostart ? "On" : "Off"} </span>
+                </div>
+              </div>
+            {/snippet}
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
 
-      <Form.Control>
-        {#snippet children({ props })}
-          <div class="flex flex-col space-y-2">
-            <Form.Label>Auto Start</Form.Label>
-            <Form.Description>
-              If enabled, the user is autostart and cannot signin
-            </Form.Description>
-            <div class="flex items-center space-x-4">
-              <CustomSwitch
-                disabled={loading}
-                bind:checked={$formData.autostart}
-                {...props}
-                aria-readonly
-              />
-              <span> {$formData.autostart ? "On" : "Off"} </span>
-            </div>
-          </div>
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
+        <Form.Field
+          {form}
+          name="webserver"
+          class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
+        >
+          <Form.Control>
+            {#snippet children({ props })}
+              <div class="flex flex-col space-y-2">
+                <Form.Label>Web Server</Form.Label>
+                <Form.Description></Form.Description>
+                <div class="flex space-x-4">
+                  <CustomSwitch
+                    disabled={loading}
+                    bind:checked={$formData.webserver}
+                    {...props}
+                    aria-readonly
+                  />
+                  <span> {$formData.webserver ? "On" : "Off"} </span>
+                </div>
+              </div>
+            {/snippet}
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
 
-    <Form.Field
-      {form}
-      name="webserver"
-      class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
-    >
-      <Form.Control>
-        {#snippet children({ props })}
-          <div class="flex flex-col space-y-2">
-            <Form.Label>Web Server</Form.Label>
-            <Form.Description>
-              If enabled, the user is webserver and cannot signin
-            </Form.Description>
-            <div class="flex space-x-4">
-              <CustomSwitch
-                disabled={loading}
-                bind:checked={$formData.webserver}
-                {...props}
-                aria-readonly
-              />
-              <span> {$formData.webserver ? "On" : "Off"} </span>
-            </div>
-          </div>
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
+        <Form.Field
+          {form}
+          name="sleep"
+          class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
+        >
+          <Form.Control>
+            {#snippet children({ props })}
+              <div class="flex flex-col space-y-2">
+                <Form.Label>Sleep</Form.Label>
+                <Form.Description></Form.Description>
+                <div class="flex space-x-4">
+                  <CustomSwitch
+                    disabled={loading}
+                    bind:checked={$formData.sleep}
+                    {...props}
+                    aria-readonly
+                  />
+                  <span> {$formData.sleep ? "On" : "Off"} </span>
+                </div>
+              </div>
+            {/snippet}
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
 
-    <Form.Field
-      {form}
-      name="sleep"
-      class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
-    >
-      <Form.Control>
-        {#snippet children({ props })}
-          <div class="flex flex-col space-y-2">
-            <Form.Label>Sleep</Form.Label>
-            <Form.Description>
-              If enabled, the user is sleep and cannot signin
-            </Form.Description>
-            <div class="flex space-x-4">
-              <CustomSwitch
-                disabled={loading}
-                bind:checked={$formData.sleep}
-                {...props}
-                aria-readonly
-              />
-              <span> {$formData.sleep ? "On" : "Off"} </span>
-            </div>
-          </div>
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
-
-    <Form.Field {form} name="timezone" class="mb-4">
-      <Form.Control>
-        {#snippet children({ props })}
-          <div class="flex flex-col items-start space-y-2">
-            <Form.Label>Timezone</Form.Label>
-            <Timezoneselector
-              disabled={loading}
-              {...props}
-              bind:value={$formData.timezone}
-            />
-          </div>
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
+        <Form.Field {form} name="timezone" class="mb-4">
+          <Form.Control>
+            {#snippet children({ props })}
+              <div class="flex flex-col items-start space-y-2">
+                <Form.Label>Timezone</Form.Label>
+                <Timezoneselector
+                  disabled={loading}
+                  {...props}
+                  bind:value={$formData.timezone}
+                />
+              </div>
+            {/snippet}
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
+      </div>
     {/if}
 
     <Form.Field {form} name="runas">
@@ -1034,14 +1029,14 @@
   </form>
 
   {#if $formData.image != null && $formData.image != "" && data.agentInstance != null}
-  <div class="italic text-gray-500 py-2">
-    Agents using free plan will be shutdown after {data.agentInstance
-      ?.defaultmetadata.runtime_hours} hours. Buy one or more products on the customer
-    page, and then assign it to an agent to allow it to run 24/7. You are limited
-    to
-    {data.agentInstance?.defaultmetadata.agentcount} free agents. Add more resources
-    on the customer page to increase the limit.
-  </div>
+    <div class="italic text-gray-500 py-2">
+      Agents using free plan will be shutdown after {data.agentInstance
+        ?.defaultmetadata.runtime_hours} hours. Buy one or more products on the customer
+      page, and then assign it to an agent to allow it to run 24/7. You are limited
+      to
+      {data.agentInstance?.defaultmetadata.agentcount} free agents. Add more resources
+      on the customer page to increase the limit.
+    </div>
   {/if}
 
   <CustomSuperDebug {formData} />
