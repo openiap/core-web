@@ -14,7 +14,14 @@
   import { auth } from "$lib/stores/auth.svelte";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import { WarningDialogue } from "$lib/warningdialogue/index.js";
-  import { Folder, History, Pencil, Plus, RefreshCcw, Trash2 } from "lucide-svelte";
+  import {
+    Folder,
+    History,
+    Pencil,
+    Plus,
+    RefreshCcw,
+    Trash2,
+  } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
@@ -22,7 +29,6 @@
   let loading = $state(false);
   datacomponent.parsesettings(data.settings);
   let showWarningEntityDelete = $state(false);
-  let addCollectionDialoge = $state(false);
   let newCollectionName = $state("");
 
   let collectionname = $state("");
@@ -90,9 +96,7 @@
       toast.success(`Deleted ${collectionname} collection`);
       selectcollection("entities");
       newCollectionName = "";
-      setTimeout(() => {
-        getCollections();
-      }, 2000);
+      getCollections();
     } catch (error: any) {
       toast.error("Error while deleting collection", {
         description: error,
@@ -101,30 +105,32 @@
     }
     showWarningEntityDelete = false;
   }
-  async function createCollection() {
-    if (!newCollectionName) {
-      toast.error("Name cannot be empty");
-      return;
-    }
-    try {
-      await auth.client.CreateCollection({
-        jwt: auth.access_token,
-        collectionname: newCollectionName,
-      });
-      toast.success(`Added ${newCollectionName} collection`);
-      setTimeout(() => {
-        getCollections();
-      }, 2000);
-      selectcollection(newCollectionName);
-      newCollectionName = "";
-      addCollectionDialoge = false;
-    } catch (error: any) {
-      toast.error("Error while creating collection", {
-        description: error,
-      });
-      return;
-    }
-  }
+  // async function createCollection() {
+  //   if (!newCollectionName) {
+  //     toast.error("Name cannot be empty");
+  //     return;
+  //   }
+  //   try {
+  //     await auth.client.CreateCollection({
+  //       jwt: auth.access_token,
+  //       collectionname: newCollectionName,
+  //     });
+  //     toast.success(`Added ${newCollectionName} collection`);
+  //     setTimeout(() => {
+  //       getCollections();
+  //     }, 2000);
+  //     selectcollection(newCollectionName);
+  //     newCollectionName = "";
+  //     addCollectionDialoge = false;
+  //   } catch (error: any) {
+  //     toast.error("Error while creating collection", {
+  //       description: error,
+  //     });
+  //     return;
+  //   }
+  // }
+  let profileroles = auth.profile?.roles || [];
+  const isAdmin = profileroles.includes("admins");
 </script>
 
 <div class="flex items-start justify-between">
@@ -137,9 +143,7 @@
       size="sm"
       data-shortcut="n,ins"
       disabled={loading}
-      onclick={async () => {
-        addCollectionDialoge = true;
-      }}
+      onclick={() => goto(base + `/entities/new`)}
     >
       <Plus />
       Add collection</HotkeyButton
@@ -173,17 +177,19 @@
           <RefreshCcw />
           Refresh</HotkeyButton
         >
-        <HotkeyButton
-          size="sm"
-          variant="danger"
-          disabled={loading}
-          onclick={async () => {
-            showWarningEntityDelete = true;
-          }}
-        >
-          <Trash2 />
-          Delete {collectionname}</HotkeyButton
-        >
+        {#if isAdmin}
+          <HotkeyButton
+            size="sm"
+            variant="danger"
+            disabled={loading}
+            onclick={async () => {
+              showWarningEntityDelete = true;
+            }}
+          >
+            <Trash2 />
+            Delete {collectionname}</HotkeyButton
+          >
+        {/if}
         <HotkeyButton
           size="sm"
           data-shortcut="n,ins"
@@ -259,23 +265,6 @@
 >
   Next</HotkeyButton
 >
-
-<Dialog.Root bind:open={addCollectionDialoge}>
-  <Dialog.Content class="max-w-xs">
-    <Dialog.Header>
-      <Dialog.Title>Add New Collection</Dialog.Title>
-    </Dialog.Header>
-    <div>Name</div>
-    <div>
-      <CustomInput bind:value={newCollectionName} />
-    </div>
-    <Dialog.Footer>
-      <HotkeyButton type="submit" variant="success" onclick={createCollection}
-        >Create</HotkeyButton
-      >
-    </Dialog.Footer>
-  </Dialog.Content>
-</Dialog.Root>
 
 <WarningDialogue
   bind:showWarning={showWarningEntityDelete}

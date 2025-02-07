@@ -5,9 +5,9 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
-  import Button from "$lib/components/ui/button/button.svelte";
   import * as Form from "$lib/components/ui/form/index.js";
-  import { Input } from "$lib/components/ui/input/index.js";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
+  import { CustomInput } from "$lib/custominput/index.js";
   import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { Check } from "lucide-svelte";
@@ -53,29 +53,23 @@
 {/if}
 
 <header>
-  <Button
-    variant="outline"
-    size="base"
+  <HotkeyButton
     onclick={() => {
       goto(base + "/billingaccount/" + data.id + "/billing");
     }}
   >
     billing usage
-  </Button>
-  <Button
-    variant="outline"
-    size="base"
+  </HotkeyButton>
+  <HotkeyButton
     onclick={() => {
       goto(base + "/licensekey");
     }}
   >
     Manage OpenCore Licenses
-  </Button>
+  </HotkeyButton>
 
   {#if data.item?.stripeid != null && data.item?.stripeid != ""}
-    <Button
-      variant="outline"
-      size="base"
+    <HotkeyButton
       onclick={async () => {
         try {
           const link = await auth.client.CustomCommand({
@@ -96,10 +90,8 @@
       }}
     >
       Open Billing Portal
-    </Button>
-    <Button
-      variant="outline"
-      size="base"
+    </HotkeyButton>
+    <HotkeyButton
       onclick={async () => {
         try {
           const link = await auth.client.CustomCommand({
@@ -116,7 +108,7 @@
       }}
     >
       Sync with Stripe
-    </Button>
+    </HotkeyButton>
   {/if}
 </header>
 <form method="POST" use:enhance>
@@ -124,7 +116,7 @@
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Company Name</Form.Label>
-        <Input {...props} bind:value={$formData.name} />
+        <CustomInput {...props} bind:value={$formData.name} />
       {/snippet}
     </Form.Control>
     <Form.Description>This is your company name.</Form.Description>

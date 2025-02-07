@@ -442,7 +442,7 @@
     {/if}
   {/snippet}
   {#snippet action(item: any)}
-    <div class="flex items-center justify-center space-x-2.5">
+    <div class="flex items-center justify-end space-x-2.5">
       <HotkeyButton
         aria-label="start"
         title="start"

@@ -11,7 +11,7 @@
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
-  import { Check } from "lucide-svelte";
+  import { Check, Mail, SquareArrowDown, SquareArrowUp } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import SuperDebug, { superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
@@ -254,7 +254,7 @@
         {#snippet children({ props })}
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <div class="grid grid-col-1 lg:grid-cols-1 gap-2">
-              <Form.Label>Workspace Name</Form.Label>
+              <Form.Label class="font-medium">Workspace Name</Form.Label>
               <div class="text-bw400">
                 Your are managing the workspace below
               </div>
@@ -280,7 +280,6 @@
                     Select a billing account for this workspace
                   </div>
                   <CustomSelect
-                    class="max-w-xs"
                     type="single"
                     triggerContent={billingname}
                     bind:value={billingid}
@@ -361,12 +360,17 @@
         </Card.Content>
         <Card.Footer class="flex justify-between">
           {#if currentworkspace == null || currentworkspace._resourceusageid == null || currentworkspace._resourceusageid == ""}
-            <HotkeyButton>Current</HotkeyButton>
+            <HotkeyButton>
+              <Check class="p-0.5" />
+              Current Plan</HotkeyButton
+            >
           {:else}
             <HotkeyButton
               disabled={loading}
               onclick={removeplan}
-              variant="danger">Downgrade</HotkeyButton
+              variant="danger"
+            >
+              <SquareArrowDown /> Downgrade</HotkeyButton
             >
           {/if}
         </Card.Footer>
@@ -401,15 +405,24 @@
         </Card.Content>
         <Card.Footer class="flex justify-between">
           {#if currentworkspace == null || currentworkspace._resourceusageid == null || currentworkspace._resourceusageid == ""}
-            <HotkeyButton disabled={loading} onclick={addplan} class="success"
-              >Upgrade</HotkeyButton
+            <HotkeyButton
+              disabled={loading}
+              onclick={addplan}
+              variant="success"
+            >
+              <SquareArrowUp />
+              Upgrade To Basic</HotkeyButton
             >
           {:else if currentworkspace._productname != "Basic tier"}
-            <HotkeyButton disabled={loading} onclick={addplan} variant="danger"
-              >Downgrade</HotkeyButton
+            <HotkeyButton disabled={loading} onclick={addplan} variant="danger">
+              <SquareArrowDown />
+              Downgrade</HotkeyButton
             >
           {:else}
-            <HotkeyButton>Current</HotkeyButton>
+            <HotkeyButton
+              ><Check class="p-0.5" />
+              Current Plan</HotkeyButton
+            >
           {/if}
         </Card.Footer>
       </div>
@@ -453,6 +466,7 @@
                 "noopener,noreferrer",
               )}
           >
+            <Mail />
             Contact us
           </HotkeyButton>
         </Card.Footer>

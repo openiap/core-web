@@ -2,21 +2,23 @@
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-  import Button from "$lib/components/ui/button/button.svelte";
   import * as Card from "$lib/components/ui/card/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
-  import Input from "$lib/components/ui/input/input.svelte";
   import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
+  import Separator from "$lib/components/ui/separator/separator.svelte";
   import * as Sheet from "$lib/components/ui/sheet/index.js";
+  import { CustomInput } from "$lib/custominput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import { Resource, ResourceUsage, type Product } from "$lib/types.svelte.js";
   import {
-      Clock,
-      LucideBadgeDollarSign,
-      Minus,
-      Plus,
-      Trash,
+    Clock,
+    Info,
+    LucideBadgeDollarSign,
+    Minus,
+    Plus,
+    ReceiptText,
+    Trash2,
   } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
@@ -344,33 +346,41 @@
 
   let profileroles = auth.profile?.roles || [];
   const isAdmin = profileroles.includes("admins");
+
+  const cardRoot = "w-full h-[430px] dark:bg-bw850 grid grid-rows-4";
+  const cardHeader = "text-center";
+  const cardTitle = "text-bw950 dark:text-bw100";
+  const cardDiv = "flex flex-col justify-between row-span-4";
 </script>
 
-<header>
-  <Button
-    variant="outline"
-    size="base"
-    disabled={loading}
-    onclick={() => {
-      goto(base + "/billingaccount/" + data.billingaccount?._id);
-    }}
-  >
-    {data?.billingaccount?.name}
-  </Button> 's billing usage.
-  <Button
-    variant="outline"
-    size="base"
-    onclick={() => {
-      goto(base + "/licensekey");
-    }}
-  >
-    Manage OpenCore Licenses
-  </Button>
+<header class="mb-6">
+  <div>
+    <h1 class="font-semibold mb-2">Billing Account</h1>
+    <div class="text-bw500 mb-2">
+      Detailed billing information for all workspaces attached to this billing
+      account.
+    </div>
+    <div class="flex items-center space-x-4 mb-4">
+      <HotkeyButton
+        onclick={() => {
+          goto(base + "/billingaccount/" + data.billingaccount?._id);
+        }}
+      >
+        <ReceiptText />
+        {data?.billingaccount?.name}'s Billing account
+      </HotkeyButton>
+      <HotkeyButton
+        onclick={() => {
+          goto(base + "/licensekey");
+        }}
+      >
+        Manage OpenCore Licenses
+      </HotkeyButton>
+    </div>
+  </div>
 
   {#if data.billingaccount?.stripeid != null && data.billingaccount?.stripeid != ""}
-    <Button
-      variant="outline"
-      size="base"
+    <HotkeyButton
       disabled={loading}
       onclick={async () => {
         try {
@@ -392,10 +402,8 @@
       }}
     >
       Open Billing Portal
-    </Button>
-    <Button
-      variant="outline"
-      size="base"
+    </HotkeyButton>
+    <HotkeyButton
       disabled={loading}
       onclick={async () => {
         try {
@@ -413,166 +421,152 @@
       }}
     >
       Sync with Stripe
-    </Button>
+    </HotkeyButton>
   {/if}
 </header>
 
-<div class="flex flex-wrap gap-4">
+<div class="grid lg:grid-cols-3 gap-4 lg:gap-10">
   {#each resources as resource}
-    <Card.Root class="w-[450px] h-[500px] flex flex-col justify-around">
-      <Card.Header>
-        <Card.Title>{resource.name}</Card.Title>
+    <Card.Root class={cardRoot}>
+      <Card.Header class={cardHeader}>
+        <Card.Title class={cardTitle}>{resource.name}</Card.Title>
       </Card.Header>
-      <Card.Content>
-        <table class="w-full">
-          <thead>
-            <tr>
-              <th>Product</th>
-              <th>Quantity</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {#each resource.products as product}
-              {#key key}
-                <tr>
-                  <td>{product.name}</td>
-                  <td>{quantity(resource, product)}</td>
-                  <td>
-                    {#if canincrease(resource, product)}
-                      <Button
-                        variant="outline"
-                        size="base"
-                        disabled={loading}
-                        onclick={() => increment(resource, product)}
-                        ><Plus />
-                      </Button>
-                    {:else}
-                      <Button variant="outline" size="base" disabled={true}
-                        ><Plus />
-                      </Button>
-                    {/if}
-                    {#if candecrease(resource, product)}
-                      <Button
-                        variant="outline"
-                        size="base"
-                        disabled={loading}
-                        onclick={() => decrement(resource, product)}
-                        ><Minus />
-                      </Button>
-                    {:else}
-                      <Button variant="outline" size="base" disabled={true}
-                        ><Minus />
-                      </Button>
-                    {/if}
-                  </td>
-                </tr>
-              {/key}
-            {/each}
-          </tbody>
-        </table>
-      </Card.Content>
-      <Card.Footer class="flex justify-between">
-        <Button
-          variant="outline"
-          size="base"
-          disabled={rquantity(resource) == 0 || loading}
-          onclick={() => {
-            sheetresource = resource;
-            toggleSheet = true;
-          }}
-        >
-          <LucideBadgeDollarSign />
-          Detailed Usage
-        </Button>
-      </Card.Footer>
+      <div class={cardDiv}>
+        <Card.Content>
+          <table>
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {#each resource.products as product}
+                {#key key}
+                  <tr>
+                    <td>{product.name}</td>
+                    <td class="text-center">{quantity(resource, product)}</td>
+                    <td class="flex justify-end mb-2">
+                      {#if canincrease(resource, product)}
+                        <HotkeyButton
+                          disabled={loading}
+                          onclick={() => increment(resource, product)}
+                          ><Plus />
+                        </HotkeyButton>
+                      {:else}
+                        <HotkeyButton disabled={true}><Plus /></HotkeyButton>
+                      {/if}
+                      {#if candecrease(resource, product)}
+                        <HotkeyButton
+                          class="ms-2"
+                          disabled={loading}
+                          onclick={() => decrement(resource, product)}
+                          ><Minus />
+                        </HotkeyButton>
+                      {:else}
+                        <HotkeyButton class="ms-2" disabled={true}
+                          ><Minus /></HotkeyButton
+                        >
+                      {/if}
+                    </td>
+                  </tr>
+                {/key}
+              {/each}
+            </tbody>
+          </table>
+        </Card.Content>
+        <Card.Footer class="flex justify-between">
+          <HotkeyButton
+            disabled={rquantity(resource) == 0 || loading}
+            onclick={() => {
+              sheetresource = resource;
+              toggleSheet = true;
+            }}
+          >
+            <LucideBadgeDollarSign />
+            Detailed Usage
+          </HotkeyButton>
+        </Card.Footer>
+      </div>
     </Card.Root>
   {/each}
 </div>
 
 <Sheet.Root bind:open={toggleSheet}>
-  <Sheet.Content>
+  <Sheet.Content class="bg-bw200 dark:bg-bw1000">
     <Sheet.Header>
-      <Sheet.Title>Select columns</Sheet.Title>
+      <Sheet.Title>
+        <div class="flex items-center">
+          <Info class="p-1" /> Detailed Usage
+        </div></Sheet.Title
+      >
       <Sheet.Description>
-        Select what columns to show in the table.
+        View and manage your usage in all workspaces
       </Sheet.Description>
     </Sheet.Header>
-    <div class="grid gap-4 py-4">
-      <ScrollArea class="max-h-[70vh]">
-        {#each entities.filter((x) => x.resourceid == sheetresource._id) as resource}
-          <div class=" flex items-center space-x-4 rounded-md border p-4">
-            <div class="flex-1 space-y-1">
-              <p class="text-muted-foreground text-sm">
-                {resource.name}<br />
-                <Button
-                  variant="outline"
-                  size="base"
-                  disabled={loading}
-                  onclick={() => removeresourceusage(resource)}
-                >
-                  <Trash />
-                </Button>
-                {#if resource.product.assign == "metered"}
-                  <Button
-                    variant="outline"
-                    size="base"
-                    disabled={loading}
-                    onclick={async () => {
-                      try {
-                        loading = true;
-                        metervalues = JSON.parse(
-                          await auth.client.CustomCommand({
-                            command: "getmeteredresourceusage",
-                            id: resource._id,
-                            jwt: auth.access_token,
-                          }),
-                        );
-                        selectedmeter = resource;
-                        meterusageprompt = true;
-                      } catch (error: any) {
-                        toast.error("Error getting data", {
-                          description: error.message,
-                        });
-                      } finally {
-                        loading = false;
-                      }
-                    }}
-                  >
-                    <Clock />
-                  </Button>
-                  {/if}
-                  {#if resource.product.assign == "metered" && isAdmin}
-                  <Button
-                    variant="outline"
-                    size="base"
-                    disabled={loading}
-                    onclick={() => {
-                      selectedmeter = resource;
-                      meterprompt = true;
-                    }}
-                  >
-                    <Plus />
-                  </Button>
-                {/if}
-              </p>
+    <div class="border rounded-[10px] my-4">
+      <ScrollArea class="max-h-[70vh] bg-bw100 dark:bg-bw1000 rounded-[10px]">
+        {#each entities.filter((x) => x.resourceid == sheetresource._id) as resource, index}
+          {#if index != 0}
+            <div class="mx-3">
+              <Separator />
             </div>
+          {/if}
+          <div class="flex items-center justify-between p-4">
+            <p class="text-muted-foreground text-sm max-w-[200px]">
+              {resource.name}<br />
+              {#if resource.product.assign == "metered"}
+                <HotkeyButton
+                  disabled={loading}
+                  onclick={async () => {
+                    try {
+                      loading = true;
+                      metervalues = JSON.parse(
+                        await auth.client.CustomCommand({
+                          command: "getmeteredresourceusage",
+                          id: resource._id,
+                          jwt: auth.access_token,
+                        }),
+                      );
+                      selectedmeter = resource;
+                      meterusageprompt = true;
+                    } catch (error: any) {
+                      toast.error("Error getting data", {
+                        description: error.message,
+                      });
+                    } finally {
+                      loading = false;
+                    }
+                  }}
+                >
+                  <Clock />
+                </HotkeyButton>
+              {/if}
+              {#if resource.product.assign == "metered" && isAdmin}
+                <HotkeyButton
+                  disabled={loading}
+                  onclick={() => {
+                    selectedmeter = resource;
+                    meterprompt = true;
+                  }}
+                >
+                  <Plus />
+                </HotkeyButton>
+              {/if}
+            </p>
+            <HotkeyButton
+              variant="danger"
+              size="icon"
+              disabled={loading}
+              onclick={() => removeresourceusage(resource)}
+            >
+              <Trash2 />
+            </HotkeyButton>
           </div>
         {/each}
       </ScrollArea>
     </div>
-    <Sheet.Footer>
-      <Button
-        variant="outline"
-        size="base"
-        disabled={loading}
-        onclick={() => {
-          toggleSheet = false;
-        }}
-      >
-        Close
-      </Button>
-    </Sheet.Footer>
   </Sheet.Content>
 </Sheet.Root>
 
@@ -583,7 +577,7 @@
       <AlertDialog.Description>
         Add to {selectedmeter.name}<br />
         Please type the value to add to the meter
-        <Input bind:value={metervalue} type="number" />
+        <CustomInput bind:value={metervalue} type="number" />
       </AlertDialog.Description>
     </AlertDialog.Header>
     <AlertDialog.Footer>

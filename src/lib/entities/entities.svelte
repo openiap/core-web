@@ -459,11 +459,19 @@
 <div class="text-red-500">{data.errormessage}</div>
 
 <div class="overflow-hidden rounded-[10px] border border-bw500">
-	<div
+	<!-- <div
 		class={`border-bw500 rounded-[10px] ${
 			sidemenu.status
 				? `
 			${usersettings.currentpage.includes("entities") ? "lg:w-[59vw]" : "lg:w-[79vw]"}`
+				: "lg:w-full"
+		}`}
+	> -->
+	<div
+		class={`border-bw500 rounded-[10px] ${
+			sidemenu.status
+				? `
+		${usersettings.currentpage.includes("entities") ? "lg:w-full" : "lg:w-full"}`
 				: "lg:w-full"
 		}`}
 	>
@@ -477,10 +485,10 @@
 			{/if}
 			<Table.Header>
 				<Table.Row
-					class="bg-lighttableheader hover:bg-lighttableheader dark:bg-bw900 dark:hover:bg-bw900 rounded-[10px] "
+					class="bg-lighttableheader hover:bg-lighttableheader dark:bg-bw900 dark:hover:bg-bw900 "
 				>
 					{#if multi_select}
-						<Table.Head class="w-8 rounded-tl-[10px] " role="cell"
+						<Table.Head class="w-8 " role="cell"
 							><CustomCheckbox
 								arialabel="Select all"
 								checked={is_all_selected()}
@@ -517,7 +525,7 @@
 					{/each}
 					{#if rest["action"]}
 						<Table.Head
-							class="text-bw950 dark:text-bw200 font-normal rounded-tr-[10px] {actionheadclass}"
+							class="text-bw950 dark:text-bw200 font-normal {actionheadclass}"
 						>
 							<div class="flex items-center justify-end">
 								<IconRenderer title="Action" />

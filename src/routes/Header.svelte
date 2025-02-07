@@ -12,7 +12,9 @@
 	import { usersettings } from "$lib/stores/usersettings.svelte.js";
 	import {
 		ArrowLeft,
+		ArrowLeftToLine,
 		ArrowRight,
+		ArrowRightToLine,
 		Github,
 		PanelRight,
 		Trash2,
@@ -45,7 +47,6 @@
 	<div class="flex items-center">
 		<!-- <Sidebar.Trigger class="-ml-1" />
 		<Separator orientation="vertical" class="mr-2 h-4" /> -->
-
 		<HotkeyButton
 			variant="ghost"
 			size="icon"
@@ -53,13 +54,13 @@
 				sidemenu.status = !sidemenu.status;
 				console.log(sidemenu.status);
 			}}
-			class="me-4 text-bw500"
+			class="me-2 text-bw500"
 			title={sidemenu.status ? "Close sidebar" : "Open sidebar"}
 		>
 			{#if sidemenu.status}
-				<PanelRight class="hidden md:block dark:text-bw500" />
+				<ArrowLeftToLine class="hidden md:block dark:text-bw500" />
 			{:else}
-				<PanelRight class="hidden md:block dark:text-bw500" />
+				<ArrowRightToLine class="hidden md:block dark:text-bw500" />
 			{/if}
 		</HotkeyButton>
 

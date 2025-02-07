@@ -3,12 +3,14 @@
   import { base } from "$app/paths";
   import Button from "$lib/components/ui/button/button.svelte";
   import * as Card from "$lib/components/ui/card/index.js";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
   import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
+  import Separator from "$lib/components/ui/separator/separator.svelte";
   import * as Sheet from "$lib/components/ui/sheet/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import { Resource, ResourceUsage, type Product } from "$lib/types.svelte.js";
-  import { Check, Trash } from "lucide-svelte";
+  import { Info, ReceiptText, Trash, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   const { data } = $props();
@@ -252,24 +254,29 @@
 </script>
 
 <header>
-  Linked to
-  <Button
-    variant="outline"
-    size="base"
-    onclick={() => {
-      goto(base + "/billingaccount/" + data.billingaccount?._id);
-    }}
-  >
-    {data?.billingaccount?.name}
-  </Button> 's <Button
-    variant="outline"
-    size="base"
+  <div>
+    <h1 class="font-semibold mb-2">Billing Account</h1>
+    <div class="text-bw500 mb-2">
+      This workspace has the following billing account tied to it:
+    </div>
+    <HotkeyButton
+      class="mb-2"
+      onclick={() => {
+        goto(base + "/billingaccount/" + data.billingaccount?._id);
+      }}
+    >
+      <ReceiptText />
+      {data?.billingaccount?.name}'s Billing account
+    </HotkeyButton>
+  </div>
+  <HotkeyButton
+    class="mb-2"
     onclick={() => {
       goto(base + "/billingaccount/" + data.billingaccount?._id + "/billing");
     }}
   >
     billing usage
-  </Button>
+  </HotkeyButton>
 </header>
 
 <div class="flex flex-wrap gap-4">
@@ -335,7 +342,7 @@
             toggleSheet = true;
           }}
         >
-          <Check />
+          <Info />
           Detailed Usage
         </Button>
       </Card.Footer>
@@ -344,45 +351,43 @@
 </div>
 
 <Sheet.Root bind:open={toggleSheet}>
-  <Sheet.Content>
+  <Sheet.Content class="bg-bw200 dark:bg-bw1000">
     <Sheet.Header>
-      <Sheet.Title>Select columns</Sheet.Title>
+      <Sheet.Title>
+        <div class="flex items-center">
+          <Info class="p-1" /> Detailed Usage
+        </div>
+      </Sheet.Title>
       <Sheet.Description>
-        Select what columns to show in the table.
+        View and manage your usage in workspace:
       </Sheet.Description>
+      <div class="font-semibold">
+        {data?.billingaccount?.name}
+      </div>
     </Sheet.Header>
-    <div class="grid gap-4 py-4">
-      <ScrollArea class="max-h-[70vh]">
-        {#each entities.filter((x) => x.resourceid == sheetresource._id) as resource}
-          <div class=" flex items-center space-x-4 rounded-md border p-4">
-            <div class="flex-1 space-y-1">
-              <p class="text-muted-foreground text-sm">
-                {resource.name}
-                <Button
-                  variant="outline"
-                  size="base"
-                  disabled={loading}
-                  onclick={() => removeresourceusage(resource)}
-                >
-                  <Trash />
-                </Button>
-              </p>
+    <div class="border rounded-[10px] my-4">
+      <ScrollArea class="max-h-[70vh] bg-bw100 dark:bg-bw1000 rounded-[10px]">
+        {#each entities.filter((x) => x.resourceid == sheetresource._id) as resource, index}
+          {#if index != 0}
+            <div class="mx-3">
+              <Separator />
             </div>
+          {/if}
+          <div class="flex items-center justify-between p-4">
+            <p class="text-muted-foreground text-sm max-w-[200px]">
+              {resource.name}
+            </p>
+            <HotkeyButton
+              variant="danger"
+              size="icon"
+              disabled={loading}
+              onclick={() => removeresourceusage(resource)}
+            >
+              <Trash2 />
+            </HotkeyButton>
           </div>
         {/each}
       </ScrollArea>
     </div>
-    <Sheet.Footer>
-      <Button
-        variant="outline"
-        size="base"
-        disabled={loading}
-        onclick={() => {
-          toggleSheet = false;
-        }}
-      >
-        Close
-      </Button>
-    </Sheet.Footer>
   </Sheet.Content>
 </Sheet.Root>
