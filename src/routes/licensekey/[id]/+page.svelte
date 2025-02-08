@@ -1,31 +1,44 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
-  import { Acl } from "$lib/acl";
+  import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
+  import Button from "$lib/components/ui/button/button.svelte";
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
+  import Input from "$lib/components/ui/input/input.svelte";
   import { CustomInput } from "$lib/custominput/index.js";
   import { CustomSelect } from "$lib/customselect/index.js";
   import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
-  import { CustomSwitch } from "$lib/customswitch/index.js";
   import { EntitySelector } from "$lib/entityselector/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
-  import { Check, Plus, Trash2 } from "lucide-svelte";
+  import { Check, Minus, Plus } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { LicenseSchema } from "../schema.js";
+    import { client } from "@openiap/jsapi/dist/client.js";
+    import { ResourceUsage } from "$lib/types.svelte.js";
 
   let loading = $state(false);
   let errormessage = $state("");
   let newid = $state("");
   let members: any = $state([]);
-
+  let valueprompt = $state(false);
+  let valueprompttitle = $state("");
+  let valuepromptdescription = $state("");
+  let valuepromptvalue = $state(0);
+  let valuepromptaction:
+    | "addconnection"
+    | "removeconnection"
+    | "addworkspace"
+    | "removeworkspace"
+    | "addgitrepo"
+    | "removegitrepo" = $state("addconnection");
   const { data } = $props();
   let products = $state([
     {
       stripeprice: "",
-      name: "Free tier"
+      name: "Free tier",
     },
   ]);
   if (data.resource != null) {
@@ -57,35 +70,42 @@
             jwt: auth.access_token,
           });
           toast.success("License updated");
-          console.log("data.item._stripeprice: ", data.item._stripeprice, "form.data._stripeprice: ", form.data._stripeprice);
-          if(data.item._stripeprice != form.data._stripeprice) {
-            if(form.data._stripeprice == null || form.data._stripeprice == "") {
+          console.log(
+            "data.item._stripeprice: ",
+            data.item._stripeprice,
+            "form.data._stripeprice: ",
+            form.data._stripeprice,
+          );
+          if (data.item._stripeprice != form.data._stripeprice) {
+            if (
+              form.data._stripeprice == null ||
+              form.data._stripeprice == ""
+            ) {
               await auth.client.CustomCommand({
-                  command: "removeresourceusage",
-                  id: form.data._resourceusageid as any,
-                  jwt: auth.access_token,
-                });
+                command: "removeresourceusage",
+                id: form.data._resourceusageid as any,
+                jwt: auth.access_token,
+              });
             } else {
               const product = products.find(
                 (x: any) => x.stripeprice === form.data._stripeprice,
               );
               const { result, link } = JSON.parse(
-                  await auth.client.CustomCommand({
-                    command: "createresourceusage",
-                    data: JSON.stringify({
-                      target: form.data,
-                      billingid: form.data._billingid,
-                      resourceid: data.resource._id,
-                      productname: product?.name,
-                      allowreplace: true,
-                    }),
-                    jwt: auth.access_token,
+                await auth.client.CustomCommand({
+                  command: "createresourceusage",
+                  data: JSON.stringify({
+                    target: form.data,
+                    billingid: form.data._billingid,
+                    resourceid: data.resource._id,
+                    productname: product?.name,
+                    allowreplace: true,
                   }),
-                );
-                if (link != null && link != "") {
-                  document.location.href = link;
-                }
-
+                  jwt: auth.access_token,
+                }),
+              );
+              if (link != null && link != "") {
+                document.location.href = link;
+              }
             }
           }
           goto(base + `/licensekey`);
@@ -107,6 +127,94 @@
   const { form: formData, enhance, message, validateForm } = form;
   formData.set(data.item);
   validateForm({ update: true });
+
+  async function valuepromptdoaction() {
+    if (valuepromptvalue <= 0) {
+      toast.error("Error", {
+        description: "Value must be greater than 0",
+      });
+    }
+    try {
+      loading = true;
+      let adding = (valuepromptaction == "addconnection" || valuepromptaction == "addworkspace" || valuepromptaction == "addgitrepo");
+      let productname = "";
+      if(valuepromptaction.indexOf("connection") > -1) {
+        productname = "Additional connections";
+      } else if(valuepromptaction.indexOf("workspace") > -1) {
+        productname = "Additional workspaces";
+      } else if(valuepromptaction.indexOf("gitrepo") > -1) {
+        productname = "Additional getrepos";
+      }
+
+      const product = products.find(
+          (x: any) => x.name == productname,
+        );
+      if (product == null)
+          throw new Error("Failed to find `" + productname + "` product");
+      const target = $state.snapshot($formData);
+      if (adding) {
+        const { result, link } = JSON.parse(
+          await auth.client.CustomCommand({
+            command: "createresourceusage",
+            data: JSON.stringify({
+              target,
+              billingid: target._billingid,
+              resourceid: data.resource._id,
+              productname: product.name,
+              quantity: valuepromptvalue,
+            }),
+            jwt: auth.access_token,
+          }),
+        );
+        if (link != null && link != "") {
+          document.location.href = link;
+        }
+        toast.success("Resource " + productname + " assigned " + valuepromptvalue + " times");
+
+        data.item = await auth.client.FindOne({
+          collectionname: "config",
+          query: { _id: data.item._id },
+          jwt: auth.access_token,
+        });
+        formData.set(data.item);
+        validateForm({ update: true });
+      } else  {
+        let existing = await auth.client.FindOne<ResourceUsage>({
+          collectionname: "config",
+          query: { licenseid: data.item._id, "product.valueadd": true },
+          jwt: auth.access_token,
+        });
+        if(existing == null) {
+          throw new Error("Failed to find `" + productname + "` resource assigned to " + data.item._id);
+        }
+        const { result, link } = JSON.parse(
+          await auth.client.CustomCommand({
+            command: "removeresourceusage",
+            id: existing._id,
+            data: JSON.stringify({
+              quantity: valuepromptvalue,
+            }),
+            jwt: auth.access_token,
+          }),
+        );
+        toast.success("Resource `" + productname + "` removed " + valuepromptvalue + " times");
+
+        data.item = await auth.client.FindOne({
+          collectionname: "config",
+          query: { _id: data.item._id },
+          jwt: auth.access_token,
+        });
+        formData.set(data.item);
+        validateForm({ update: true });
+      }
+    } catch (error: any) {
+      toast.error("Error", {
+        description: error.message,
+      });
+    } finally {
+      loading = false;
+    }
+  }
 </script>
 
 {#if errormessage && errormessage != ""}
@@ -162,7 +270,7 @@
           {loading}
           {...props}
           bind:value={$formData._stripeprice}
-          selectitems={products}
+          selectitems={products.filter((x: any) => x.valueadd == false)}
           triggerContent={triggerContentPlan}
           type="single"
         />
@@ -184,6 +292,35 @@
           {...props}
           bind:value={$formData.connections}
         />
+        <Button
+          variant="outline"
+          size="base"
+          disabled={loading}
+          onclick={() => {
+            valuepromptaction = "addconnection";
+            valueprompttitle = "Add connections";
+            valuepromptdescription = "How many connections do you want to add?";
+            valuepromptvalue = 1;
+            valueprompt = true;
+          }}
+        >
+          <Plus />
+        </Button>
+        <Button
+          variant="outline"
+          size="base"
+          disabled={loading}
+          onclick={() => {
+            valuepromptaction = "removeconnection";
+            valueprompttitle = "Remove connections";
+            valuepromptdescription =
+              "How many connections do you want to remove?";
+            valuepromptvalue = 1;
+            valueprompt = true;
+          }}
+        >
+          <Minus />
+        </Button>
       {/snippet}
     </Form.Control>
     <Form.Description>Max number of concurent connections.</Form.Description>
@@ -200,9 +337,83 @@
           {...props}
           bind:value={$formData.workspaces}
         />
+        <Button
+        variant="outline"
+        size="base"
+        disabled={loading}
+        onclick={() => {
+          valuepromptaction = "addworkspace";
+          valueprompttitle = "Add workspaces";
+          valuepromptdescription = "How many workspaces do you want to add?";
+          valuepromptvalue = 1;
+          valueprompt = true;
+        }}
+      >
+        <Plus />
+      </Button>
+      <Button
+        variant="outline"
+        size="base"
+        disabled={loading}
+        onclick={() => {
+          valuepromptaction = "removeworkspace";
+          valueprompttitle = "Remove workspaces";
+          valuepromptdescription =
+            "How many workspaces do you want to remove?";
+          valuepromptvalue = 1;
+          valueprompt = true;
+        }}
+      >
+        <Minus />
+      </Button>
       {/snippet}
     </Form.Control>
     <Form.Description>Max number of workspaces.</Form.Description>
+    <Form.FieldErrors />
+  </Form.Field>
+
+  <Form.Field {form} name="gitrepos">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Git repositories</Form.Label>
+        <CustomInput
+          disabled={true}
+          placeholder="Type name"
+          {...props}
+          bind:value={$formData.gitrepos}
+        />
+        <Button
+        variant="outline"
+        size="base"
+        disabled={loading}
+        onclick={() => {
+          valuepromptaction = "addgitrepo";
+          valueprompttitle = "Add git repositories";
+          valuepromptdescription = "How many git repositories do you want to add?";
+          valuepromptvalue = 1;
+          valueprompt = true;
+        }}
+      >
+        <Plus />
+      </Button>
+      <Button
+        variant="outline"
+        size="base"
+        disabled={loading}
+        onclick={() => {
+          valuepromptaction = "removegitrepo";
+          valueprompttitle = "Remove git repositories";
+          valuepromptdescription =
+            "How many git repositories do you want to remove?";
+          valuepromptvalue = 1;
+          valueprompt = true;
+        }}
+      >
+        <Minus />
+      </Button>
+      {/snippet}
+    </Form.Control>
+    <Form.Description>Max number of git repositories.</Form.Description>
     <Form.FieldErrors />
   </Form.Field>
 
@@ -218,3 +429,27 @@
 </form>
 
 <CustomSuperDebug {formData} />
+
+<AlertDialog.Root bind:open={valueprompt}>
+  <AlertDialog.Content>
+    <AlertDialog.Header>
+      <AlertDialog.Title>{valueprompttitle}</AlertDialog.Title>
+      <AlertDialog.Description>
+        {valuepromptdescription}
+        <Input bind:value={valuepromptvalue} type="number" autofocus={true} />
+      </AlertDialog.Description>
+    </AlertDialog.Header>
+    <AlertDialog.Footer>
+      <HotkeyButton disabled={loading} onclick={() => (valueprompt = false)}
+        >Cancel</HotkeyButton
+      >
+      <HotkeyButton
+        disabled={loading}
+        onclick={() => {
+          valuepromptdoaction();
+          valueprompt = false;
+        }}>Continue</HotkeyButton
+      >
+    </AlertDialog.Footer>
+  </AlertDialog.Content>
+</AlertDialog.Root>
