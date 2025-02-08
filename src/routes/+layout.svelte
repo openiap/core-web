@@ -36,6 +36,20 @@
 				jwt: access_token,
 				top: 5,
 			});
+			if(usersettings.currentworkspace != null && usersettings.currentworkspace != "") {
+				let exists = workspaces.find(x=> x._id == usersettings.currentworkspace);
+				if(exists == null) {
+					let _workspace = await auth.client.FindOne<Workspace>({
+						collectionname: "users",
+						query: { _type: "workspace", _id: usersettings.currentworkspace },
+						jwt: access_token
+					});
+					if(_workspace != null) {
+						workspaces.pop();
+						workspaces.unshift(_workspace);
+					}
+				}
+			}
 		} catch (error: any) {
 			if (browser) {
 				toast.error("Error assigning resource", {

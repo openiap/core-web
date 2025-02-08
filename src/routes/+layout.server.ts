@@ -19,6 +19,20 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 		await usersettings.dbload(access_token);
 		const shortpage = (route.id != null && route.id.indexOf("/") > -1 ? route.id.split("/")[1] : "");
 		workspaces = await auth.client.Query<Workspace>({ collectionname: "users", query: { _type: "workspace" }, jwt: access_token, top: 5 });
+		if(usersettings.currentworkspace != null && usersettings.currentworkspace != "") {
+			let exists = workspaces.find(x=> x._id == usersettings.currentworkspace);
+			if(exists == null) {
+				let _workspace = await auth.client.FindOne<Workspace>({
+					collectionname: "users",
+					query: { _type: "workspace", _id: usersettings.currentworkspace },
+					jwt: access_token
+				});
+				if(_workspace != null) {
+					workspaces.pop();
+					workspaces.unshift(_workspace);
+				}
+			}
+		}
 		let entities: any[] = [];
 		const id = params.id;
 		datacomponent.loadsettings(page);
