@@ -272,7 +272,7 @@
               </div>
               <div class="flex space-x-5">
                 <CustomInput {...props} bind:value={$formData.name} />
-                <!-- <Form.Button
+                <Form.Button
               disabled={loading}
               aria-label="Update workspace"
               variant="success"
@@ -280,7 +280,7 @@
             >
               <Check />
               Update workspace</Form.Button
-            > -->
+            >
               </div>
             </div>
 
