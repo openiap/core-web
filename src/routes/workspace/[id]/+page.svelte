@@ -26,6 +26,7 @@
   const { data } = $props();
   let _workspaceid = data.currentworkspace._id;
   let loading = $state(false);
+  let resourcecount = $state(data.resourcecount);
   let currentworkspace = $state(data.currentworkspace);
 
   let nameprompt = $state(false);
@@ -286,8 +287,8 @@
 
             <div class="grid grid-col-1 lg:grid-cols-1 gap-2">
               {#if entities.length > 0}
-                {#if currentworkspace._resourceusageid == "" || currentworkspace._resourceusageid == null}
-                  <Form.Label>Work Space Billing</Form.Label>
+                {#if resourcecount == 0}
+                  <Form.Label>Workspace Billing</Form.Label>
                   <div class="text-bw400">
                     Select a billing account for this workspace
                   </div>
@@ -297,8 +298,8 @@
                     bind:value={billingid}
                     selectitems={[{ name: "Create new", _id: "" }, ...entities]}
                   />
-                {:else if currentworkspace._billingid != null && currentworkspace._billingid != ""}
-                  <Form.Label>Work Space Billing</Form.Label>
+                {:else}
+                  <Form.Label>Workspace Billing</Form.Label>
                   <div class="text-bw400">
                     The current billing account for this workspace
                   </div>
