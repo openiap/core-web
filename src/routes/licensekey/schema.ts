@@ -12,7 +12,9 @@ export const LicenseSchema = z.object({
   _resourceusageid: z.string().optional(),
   _productname: z.string().optional(),
   connections: z.number().optional(),
-  workspaces: z.number().optional(),  
+  workspaces: z.number().optional(),
+  gitrepos: z.number().optional(),
+  licenseversion: z.number().optional(),
   _stripeprice: z.string().optional(),
 }).passthrough();
 export type LicenseSchema = typeof LicenseSchema;

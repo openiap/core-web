@@ -447,6 +447,8 @@ class entitiesdata {
 				return "Product";
 			case "_billingid":
 				return "Billing ID";
+			case "licenseversion":
+				return "Version";
 			case "errortype":
 				return "Error type";
 			case "wiq":
@@ -485,6 +487,7 @@ class entitiesdata {
 			case "licensekey":
 				return [
 					"name",
+					"licenseversion",
 					"_productname",
 					"connections",
 					"workspaces",

@@ -5,6 +5,7 @@ export const load: PageLoad = async ({ parent, params }) => {
   try {
     let item = await auth.client.FindOne<any>({ collectionname: "config", query: { _id: params.id, _type: "license" }, jwt: access_token });
     if(item._stripeprice == null) { item._stripeprice = ""; }
+    if(item.licenseversion == null) { item.licenseversion = 3; }
     let resource = await auth.client.FindOne<any>({ collectionname: "config", query: { name: "OpenCore License", _type: "resource" }, jwt: access_token });
     return { item, resource };
   } catch (error) {

@@ -3,7 +3,7 @@
 	function onvc(value: any) {}
 	let {
 		class: className = "h-8",
-		value = $bindable(""),
+		value = $bindable(),
 		onValueChangeFunction = onvc,
 		triggerContent = () => {},
 		type,

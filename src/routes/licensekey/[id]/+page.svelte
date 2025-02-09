@@ -11,13 +11,14 @@
   import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { EntitySelector } from "$lib/entityselector/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
-  import { Check, Minus, Plus } from "lucide-svelte";
+  import { Check, KeyRound, Minus, Plus } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { LicenseSchema } from "../schema.js";
     import { client } from "@openiap/jsapi/dist/client.js";
     import { ResourceUsage } from "$lib/types.svelte.js";
+    import Textarea from "$lib/components/ui/textarea/textarea.svelte";
 
   let loading = $state(false);
   let errormessage = $state("");
@@ -34,7 +35,13 @@
     | "removeworkspace"
     | "addgitrepo"
     | "removegitrepo" = $state("addconnection");
+  let showlicenseprompt = $state(false);
+  let licensekey = $state("");
   const { data } = $props();
+  let LicenseVersions = [
+    {name: "Version 3", _id: 3},
+    {name: "Version 2", _id: 2}
+  ]
   let products = $state([
     {
       stripeprice: "",
@@ -54,6 +61,11 @@
     () =>
       products.find((item: any) => item.stripeprice === $formData._stripeprice)
         ?.name ?? "Select a plan",
+  );
+  const triggerContentVersion = $derived(
+    () =>
+      LicenseVersions.find((item: any) => item._id === $formData.licenseversion)
+        ?.name ?? "Select a version",
   );
 
   const form = superForm(defaults(zod(LicenseSchema)), {
@@ -215,6 +227,8 @@
       loading = false;
     }
   }
+  let profileroles = auth.profile?.roles || [];
+  const isAdmin = profileroles.includes("admins");
 </script>
 
 {#if errormessage && errormessage != ""}
@@ -417,6 +431,28 @@
     <Form.FieldErrors />
   </Form.Field>
 
+  {#if isAdmin}
+  <Form.Field {form} name="_stripeprice">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>License version</Form.Label>
+        <CustomSelect
+          {loading}
+          {...props}
+          bind:value={$formData.licenseversion}
+          selectitems={LicenseVersions}
+          triggerContent={triggerContentVersion}
+          type="single"
+        />
+      {/snippet}
+    </Form.Control>
+    <Form.Description
+      >License is linked to this Billing Account.</Form.Description
+    >
+    <Form.FieldErrors />
+  </Form.Field>
+  {/if}
+
   <Form.Button
     variant="success"
     size="base"
@@ -425,6 +461,35 @@
   >
     <Check />
     Update license</Form.Button
+  >
+  <HotkeyButton
+    variant="success"
+    size="base"
+    disabled={loading}
+    aria-label="Update"
+    onclick={async () => {
+      try {
+        loading = true;
+        const payload: any = { domain: $formData.name };
+        licensekey = await auth.client.CustomCommand({ command: "issuelicense", data: JSON.stringify(payload), jwt: auth.access_token });
+        licensekey = licensekey.replace(/"/g, "");
+        try {
+          console.log("licensekey: ", atob(licensekey));
+        } catch (error:any) {
+          console.log("licensekey: ", licensekey, error.message);
+        }
+        showlicenseprompt = true;
+      } catch (error:any) {
+        toast.error("Error", {
+          description: error.message,
+        }); 
+      } finally {
+        loading = false;
+      }
+    }}
+  >
+    <KeyRound />
+    Generate license key</HotkeyButton
   >
 </form>
 
@@ -449,6 +514,21 @@
           valuepromptdoaction();
           valueprompt = false;
         }}>Continue</HotkeyButton
+      >
+    </AlertDialog.Footer>
+  </AlertDialog.Content>
+</AlertDialog.Root>
+
+<AlertDialog.Root bind:open={showlicenseprompt}>
+  <AlertDialog.Content>
+    <AlertDialog.Header>
+      <AlertDialog.Description>
+        <Textarea value={licensekey} class="h-[275px]" />
+      </AlertDialog.Description>
+    </AlertDialog.Header>
+    <AlertDialog.Footer>
+      <HotkeyButton disabled={loading} onclick={() => (showlicenseprompt = false)}
+        >Close</HotkeyButton
       >
     </AlertDialog.Footer>
   </AlertDialog.Content>
