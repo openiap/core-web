@@ -25,7 +25,9 @@
   }
 </script>
 
-<SearchInput bind:searchstring />
+<div class="mb-5.5">
+  <SearchInput bind:searchstring />
+</div>
 
 <Entities
   {collectionname}

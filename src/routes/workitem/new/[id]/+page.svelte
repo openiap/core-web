@@ -110,7 +110,6 @@
       {#snippet children({ props })}
         <Form.Label>Name</Form.Label>
         <CustomInput
-          width="w-1/3"
           placeholder="Type name"
           disabled={loading}
           {...props}
@@ -124,15 +123,15 @@
   <Form.Field {form} name="wiqid" class="mb-7">
     <Form.Control>
       {#snippet children({ props })}
-        <Form.Label>Queue</Form.Label>
-        <EntitySelector
-          width="w-1/3"
-          collectionname="mq"
-          bind:value={$formData.wiqid}
-          basefilter={{ _type: "workitemqueue" }}
-          class="w-64"
-          name="queue"
-        />
+        <div class="flex flex-col items-start space-y-2">
+          <Form.Label>Queue</Form.Label>
+          <EntitySelector
+            collectionname="mq"
+            bind:value={$formData.wiqid}
+            basefilter={{ _type: "workitemqueue" }}
+            name="queue"
+          />
+        </div>
       {/snippet}
     </Form.Control>
     <Form.FieldErrors />
@@ -208,15 +207,17 @@
       {/each}
     </div>
   {/if}
-
-  <Form.Button
-    disabled={loading}
-    aria-label="Add"
+  <HotkeyButton
+    class="w-full md:w-auto"
     variant="success"
     size="base"
+    disabled={loading}
+    aria-label="Add workitem"
+    type="submit"
+    data-shortcut="ctrl+s"
   >
     <Check />
-    Add {key}</Form.Button
+    Add workitem</HotkeyButton
   >
 </form>
 

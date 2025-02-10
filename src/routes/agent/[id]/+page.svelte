@@ -22,18 +22,18 @@
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import { AnsiUp } from "ansi_up";
   import {
-      Box,
-      CalendarDays,
-      Check,
-      Gauge,
-      Hourglass,
-      Laptop,
-      RefreshCcw,
-      Tag,
-      Trash2,
-      User,
-      Webhook,
-      Zap,
+    Box,
+    CalendarDays,
+    Check,
+    Gauge,
+    Hourglass,
+    Laptop,
+    RefreshCcw,
+    Tag,
+    Trash2,
+    User,
+    Webhook,
+    Zap,
   } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
@@ -501,7 +501,9 @@
 
   {#each instances as resourceMonitor}
     {#if resourceMonitor != null}
-      <div class="my-4 text-[14px] border rounded-[10px]">
+      <div
+        class="my-4 text-[14px] border rounded-[10px] w-92 md:w-full overflow-hidden"
+      >
         <div
           class="grid grid-cols-7 bg-lighttableheader dark:bg-darktableheader rounded-tr-[10px] rounded-tl-[10px] border-b"
         >
@@ -624,53 +626,61 @@
   {/if}
 
   <form method="POST" use:enhance class="text-sm">
-    <Form.Button
-      disabled={loading}
-      aria-label="Save changes"
-      title="Save changes"
-      variant="success"
-      size="base"
-      class="mb-4 mr-4"
-    >
-      <Check />
-      Save Changes</Form.Button
-    >
-    {#if $formData.image != null && $formData.image != ""}
+    <div class="mb-4 space-y-2 md:space-x-4">
       <HotkeyButton
-        aria-label="Refresh"
-        title="Refresh"
-        variant="base"
+        class="w-full md:w-auto"
+        variant="success"
         size="base"
         disabled={loading}
-        onclick={() => {
-          refreshPods();
-        }}
-        class="mr-4"
+        aria-label="Save Changes"
+        type="submit"
+        data-shortcut="ctrl+s"
       >
-        <RefreshCcw />
-        Refresh</HotkeyButton
+        <Check />
+        Save Changes</HotkeyButton
       >
-      <HotkeyButton
-        aria-label="Open in Web"
-        title="Open in Web"
-        variant="base"
-        size="base"
-        disabled={$formData.webserver != true ||
-          instances.find((x: any) => x.showstatus === "running") ||
-          loading}
-        onclick={() => window.open(auth.weburl($formData.slug), "_blank")}
-      >
-        <Webhook />
-        Open in Web</HotkeyButton
-      >
-    {/if}
+      {#if $formData.image != null && $formData.image != ""}
+        <HotkeyButton
+          class="w-full md:mr-4 md:w-auto"
+          aria-label="Refresh"
+          title="Refresh"
+          variant="base"
+          size="base"
+          disabled={loading}
+          onclick={() => {
+            refreshPods();
+          }}
+        >
+          <RefreshCcw />
+          Refresh</HotkeyButton
+        >
+        <HotkeyButton
+          class="w-full md:w-auto"
+          aria-label="Open in Web"
+          title="Open in Web"
+          variant="base"
+          size="base"
+          disabled={$formData.webserver != true ||
+            instances.find((x: any) => x.showstatus === "running") ||
+            loading}
+          onclick={() => window.open(auth.weburl($formData.slug), "_blank")}
+        >
+          <Webhook />
+          Open in Web</HotkeyButton
+        >
+      {/if}
+    </div>
 
-    <div class="flex items-center justify-between space-x-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       <Form.Field {form} name="name" class="w-full">
         <Form.Control>
           {#snippet children({ props })}
             <Form.Label>Name</Form.Label>
-            <CustomInput disabled={loading} bind:value={$formData.name} />
+            <CustomInput
+              width="w-full"
+              disabled={loading}
+              bind:value={$formData.name}
+            />
           {/snippet}
         </Form.Control>
         <Form.FieldErrors />
@@ -691,10 +701,11 @@
                 onclick={() => {
                   $formData.name = randomname();
                   $formData.slug = $formData.name;
-                }}><RefreshCcw class="h-4 w-4" /></HotkeyButton
+                }}><RefreshCcw /></HotkeyButton
               >
             </div>
             <CustomInput
+              width="w-full"
               disabled={loading}
               {...props}
               bind:value={$formData.slug}
@@ -710,6 +721,7 @@
             {#snippet children({ props })}
               <Form.Label>Image</Form.Label>
               <CustomSelect
+                width="w-full"
                 type="single"
                 {loading}
                 {...props}
@@ -728,6 +740,7 @@
             {#snippet children({ props })}
               <Form.Label>Plan</Form.Label>
               <CustomSelect
+                width="w-full"
                 {loading}
                 {...props}
                 bind:value={$formData._stripeprice}
@@ -756,22 +769,24 @@
       </div>
     {/if}
 
-    <Form.Field {form} name="environment" class="mb-4 w-full">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Environment</Form.Label>
-          <ObjectInput
-            disabled={loading}
-            {...props}
-            bind:value={$formData.environment}
-          />
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
+    <div class="mb-6 mt-4 md:mb-4 md:mt-2">
+      <Form.Field {form} name="environment" class="w-full">
+        <Form.Control>
+          {#snippet children({ props })}
+            <Form.Label>Environment</Form.Label>
+            <ObjectInput
+              disabled={loading}
+              {...props}
+              bind:value={$formData.environment}
+            />
+          {/snippet}
+        </Form.Control>
+        <Form.FieldErrors />
+      </Form.Field>
+    </div>
 
     {#if $formData.image != null && $formData.image != ""}
-      <div class="grid grid-cols-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4">
         <Form.Field
           {form}
           name="autostart"
@@ -870,8 +885,10 @@
         {#snippet children({ props })}
           <div class="flex flex-col items-start space-y-2">
             <Form.Label>Runas</Form.Label>
-            <div class="flex items-center space-x-4">
+            <div class="md:flex md:items-center md:space-x-4 my-2">
               <Entityselector
+                width="md:w-fit w-64"
+                class="mb-2 md:mb-0"
                 disabled={loading}
                 {...props}
                 collectionname="users"
@@ -897,9 +914,10 @@
 
     <div>
       <div>Add schedule of package</div>
-      <div class="flex space-x-5 my-2">
-        <div class="flex items-center space-x-8">
+      <div class="md:flex md:space-x-5 my-2">
+        <div class="flex items-center space-x-8 mb-2">
           <Entityselector
+            width="md:w-fit w-64"
             collectionname="agents"
             basefilter={{
               _type: "package",
