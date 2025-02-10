@@ -17,6 +17,7 @@ class Config {
     auto_create_personal_nodered_group: boolean = false;
     auto_create_personal_noderedapi_group: boolean = false;
     namespace: string = "";
+    ofid: string = "";
     agent_domain_schema: string = "";
     websocket_package_size: number = 0;
     version: string = "";
