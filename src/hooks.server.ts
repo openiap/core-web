@@ -8,9 +8,6 @@ export const init: ServerInit = async () => {
     if (protocol == null || protocol == "") protocol = web_protocol;
     let domain = process.env.web_domain;
     if (domain == null || domain == "") domain = web_domain;
-
-    console.log("Init core-web version", version, "git commit", hash);
-
     const baseurl = protocol + '://' + domain;
     let wsurl = baseurl.replace("https://", "wss://").replace("http://", "ws://") + "/ws/v2";
     if(process.env.web_wsapiurl != null && process.env.web_wsapiurl != "") {
@@ -23,17 +20,18 @@ export const init: ServerInit = async () => {
             auth.config.webversion = version;
             console.log("Core-Web version", version, "git commit", hash, "Connected to open-core version", auth.config.version);
         }
+        console.log("Init core-web version", version, "git commit", hash);
         initialized = true;
-    } catch (error) {
-        console.log("**** serverinit error", error);
+    } catch (error:any) {
+        console.log("**** serverinit error", error.message);
+        // console.log("**** serverinit error", error);
     }
 }
 export const handle: Handle = async ({ event, resolve }) => {
     if(initialized == false) {
         try {
             await init();
-        } catch (error) {
-            console.log("**** serverinit error", error);
+        } catch (error:any) {
         }
     }
     let protocol = process.env.web_protocol;

@@ -20,7 +20,11 @@
 	datacomponent.parsesettings(data.settings);
 	const { wsurl, protocol, domain, client_id, profile, origin } = data;
 	let { access_token } = data;
-	console.log("core-web version", data.webversion, "git commit", data.webcommit);
+	if(auth.config != null) {
+		console.log("core-web version", data.webversion, "git commit", data.webcommit);
+	} else if (browser) {
+		console.log("core-web not initialized, is opencore down?");
+	}
 
 	let _workspaces = data.workspaces;
 	let workspaces = $state(_workspaces);

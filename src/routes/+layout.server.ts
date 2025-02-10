@@ -15,6 +15,9 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 	const page = url.pathname;
 	const webcommit = auth.config?.webcommit;
 	const webversion = auth.config?.webversion;
+	if(auth.client?.connected == false || auth.client?.connected == null) {
+		return { protocol, domain, client_id, page, profile, access_token, wsurl, origin, entities: [], workspaces: [], item: null, id: "", settings: {}, total_count, webcommit, webversion };
+	}
 	try {
 		await usersettings.dbload(access_token);
 		const shortpage = (route.id != null && route.id.indexOf("/") > -1 ? route.id.split("/")[1] : "");
