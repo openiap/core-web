@@ -4,40 +4,48 @@
 	import { page } from "$app/stores";
 	import * as Breadcrumb from "$lib/components/ui/breadcrumb/index.js";
 	import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
-	import Separator from "$lib/components/ui/separator/separator.svelte";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import Search from "$lib/search/search.svelte";
 	import NavUser from "$lib/sidebar/nav-user.svelte";
 	import { auth } from "$lib/stores/auth.svelte";
+	import { sidemenu } from "$lib/stores/sidemenu.svelte";
 	import { usersettings } from "$lib/stores/usersettings.svelte.js";
 	import {
-		ArrowLeft,
 		ArrowLeftToLine,
-		ArrowRight,
 		ArrowRightToLine,
 		Github,
-		PanelRight,
 		Trash2,
 	} from "lucide-svelte";
 	import Moon from "lucide-svelte/icons/moon";
 	import Sun from "lucide-svelte/icons/sun";
 	import { toggleMode } from "mode-watcher";
 	import { capitalizeFirstLetter } from "../helper";
-	import { sidemenu } from "$lib/stores/sidemenu.svelte";
 
+	let sidebar = Sidebar.useSidebar();
 	let pagename = $derived(() =>
 		$page.url.pathname.replace(base, "").replace("/", ""),
 	);
+	let isMobile = $state(false);
+
 	function login() {
 		window.localStorage.setItem("redirect", window.location.pathname);
 		auth.login();
 	}
-	async function logout() {
-		await auth.logout();
-	}
 	function reset() {
 		usersettings.reset();
 		goto(base + `/`);
+	}
+	function checkMobile() {
+		return (
+			typeof navigator !== "undefined" &&
+			/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+		);
+	}
+	if (checkMobile()) {
+		isMobile = true;
+		sidemenu.status = false;
+	} else {
+		sidemenu.status = true;
 	}
 </script>
 
@@ -45,22 +53,24 @@
 	class="flex h-16 shrink-0 items-center justify-between px-4 rounded mx-2"
 >
 	<div class="flex items-center">
-		<!-- <Sidebar.Trigger class="-ml-1" />
-		<Separator orientation="vertical" class="mr-2 h-4" /> -->
+		<!-- <Sidebar.Trigger class="-ml-1" /> -->
 		<HotkeyButton
 			variant="ghost"
 			size="icon"
 			onclick={() => {
-				sidemenu.status = !sidemenu.status;
-				console.log(sidemenu.status);
+				if (isMobile) {
+					sidebar.toggle();
+				} else {
+					sidemenu.status = !sidemenu.status;
+				}
 			}}
 			class="me-2 text-bw500"
 			title={sidemenu.status ? "Close sidebar" : "Open sidebar"}
 		>
 			{#if sidemenu.status}
-				<ArrowLeftToLine class="hidden md:block dark:text-bw500" />
+				<ArrowLeftToLine class="block dark:text-bw500" />
 			{:else}
-				<ArrowRightToLine class="hidden md:block dark:text-bw500" />
+				<ArrowRightToLine class="block dark:text-bw500" />
 			{/if}
 		</HotkeyButton>
 

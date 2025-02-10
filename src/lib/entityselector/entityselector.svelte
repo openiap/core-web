@@ -18,6 +18,7 @@
         projection = {},
         noitem = false,
         width = "w-64",
+        showType = false,
         ...restProps
     } = $props();
 
@@ -45,7 +46,11 @@
             jwt: auth.access_token,
         });
         if (item != null) {
-            return "(" + item._type + ") " + item.name;
+            if (showType) {
+                return "(" + item._type + ") " + item.name;
+            } else {
+                return item.name;
+            }
         }
         return placeholder;
     });
@@ -144,8 +149,12 @@
                         value={item._id}
                         class="text-sm"
                     >
-                        {item._type ? `(${item._type})` : ""}
-                        {item.name}
+                        {#if showType}
+                            {item._type ? `(${item._type})` : ""}
+                            {item.name}
+                        {:else}
+                            {item.name}
+                        {/if}
                     </Command.Item>
                 {/each}
             </Command.List>

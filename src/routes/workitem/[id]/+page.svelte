@@ -97,6 +97,7 @@
       class="w-64"
       handleChangeFunction={filterData}
       name="Queue"
+      showType={false}
     />
     <HotkeyButton
       size="sm"
