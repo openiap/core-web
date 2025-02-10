@@ -121,7 +121,7 @@
           let product = products.find(
             (x: any) => x.stripeprice == form.data._stripeprice,
           );
-          if (auth.config.workspace_enabled) {
+          if (auth.config?.workspace_enabled == true) {
             let _workspaceid = form.data._workspaceid;
             if (_workspaceid == null || _workspaceid == "") {
               if (
@@ -151,7 +151,7 @@
 
             // @ts-ignore
             form.data._acl = [...form.data._acl, ...workspace._acl];
-            if (auth.config.workspace_enabled && workspace != null) {
+            if (auth.config?.workspace_enabled == true && workspace != null) {
               form.data._workspaceid = workspace._id;
             }
           }
@@ -278,7 +278,7 @@
     ];
   }
   const resource = data.agentInstance;
-  const images = auth.config.agent_images;
+  const images = auth.config?.agent_images ?? [];
 
   const triggerContentImage = $derived(
     () =>
@@ -358,7 +358,7 @@
       var url =
         window.location.protocol +
         "//" +
-        auth.config.agent_domain_schema.replace("$slug$", $formData.slug);
+        auth.config?.agent_domain_schema.replace("$slug$", $formData.slug);
       $formData.environment = {
         ELSA__SERVER__BASEURL: url,
       };
@@ -398,8 +398,8 @@
       if (product == null || (ram as any) < 0.25) {
         sizewarningtitle = "Not enough ram";
         if (
-          auth.config.stripe_api_key != null &&
-          auth.config.stripe_api_key != ""
+          auth.config?.stripe_api_key != null &&
+          auth.config?.stripe_api_key != ""
         ) {
           sizewarning =
             "This instance will not start, or will run extremly slow if not assigned a Payed plan with at least 256Mi ram or higher";
@@ -413,8 +413,8 @@
       if (product == null || (ram as any) < 0.25) {
         sizewarningtitle = "Not enough ram";
         if (
-          auth.config.stripe_api_key != null &&
-          auth.config.stripe_api_key != ""
+          auth.config?.stripe_api_key != null &&
+          auth.config?.stripe_api_key != ""
         ) {
           sizewarning =
             "This instance will not start, or will run extremly slow if not assigned a Payed plan with at least 256Mi ram or higher";

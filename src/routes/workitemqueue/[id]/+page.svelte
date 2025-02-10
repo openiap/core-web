@@ -31,7 +31,7 @@
         loading = true;
         let workspace: Workspace | null = null;
         try {
-          if (auth.config.workspace_enabled) {
+          if (auth.config?.workspace_enabled == true) {
             let _workspaceid = form.data._workspaceid;
             if(_workspaceid == null || _workspaceid == "") {
               if (
@@ -55,7 +55,7 @@
             }
             // @ts-ignore
             form.data._acl = [...form.data._acl, ...workspace._acl];
-            if(auth.config.workspace_enabled && workspace != null) {
+            if(auth.config?.workspace_enabled == true && workspace != null) {
               form.data._workspaceid = workspace._id;
             }
           }
@@ -130,7 +130,7 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  {#if auth.config.workspace_enabled}
+  {#if auth.config?.workspace_enabled == true}
   <Form.Field {form} name="_workspaceid" class="mb-7">
     <Form.Control>
       {#snippet children({ props })}

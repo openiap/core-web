@@ -240,13 +240,13 @@
         try {
             if (data.form != null && data.form.schema != null) {
                 let protocol = "http:";
-                if (auth.config.wsurl.startsWith("wss")) protocol = "https:";
+                if (auth.config?.wsurl.startsWith("wss")) protocol = "https:";
 
                 traversecomponentsMakeDefaults(data.form.schema);
                 traversecomponentsAddCustomValidate(data.form.schema);
 
-                Formio.setBaseUrl(protocol + "//" + auth.config.domain);
-                Formio.setProjectUrl(protocol + "//" + auth.config.domain);
+                Formio.setBaseUrl(protocol + "//" + auth.config?.domain);
+                Formio.setProjectUrl(protocol + "//" + auth.config?.domain);
                 // @ts-ignore
                 form = await Formio.createForm(ref, data.form.schema, {
                     breadcrumbSettings: { clickable: true },

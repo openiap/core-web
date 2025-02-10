@@ -316,7 +316,7 @@
 
 	const navMain = $state([actions, workspace, management]);
 	function loadMenu() {
-		if (auth.config.workspace_enabled) {
+		if (auth.config?.workspace_enabled == true) {
 			workspace.hidden = workspaces.length == 0;
 			users.hidden = true;
 			members.hidden =
@@ -356,9 +356,9 @@
 		forms.hidden = !auth.isAuthenticated;
 		clients.hidden = !isWorkspaceAdmin;
 
-		if (auth.config.workspace_enabled || auth.config.multi_tenant) {
+		if (auth.config?.workspace_enabled == true || auth.config?.multi_tenant == true) {
 			billingaccounts.hidden = false;
-			if (auth.config.workspace_enabled == true) {
+			if (auth.config?.workspace_enabled == true) {
 				billingaccounts.title = "Billing accounts";
 			} else {
 				billingaccounts.title = "Customers";
@@ -374,11 +374,11 @@
 				grafana.hidden = true;
 			}
 		} else {
-			if (grafana.hidden != (auth.config.grafana_url == "")) {
-				grafana.hidden = auth.config.grafana_url == "";
+			if (grafana.hidden != (auth.config?.grafana_url == "")) {
+				grafana.hidden = auth.config?.grafana_url == "";
 			}
-			if (grafana.url != auth.config.grafana_url) {
-				grafana.url = auth.config.grafana_url;
+			if (grafana.url != auth.config?.grafana_url) {
+				grafana.url = auth.config?.grafana_url;
 			}
 		}
 	}

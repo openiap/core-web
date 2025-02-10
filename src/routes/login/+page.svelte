@@ -34,8 +34,8 @@
               <Input id="password" name="password" type="password" required autocomplete="current-password" />
             </div>
             <Button variant="outline" type="submit" class="w-full">Login</Button>
-            {#if auth.config != null && auth.config.loginproviders != null}
-              {#each auth.config.loginproviders.filter((x:any) => x.provider != "local") as lp }
+            {#if auth.config?.loginproviders != null}
+              {#each auth.config?.loginproviders.filter((x:any) => x.provider != "local") as lp }
                 <Button variant="outline" class="w-full" onclick={() => goto('/' + lp.id)}>{lp.name}</Button>
               {/each}
             {/if}

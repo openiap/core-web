@@ -2,6 +2,7 @@ import { web_client_id, web_domain, web_protocol, version, hash } from '$env/sta
 import { auth } from '$lib/stores/auth.svelte';
 import type { Handle, ServerInit } from '@sveltejs/kit';
 
+let initialized = false;
 export const init: ServerInit = async () => {
     let protocol = process.env.web_protocol;
     if (protocol == null || protocol == "") protocol = web_protocol;
@@ -22,11 +23,19 @@ export const init: ServerInit = async () => {
             auth.config.webversion = version;
             console.log("Core-Web version", version, "git commit", hash, "Connected to open-core version", auth.config.version);
         }
+        initialized = true;
     } catch (error) {
         console.log("**** serverinit error", error);
     }
 }
 export const handle: Handle = async ({ event, resolve }) => {
+    if(initialized == false) {
+        try {
+            await init();
+        } catch (error) {
+            console.log("**** serverinit error", error);
+        }
+    }
     let protocol = process.env.web_protocol;
     if (protocol == null || protocol == "") protocol = web_protocol;
     let domain = process.env.web_domain;
