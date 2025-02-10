@@ -78,6 +78,7 @@ class authState {
         if (this.client == null) {
             global.WebSocket = ws;
             this.client = new openiap(wsurl, "");
+            this.client.maxreconnectms = 1000;
             try {
                 await this.client.connect(true);
                 this.client.onDisconnected = async () => {
@@ -178,6 +179,11 @@ class authState {
         if (this.client == null) {
             try {
                 this.client = new openiap(wsurl, access_token);
+                if(wsurl.indexOf("demo.openiap.io") > -1 || wsurl.indexOf("dev.openiap.io") > -1 || wsurl.indexOf("home.openiap.io") > -1) {
+                    this.client.maxreconnectms = 1000; // as a dev, i have no patience
+                } else {
+                    this.client.maxreconnectms = 5000; // default is 30 seconds, but we want to reconnect faster
+                }
                 const user = await this.client.connect(true);
                 this.isConnected = true;
                 this.connectWaitingPromisses.forEach((resolve: any) => {
