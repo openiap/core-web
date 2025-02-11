@@ -26,6 +26,7 @@
     onUpdate: async ({ form, cancel }) => {
       if (form.valid) {
         try {
+          loading = true;
           await auth.client.CustomCommand({
             command: "ensurebilling",
             data: JSON.stringify(form.data),
@@ -39,6 +40,7 @@
           });
           cancel();
         } finally {
+          loading = false;
         }
       }
     },
@@ -123,15 +125,16 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Button
-    disabled={loading}
-    aria-label="Update Billing account"
-    title="Update Billing account"
+  <HotkeyButton
     variant="success"
     size="base"
+    disabled={loading}
+    aria-label="Update Billing Account"
+    type="submit"
+    data-shortcut="ctrl+s"
   >
     <Check />
-    Update Billing account</Form.Button
+    Update Billing Account</HotkeyButton
   >
 </form>
 

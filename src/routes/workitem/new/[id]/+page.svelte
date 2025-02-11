@@ -137,7 +137,7 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Field {form} name="payload" class="mb-7">
+  <Form.Field {form} name="payload" class="mb-4">
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Payload</Form.Label>

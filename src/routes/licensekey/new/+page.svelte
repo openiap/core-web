@@ -40,10 +40,11 @@
             description: error.message,
           });
           cancel();
-        } finally {
           loading = false;
+        } finally {
         }
       } else {
+        loading = false;
         errormessage = "Form is invalid";
       }
     },
@@ -63,49 +64,57 @@
   {$message}
 {/if}
 {#if $formData}
-<form method="POST" use:enhance>
-  <Form.Field {form} name="name">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>License Domain</Form.Label>
-        <CustomInput {...props} bind:value={$formData.name} />
-      {/snippet}
-    </Form.Control>
-    <Form.Description>This is the domain name ( fqdn ) of the OpenCore instance.</Form.Description>
-    <Form.FieldErrors />
-  </Form.Field>
+  <form method="POST" use:enhance>
+    <Form.Field {form} name="name">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>License Domain</Form.Label>
+          <CustomInput {...props} bind:value={$formData.name} />
+        {/snippet}
+      </Form.Control>
+      <Form.Description
+        >This is the domain name ( fqdn ) of the OpenCore instance.</Form.Description
+      >
+      <Form.FieldErrors />
+    </Form.Field>
 
-  <Form.Field {form} name="_billingid">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Billing Account</Form.Label>
-        <EntitySelector bind:value={$formData._billingid} collectionname="users" {loading}
-        basefilter={{ _type: "customer" }}
-        >
-        </EntitySelector>
-      {/snippet}
-    </Form.Control>
-    <Form.Description>License is linked to this Billing Account.</Form.Description>
-    <Form.FieldErrors />
-  </Form.Field>
+    <Form.Field {form} name="_billingid">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Billing Account</Form.Label>
+          <EntitySelector
+            bind:value={$formData._billingid}
+            collectionname="users"
+            {loading}
+            basefilter={{ _type: "customer" }}
+          ></EntitySelector>
+        {/snippet}
+      </Form.Control>
+      <Form.Description
+        >License is linked to this Billing Account.</Form.Description
+      >
+      <Form.FieldErrors />
+    </Form.Field>
 
-  <div class="flex items-center space-x-5">
-    <Form.Button
-      disabled={loading}
-      aria-label="Create"
-      variant="success"
-      size="base"
-    >
-      <Check />
-      Create {key}</Form.Button
-    >
-    <HotkeyButton
-      size="lg"
-      aria-label="Cancel"
-      onclick={() => goto(base + `/licensekey`)}>Cancel</HotkeyButton
-    >
-  </div>
-</form>
+    <div class="flex items-center space-x-5">
+      <HotkeyButton
+        variant="success"
+        size="base"
+        disabled={loading}
+        aria-label="Create licence"
+        type="submit"
+        data-shortcut="ctrl+s"
+      >
+        <Check />
+        Create licence</HotkeyButton
+      >
+      <HotkeyButton
+        size="lg"
+        aria-label="Cancel"
+        onclick={() => goto(base + `/licensekey`)}>Cancel</HotkeyButton
+      >
+    </div>
+  </form>
 
-<CustomSuperDebug {formData} />
+  <CustomSuperDebug {formData} />
 {/if}

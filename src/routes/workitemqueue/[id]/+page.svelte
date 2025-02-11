@@ -12,7 +12,8 @@
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../schema.js";
-    import type { Workspace } from "../../workspace/schema.js";
+  import type { Workspace } from "../../workspace/schema.js";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
 
   const key = "workitemqueue";
   let loading = $state(false);
@@ -33,14 +34,14 @@
         try {
           if (auth.config?.workspace_enabled == true) {
             let _workspaceid = form.data._workspaceid;
-            if(_workspaceid == null || _workspaceid == "") {
+            if (_workspaceid == null || _workspaceid == "") {
               if (
-              usersettings.currentworkspace == null ||
-              usersettings.currentworkspace == ""
-            ) {
-              throw new Error("You must select a workspace first");
-            }
-            _workspaceid = usersettings.currentworkspace;
+                usersettings.currentworkspace == null ||
+                usersettings.currentworkspace == ""
+              ) {
+                throw new Error("You must select a workspace first");
+              }
+              _workspaceid = usersettings.currentworkspace;
             }
             workspace = await auth.client.FindOne({
               collectionname: "users",
@@ -55,7 +56,7 @@
             }
             // @ts-ignore
             form.data._acl = [...form.data._acl, ...workspace._acl];
-            if(auth.config?.workspace_enabled == true && workspace != null) {
+            if (auth.config?.workspace_enabled == true && workspace != null) {
               form.data._workspaceid = workspace._id;
             }
           }
@@ -131,26 +132,26 @@
   </Form.Field>
 
   {#if auth.config?.workspace_enabled == true}
-  <Form.Field {form} name="_workspaceid" class="mb-7">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Workspace</Form.Label>
-        <EntitySelector
-          collectionname="users"
-          bind:value={$formData._workspaceid}
-          basefilter={{ _type: "workspace" }}
-          projection={{ name: 1 }}
-          class="w-64"
-          name="project"
-          noitem={true}
-        />
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-{/if}
+    <Form.Field {form} name="_workspaceid" class="mb-7">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Workspace</Form.Label>
+          <EntitySelector
+            collectionname="users"
+            bind:value={$formData._workspaceid}
+            basefilter={{ _type: "workspace" }}
+            projection={{ name: 1 }}
+            class="w-64"
+            name="project"
+            noitem={true}
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+  {/if}
 
-<Form.Field {form} name="projectid" class="mb-7">
+  <Form.Field {form} name="projectid" class="mb-7">
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Project</Form.Label>
@@ -310,15 +311,17 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Button
+  <HotkeyButton
+    class="mb-7"
     variant="success"
     size="base"
     disabled={loading}
-    aria-label="Update"
-    class="mb-7"
+    aria-label="Update workitemqueue"
+    type="submit"
+    data-shortcut="ctrl+s"
   >
     <Check />
-    Update {key}</Form.Button
+    Update workitemqueue</HotkeyButton
   >
 
   <Form.Field {form} name="success_wiq" class="mb-7">

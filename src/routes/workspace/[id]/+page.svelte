@@ -273,15 +273,17 @@
               </div>
               <div class="flex space-x-5">
                 <CustomInput {...props} bind:value={$formData.name} />
-                <Form.Button
-              disabled={loading}
-              aria-label="Update workspace"
-              variant="success"
-              size="base"
-            >
-              <Check />
-              Update workspace</Form.Button
-            >
+                <HotkeyButton
+                  variant="success"
+                  size="base"
+                  disabled={loading}
+                  aria-label="Update workspace"
+                  type="submit"
+                  data-shortcut="ctrl+s"
+                >
+                  <Check />
+                  Update workspace</HotkeyButton
+                >
               </div>
             </div>
 

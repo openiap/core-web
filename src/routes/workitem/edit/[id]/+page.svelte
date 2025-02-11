@@ -182,7 +182,7 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Field {form} name="payload" class="mb-7">
+  <Form.Field {form} name="payload" class="mb-4">
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Payload</Form.Label>
@@ -325,10 +325,11 @@
   {/if}
 
   <HotkeyButton
+    class="mb-7"
     variant="success"
     size="base"
     disabled={loading}
-    aria-label="Update"
+    aria-label="Update workitem"
     type="submit"
     data-shortcut="ctrl+s"
   >

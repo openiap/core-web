@@ -129,6 +129,7 @@
   </div>
   <div class="flex space-x-5">
     <CustomInput
+      width="w-full"
       height="h-7"
       disabled={loading}
       type="file"

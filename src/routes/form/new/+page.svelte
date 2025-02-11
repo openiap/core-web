@@ -2,15 +2,17 @@
   import { browser } from "$app/environment";
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
-  import Button from "$lib/components/ui/button/button.svelte";
-  import { Input } from "$lib/components/ui/input";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
+  import { CustomInput } from "$lib/custominput";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { Formio } from "formiojs";
+  import { Check } from "lucide-svelte";
   import { onDestroy } from "svelte";
   import { toast } from "svelte-sonner";
 
   let builder: any = null as any;
   let ref = $state(null) as any;
+  let loading = $state(false);
   let message = $state("");
   let data = $state({
     _type: "form",
@@ -76,6 +78,7 @@
   });
 
   async function createfrom() {
+    loading = true;
     try {
       // @ts-ignore
       if (Formio == null || typeof Formio.builder !== "function") {
@@ -107,6 +110,7 @@
     } catch (e) {
       console.log(e);
     }
+    loading = false;
   }
   let firstrun = $state(true);
   if (browser) {
@@ -162,13 +166,24 @@
 </div>
 <div>
   <div class="flex items-center justify-start space-x-4 mb-4">
-    <Input
+    <CustomInput
       class="max-w-sm"
       type="text"
       placeholder="Enter form name"
       bind:value={data.name}
     />
-    <Button onclick={saveform}>Create form</Button>
+    <HotkeyButton
+      variant="success"
+      size="base"
+      disabled={loading}
+      onclick={saveform}
+      aria-label="Create form"
+      type="submit"
+      data-shortcut="ctrl+s"
+    >
+      <Check />
+      Create form</HotkeyButton
+    >
   </div>
   <div class="bootstrap-scope formio-dialog-content" bind:this={ref}></div>
 </div>
