@@ -5,7 +5,7 @@
 	let {
 		searchstring = $bindable(""),
 		debounc = 500,
-		class: _class = "",
+		class: _class = "w-full lg:max-w-[288px] mb-4",
 	} = $props();
 	let _searchstring = $state(searchstring);
 	let lastinput = new Date();
@@ -29,10 +29,7 @@
 	});
 </script>
 
-<div
-	class={"flex w-full md:max-w-[288px] flex-col gap-1.5 mb-5 " +
-		_class}
->
+<div class={"flex w-full flex-col gap-1.5" + " " + _class}>
 	<div class="relative">
 		<label for="searchstring" class="sr-only">Search</label>
 		<HotkeyInput

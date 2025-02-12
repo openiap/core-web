@@ -170,7 +170,7 @@
     </div>
   </div>
   <div id="div2" class="ms-6 flex-1 h-full">
-    <div class="flex justify-between">
+    <div class="flex gap-2 justify-between">
       <div class="flex gap-2 w-full">
         <Searchinput bind:searchstring />
       </div>

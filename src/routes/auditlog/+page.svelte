@@ -25,6 +25,8 @@
   }
 </script>
 
+<div class="h-full">
+
 <div class="mb-5.5">
   <SearchInput bind:searchstring />
 </div>
@@ -66,3 +68,4 @@
     </HotkeyButton>
   {/snippet}
 </Entities>
+</div>

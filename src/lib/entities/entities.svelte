@@ -457,7 +457,7 @@
 </script>
 
 <div
-	class={`flex flex-col justify-between ${usersettings.currentpage.includes("agent") ? "h-[89%]" : usersettings.currentpage.includes("entities") ? "h-[93%]" : "h-[95%]"}`}
+	class={`flex flex-col justify-between ${usersettings.currentpage.includes("entities") ? "h-[96%]" : "h-[96%]"}`}
 >
 	<div>
 		<div class="text-red-500">{data.errormessage}</div>
@@ -608,7 +608,7 @@
 		</div>
 
 		<div
-			class="grid grid-cols-1 gap-2 md:grid-cols-2 md:space-y-0 lg:flex mt-5 lg:mb-2.5 lg:space-x-5 items-center"
+			class="grid grid-cols-1 gap-2 md:grid-cols-2 md:space-y-0 lg:flex mt-4 lg:space-x-5 items-center mb-2"
 		>
 			<HotkeyButton
 				disabled={selected_items.length === 0}
@@ -644,7 +644,7 @@
 	</div>
 
 	<div
-		class="grid grid-cols-1 md:flex my-1 text-center md:justify-between items-center dark:text-bw300"
+		class="grid grid-cols-1 md:flex my-1 text-center md:justify-between items-center dark:text-bw300 pb-4 md:pb-0 lg:pb-2"
 	>
 		<HotkeyButton
 			size="base"

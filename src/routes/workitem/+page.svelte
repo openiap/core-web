@@ -76,36 +76,40 @@
   }
 </script>
 
-<div class="flex justify-between gap-2">
-  <div class="flex gap-2 w-full">
-    <SearchInput bind:searchstring />
+<div
+  class="grid grid-cols-2 md:grid-cols-2 gap-2 md:gap-4 xl:grid-cols-8 xl:gap-4 mb-2 md:mb-4"
+>
+  <div class="col-span-2">
+    <SearchInput bind:searchstring class="" />
+  </div>
+  <div class="xl:col-span-2">
     <EntitySelector
+      width="w-full"
       height="h-7"
       collectionname="mq"
       bind:value={queue}
       basefilter={{ _type: "workitemqueue" }}
-      class="w-64"
       handleChangeFunction={filterData}
       name="Queue"
     />
-    <HotkeyButton
-      size="sm"
-      variant="base"
-      aria-label="Filter"
-      class="border-dashed"
-      disabled={!queue || loading}
-      onclick={() => {
-        searchstring = "";
-        queue = "";
-        ref.reload();
-      }}
-    >
-      <X />
-      Clear</HotkeyButton
-    >
   </div>
-
   <HotkeyButton
+    class="border-dashed"
+    size="sm"
+    variant="base"
+    aria-label="Filter"
+    disabled={!queue || loading}
+    onclick={() => {
+      searchstring = "";
+      queue = "";
+      ref.reload();
+    }}
+  >
+    <X />
+    Clear</HotkeyButton
+  >
+  <HotkeyButton
+    class="xl:col-start-10"
     size="sm"
     variant="base"
     disabled={loading}
