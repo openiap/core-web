@@ -356,7 +356,10 @@
 		forms.hidden = !auth.isAuthenticated;
 		clients.hidden = !isWorkspaceAdmin;
 
-		if (auth.config?.workspace_enabled == true || auth.config?.multi_tenant == true) {
+		if (
+			auth.config?.workspace_enabled == true ||
+			auth.config?.multi_tenant == true
+		) {
 			billingaccounts.hidden = false;
 			if (auth.config?.workspace_enabled == true) {
 				billingaccounts.title = "Billing accounts";
@@ -415,7 +418,7 @@
 	{...restProps}
 	class="border-r border-transparent toursidebar"
 >
-	<div class="my-2.5 mx-3 h-full overflow-auto">
+	<div class="my-2.5 mx-3 h-full">
 		<Sidebar.Header class="ms-6">
 			<NavWorkspace
 				{workspaces}
@@ -423,69 +426,71 @@
 				{update_currentworkspace}
 			/>
 		</Sidebar.Header>
-		<Sidebar.Content>
-			{#each navMain as group (group.title)}
-				{#if !group.hidden}
-					<Sidebar.Group class="ps-8">
-						{#if group.title && group.title != ""}
-							<Sidebar.GroupLabel
-								class="font-bold text-black dark:text-bw300"
-								>{group.title}</Sidebar.GroupLabel
-							>
-						{/if}
-						<Sidebar.GroupContent>
-							<Sidebar.Menu>
-								{#each group.items as item (item.title)}
-									{#if !item.hidden}
-										<Sidebar.MenuItem
-											class="rounded-[10px] hover:rounded-[10px]"
-										>
-											<Sidebar.MenuButton
-												isActive={item.isActive(
-													$page.url.pathname,
-												)}
-												class={item.isActive(
-													$page.url.pathname,
-												)
-													? " border-[1px] border-bw600 rounded-[10px] dark:border-transparent " +
-														item.classname
-													: "border-[1px] border-transparent rounded-[10px] hover:bg-bw100 hover:border-[1px] hover:border-bw600 hover:bg-inherit dark:hover:border-bw500 dark:hover:bg-bw850 dark:hover:text-bw400 " +
-														item.classname}
+		<Sidebar.Content class="h-full overflow-hidden">
+			<div class="h-full overflow-auto mb-24">
+				{#each navMain as group (group.title)}
+					{#if !group.hidden}
+						<Sidebar.Group class="ps-8">
+							{#if group.title && group.title != ""}
+								<Sidebar.GroupLabel
+									class="font-bold text-black dark:text-bw300"
+									>{group.title}</Sidebar.GroupLabel
+								>
+							{/if}
+							<Sidebar.GroupContent>
+								<Sidebar.Menu>
+									{#each group.items as item (item.title)}
+										{#if !item.hidden}
+											<Sidebar.MenuItem
+												class="rounded-[10px] hover:rounded-[10px]"
 											>
-												{#snippet child({ props })}
-													{#if item.external}
-														<a
-															href={item.url}
-															{...props}
-															target="_blank"
-															rel="noopener noreferrer"
-														>
-															<IconRenderer
-																title={item.title}
-															/>
-															{item.title}</a
-														>
-													{:else}
-														<a
-															href={item.url}
-															{...props}
-														>
-															<IconRenderer
-																title={item.title}
-															/>
-															{item.title}</a
-														>
-													{/if}
-												{/snippet}
-											</Sidebar.MenuButton>
-										</Sidebar.MenuItem>
-									{/if}
-								{/each}
-							</Sidebar.Menu>
-						</Sidebar.GroupContent>
-					</Sidebar.Group>
-				{/if}
-			{/each}
+												<Sidebar.MenuButton
+													isActive={item.isActive(
+														$page.url.pathname,
+													)}
+													class={item.isActive(
+														$page.url.pathname,
+													)
+														? " border-[1px] border-bw600 rounded-[10px] dark:border-transparent " +
+															item.classname
+														: "border-[1px] border-transparent rounded-[10px] hover:bg-bw100 hover:border-[1px] hover:border-bw600 hover:bg-inherit dark:hover:border-bw500 dark:hover:bg-bw850 dark:hover:text-bw400 " +
+															item.classname}
+												>
+													{#snippet child({ props })}
+														{#if item.external}
+															<a
+																href={item.url}
+																{...props}
+																target="_blank"
+																rel="noopener noreferrer"
+															>
+																<IconRenderer
+																	title={item.title}
+																/>
+																{item.title}</a
+															>
+														{:else}
+															<a
+																href={item.url}
+																{...props}
+															>
+																<IconRenderer
+																	title={item.title}
+																/>
+																{item.title}</a
+															>
+														{/if}
+													{/snippet}
+												</Sidebar.MenuButton>
+											</Sidebar.MenuItem>
+										{/if}
+									{/each}
+								</Sidebar.Menu>
+							</Sidebar.GroupContent>
+						</Sidebar.Group>
+					{/if}
+				{/each}
+			</div>
 		</Sidebar.Content>
 	</div>
 </Sidebar.Root>
