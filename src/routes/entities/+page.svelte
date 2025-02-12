@@ -3,11 +3,9 @@
   import { goto, replaceState } from "$app/navigation";
   import { base } from "$app/paths";
   import { page as sveltepage } from "$app/state";
-  import * as Dialog from "$lib/components/ui/dialog/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
   import { Separator } from "$lib/components/ui/separator/index.js";
-  import { CustomInput } from "$lib/custominput";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
   import Searchinput from "$lib/searchinput/searchinput.svelte";
@@ -133,10 +131,10 @@
   const isAdmin = profileroles.includes("admins");
 </script>
 
-<div class="flex items-start justify-between">
+<div class="flex items-start justify-between h-full">
   <div
     id="div1"
-    class="w-full max-w-max flex-shrink-0 hidden sm:block p-2.5 rounded-[10px] bg-bw100 dark:bg-bw900"
+    class="w-full max-w-max flex-shrink-0 hidden sm:block p-2.5 rounded-[10px] bg-bw100 dark:bg-bw900 h-full overflow-hidden pb-10"
   >
     <HotkeyButton
       class="mb-2 w-full"
@@ -148,26 +146,30 @@
       <Plus />
       Add collection</HotkeyButton
     >
-    <ScrollArea class="max-h-[78vh] w-[266px] overflow-auto ">
-      <div class="pt-0 p-4">
-        {#each collections as collection}
-          <HotkeyButton
-            class="w-full justify-start"
-            size="entity"
-            variant={collectionvariant(collection.name)}
-            onclick={(e) => {
-              selectcollection(collection.name);
-            }}
-          >
-            <Folder class="size-4" />
-            {collection.name}</HotkeyButton
-          >
-          <Separator class="my-2" />
-        {/each}
-      </div>
-    </ScrollArea>
+    <div class="h-full overflow-auto">
+      <ScrollArea class="max-h-full w-[266px] overflow-auto ">
+        <div class="pt-0 p-4">
+          {#each collections as collection, index}
+            {#if index != 0}
+              <Separator class="my-2" />
+            {/if}
+            <HotkeyButton
+              class="w-full justify-start"
+              size="entity"
+              variant={collectionvariant(collection.name)}
+              onclick={(e) => {
+                selectcollection(collection.name);
+              }}
+            >
+              <Folder class="size-4" />
+              {collection.name}</HotkeyButton
+            >
+          {/each}
+        </div>
+      </ScrollArea>
+    </div>
   </div>
-  <div id="div2" class="ms-6 flex-1">
+  <div id="div2" class="ms-6 flex-1 h-full">
     <div class="flex justify-between">
       <div class="flex gap-2 w-full">
         <Searchinput bind:searchstring />

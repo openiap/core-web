@@ -159,12 +159,10 @@
 <Toaster />
 
 <style>
-	:global(body) {
-		overflow: hidden;
-	}
 	main {
 		padding: 1.25rem 1rem;
 		width: 100%;
+		height: 100%;
 		margin: 0 auto;
 		box-sizing: border-box;
 	}

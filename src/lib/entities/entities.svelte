@@ -456,7 +456,9 @@
 	}
 </script>
 
-<div class="flex flex-col gap-2 justify-between">
+<div
+	class={`flex flex-col justify-between ${usersettings.currentpage.includes("agent") ? "h-[89%]" : usersettings.currentpage.includes("entities") ? "h-[93%]" : "h-[95%]"}`}
+>
 	<div>
 		<div class="text-red-500">{data.errormessage}</div>
 		<div class="overflow-hidden rounded-[10px] border border-bw500">
@@ -641,7 +643,9 @@
 		</div>
 	</div>
 
-	<div class="flex my-1 justify-between items-center dark:text-bw300">
+	<div
+		class="grid grid-cols-1 md:flex my-1 text-center md:justify-between items-center dark:text-bw300"
+	>
 		<HotkeyButton
 			size="base"
 			variant="base"
