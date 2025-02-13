@@ -11,12 +11,14 @@
   import { auth } from "$lib/stores/auth.svelte";
   import { WarningDialogue } from "$lib/warningdialogue/index.js";
   import {
-    Folder,
-    History,
-    Pencil,
-    Plus,
-    RefreshCcw,
-    Trash2,
+      Folder,
+      History,
+      Layers2,
+      Pencil,
+      Plus,
+      RefreshCcw,
+      RotateCcw,
+      Trash2,
   } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
@@ -66,15 +68,19 @@
   }
   async function getCollections() {
     try {
+      loading = true;
+
       collections = await auth.client.ListCollections({
         jwt: auth.access_token,
       });
-      console.log("collections", collections);
+      await ref.reload();
     } catch (error: any) {
       toast.error("Error while fetching collections", {
         description: error,
       });
       return;
+    } finally {
+      loading = false;
     }
   }
   async function handleEntityDelete() {
@@ -160,40 +166,52 @@
     </ScrollArea>
   </div>
   <div id="div2" class="ms-6 flex-1 h-full">
-    <div class="flex justify-between">
-      <div class="flex gap-2 w-full">
-        <Searchinput bind:searchstring />
-      </div>
-      <div class="flex gap-2">
-        <HotkeyButton size="sm" disabled={loading} onclick={getCollections}>
-          <RefreshCcw />
-          Refresh</HotkeyButton
-        >
-        {#if isAdmin}
-          <HotkeyButton
-            size="sm"
-            variant="danger"
-            disabled={loading}
-            onclick={async () => {
-              showWarningEntityDelete = true;
-            }}
-          >
-            <Trash2 />
-            Delete {collectionname}</HotkeyButton
-          >
-        {/if}
+    <div class="grid grid-cols-2 gap-2 xl:flex xl:gap-4 justify-between mb-4">
+      <Searchinput bind:searchstring class="col-span-2" />
+      <HotkeyButton
+        size="sm"
+        disabled={loading}
+        onclick={() => goto(base + `/entities/${collectionname}/deleted`)}
+      >
+        <RotateCcw />
+        Deleted items</HotkeyButton
+      >
+      <HotkeyButton
+        size="sm"
+        disabled={loading}
+        onclick={() => goto(base + `/entities/${collectionname}/duplicates`)}
+      >
+        <Layers2 />
+        Show Duplicates</HotkeyButton
+      >
+      <HotkeyButton size="sm" disabled={loading} onclick={getCollections}>
+        <RefreshCcw />
+        Refresh</HotkeyButton
+      >
+      {#if isAdmin}
         <HotkeyButton
           size="sm"
-          data-shortcut="n,ins"
+          variant="danger"
           disabled={loading}
-          onclick={() => {
-            goto(base + `/entities/${collectionname}/new`);
+          onclick={async () => {
+            showWarningEntityDelete = true;
           }}
         >
-          <Plus />
-          Add to {collectionname}</HotkeyButton
+          <Trash2 />
+          Delete {collectionname}</HotkeyButton
         >
-      </div>
+      {/if}
+      <HotkeyButton
+        size="sm"
+        data-shortcut="n,ins"
+        disabled={loading}
+        onclick={() => {
+          goto(base + `/entities/${collectionname}/new`);
+        }}
+      >
+        <Plus />
+        Add to {collectionname}</HotkeyButton
+      >
     </div>
 
     <Entities

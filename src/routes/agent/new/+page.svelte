@@ -78,7 +78,16 @@
             stripeprice = product.stripeprice;
           }
           form.data._stripeprice = "";
-
+          let image = auth.config?.agent_images.find(
+            (x: any) => x.image == form.data.image,
+          );
+          if (
+            image != null &&
+            image.languages != null &&
+            image.languages.length > 0
+          ) {
+            form.data.languages = image.languages;
+          }
           const newagent = await auth.client.InsertOne<any>({
             collectionname: "agents",
             item: { ...form.data, _type: "agent" },
@@ -105,6 +114,12 @@
               }
               toast.success("Resource assigned");
             }
+            await auth.client.CustomCommand({
+              command: "startagent",
+              id: newagent._id,
+              name: newagent.slug,
+              jwt: auth.access_token,
+            });
             goto(base + `/agent`);
           } catch (error: any) {
             toast.error("Error", {

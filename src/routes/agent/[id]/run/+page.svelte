@@ -118,16 +118,19 @@
       });
     }
   }
-
   if (browser) init();
 </script>
 
 <div>View Logs for packages running on {agent.name}</div>
 
 <div class="flex items-center justify-start space-x-2 my-2">
-  <Entityselector
+  <!-- <Entityselector
     collectionname="agents"
     basefilter={{ _type: "package", language: { $in: agent.languages } }}
+    bind:value={packageId}
+  /> -->
+  <Entityselector
+    collectionname="agents"
     bind:value={packageId}
   />
   <HotkeyButton onclick={runpackage}>Run package</HotkeyButton>

@@ -457,7 +457,7 @@
 </script>
 
 <div
-	class={`flex flex-col justify-between ${usersettings.currentpage.includes("entities") ? "h-[96%]" : "h-[96%]"}`}
+	class={`flex flex-col justify-between ${usersettings.currentpage.includes("entities") ? "md:h-[91%] lg:h-[94%] xl:h-[96%]" : "md:h-[91%] lg:h-[94%] xl:h-[96%]"}`}
 >
 	<div>
 		<div class="text-red-500">{data.errormessage}</div>
@@ -466,7 +466,7 @@
 				<Table.Root>
 					{#if entities.length === 0}
 						<Table.Caption class="mb-2 text-bw300"
-							>No data found.</Table.Caption
+							>No data found in this workspace.</Table.Caption
 						>
 					{:else if caption != ""}
 						<Table.Caption>{caption}</Table.Caption>

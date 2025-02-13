@@ -23,6 +23,8 @@
     } = $props();
 
     let placeholder = `Select ${name}`;
+    let entities: any[] = $state([]);
+    let isOpen = $state(false);
 
     const triggerContent = $derived(async () => {
         let id;
@@ -54,8 +56,6 @@
         }
         return placeholder;
     });
-
-    let entities: any[] = $state([]);
     async function loadSearchResult(search: string) {
         let query = { ...basefilter };
         if (search != null && search != "") {
@@ -93,7 +93,6 @@
             }
         }
     }
-    let isOpen = $state(false);
     function closeAndRefocusTrigger() {
         isOpen = false;
     }
@@ -138,6 +137,7 @@
                 {#each entities as item}
                     <Command.Item
                         onSelect={() => {
+                            console.log("onSelect", item);
                             if (returnObject) {
                                 value = item;
                             } else {

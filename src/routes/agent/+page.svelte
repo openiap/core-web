@@ -6,13 +6,12 @@
 
 <script lang="ts">
   import { browser } from "$app/environment";
-
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
   import {
-    buttonVariants,
-    HotkeyButton,
+      buttonVariants,
+      HotkeyButton,
   } from "$lib/components/ui/hotkeybutton";
   import { Label } from "$lib/components/ui/label/index.js";
   import * as Popover from "$lib/components/ui/popover/index.js";
@@ -26,19 +25,19 @@
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import {
-    Box,
-    Ellipsis,
-    Filter,
-    Play,
-    Plus,
-    Receipt,
-    RefreshCcw,
-    Square,
-    SquarePen,
-    Trash2,
-    User,
-    Webhook,
-    Wrench,
+      Box,
+      Ellipsis,
+      Filter,
+      Play,
+      Plus,
+      Receipt,
+      RefreshCcw,
+      Square,
+      SquarePen,
+      Trash2,
+      User,
+      Webhook,
+      Wrench,
   } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
@@ -167,6 +166,7 @@
     usersettings.persist();
   }
   function single_item_click(item: any) {
+    loading = true;
     goto(base + `/${page}/${item._id}`);
   }
   function getStatus(model: any) {
@@ -307,7 +307,7 @@
         ><Filter />
         Filter</Popover.Trigger
       >
-      <Popover.Content>
+      <Popover.Content class="w-fit">
         <RadioGroup.Root value="All" class="flex flex-col">
           <div class="flex items-center space-x-2 w-full">
             <RadioGroup.Item
@@ -464,6 +464,7 @@
           disabled={loading}
           onclick={async () => {
             try {
+              loading = true;
               await auth.client.CustomCommand({
                 command: "startagent",
                 id: item._id,
@@ -478,6 +479,8 @@
               toast.error("Error while starting", {
                 description: error.message,
               });
+            } finally {
+              loading = false;
             }
           }}
         >
@@ -491,6 +494,7 @@
           disabled={loading}
           onclick={async () => {
             try {
+              loading = true;
               await auth.client.CustomCommand({
                 command: "stopagent",
                 id: item._id,
@@ -505,6 +509,8 @@
               toast.error("Error while stopping", {
                 description: error.message,
               });
+            } finally {
+              loading = false;
             }
           }}
         >

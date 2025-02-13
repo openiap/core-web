@@ -31,6 +31,8 @@ const config: Config = {
 				bw950: "#0C0D0E",
 				bw1000: "#282A2F",
 
+				darkagenttab: "#3B3E42",
+
 				lightbg: "#F5F5F5",
 
 				lighttableheader: "#E6E6E6",

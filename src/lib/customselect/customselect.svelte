@@ -9,7 +9,8 @@
 		type,
 		loading = false,
 		selectitems = [],
-		width: _width = " lg:w-64",
+        width = "w-full md:w-1/2 lg:w-1/3",
+		width: _width = " w-full md:w-1/2 lg:w-1/3",
 	} = $props();
 
 	function getValue(item: any) {
@@ -20,6 +21,7 @@
 		if (item.value != null) return item.value;
 		return "";
 	}
+	console.log("value", value);
 </script>
 
 <Select.Root

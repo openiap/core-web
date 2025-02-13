@@ -206,6 +206,7 @@
     aria-label="Submit"
     variant="success"
     size="base"
+    data-shortcut="ctrl+s"
   >
     <Check />
     Add {page}</Form.Button
