@@ -25,7 +25,11 @@
   }
 </script>
 
-<SearchInput bind:searchstring />
+<div class="h-full">
+
+<div class="mb-5.5">
+  <SearchInput bind:searchstring />
+</div>
 
 <Entities
   {collectionname}
@@ -64,3 +68,4 @@
     </HotkeyButton>
   {/snippet}
 </Entities>
+</div>

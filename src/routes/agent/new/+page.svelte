@@ -78,7 +78,16 @@
             stripeprice = product.stripeprice;
           }
           form.data._stripeprice = "";
-
+          let image = auth.config?.agent_images.find(
+            (x: any) => x.image == form.data.image,
+          );
+          if (
+            image != null &&
+            image.languages != null &&
+            image.languages.length > 0
+          ) {
+            form.data.languages = image.languages;
+          }
           const newagent = await auth.client.InsertOne<any>({
             collectionname: "agents",
             item: { ...form.data, _type: "agent" },
@@ -105,6 +114,12 @@
               }
               toast.success("Resource assigned");
             }
+            await auth.client.CustomCommand({
+              command: "startagent",
+              id: newagent._id,
+              name: newagent.slug,
+              jwt: auth.access_token,
+            });
             goto(base + `/agent`);
           } catch (error: any) {
             toast.error("Error", {
@@ -318,23 +333,28 @@
   {/if}
 
   <form method="POST" use:enhance>
-    <Form.Button
-      disabled={loading}
-      aria-label="Create agent"
-      title="Create agent"
+    <HotkeyButton
+      class="w-full md:w-auto mb-4"
       variant="success"
       size="base"
-      class="mb-4"
+      disabled={loading}
+      aria-label="Create agent"
+      type="submit"
+      data-shortcut="ctrl+s"
     >
       <Check />
-      Create agent</Form.Button
+      Create agent</HotkeyButton
     >
-    <div class="flex items-center justify-between space-x-4 mb-2">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       <Form.Field {form} name="name" class="w-full">
         <Form.Control>
           {#snippet children({ props })}
             <Form.Label>Name</Form.Label>
-            <CustomInput disabled={loading} bind:value={$formData.name} />
+            <CustomInput
+              width="w-full"
+              disabled={loading}
+              bind:value={$formData.name}
+            />
           {/snippet}
         </Form.Control>
         <Form.FieldErrors />
@@ -355,10 +375,11 @@
                 onclick={() => {
                   $formData.name = randomname();
                   $formData.slug = $formData.name;
-                }}><RefreshCcw class="h-4 w-4" /></HotkeyButton
+                }}><RefreshCcw /></HotkeyButton
               >
             </div>
             <CustomInput
+              width="w-full"
               disabled={loading}
               {...props}
               bind:value={$formData.slug}
@@ -373,6 +394,7 @@
           {#snippet children({ props })}
             <Form.Label>Image</Form.Label>
             <CustomSelect
+              width="w-full"
               type="single"
               {loading}
               {...props}
@@ -391,6 +413,7 @@
           {#snippet children({ props })}
             <Form.Label>Plan</Form.Label>
             <CustomSelect
+              width="w-full"
               {loading}
               {...props}
               bind:value={$formData._stripeprice}
@@ -414,21 +437,23 @@
       </div>
     {/if}
 
-    <Form.Field {form} name="environment" class="min-h-52 w-full mb-4">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Environment</Form.Label>
-          <ObjectInput
-            disabled={loading}
-            {...props}
-            bind:value={$formData.environment}
-          />
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
+    <div class="mb-6 mt-4 md:mb-4 md:mt-2">
+      <Form.Field {form} name="environment" class="min-h-52 w-full mb-4">
+        <Form.Control>
+          {#snippet children({ props })}
+            <Form.Label>Environment</Form.Label>
+            <ObjectInput
+              disabled={loading}
+              {...props}
+              bind:value={$formData.environment}
+            />
+          {/snippet}
+        </Form.Control>
+        <Form.FieldErrors />
+      </Form.Field>
+    </div>
 
-    <div class="grid grid-cols-2 lg:grid-cols-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4">
       <Form.Field
         {form}
         name="autostart"
@@ -524,8 +549,10 @@
         {#snippet children({ props })}
           <div class="flex flex-col items-start space-y-2">
             <Form.Label class="me-6">Runas</Form.Label>
-            <div class="flex items-center space-x-4">
+            <div class="md:flex md:items-center md:space-x-4 my-2">
               <Entityselector
+                width="md:w-fit w-64"
+                class="mb-2 md:mb-0"
                 disabled={loading}
                 {...props}
                 collectionname="users"
@@ -533,9 +560,8 @@
                 bind:value={$formData.runas}
               />
               <HotkeyButton
-                variant="base"
-                aria-label="Refresh"
-                title="Refresh"
+                aria-label="User details"
+                title="User details"
                 disabled={loading}
                 onclick={() => {
                   goto(base + `/user/${$formData.runas}`);

@@ -14,6 +14,8 @@
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../../schema.js";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
+  import { Check } from "lucide-svelte";
 
   let loading = $state(false);
   let errormessage = $state("");
@@ -61,12 +63,17 @@
 {/if}
 
 <form method="POST" use:enhance>
-  <Form.Button
+  <HotkeyButton
     class="mb-4"
-    disabled={loading}
-    aria-label="submit"
     variant="success"
-    size="base">Save Changes</Form.Button
+    size="base"
+    disabled={loading}
+    aria-label="Save Changes"
+    type="submit"
+    data-shortcut="ctrl+s"
+  >
+    <Check />
+    Save Changes</HotkeyButton
   >
 
   <Acl bind:value={$formData} />

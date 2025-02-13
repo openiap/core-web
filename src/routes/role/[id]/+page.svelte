@@ -223,14 +223,16 @@
     </HotkeyButton>
   </div>
 
-  <Form.Button
+  <HotkeyButton
     variant="success"
     size="base"
     disabled={loading}
-    aria-label="Update"
+    aria-label="Update role"
+    type="submit"
+    data-shortcut="ctrl+s"
   >
     <Check />
-    Update {key}</Form.Button
+    Update role</HotkeyButton
   >
 </form>
 

@@ -16,6 +16,8 @@
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../schema.js";
+  import { Check } from "lucide-svelte";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
 
   const key = "formresource";
   const { data } = $props();
@@ -43,11 +45,12 @@
             description: error.message,
           });
           cancel();
-        } finally {
           loading = false;
+        } finally {
         }
       } else {
         errormessage = "Form is invalid";
+        loading = false;
       }
     },
   });
@@ -97,11 +100,16 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Button
-    disabled={loading}
-    aria-label="Save Changes"
+  <HotkeyButton
     variant="success"
-    size="base">Save Changes</Form.Button
+    size="base"
+    disabled={loading}
+    aria-label="Update formresource"
+    type="submit"
+    data-shortcut="ctrl+s"
+  >
+    <Check />
+    Update formresource</HotkeyButton
   >
 </form>
 

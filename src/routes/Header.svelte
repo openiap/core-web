@@ -36,17 +36,18 @@
 		goto(base + `/`);
 	}
 	function checkMobile() {
-		return (
+		const currentState =
 			typeof navigator !== "undefined" &&
-			/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
-		);
+			/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+		if (currentState) {
+			isMobile = true;
+			sidemenu.status = false;
+		} else {
+			isMobile = false;
+			sidemenu.status = true;
+		}
 	}
-	if (checkMobile()) {
-		isMobile = true;
-		sidemenu.status = false;
-	} else {
-		sidemenu.status = true;
-	}
+	checkMobile();
 </script>
 
 <header

@@ -74,10 +74,11 @@
   }
 </script>
 
-<div class="flex justify-between">
-  <div class="flex gap-2 w-full">
-    <SearchInput bind:searchstring />
-    <HotkeyButton
+<div
+  class="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 mb-4 xl:flex xl:justify-between xl:items-center"
+>
+  <SearchInput bind:searchstring class="xl:max-w-[288px]" />
+  <!-- <HotkeyButton
       size="sm"
       variant="base"
       disabled={loading}
@@ -86,9 +87,7 @@
     >
       <Filter />
       Filter</HotkeyButton
-    >
-  </div>
-
+    > -->
   <HotkeyButton
     size="sm"
     variant="base"
@@ -97,7 +96,7 @@
     onclick={() => goto(base + `/${page}/new/`)}
   >
     <Plus />
-    Add {page}</HotkeyButton
+    Add Workitemqueue</HotkeyButton
   >
 </div>
 

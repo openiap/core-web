@@ -82,7 +82,6 @@
 {/if}
 
 <form method="POST" use:enhance>
-
   <Form.Field {form} name="name" class="mb-7">
     <Form.Control>
       {#snippet children({ props })}
@@ -212,14 +211,16 @@
     </HotkeyButton>
   </div>
 
-  <Form.Button
-    disabled={loading}
-    aria-label="Add"
+  <HotkeyButton
     variant="success"
     size="base"
+    disabled={loading}
+    aria-label="Add role"
+    type="submit"
+    data-shortcut="ctrl+s"
   >
     <Check />
-    Add {key}</Form.Button
+    Add role</HotkeyButton
   >
 </form>
 

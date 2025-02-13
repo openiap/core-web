@@ -2,19 +2,23 @@
 	import { HotkeyInput } from "$lib/components/ui/hotkeyinput";
 	import { Search } from "lucide-svelte";
 
-	let { searchstring = $bindable(""), debounc = 500 } = $props();
+	let {
+		searchstring = $bindable(""),
+		debounc = 500,
+		class: _class = "w-full lg:max-w-[288px] mb-4",
+	} = $props();
 	let _searchstring = $state(searchstring);
 	let lastinput = new Date();
-	let timeout:any = null;
+	let timeout: any = null;
 	$effect(() => {
 		_searchstring;
 		searchstring;
 		if (new Date().getTime() - lastinput.getTime() > debounc) {
-			if(timeout != null) clearTimeout(timeout);
+			if (timeout != null) clearTimeout(timeout);
 			searchstring = _searchstring;
 			lastinput = new Date();
 		} else {
-			if(timeout != null) clearTimeout(timeout);
+			if (timeout != null) clearTimeout(timeout);
 			lastinput = new Date();
 			timeout = setTimeout(async () => {
 				searchstring = _searchstring;
@@ -25,7 +29,7 @@
 	});
 </script>
 
-<div class="flex w-full max-w-[288px] flex-col gap-1.5 mb-4">
+<div class={"flex w-full flex-col gap-1.5" + " " + _class}>
 	<div class="relative">
 		<label for="searchstring" class="sr-only">Search</label>
 		<HotkeyInput

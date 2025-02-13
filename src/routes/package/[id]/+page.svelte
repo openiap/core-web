@@ -5,22 +5,17 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
-  import Checkbox from "$lib/components/ui/checkbox/checkbox.svelte";
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
-  import { Input } from "$lib/components/ui/input/index.js";
-  import { auth } from "$lib/stores/auth.svelte.js";
-  import Button from "$lib/components/ui/button/button.svelte";
-  import * as Select from "$lib/components/ui/select/index.js";
-  import { ArrowLeft, Check } from "lucide-svelte";
-  import { toast } from "svelte-sonner";
-  import SuperDebug, { defaults, superForm } from "sveltekit-superforms";
-  import { zod } from "sveltekit-superforms/adapters";
-  import { editFormSchema } from "../schema.js";
+  import { CustomCheckbox } from "$lib/customcheckbox/index.js";
   import { CustomInput } from "$lib/custominput/index.js";
   import { CustomSelect } from "$lib/customselect/index.js";
-  import { CustomCheckbox } from "$lib/customcheckbox/index.js";
   import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
+  import { auth } from "$lib/stores/auth.svelte.js";
+  import { toast } from "svelte-sonner";
+  import { defaults, superForm } from "sveltekit-superforms";
+  import { zod } from "sveltekit-superforms/adapters";
+  import { editFormSchema } from "../schema.js";
 
   const page = "package";
   let loading = $state(false);
@@ -230,6 +225,7 @@
   </Form.Field>
 
   <Form.Button
+    data-shortcut="ctrl+s"
     disabled={loading}
     aria-label="Save Changes"
     variant="success"

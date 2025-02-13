@@ -51,14 +51,13 @@
     },
   });
   const { form: formData, enhance, message } = form;
-  for(let i = 0; i < settings.length; i++) {
+  for (let i = 0; i < settings.length; i++) {
     if (settings[i].type === "boolean") {
       if ($formData[settings[i].name] == null) {
         $formData[settings[i].name] = settings[i].default as boolean;
       }
     }
   }
-
 </script>
 
 {#if message && $message != ""}
@@ -247,14 +246,16 @@
       </div>
     {/if}
   {/each}
-  <Form.Button
-    disabled={loading}
-    aria-label="submit"
+  <HotkeyButton
     variant="success"
     size="base"
+    disabled={loading}
+    aria-label="Save Changes"
+    type="submit"
+    data-shortcut="ctrl+s"
   >
     <Check />
-    Save</Form.Button
+    Save Changes</HotkeyButton
   >
 </form>
 

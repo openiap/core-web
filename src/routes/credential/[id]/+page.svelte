@@ -15,6 +15,7 @@
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../schema.js";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
 
   const key = "credential";
   const { data } = $props();
@@ -87,21 +88,27 @@
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Password</Form.Label>
-        <CustomInput {...props} bind:value={$formData.password} type="password" />
+        <CustomInput
+          {...props}
+          bind:value={$formData.password}
+          type="password"
+        />
       {/snippet}
     </Form.Control>
     <Form.Description>This is your password.</Form.Description>
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Button
+  <HotkeyButton
     variant="success"
     size="base"
     disabled={loading}
-    aria-label="submit"
+    aria-label="Update Credential"
+    type="submit"
+    data-shortcut="ctrl+s"
   >
     <Check />
-    Update {key}</Form.Button
+    Update Credential</HotkeyButton
   >
 </form>
 

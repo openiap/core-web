@@ -7,6 +7,7 @@ export const newFormSchema = z.object({
   environment: z.any(),
   autostart: z.boolean().default(false),
   webserver: z.boolean().default(false),
+  docker: z.boolean().default(true),
   sleep: z.boolean().default(false),
   timezone: z.string().default(""),
   runas: z.string().default("").optional(),
@@ -20,6 +21,7 @@ export const newFormSchema = z.object({
 export type NewFormSchema = typeof newFormSchema;
 
 export const editFormSchema = z.object({
+  _id: z.string().min(2),
   name: z.string().min(2),
   slug: z.string().min(2),
   image: z.string().min(2),

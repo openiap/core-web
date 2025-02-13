@@ -9,6 +9,8 @@
 		type,
 		loading = false,
 		selectitems = [],
+        width = "w-full md:w-1/2 lg:w-1/3",
+		width: _width = " w-full md:w-1/2 lg:w-1/3",
 	} = $props();
 
 	function getValue(item: any) {
@@ -19,6 +21,7 @@
 		if (item.value != null) return item.value;
 		return "";
 	}
+	console.log("value", value);
 </script>
 
 <Select.Root
@@ -28,7 +31,10 @@
 	onValueChange={onValueChangeFunction}
 >
 	<Select.Trigger
-		class={"shadow-soft dark:shadow-dark bg-bw50 w-64 py-2 rounded-[10px] border dark:border-bw600 dark:placeholder-bw500 dark:text-bw400 dark:bg-bw800 focus:outline-none " +
+		class={"shadow-soft dark:shadow-dark bg-bw50  py-2 rounded-[10px] border dark:border-bw600 dark:placeholder-bw500 dark:text-bw400 dark:bg-bw800 focus:outline-none " +
+			" " +
+			_width +
+			" " +
 			className}
 	>
 		{triggerContent()}

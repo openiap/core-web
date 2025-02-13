@@ -20,8 +20,13 @@
 	datacomponent.parsesettings(data.settings);
 	const { wsurl, protocol, domain, client_id, profile, origin } = data;
 	let { access_token } = data;
-	if(auth.config != null) {
-		console.log("core-web version", data.webversion, "git commit", data.webcommit);
+	if (auth.config != null) {
+		console.log(
+			"core-web version",
+			data.webversion,
+			"git commit",
+			data.webcommit,
+		);
 	} else if (browser) {
 		console.log("core-web not initialized, is opencore down?");
 	}
@@ -40,15 +45,23 @@
 				jwt: access_token,
 				top: 5,
 			});
-			if(usersettings.currentworkspace != null && usersettings.currentworkspace != "") {
-				let exists = workspaces.find(x=> x._id == usersettings.currentworkspace);
-				if(exists == null) {
+			if (
+				usersettings.currentworkspace != null &&
+				usersettings.currentworkspace != ""
+			) {
+				let exists = workspaces.find(
+					(x) => x._id == usersettings.currentworkspace,
+				);
+				if (exists == null) {
 					let _workspace = await auth.client.FindOne<Workspace>({
 						collectionname: "users",
-						query: { _type: "workspace", _id: usersettings.currentworkspace },
-						jwt: access_token
+						query: {
+							_type: "workspace",
+							_id: usersettings.currentworkspace,
+						},
+						jwt: access_token,
 					});
-					if(_workspace != null) {
+					if (_workspace != null) {
 						workspaces.pop();
 						workspaces.unshift(_workspace);
 					}
@@ -125,10 +138,10 @@
 				{profile}
 				{update_currentworkspace}
 			/>
-			<div class="flex flex-col w-full tourcontent">
+			<Sidebar.Inset class="overflow-hidden">
 				<Header />
 				<div
-					class="border border-gray-300 bg-white dark:border-bw500 dark:bg-bw800 rounded-xl mb-4 mx-4 h-full overflow-auto"
+					class="border border-gray-300 bg-white dark:border-bw500 dark:bg-bw800 rounded-xl mb-4 mx-4 h-full overflow-auto tourcontent"
 				>
 					{#if auth.isAuthenticated == true || auth.isAuthenticated == false}
 						<main>
@@ -136,7 +149,7 @@
 						</main>
 					{/if}
 				</div>
-			</div>
+			</Sidebar.Inset>
 		</Sidebar.Provider>
 	</div>
 {:else}
@@ -146,12 +159,10 @@
 <Toaster />
 
 <style>
-	:global(body) {
-		overflow: hidden;
-	}
 	main {
 		padding: 1.25rem 1rem;
 		width: 100%;
+		height: 100%;
 		margin: 0 auto;
 		box-sizing: border-box;
 	}

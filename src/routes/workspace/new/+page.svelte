@@ -73,14 +73,16 @@
   </Form.Field>
 
   <div class="flex items-center space-x-5">
-    <Form.Button
-      disabled={loading}
-      aria-label="Create"
+    <HotkeyButton
       variant="success"
       size="base"
+      disabled={loading}
+      aria-label="Create workspace"
+      type="submit"
+      data-shortcut="ctrl+s"
     >
       <Check />
-      Create {key}</Form.Button
+      Update workspace</HotkeyButton
     >
     <HotkeyButton
       size="lg"

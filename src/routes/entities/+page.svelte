@@ -3,11 +3,9 @@
   import { goto, replaceState } from "$app/navigation";
   import { base } from "$app/paths";
   import { page as sveltepage } from "$app/state";
-  import * as Dialog from "$lib/components/ui/dialog/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
   import { Separator } from "$lib/components/ui/separator/index.js";
-  import { CustomInput } from "$lib/custominput";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
   import Searchinput from "$lib/searchinput/searchinput.svelte";
@@ -15,12 +13,14 @@
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import { WarningDialogue } from "$lib/warningdialogue/index.js";
   import {
-    Folder,
-    History,
-    Pencil,
-    Plus,
-    RefreshCcw,
-    Trash2,
+      Folder,
+      History,
+      Layers2,
+      Pencil,
+      Plus,
+      RefreshCcw,
+      RotateCcw,
+      Trash2,
   } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
@@ -76,15 +76,18 @@
   }
   async function getCollections() {
     try {
+      loading = true;
       collections = await auth.client.ListCollections({
         jwt: auth.access_token,
       });
-      console.log("collections", collections);
+      await ref.reload();
     } catch (error: any) {
       toast.error("Error while fetching collections", {
         description: error,
       });
       return;
+    } finally {
+      loading = false;
     }
   }
   async function handleEntityDelete() {
@@ -133,10 +136,10 @@
   const isAdmin = profileroles.includes("admins");
 </script>
 
-<div class="flex items-start justify-between">
+<div class="flex items-start justify-between h-full">
   <div
     id="div1"
-    class="w-full max-w-max flex-shrink-0 hidden sm:block p-2.5 rounded-[10px] bg-bw100 dark:bg-bw900"
+    class="w-full max-w-max flex-shrink-0 hidden sm:block p-2.5 rounded-[10px] bg-bw100 dark:bg-bw900 h-full overflow-hidden pb-10"
   >
     <HotkeyButton
       class="mb-2 w-full"
@@ -148,60 +151,76 @@
       <Plus />
       Add collection</HotkeyButton
     >
-    <ScrollArea class="max-h-[78vh] w-[266px] overflow-auto ">
-      <div class="pt-0 p-4">
-        {#each collections as collection}
-          <HotkeyButton
-            class="w-full justify-start"
-            size="entity"
-            variant={collectionvariant(collection.name)}
-            onclick={(e) => {
-              selectcollection(collection.name);
-            }}
-          >
-            <Folder class="size-4" />
-            {collection.name}</HotkeyButton
-          >
-          <Separator class="my-2" />
-        {/each}
-      </div>
-    </ScrollArea>
+    <div class="h-full overflow-auto">
+      <ScrollArea class="max-h-full w-[266px] overflow-auto ">
+        <div class="pt-0 p-4">
+          {#each collections as collection, index}
+            {#if index != 0}
+              <Separator class="my-2" />
+            {/if}
+            <HotkeyButton
+              class="w-full justify-start"
+              size="entity"
+              variant={collectionvariant(collection.name)}
+              onclick={(e) => {
+                selectcollection(collection.name);
+              }}
+            >
+              <Folder class="size-4" />
+              {collection.name}</HotkeyButton
+            >
+          {/each}
+        </div>
+      </ScrollArea>
+    </div>
   </div>
-  <div id="div2" class="ms-6 flex-1">
-    <div class="flex justify-between">
-      <div class="flex gap-2 w-full">
-        <Searchinput bind:searchstring />
-      </div>
-      <div class="flex gap-2">
-        <HotkeyButton size="sm" disabled={loading} onclick={getCollections}>
-          <RefreshCcw />
-          Refresh</HotkeyButton
-        >
-        {#if isAdmin}
-          <HotkeyButton
-            size="sm"
-            variant="danger"
-            disabled={loading}
-            onclick={async () => {
-              showWarningEntityDelete = true;
-            }}
-          >
-            <Trash2 />
-            Delete {collectionname}</HotkeyButton
-          >
-        {/if}
+  <div id="div2" class="ms-6 flex-1 h-full">
+    <div class="grid grid-cols-2 gap-2 xl:flex xl:gap-4 justify-between mb-4">
+      <Searchinput bind:searchstring class="col-span-2" />
+      <HotkeyButton
+        size="sm"
+        disabled={loading}
+        onclick={() => goto(base + `/entities/${collectionname}/deleted`)}
+      >
+        <RotateCcw />
+        Deleted items</HotkeyButton
+      >
+      <HotkeyButton
+        size="sm"
+        disabled={loading}
+        onclick={() => goto(base + `/entities/${collectionname}/duplicates`)}
+      >
+        <Layers2 />
+        Show Duplicates</HotkeyButton
+      >
+      <HotkeyButton size="sm" disabled={loading} onclick={getCollections}>
+        <RefreshCcw />
+        Refresh</HotkeyButton
+      >
+      {#if isAdmin}
         <HotkeyButton
           size="sm"
-          data-shortcut="n,ins"
+          variant="danger"
           disabled={loading}
-          onclick={() => {
-            goto(base + `/entities/${collectionname}/new`);
+          onclick={async () => {
+            showWarningEntityDelete = true;
           }}
         >
-          <Plus />
-          Add to {collectionname}</HotkeyButton
+          <Trash2 />
+          Delete {collectionname}</HotkeyButton
         >
-      </div>
+      {/if}
+      <HotkeyButton
+        size="sm"
+        data-shortcut="n,ins"
+        disabled={loading}
+        onclick={() => {
+          goto(base + `/entities/${collectionname}/new`);
+        }}
+      >
+        <Plus />
+        Add to {collectionname}</HotkeyButton
+      >
     </div>
 
     <Entities

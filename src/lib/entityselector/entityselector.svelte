@@ -17,12 +17,14 @@
         name = "Entity",
         projection = {},
         noitem = false,
-        width = "w-64",
+        width = "w-full md:w-1/2 lg:w-1/3",
         showType = false,
         ...restProps
     } = $props();
 
     let placeholder = `Select ${name}`;
+    let entities: any[] = $state([]);
+    let isOpen = $state(false);
 
     const triggerContent = $derived(async () => {
         let id;
@@ -54,8 +56,6 @@
         }
         return placeholder;
     });
-
-    let entities: any[] = $state([]);
     async function loadSearchResult(search: string) {
         let query = { ...basefilter };
         if (search != null && search != "") {
@@ -93,7 +93,6 @@
             }
         }
     }
-    let isOpen = $state(false);
     function closeAndRefocusTrigger() {
         isOpen = false;
     }
@@ -121,7 +120,7 @@
             <ChevronDown class="ml-2 h-4 w-4" />
         {/if}
     </Popover.Trigger>
-    <Popover.Content class="w-80">
+    <Popover.Content class="w-72 md:w-80 lg:w-96">
         {#await loadSearchResult("")}{/await}
 
         <Command.Root shouldFilter={false}>
@@ -138,6 +137,7 @@
                 {#each entities as item}
                     <Command.Item
                         onSelect={() => {
+                            console.log("onSelect", item);
                             if (returnObject) {
                                 value = item;
                             } else {

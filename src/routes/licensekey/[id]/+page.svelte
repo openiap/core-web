@@ -16,9 +16,9 @@
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { LicenseSchema } from "../schema.js";
-    import { client } from "@openiap/jsapi/dist/client.js";
-    import { ResourceUsage } from "$lib/types.svelte.js";
-    import Textarea from "$lib/components/ui/textarea/textarea.svelte";
+  import { client } from "@openiap/jsapi/dist/client.js";
+  import { ResourceUsage } from "$lib/types.svelte.js";
+  import Textarea from "$lib/components/ui/textarea/textarea.svelte";
 
   let loading = $state(false);
   let errormessage = $state("");
@@ -39,9 +39,9 @@
   let licensekey = $state("");
   const { data } = $props();
   let LicenseVersions = [
-    {name: "Version 3", _id: 3},
-    {name: "Version 2", _id: 2}
-  ]
+    { name: "Version 3", _id: 3 },
+    { name: "Version 2", _id: 2 },
+  ];
   let products = $state([
     {
       stripeprice: "",
@@ -127,10 +127,11 @@
             description: error.message,
           });
           cancel();
-        } finally {
           loading = false;
+        } finally {
         }
       } else {
+        loading = false;
         errormessage = "Form is invalid";
       }
     },
@@ -148,21 +149,22 @@
     }
     try {
       loading = true;
-      let adding = (valuepromptaction == "addconnection" || valuepromptaction == "addworkspace" || valuepromptaction == "addgitrepo");
+      let adding =
+        valuepromptaction == "addconnection" ||
+        valuepromptaction == "addworkspace" ||
+        valuepromptaction == "addgitrepo";
       let productname = "";
-      if(valuepromptaction.indexOf("connection") > -1) {
+      if (valuepromptaction.indexOf("connection") > -1) {
         productname = "Additional connections";
-      } else if(valuepromptaction.indexOf("workspace") > -1) {
+      } else if (valuepromptaction.indexOf("workspace") > -1) {
         productname = "Additional workspaces";
-      } else if(valuepromptaction.indexOf("gitrepo") > -1) {
+      } else if (valuepromptaction.indexOf("gitrepo") > -1) {
         productname = "Additional getrepos";
       }
 
-      const product = products.find(
-          (x: any) => x.name == productname,
-        );
+      const product = products.find((x: any) => x.name == productname);
       if (product == null)
-          throw new Error("Failed to find `" + productname + "` product");
+        throw new Error("Failed to find `" + productname + "` product");
       const target = $state.snapshot($formData);
       if (adding) {
         const { result, link } = JSON.parse(
@@ -181,7 +183,13 @@
         if (link != null && link != "") {
           document.location.href = link;
         }
-        toast.success("Resource " + productname + " assigned " + valuepromptvalue + " times");
+        toast.success(
+          "Resource " +
+            productname +
+            " assigned " +
+            valuepromptvalue +
+            " times",
+        );
 
         data.item = await auth.client.FindOne({
           collectionname: "config",
@@ -190,14 +198,19 @@
         });
         formData.set(data.item);
         validateForm({ update: true });
-      } else  {
+      } else {
         let existing = await auth.client.FindOne<ResourceUsage>({
           collectionname: "config",
           query: { licenseid: data.item._id, "product.valueadd": true },
           jwt: auth.access_token,
         });
-        if(existing == null) {
-          throw new Error("Failed to find `" + productname + "` resource assigned to " + data.item._id);
+        if (existing == null) {
+          throw new Error(
+            "Failed to find `" +
+              productname +
+              "` resource assigned to " +
+              data.item._id,
+          );
         }
         const { result, link } = JSON.parse(
           await auth.client.CustomCommand({
@@ -209,7 +222,13 @@
             jwt: auth.access_token,
           }),
         );
-        toast.success("Resource `" + productname + "` removed " + valuepromptvalue + " times");
+        toast.success(
+          "Resource `" +
+            productname +
+            "` removed " +
+            valuepromptvalue +
+            " times",
+        );
 
         data.item = await auth.client.FindOne({
           collectionname: "config",
@@ -352,34 +371,34 @@
           bind:value={$formData.workspaces}
         />
         <Button
-        variant="outline"
-        size="base"
-        disabled={loading}
-        onclick={() => {
-          valuepromptaction = "addworkspace";
-          valueprompttitle = "Add workspaces";
-          valuepromptdescription = "How many workspaces do you want to add?";
-          valuepromptvalue = 1;
-          valueprompt = true;
-        }}
-      >
-        <Plus />
-      </Button>
-      <Button
-        variant="outline"
-        size="base"
-        disabled={loading}
-        onclick={() => {
-          valuepromptaction = "removeworkspace";
-          valueprompttitle = "Remove workspaces";
-          valuepromptdescription =
-            "How many workspaces do you want to remove?";
-          valuepromptvalue = 1;
-          valueprompt = true;
-        }}
-      >
-        <Minus />
-      </Button>
+          variant="outline"
+          size="base"
+          disabled={loading}
+          onclick={() => {
+            valuepromptaction = "addworkspace";
+            valueprompttitle = "Add workspaces";
+            valuepromptdescription = "How many workspaces do you want to add?";
+            valuepromptvalue = 1;
+            valueprompt = true;
+          }}
+        >
+          <Plus />
+        </Button>
+        <Button
+          variant="outline"
+          size="base"
+          disabled={loading}
+          onclick={() => {
+            valuepromptaction = "removeworkspace";
+            valueprompttitle = "Remove workspaces";
+            valuepromptdescription =
+              "How many workspaces do you want to remove?";
+            valuepromptvalue = 1;
+            valueprompt = true;
+          }}
+        >
+          <Minus />
+        </Button>
       {/snippet}
     </Form.Control>
     <Form.Description>Max number of workspaces.</Form.Description>
@@ -397,34 +416,35 @@
           bind:value={$formData.gitrepos}
         />
         <Button
-        variant="outline"
-        size="base"
-        disabled={loading}
-        onclick={() => {
-          valuepromptaction = "addgitrepo";
-          valueprompttitle = "Add git repositories";
-          valuepromptdescription = "How many git repositories do you want to add?";
-          valuepromptvalue = 1;
-          valueprompt = true;
-        }}
-      >
-        <Plus />
-      </Button>
-      <Button
-        variant="outline"
-        size="base"
-        disabled={loading}
-        onclick={() => {
-          valuepromptaction = "removegitrepo";
-          valueprompttitle = "Remove git repositories";
-          valuepromptdescription =
-            "How many git repositories do you want to remove?";
-          valuepromptvalue = 1;
-          valueprompt = true;
-        }}
-      >
-        <Minus />
-      </Button>
+          variant="outline"
+          size="base"
+          disabled={loading}
+          onclick={() => {
+            valuepromptaction = "addgitrepo";
+            valueprompttitle = "Add git repositories";
+            valuepromptdescription =
+              "How many git repositories do you want to add?";
+            valuepromptvalue = 1;
+            valueprompt = true;
+          }}
+        >
+          <Plus />
+        </Button>
+        <Button
+          variant="outline"
+          size="base"
+          disabled={loading}
+          onclick={() => {
+            valuepromptaction = "removegitrepo";
+            valueprompttitle = "Remove git repositories";
+            valuepromptdescription =
+              "How many git repositories do you want to remove?";
+            valuepromptvalue = 1;
+            valueprompt = true;
+          }}
+        >
+          <Minus />
+        </Button>
       {/snippet}
     </Form.Control>
     <Form.Description>Max number of git repositories.</Form.Description>
@@ -432,35 +452,37 @@
   </Form.Field>
 
   {#if isAdmin}
-  <Form.Field {form} name="_stripeprice">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>License version</Form.Label>
-        <CustomSelect
-          {loading}
-          {...props}
-          bind:value={$formData.licenseversion}
-          selectitems={LicenseVersions}
-          triggerContent={triggerContentVersion}
-          type="single"
-        />
-      {/snippet}
-    </Form.Control>
-    <Form.Description
-      >License is linked to this Billing Account.</Form.Description
-    >
-    <Form.FieldErrors />
-  </Form.Field>
+    <Form.Field {form} name="_stripeprice">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>License version</Form.Label>
+          <CustomSelect
+            {loading}
+            {...props}
+            bind:value={$formData.licenseversion}
+            selectitems={LicenseVersions}
+            triggerContent={triggerContentVersion}
+            type="single"
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.Description
+        >License is linked to this Billing Account.</Form.Description
+      >
+      <Form.FieldErrors />
+    </Form.Field>
   {/if}
 
-  <Form.Button
+  <HotkeyButton
     variant="success"
     size="base"
     disabled={loading}
-    aria-label="Update"
+    aria-label="Update licence"
+    type="submit"
+    data-shortcut="ctrl+s"
   >
     <Check />
-    Update license</Form.Button
+    Update licence</HotkeyButton
   >
   <HotkeyButton
     variant="success"
@@ -471,18 +493,22 @@
       try {
         loading = true;
         const payload: any = { domain: $formData.name };
-        licensekey = await auth.client.CustomCommand({ command: "issuelicense", data: JSON.stringify(payload), jwt: auth.access_token });
+        licensekey = await auth.client.CustomCommand({
+          command: "issuelicense",
+          data: JSON.stringify(payload),
+          jwt: auth.access_token,
+        });
         licensekey = licensekey.replace(/"/g, "");
         try {
           console.log("licensekey: ", atob(licensekey));
-        } catch (error:any) {
+        } catch (error: any) {
           console.log("licensekey: ", licensekey, error.message);
         }
         showlicenseprompt = true;
-      } catch (error:any) {
+      } catch (error: any) {
         toast.error("Error", {
           description: error.message,
-        }); 
+        });
       } finally {
         loading = false;
       }
@@ -527,8 +553,9 @@
       </AlertDialog.Description>
     </AlertDialog.Header>
     <AlertDialog.Footer>
-      <HotkeyButton disabled={loading} onclick={() => (showlicenseprompt = false)}
-        >Close</HotkeyButton
+      <HotkeyButton
+        disabled={loading}
+        onclick={() => (showlicenseprompt = false)}>Close</HotkeyButton
       >
     </AlertDialog.Footer>
   </AlertDialog.Content>

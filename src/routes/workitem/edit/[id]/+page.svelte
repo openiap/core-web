@@ -151,40 +151,51 @@
 {/if}
 
 <form method="POST" use:enhance>
-  <div class="grid lg:grid-cols-2">
-    <Form.Field {form} name="name" class="mb-4">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Name</Form.Label>
-          <CustomInput
-            width="w-2/3"
-            placeholder="Type name"
-            disabled={loading}
-            {...props}
-            bind:value={$formData.name}
-          />
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
+  <Form.Field {form} name="name" class="mb-4">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Name</Form.Label>
+        <CustomInput
+          placeholder="Type name"
+          disabled={loading}
+          {...props}
+          bind:value={$formData.name}
+        />
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field>
 
-    <Form.Field {form} name="queue" class="mb-4">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Queue</Form.Label>
-          <EntitySelector
-            width="w-2/3"
-            collectionname="mq"
-            bind:value={$formData.wiqid}
-            basefilter={{ _type: "workitemqueue" }}
-            class="w-64"
-            name="queue"
-          />
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
-  </div>
+  <Form.Field {form} name="queue" class="mb-4">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Queue</Form.Label>
+        <EntitySelector
+          collectionname="mq"
+          bind:value={$formData.wiqid}
+          basefilter={{ _type: "workitemqueue" }}
+          class="w-64"
+          name="queue"
+        />
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field>
+
+  <Form.Field {form} name="payload" class="mb-4">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Payload</Form.Label>
+        <ObjectInput
+          bind:value={$formData.payload}
+          basefilter={{ _type: "workitemqueue" }}
+          class="h-36"
+          name="queue"
+        />
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field>
 
   <div class="flex space-x-5">
     <div class="mb-4">
@@ -207,72 +218,55 @@
     </div>
   </div>
 
-  <Form.Field {form} name="payload" class="mb-7">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Payload</Form.Label>
-        <ObjectInput
-          bind:value={$formData.payload}
-          basefilter={{ _type: "workitemqueue" }}
-          class="h-36"
-          name="queue"
-        />
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-
   {#if $formData.files.length > 0}
-    <div class="mb-7">
-      <div class="mb-2">Current files:</div>
-      {#each $formData.files as file, index}
-        <div class="mb-2">
-          <div class="flex space-x-2 mb-2">
-            <div>
-              {`${index + 1}. ${file.filename}`}
-            </div>
-            <HotkeyButton
-              onclick={() => downloadFile(file)}
-              title="download"
-              aria-label="download"
-              size="tableicon"
-              variant="icon"><Download /></HotkeyButton
-            >
+    <div class="mb-2">Current files:</div>
+    {#each $formData.files as file, index}
+      <div class="mb-2">
+        <div class="flex space-x-2 mb-2">
+          <div>
+            {`${index + 1}. ${file.filename}`}
           </div>
-          {#if file.filename.match(/\.(jpeg|jpg|gif|png)$/)}
-            {#await viewImage(file._id)}
-              <span class="hidden"></span>
-            {/await}
-            <a
-              href=""
-              onclick={() => {
-                imagesSize[index] = !imagesSize[index];
-                if (imagesSize[index]) {
-                  const element = document.getElementById(file._id);
-                  if (element === null) return;
-                  element.classList.remove("w-16");
-                  element.classList.remove("h-16");
-                } else {
-                  const element = document.getElementById(file._id);
-                  if (element === null) return;
-                  element.classList.add("w-16");
-                  element.classList.add("h-16");
-                }
-              }}
-            >
-              <img
-                id={file._id}
-                alt={file.filename}
-                class={"object-cover hidden w-16 h-16"}
-              />
-            </a>
-          {/if}
+          <HotkeyButton
+            onclick={() => downloadFile(file)}
+            title="download"
+            aria-label="download"
+            size="tableicon"
+            variant="icon"><Download /></HotkeyButton
+          >
         </div>
-      {/each}
-    </div>
+        {#if file.filename.match(/\.(jpeg|jpg|gif|png)$/)}
+          {#await viewImage(file._id)}
+            <span class="hidden"></span>
+          {/await}
+          <a
+            href=""
+            onclick={() => {
+              imagesSize[index] = !imagesSize[index];
+              if (imagesSize[index]) {
+                const element = document.getElementById(file._id);
+                if (element === null) return;
+                element.classList.remove("w-16");
+                element.classList.remove("h-16");
+              } else {
+                const element = document.getElementById(file._id);
+                if (element === null) return;
+                element.classList.add("w-16");
+                element.classList.add("h-16");
+              }
+            }}
+          >
+            <img
+              id={file._id}
+              alt={file.filename}
+              class={"object-cover hidden w-16 h-16"}
+            />
+          </a>
+        {/if}
+      </div>
+    {/each}
   {/if}
 
-  <div class="mb-7">
+  <div class="mb-4">
     <div class="mb-2">Upload Files</div>
     <CustomInput
       placeholder="Type name"
@@ -303,44 +297,44 @@
 
   {#if files.length > 0}
     {console.log("files", JSON.stringify(files))}
-    <div class="mb-7">
-      <div class="mb-2">New files:</div>
-      {#each files as file, index}
-        <div class="flex space-x-2 mb-2">
-          <div>
-            {`${index + 1}. 
+    <div class="mb-2">New files:</div>
+    {#each files as file, index}
+      <div class="flex space-x-2 mb-2">
+        <div>
+          {`${index + 1}. 
             ${
               // @ts-ignore
               file.name
             }`}
-          </div>
-          <HotkeyButton
-            size="icon"
-            variant="danger"
-            disabled={loading}
-            onclick={() => {
-              let copyarray = [...files];
-              copyarray?.splice(index, 1);
-              files = copyarray;
-            }}
-            aria-label="Delete"
-          >
-            X
-          </HotkeyButton>
         </div>
-      {/each}
-    </div>
+        <HotkeyButton
+          size="icon"
+          variant="danger"
+          disabled={loading}
+          onclick={() => {
+            let copyarray = [...files];
+            copyarray?.splice(index, 1);
+            files = copyarray;
+          }}
+          aria-label="Delete"
+        >
+          X
+        </HotkeyButton>
+      </div>
+    {/each}
   {/if}
 
-  <Form.Button
-    class=""
+  <HotkeyButton
+    class="mb-7"
     variant="success"
     size="base"
     disabled={loading}
-    aria-label="Update"
+    aria-label="Update workitem"
+    type="submit"
+    data-shortcut="ctrl+s"
   >
     <Check />
-    Update {key}</Form.Button
+    Update workitem</HotkeyButton
   >
 </form>
 

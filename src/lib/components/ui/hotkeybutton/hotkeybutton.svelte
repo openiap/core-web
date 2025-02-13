@@ -37,7 +37,7 @@
 				sm: "h-7 px-2.5 py-1.5 rounded-[10px]",
 				lg: "h-8 px-2.5 py-1.5 rounded-[10px]",
 				tableicon: "p-1 rounded-[10px]",
-				refresh: "p-1 rounded-[10px]",
+				refresh: "h-5 p-1 rounded-[10px]",
 				entity: "h-8 px-2.5 py-1.5",
 			},
 		},

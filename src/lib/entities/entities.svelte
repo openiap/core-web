@@ -456,290 +456,294 @@
 	}
 </script>
 
-<div class="text-red-500">{data.errormessage}</div>
-
-<div class="overflow-hidden rounded-[10px] border border-bw500">
-	<!-- <div
-		class={`border-bw500 rounded-[10px] ${
-			sidemenu.status
-				? `
-			${usersettings.currentpage.includes("entities") ? "lg:w-[59vw]" : "lg:w-[79vw]"}`
-				: "lg:w-full"
-		}`}
-	> -->
-	<div
-		class={`border-bw500 rounded-[10px] ${
-			sidemenu.status
-				? `
-		${usersettings.currentpage.includes("entities") ? "lg:w-full" : "lg:w-full"}`
-				: "lg:w-full"
-		}`}
-	>
-		<Table.Root>
-			{#if entities.length === 0}
-				<Table.Caption class="mb-2 text-bw300"
-					>No data found.</Table.Caption
-				>
-			{:else if caption != ""}
-				<Table.Caption>{caption}</Table.Caption>
-			{/if}
-			<Table.Header>
-				<Table.Row
-					class="bg-lighttableheader hover:bg-lighttableheader dark:bg-bw900 dark:hover:bg-bw900 "
-				>
-					{#if multi_select}
-						<Table.Head class="w-8 " role="cell"
-							><CustomCheckbox
-								arialabel="Select all"
-								checked={is_all_selected()}
-								handleClick={ToogleAll}
-							/></Table.Head
-						>
-					{/if}
-					{#each tableheaders as head, index}
-						{#if head.show}
-							<Table.Head
-								class={head.headclass +
-									" text-bw950 dark:text-bw200 font-normal "}
-								role="cell"
-								draggable="true"
-								onclick={(e) => toggleSort(e, head.field)}
-								ondragstart={(e) => ondragstart(e, head)}
-								{ondragover}
-								ondrop={(e) => ondrop(e, head)}
-								ontouchstart={(e) => ontouchstart(e, head)}
-								ontouchend={(e) => ontouchend(e, head)}
-								{ontouchmove}
-							>
-								<div class="flex items-center justify-right">
-									<IconRenderer title={head.field} />
-									{data.RenderHeaderName(head)}
-								</div>
-								{#if sortby(head.field) == "asc"}
-									<ArrowUp class="ml-2 h-4 w-4" />
-								{:else if sortby(head.field) == "desc"}
-									<ArrowDown class="ml-2 h-4 w-4" />
-								{/if}
-							</Table.Head>
-						{/if}
-					{/each}
-					{#if rest["action"]}
-						<Table.Head
-							class="text-bw950 dark:text-bw200 font-normal {actionheadclass}"
-						>
-							<div class="flex items-center justify-end">
-								<IconRenderer title="Action" />
-								Action
-							</div>
-						</Table.Head>
-					{/if}
-				</Table.Row>
-			</Table.Header>
-			<Table.Body>
-				{#each entities as item}
-					<Table.Row
-						class="border-b border-bw500 text-bw950 dark:text-bw200"
-						ondblclick={() => {
-							single_item_click(item);
-						}}
-					>
-						{#if multi_select}
-							<Table.Cell
-								class="w-8"
-								onclick={() => ToggleSelect(item)}
-								><CustomCheckbox
-									arialabel="Select item"
-									checked={selected_items.indexOf(item._id) >
-										-1}
-								/></Table.Cell
-							>
-						{/if}
-						{#each tableheaders as head}
-							{#if head.show}
-								{#if head.field == "name"}
-									<Table.Cell
-										class={head.cellclass}
-										onclick={() => {
-											if (
-												multi_select &&
-												selected_items.length > 0
-											) {
-												ToggleSelect(item);
-											} else {
-												single_item_click(item);
-											}
-										}}
-										>{RenderItemData(item, head.field)}
-									</Table.Cell>
-								{:else if rest[head.field] != null}
-									<Table.Cell class={head.cellclass}
-										>{@render rest[head.field](
-											item,
-										)}</Table.Cell
-									>
-								{:else}
-									<Table.Cell
-										class={head.cellclass}
-										onclick={() => {
-											if (multi_select) {
-												ToggleSelect(item);
-											} else {
-												single_item_click(item);
-											}
-										}}
-										>{RenderItemData(
-											item,
-											head.field,
-										)}</Table.Cell
-									>
-								{/if}
-							{/if}
-						{/each}
-						{#if rest["action"]}
-							<Table.Cell class={actioncellclass}
-								>{@render rest["action"](item)}</Table.Cell
-							>
-						{/if}
-					</Table.Row>
-				{/each}
-			</Table.Body>
-		</Table.Root>
-	</div>
-</div>
-
-<div class="flex mt-5 mb-2.5 space-x-5 items-center">
-	<HotkeyButton
-		disabled={selected_items.length === 0}
-		onclick={() => (showWarning = true)}
-		data-shortcut="del"
-		size="base"
-		variant="danger"
-	>
-		<Trash2 />
-		Delete {selected_items.length} items</HotkeyButton
-	>
-	<Hotkeybutton
-		disabled={selected_items.length === 0}
-		variant="base"
-		size="base"
-		onclick={ClearSelected}
-	>
-		<CircleX />
-		Clear All Selections</Hotkeybutton
-	>
-	<Hotkeybutton
-		variant="base"
-		size="base"
-		disabled={tableheaders.length == 0}
-		onclick={() => {
-			toggleSheet = true;
-		}}
-	>
-		<Check />
-		Select columns
-	</Hotkeybutton>
-
-	{#if tableheaders.length > 0}
-		<Sheet.Root
-			bind:open={toggleSheet}
-			onOpenChange={onSelectColumnsOpenChange}
-		>
-			<Sheet.Content>
-				<Sheet.Header>
-					<div class="flex items-center space-x-1.5 dark:text-bw50">
-						<SquareMousePointer class="h-4 w-4" />
-						<div class="text-[16px] dark:text-bw50">
-							Select columns
-						</div>
-					</div>
-					<div class="dark:text-bw400 text-[14px] w-[256px]">
-						Choose which columns to display in the table.
-					</div>
-					<!-- <Sheet.Title>
-							Select columns</Sheet.Title
-						>
-						<Sheet.Description>
-							Choose which columns to display in the table.
-						</Sheet.Description> -->
-				</Sheet.Header>
-				<div class="grid gap-4 py-4">
-					<ScrollArea class="max-h-[84vh]">
-						{#each tableheaders as head}
-							<div
-								class="h-[36px] flex items-center rounded-[10px] border border-bw500 p-2.5 mb-1.5 mr-4"
-							>
-								<div class="flex-1 space-y-1">
-									<p class="text-muted-foreground text-sm">
-										{data.RenderHeaderName(head)}
-									</p>
-								</div>
-								<Switch
-									bind:checked={head.show}
-									onclick={() => {}}
-								/>
-							</div>
-						{/each}
-					</ScrollArea>
-				</div>
-			</Sheet.Content>
-		</Sheet.Root>
-	{/if}
-</div>
-
-<div class="flex justify-between items-center dark:text-bw300">
-	<HotkeyButton
-		size="base"
-		variant="base"
-		data-shortcut="left"
-		onclick={() => {
-			page_index = page_index - 1;
-			data.settings.page_index = page_index;
-			data.persist();
-			GetData();
-		}}
-		disabled={page_index <= 0 || loading}
-	>
-		<div class="flex items-center space-x-2">
-			<div>
-				<MoveLeft class="text-bw500" />
-			</div>
-			<div>Previous</div>
-		</div>
-	</HotkeyButton>
+<div
+	class={`flex flex-col justify-between ${usersettings.currentpage.includes("entities") ? "md:h-[91%] lg:h-[94%] xl:h-[96%]" : "md:h-[91%] lg:h-[94%] xl:h-[96%]"}`}
+>
 	<div>
-		Page {page_index + 1}
-		{#if entities.length == total_count}
-			showing {total_count}
-		{:else}
-			showing {page_index * data.pagesize + 1}
-			{#if entities.length > 1}
-				to {page_index * data.pagesize + entities.length}
-			{/if}
-			of {total_count}
-		{/if}
-	</div>
-	<HotkeyButton
-		size="base"
-		variant="base"
-		data-shortcut="right"
-		onclick={() => {
-			page_index = page_index + 1;
-			data.settings.page_index = page_index;
-			data.persist();
-			GetData();
-		}}
-		disabled={entities.length < data.pagesize ||
-			page_index * data.pagesize >= total_count ||
-			loading}
-	>
-		<div class="flex items-center space-x-2">
-			<div>Next</div>
-			<div>
-				<MoveRight class="text-bw500" />
+		<div class="text-red-500">{data.errormessage}</div>
+		<div class="overflow-hidden rounded-[10px] border border-bw500">
+			<div class={`border-bw500 rounded-[10px]`}>
+				<Table.Root>
+					{#if entities.length === 0}
+						<Table.Caption class="mb-2 text-bw300"
+							>No data found in this workspace.</Table.Caption
+						>
+					{:else if caption != ""}
+						<Table.Caption>{caption}</Table.Caption>
+					{/if}
+					<Table.Header>
+						<Table.Row
+							class="bg-lighttableheader hover:bg-lighttableheader dark:bg-bw900 dark:hover:bg-bw900 "
+						>
+							{#if multi_select}
+								<Table.Head class="w-8 " role="cell"
+									><CustomCheckbox
+										arialabel="Select all"
+										checked={is_all_selected()}
+										handleClick={ToogleAll}
+									/></Table.Head
+								>
+							{/if}
+							{#each tableheaders as head, index}
+								{#if head.show}
+									<Table.Head
+										class={head.headclass +
+											" text-bw950 dark:text-bw200 font-normal "}
+										role="cell"
+										draggable="true"
+										onclick={(e) =>
+											toggleSort(e, head.field)}
+										ondragstart={(e) =>
+											ondragstart(e, head)}
+										{ondragover}
+										ondrop={(e) => ondrop(e, head)}
+										ontouchstart={(e) =>
+											ontouchstart(e, head)}
+										ontouchend={(e) => ontouchend(e, head)}
+										{ontouchmove}
+									>
+										<div
+											class="flex items-center justify-right"
+										>
+											<IconRenderer title={head.field} />
+											{data.RenderHeaderName(head)}
+										</div>
+										{#if sortby(head.field) == "asc"}
+											<ArrowUp class="ml-2 h-4 w-4" />
+										{:else if sortby(head.field) == "desc"}
+											<ArrowDown class="ml-2 h-4 w-4" />
+										{/if}
+									</Table.Head>
+								{/if}
+							{/each}
+							{#if rest["action"]}
+								<Table.Head
+									class="text-bw950 dark:text-bw200 font-normal {actionheadclass}"
+								>
+									<div class="flex items-center justify-end">
+										<IconRenderer title="Action" />
+										Action
+									</div>
+								</Table.Head>
+							{/if}
+						</Table.Row>
+					</Table.Header>
+					<Table.Body>
+						{#each entities as item}
+							<Table.Row
+								class="border-b border-bw500 text-bw950 dark:text-bw200"
+								ondblclick={() => {
+									single_item_click(item);
+								}}
+							>
+								{#if multi_select}
+									<Table.Cell
+										class="w-8"
+										onclick={() => ToggleSelect(item)}
+										><CustomCheckbox
+											arialabel="Select item"
+											checked={selected_items.indexOf(
+												item._id,
+											) > -1}
+										/></Table.Cell
+									>
+								{/if}
+								{#each tableheaders as head}
+									{#if head.show}
+										{#if head.field == "name"}
+											<Table.Cell
+												class={head.cellclass}
+												onclick={() => {
+													if (
+														multi_select &&
+														selected_items.length >
+															0
+													) {
+														ToggleSelect(item);
+													} else {
+														single_item_click(item);
+													}
+												}}
+												>{RenderItemData(
+													item,
+													head.field,
+												)}
+											</Table.Cell>
+										{:else if rest[head.field] != null}
+											<Table.Cell class={head.cellclass}
+												>{@render rest[head.field](
+													item,
+												)}</Table.Cell
+											>
+										{:else}
+											<Table.Cell
+												class={head.cellclass}
+												onclick={() => {
+													if (multi_select) {
+														ToggleSelect(item);
+													} else {
+														single_item_click(item);
+													}
+												}}
+												>{RenderItemData(
+													item,
+													head.field,
+												)}</Table.Cell
+											>
+										{/if}
+									{/if}
+								{/each}
+								{#if rest["action"]}
+									<Table.Cell class={actioncellclass}
+										>{@render rest["action"](
+											item,
+										)}</Table.Cell
+									>
+								{/if}
+							</Table.Row>
+						{/each}
+					</Table.Body>
+				</Table.Root>
 			</div>
 		</div>
-	</HotkeyButton>
+
+		<div
+			class="grid grid-cols-1 gap-2 md:grid-cols-2 md:space-y-0 lg:flex mt-4 lg:space-x-5 items-center mb-2"
+		>
+			<HotkeyButton
+				disabled={selected_items.length === 0}
+				onclick={() => (showWarning = true)}
+				data-shortcut="del"
+				size="base"
+				variant="danger"
+			>
+				<Trash2 />
+				Delete {selected_items.length} items</HotkeyButton
+			>
+			<Hotkeybutton
+				disabled={selected_items.length === 0}
+				variant="base"
+				size="base"
+				onclick={ClearSelected}
+			>
+				<CircleX />
+				Clear All Selections</Hotkeybutton
+			>
+			<Hotkeybutton
+				variant="base"
+				size="base"
+				disabled={tableheaders.length == 0}
+				onclick={() => {
+					toggleSheet = true;
+				}}
+			>
+				<Check />
+				Select columns
+			</Hotkeybutton>
+		</div>
+	</div>
+
+	<div
+		class="grid grid-cols-1 md:flex my-1 text-center md:justify-between items-center dark:text-bw300 pb-4 md:pb-0 lg:pb-2"
+	>
+		<HotkeyButton
+			size="base"
+			variant="base"
+			data-shortcut="left"
+			onclick={() => {
+				page_index = page_index - 1;
+				data.settings.page_index = page_index;
+				data.persist();
+				GetData();
+			}}
+			disabled={page_index <= 0 || loading}
+		>
+			<div class="flex items-center space-x-2">
+				<div>
+					<MoveLeft class="text-bw500" />
+				</div>
+				<div>Previous</div>
+			</div>
+		</HotkeyButton>
+		<div>
+			Page {page_index + 1}
+			{#if entities.length == total_count}
+				showing {total_count}
+			{:else}
+				showing {page_index * data.pagesize + 1}
+				{#if entities.length > 1}
+					to {page_index * data.pagesize + entities.length}
+				{/if}
+				of {total_count}
+			{/if}
+		</div>
+		<HotkeyButton
+			size="base"
+			variant="base"
+			data-shortcut="right"
+			onclick={() => {
+				page_index = page_index + 1;
+				data.settings.page_index = page_index;
+				data.persist();
+				GetData();
+			}}
+			disabled={entities.length < data.pagesize ||
+				page_index * data.pagesize >= total_count ||
+				loading}
+		>
+			<div class="flex items-center space-x-2">
+				<div>Next</div>
+				<div>
+					<MoveRight class="text-bw500" />
+				</div>
+			</div>
+		</HotkeyButton>
+	</div>
 </div>
+
+{#if tableheaders.length > 0}
+	<Sheet.Root
+		bind:open={toggleSheet}
+		onOpenChange={onSelectColumnsOpenChange}
+	>
+		<Sheet.Content>
+			<Sheet.Header>
+				<div class="flex items-center space-x-1.5 dark:text-bw50">
+					<SquareMousePointer class="h-4 w-4" />
+					<div class="text-[16px] dark:text-bw50">Select columns</div>
+				</div>
+				<div class="dark:text-bw400 text-[14px] w-[256px]">
+					Choose which columns to display in the table.
+				</div>
+				<!-- <Sheet.Title>
+								Select columns</Sheet.Title
+							>
+							<Sheet.Description>
+								Choose which columns to display in the table.
+							</Sheet.Description> -->
+			</Sheet.Header>
+			<div class="grid gap-4 py-4">
+				<ScrollArea class="max-h-[84vh]">
+					{#each tableheaders as head}
+						<div
+							class="h-[36px] flex items-center rounded-[10px] border border-bw500 p-2.5 mb-1.5 mr-4"
+						>
+							<div class="flex-1 space-y-1">
+								<p class="text-muted-foreground text-sm">
+									{data.RenderHeaderName(head)}
+								</p>
+							</div>
+							<Switch
+								bind:checked={head.show}
+								onclick={() => {}}
+							/>
+						</div>
+					{/each}
+				</ScrollArea>
+			</div>
+		</Sheet.Content>
+	</Sheet.Root>
+{/if}
 
 <HotkeyButton
 	data-shortcut="ctrl+a,meta+a"

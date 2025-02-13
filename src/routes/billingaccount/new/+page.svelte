@@ -10,6 +10,7 @@
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newCustomerSchema } from "../schema.js";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
 
   const key = "billingaccount";
   let loading = $state(false);
@@ -20,6 +21,7 @@
     onUpdate: async ({ form, cancel }) => {
       if (form.valid) {
         try {
+          loading = true;
           await auth.client.CustomCommand({
             command: "ensurebilling",
             data: JSON.stringify(form.data),
@@ -33,6 +35,7 @@
           });
           cancel();
         } finally {
+          loading = false;
         }
       }
     },
@@ -56,14 +59,16 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Button
-    disabled={loading}
-    aria-label="Create Billing Account"
+  <HotkeyButton
     variant="success"
     size="base"
+    disabled={loading}
+    aria-label="Create Billing Account"
+    type="submit"
+    data-shortcut="ctrl+s"
   >
     <Check />
-    Create Billing Account</Form.Button
+    Create Billing Account</HotkeyButton
   >
 </form>
 

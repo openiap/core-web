@@ -31,6 +31,8 @@
         update_currentworkspace: (workspaceid: string) => void;
     } = $props();
     const sidebar = useSidebar();
+    const isBrowser = typeof window !== "undefined";
+    let isMobile = $state(false);
 
     const activeWorkspace = $derived(() => {
         return workspaces.find((x) => x._id == currentworkspace);
@@ -45,6 +47,17 @@
             activeWorkspace()?._billingid != ""
         );
     });
+    function checkMobile() {
+        const currentState =
+            typeof navigator !== "undefined" &&
+            /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        if (currentState) {
+            isMobile = true;
+        } else {
+            isMobile = false;
+        }
+    }
+    checkMobile();
 </script>
 
 {#if auth.config?.workspace_enabled == true}
@@ -76,7 +89,11 @@
                                         Select workspace
                                     </span>
                                 </div>
-                                <ChevronRight class="ml-auto" />
+                                {#if isMobile}
+                                    <ChevronDown class="ml-auto" />
+                                {:else}
+                                    <ChevronRight class="ml-auto" />
+                                {/if}
                             {/if}
                         </Sidebar.MenuButton>
                     {/snippet}

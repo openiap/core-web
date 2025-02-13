@@ -25,6 +25,6 @@ export const editFormSchema = z.object({
   validated: z.boolean().optional().nullable().transform((val) => val ?? false),
   emailvalidated: z.boolean().optional().nullable().transform((val) => val ?? false),
   formvalidated: z.boolean().optional().nullable().transform((val) => val ?? false),
-  federationids: z.array(z.string().email()).optional().nullable().transform((val) => val ?? []),
+  federationids: z.any().optional().nullable().transform((val) => val ?? []),
 }).passthrough();
 export type EditFormSchema = typeof editFormSchema;

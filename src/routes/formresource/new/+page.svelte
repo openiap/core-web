@@ -12,6 +12,7 @@
   import { zod } from "sveltekit-superforms/adapters";
   import { newFormSchema } from "../schema.js";
   import { CustomInput } from "$lib/custominput/index.js";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
 
   const title = "Form Resource";
   const key = "formresource";
@@ -38,11 +39,12 @@
             description: error.message,
           });
           cancel();
-        } finally {
           loading = false;
+        } finally {
         }
       } else {
         errormessage = "Form is invalid";
+        loading = false;
       }
     },
   });
@@ -92,14 +94,16 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Button
-    disabled={loading}
-    aria-label="submit"
+  <HotkeyButton
     variant="success"
     size="base"
+    disabled={loading}
+    aria-label="Create formresource"
+    type="submit"
+    data-shortcut="ctrl+s"
   >
     <Check />
-    Create {key}</Form.Button
+    Create formresource</HotkeyButton
   >
 </form>
 

@@ -101,7 +101,6 @@
 
 {#if config != null}
   <div class="flex flex-col h-screen p-4 gap-4">
-    <h1 class="text-2xl font-bold">Console</h1>
     <div class="flex flex-wrap gap-4">
       <div class="flex items-center space-x-2">
         <Switch

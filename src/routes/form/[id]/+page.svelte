@@ -2,10 +2,11 @@
     import { browser } from "$app/environment";
     import { goto } from "$app/navigation";
     import { base } from "$app/paths";
-    import Button from "$lib/components/ui/button/button.svelte";
-    import { Input } from "$lib/components/ui/input";
+    import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
+    import { CustomInput } from "$lib/custominput";
     import { auth } from "$lib/stores/auth.svelte.js";
     import { Formio } from "formiojs";
+    import { Check } from "lucide-svelte";
     import { onDestroy } from "svelte";
     import { toast } from "svelte-sonner";
 
@@ -14,7 +15,10 @@
     let builder: any = null as any;
     let ref = $state(null) as any;
     let message = $state("");
+    let loading = $state(false);
+
     async function createfrom() {
+        loading = true;
         try {
             // @ts-ignore
             if (Formio == null || typeof Formio.builder !== "function") {
@@ -46,6 +50,7 @@
         } catch (e) {
             console.log(e);
         }
+        loading = false;
     }
     let firstrun = $state(true);
     if (browser) {
@@ -109,14 +114,25 @@
 <div>
     <div class="flex items-center justify-start space-x-4 mb-4">
         {#if data && data.item && data.item.name}
-            <Input
+            <CustomInput
                 class="max-w-sm"
                 type="text"
                 placeholder="Enter form name"
                 bind:value={data.item.name}
             />
         {/if}
-        <Button onclick={saveform}>Update form</Button>
+        <HotkeyButton
+            onclick={saveform}
+            variant="success"
+            size="base"
+            disabled={loading}
+            aria-label="Update form"
+            type="submit"
+            data-shortcut="ctrl+s"
+        >
+            <Check />
+            Update form</HotkeyButton
+        >
     </div>
     <div class="bootstrap-scope formio-dialog-content" bind:this={ref}></div>
 </div>
