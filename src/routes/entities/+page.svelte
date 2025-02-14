@@ -141,16 +141,18 @@
     id="div1"
     class="w-full max-w-max flex-shrink-0 hidden sm:block p-2.5 rounded-[10px] bg-bw100 dark:bg-bw900 h-full overflow-hidden pb-10"
   >
-    <HotkeyButton
-      class="mb-2 w-full"
-      size="sm"
-      data-shortcut="n,ins"
-      disabled={loading}
-      onclick={() => goto(base + `/entities/new`)}
-    >
-      <Plus />
-      Add collection</HotkeyButton
-    >
+    <div class="flex justify-center w-full px-4">
+      <HotkeyButton
+        class="mb-2 rounded-md w-full"
+        size="sm"
+        data-shortcut="n,ins"
+        disabled={loading}
+        onclick={() => goto(base + `/entities/new`)}
+      >
+        <Plus />
+        Add collection</HotkeyButton
+      >
+    </div>
     <div class="h-full overflow-auto">
       <ScrollArea class="max-h-full w-[266px] overflow-auto ">
         <div class="pt-0 p-4">
@@ -174,10 +176,12 @@
       </ScrollArea>
     </div>
   </div>
-  <div id="div2" class="ms-6 page">
-    <div class="grid grid-cols-2 gap-2 xl:flex xl:gap-4 justify-between mb-4">
+  <div id="div2" class="ms-2 xl:ms-6 page">
+    <div
+      class="grid grid-cols-2 lg:grid-cols-2 gap-2 xl:grid xl:grid-cols-5 xl:gap-4 justify-between mb-4"
+    >
       <Searchinput bind:searchstring class="col-span-2" />
-      <HotkeyButton
+      <!-- <HotkeyButton
         size="sm"
         disabled={loading}
         onclick={() => goto(base + `/entities/${collectionname}/deleted`)}
@@ -192,7 +196,7 @@
       >
         <Layers2 />
         Show Duplicates</HotkeyButton
-      >
+      > -->
       <HotkeyButton size="sm" disabled={loading} onclick={getCollections}>
         <RefreshCcw />
         Refresh</HotkeyButton
