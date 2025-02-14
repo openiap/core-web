@@ -141,12 +141,10 @@
 			<Sidebar.Inset class="overflow-hidden">
 				<Header />
 				<div
-					class="border border-gray-300 bg-white dark:border-bw500 dark:bg-bw800 rounded-xl mb-4 mx-4 h-full overflow-auto tourcontent"
+					class="border border-gray-300 bg-white dark:border-bw500 dark:bg-bw800 rounded-xl mb-4 mx-4 h-full overflow-auto tourcontent px-4 py-5 page"
 				>
 					{#if auth.isAuthenticated == true || auth.isAuthenticated == false}
-						<main>
-							{@render children()}
-						</main>
+						{@render children()}
 					{/if}
 				</div>
 			</Sidebar.Inset>
@@ -159,11 +157,10 @@
 <Toaster />
 
 <style>
-	main {
-		padding: 1.25rem 1rem;
-		width: 100%;
+	.page {
+		display: flex;
+		flex-direction: column;
 		height: 100%;
-		margin: 0 auto;
-		box-sizing: border-box;
+		/* This ensures it fills the entire window height */
 	}
 </style>

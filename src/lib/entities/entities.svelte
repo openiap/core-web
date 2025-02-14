@@ -456,10 +456,11 @@
 	}
 </script>
 
-<div
-	class={`flex flex-col justify-between ${usersettings.currentpage.includes("entities") ? "md:h-[91%] lg:h-[94%] xl:h-[96%]" : "md:h-[91%] lg:h-[94%] xl:h-[96%]"}`}
->
-	<div>
+<!-- <div
+	class={`flex flex-col justify-between ${usersettings.currentpage.includes("entities") ? "md:h-[91%] lg:h-[94%] xl:h-[96%]" : "md:h-[91%] lg:h-full xl:min-h-max"}`}
+> -->
+<div class="main">
+	<div class="mb-2">
 		<div class="text-red-500">{data.errormessage}</div>
 		<div class="overflow-hidden rounded-[10px] border border-bw500">
 			<div class={`border-bw500 rounded-[10px]`}>
@@ -644,7 +645,7 @@
 	</div>
 
 	<div
-		class="grid grid-cols-1 md:flex my-1 text-center md:justify-between items-center dark:text-bw300 pb-4 md:pb-0 lg:pb-2"
+		class="grid grid-cols-1 md:flex text-center md:justify-between items-center dark:text-bw300"
 	>
 		<HotkeyButton
 			size="base"
@@ -774,3 +775,14 @@
 
 <Warningdialogue bind:showWarning type="deleteall" onaccept={handleAccept}
 ></Warningdialogue>
+
+<style>
+	.main {
+		/* Grow to fill leftover vertical space */
+		flex: 1;
+		/* We want to arrange two sub-divs in a column, spaced apart */
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+	}
+</style>

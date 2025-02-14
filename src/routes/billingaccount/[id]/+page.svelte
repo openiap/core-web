@@ -54,88 +54,91 @@
   {$message}
 {/if}
 
-<header class="mb-4">
-  <HotkeyButton
-    onclick={() => {
-      goto(base + "/billingaccount/" + data.id + "/billing");
-    }}
-  >
-    All billing usage
-  </HotkeyButton>
-  <HotkeyButton
-    onclick={() => {
-      goto(base + "/licensekey");
-    }}
-  >
-    Manage OpenCore Licenses
-  </HotkeyButton>
-
-  {#if data.item?.stripeid != null && data.item?.stripeid != ""}
+<div class="m-4">
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
     <HotkeyButton
-      onclick={async () => {
-        try {
-          const link = await auth.client.CustomCommand({
-            command: "getbillingportallink",
-            id: data.id,
-            jwt: auth.access_token,
-          });
-          if (link != null && link != "") {
-            document.location.href = link.split('"').join("");
-          } else {
-            toast.error("Error opening billing portal");
+      onclick={() => {
+        goto(base + "/billingaccount/" + data.id + "/billing");
+      }}
+    >
+      All billing usage
+    </HotkeyButton>
+    <HotkeyButton
+      onclick={() => {
+        goto(base + "/licensekey");
+      }}
+    >
+      Manage OpenCore Licenses
+    </HotkeyButton>
+
+    {#if data.item?.stripeid != null && data.item?.stripeid != ""}
+      <HotkeyButton
+        onclick={async () => {
+          try {
+            const link = await auth.client.CustomCommand({
+              command: "getbillingportallink",
+              id: data.id,
+              jwt: auth.access_token,
+            });
+            if (link != null && link != "") {
+              document.location.href = link.split('"').join("");
+            } else {
+              toast.error("Error opening billing portal");
+            }
+          } catch (error: any) {
+            toast.error("Error opening billing portal", {
+              description: error.message,
+            });
           }
-        } catch (error: any) {
-          toast.error("Error opening billing portal", {
-            description: error.message,
-          });
-        }
-      }}
-    >
-      Open Billing Portal
-    </HotkeyButton>
+        }}
+      >
+        Open Billing Portal
+      </HotkeyButton>
+      <HotkeyButton
+        onclick={async () => {
+          try {
+            const link = await auth.client.CustomCommand({
+              command: "syncbillingaccount",
+              id: data.id,
+              jwt: auth.access_token,
+            });
+            toast.success("Billing account synced");
+          } catch (error: any) {
+            toast.error("Error opening billing portal", {
+              description: error.message,
+            });
+          }
+        }}
+      >
+        Sync with Stripe
+      </HotkeyButton>
+    {/if}
+  </div>
+
+  <form method="POST" use:enhance>
+    <Form.Field {form} name="name">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Company Name</Form.Label>
+          <CustomInput {...props} bind:value={$formData.name} />
+        {/snippet}
+      </Form.Control>
+      <Form.Description>This is your company name.</Form.Description>
+      <Form.FieldErrors />
+    </Form.Field>
+
     <HotkeyButton
-      onclick={async () => {
-        try {
-          const link = await auth.client.CustomCommand({
-            command: "syncbillingaccount",
-            id: data.id,
-            jwt: auth.access_token,
-          });
-          toast.success("Billing account synced");
-        } catch (error: any) {
-          toast.error("Error opening billing portal", {
-            description: error.message,
-          });
-        }
-      }}
+      variant="success"
+      size="base"
+      disabled={loading}
+      aria-label="Update Billing Account"
+      type="submit"
+      data-shortcut="ctrl+s"
     >
-      Sync with Stripe
-    </HotkeyButton>
-  {/if}
-</header>
-<form method="POST" use:enhance>
-  <Form.Field {form} name="name">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Company Name</Form.Label>
-        <CustomInput {...props} bind:value={$formData.name} />
-      {/snippet}
-    </Form.Control>
-    <Form.Description>This is your company name.</Form.Description>
-    <Form.FieldErrors />
-  </Form.Field>
+      <Check />
+      Update Billing Account</HotkeyButton
+    >
+  </form>
 
-  <HotkeyButton
-    variant="success"
-    size="base"
-    disabled={loading}
-    aria-label="Update Billing Account"
-    type="submit"
-    data-shortcut="ctrl+s"
-  >
-    <Check />
-    Update Billing Account</HotkeyButton
-  >
-</form>
-
-<CustomSuperDebug {formData} />
+  <CustomSuperDebug {formData} />
+</div>

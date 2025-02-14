@@ -10,8 +10,8 @@
   import { base } from "$app/paths";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
   import {
-      buttonVariants,
-      HotkeyButton,
+    buttonVariants,
+    HotkeyButton,
   } from "$lib/components/ui/hotkeybutton";
   import { Label } from "$lib/components/ui/label/index.js";
   import * as Popover from "$lib/components/ui/popover/index.js";
@@ -25,19 +25,19 @@
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import {
-      Box,
-      Ellipsis,
-      Filter,
-      Play,
-      Plus,
-      Receipt,
-      RefreshCcw,
-      Square,
-      SquarePen,
-      Trash2,
-      User,
-      Webhook,
-      Wrench,
+    Box,
+    Ellipsis,
+    Filter,
+    Play,
+    Plus,
+    Receipt,
+    RefreshCcw,
+    Square,
+    SquarePen,
+    Trash2,
+    User,
+    Webhook,
+    Wrench,
   } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
@@ -292,318 +292,317 @@
   }
 </script>
 
-<div class="h-full">
-  <div
-    class="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4 xl:grid-cols-9 xl:gap-4"
-  >
-    <div class="col-span-2">
-      <SearchInput bind:searchstring class="" />
-    </div>
-    <Popover.Root open={filter}>
-      <Popover.Trigger
-        disabled={loading}
-        class={buttonVariants({ variant: "base", size: "sm" }) +
-          " border-dashed"}
-        ><Filter />
-        Filter</Popover.Trigger
-      >
-      <Popover.Content class="w-fit">
-        <RadioGroup.Root value="All" class="flex flex-col">
-          <div class="flex items-center space-x-2 w-full">
-            <RadioGroup.Item
-              class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
-              value="All"
-              id="r1"
-              disabled={loading}
-              onclick={async () => {
-                filterby = "all";
-                await GetData();
-                await getPods(false);
-              }}
-            />
-            <Label for="r1" class="cursor-pointer">All</Label>
-          </div>
-          <Separator />
-          <div class="flex items-center space-x-2">
-            <RadioGroup.Item
-              class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
-              value="Pods"
-              id="r3"
-              disabled={loading}
-              onclick={async () => {
-                filterby = "pods";
-                await GetData();
-              }}
-            />
-            <Label for="r3" class="cursor-pointer">Pods</Label>
-          </div>
-          <Separator />
-          <div class="flex items-center space-x-2">
-            <RadioGroup.Item
-              class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
-              value="Daemon"
-              id="r2"
-              disabled={loading}
-              onclick={async () => {
-                filterby = "daemon";
-                await GetData();
-                await getPods(false);
-              }}
-            />
-            <Label for="r2" class="cursor-pointer">Daemon</Label>
-          </div>
-          <Separator />
-          <div class="flex items-center space-x-2">
-            <RadioGroup.Item
-              class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
-              value="Docker"
-              id="r4"
-              disabled={loading}
-              onclick={async () => {
-                filterby = "docker";
-                await GetData();
-                await getPods(false);
-              }}
-            />
-            <Label for="r4" class="cursor-pointer">Docker</Label>
-          </div>
-          <Separator />
-          <div class="flex items-center space-x-2">
-            <RadioGroup.Item
-              class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
-              value="Assistant"
-              id="r5"
-              disabled={loading}
-              onclick={async () => {
-                filterby = "assistant";
-                await GetData();
-                await getPods(false);
-              }}
-            />
-            <Label for="r5" class="cursor-pointer">Assistant</Label>
-          </div>
-        </RadioGroup.Root>
-      </Popover.Content>
-    </Popover.Root>
-    <div class="xl:col-start-7">
-      <HotkeyButton
-        class="touraddagent"
-        size="sm"
-        variant="base"
-        aria-label="add"
-        disabled={loading}
-        onclick={() => goto(base + `/${page}/new`)}
-      >
-        <Plus />
-        Add agent</HotkeyButton
-      >
-    </div>
-    <HotkeyButton
-      class="xl:col-start-8"
-      aria-label="packages"
-      title="package"
-      size="sm"
-      variant="base"
-      disabled={loading}
-      onclick={() => goto(base + `/package`)}
-    >
-      <Box />
-      Packages</HotkeyButton
-    >
-    <HotkeyButton
-      class="xl:col-start-9"
-      aria-label="reload"
-      title="reload"
-      size="sm"
-      variant="base"
-      disabled={loading}
-      onclick={async () => {
-        await GetData();
-        await getPods(true);
-      }}
-    >
-      <RefreshCcw />
-      Reload</HotkeyButton
-    >
-    <div></div>
+<div
+  class="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4 xl:grid-cols-9 xl:gap-4"
+>
+  <div class="col-span-2">
+    <SearchInput bind:searchstring class="" />
   </div>
-  <Entities
-    {collectionname}
-    {query}
-    bind:searchstring
-    {page}
-    delete_selected={deleteitems}
-    {single_item_click}
-    total_count={data.total_count}
-    bind:selected_items
-    bind:entities
-    bind:this={ref}
-    bind:loading
+  <Popover.Root open={filter}>
+    <Popover.Trigger
+      disabled={loading}
+      class={buttonVariants({ variant: "base", size: "sm" }) + " border-dashed"}
+      ><Filter />
+      Filter</Popover.Trigger
+    >
+    <Popover.Content class="w-fit">
+      <RadioGroup.Root value="All" class="flex flex-col">
+        <div class="flex items-center space-x-2 w-full">
+          <RadioGroup.Item
+            class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
+            value="All"
+            id="r1"
+            disabled={loading}
+            onclick={async () => {
+              filterby = "all";
+              await GetData();
+              await getPods(false);
+            }}
+          />
+          <Label for="r1" class="cursor-pointer">All</Label>
+        </div>
+        <Separator />
+        <div class="flex items-center space-x-2">
+          <RadioGroup.Item
+            class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
+            value="Pods"
+            id="r3"
+            disabled={loading}
+            onclick={async () => {
+              filterby = "pods";
+              await GetData();
+            }}
+          />
+          <Label for="r3" class="cursor-pointer">Pods</Label>
+        </div>
+        <Separator />
+        <div class="flex items-center space-x-2">
+          <RadioGroup.Item
+            class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
+            value="Daemon"
+            id="r2"
+            disabled={loading}
+            onclick={async () => {
+              filterby = "daemon";
+              await GetData();
+              await getPods(false);
+            }}
+          />
+          <Label for="r2" class="cursor-pointer">Daemon</Label>
+        </div>
+        <Separator />
+        <div class="flex items-center space-x-2">
+          <RadioGroup.Item
+            class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
+            value="Docker"
+            id="r4"
+            disabled={loading}
+            onclick={async () => {
+              filterby = "docker";
+              await GetData();
+              await getPods(false);
+            }}
+          />
+          <Label for="r4" class="cursor-pointer">Docker</Label>
+        </div>
+        <Separator />
+        <div class="flex items-center space-x-2">
+          <RadioGroup.Item
+            class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
+            value="Assistant"
+            id="r5"
+            disabled={loading}
+            onclick={async () => {
+              filterby = "assistant";
+              await GetData();
+              await getPods(false);
+            }}
+          />
+          <Label for="r5" class="cursor-pointer">Assistant</Label>
+        </div>
+      </RadioGroup.Root>
+    </Popover.Content>
+  </Popover.Root>
+  <div class="xl:col-start-7">
+    <HotkeyButton
+      class="touraddagent"
+      size="sm"
+      variant="base"
+      aria-label="add"
+      disabled={loading}
+      onclick={() => goto(base + `/${page}/new`)}
+    >
+      <Plus />
+      Add agent</HotkeyButton
+    >
+  </div>
+  <HotkeyButton
+    class="xl:col-start-8"
+    aria-label="packages"
+    title="package"
+    size="sm"
+    variant="base"
+    disabled={loading}
+    onclick={() => goto(base + `/package`)}
   >
-    {#snippet status(item: any)}
-      {#if item && item.status}
-        <StatusCard bind:title={item.status as string} />
-      {:else}
-        <StatusCard title="missing" />
-      {/if}
-    {/snippet}
-    {#snippet _productname(item: any)}
-      {#if item && item._productname != null && item._productname != ""}
-        {item._productname}
-      {:else}
-        Free tier
-      {/if}
-    {/snippet}
-    {#snippet action(item: any)}
-      <div class="flex items-center justify-end space-x-2.5">
-        <HotkeyButton
-          aria-label="start"
-          title="start"
-          size="tableicon"
-          variant="icon"
-          disabled={loading}
-          onclick={async () => {
-            try {
-              loading = true;
-              await auth.client.CustomCommand({
-                command: "startagent",
-                id: item._id,
-                name: item.slug,
-                jwt: auth.access_token,
-              });
-              toast.success("Started successfully", {
-                description: "",
-              });
-              await getPods(true);
-            } catch (error: any) {
-              toast.error("Error while starting", {
-                description: error.message,
-              });
-            } finally {
-              loading = false;
-            }
-          }}
-        >
-          <Play />
-        </HotkeyButton>
-        <HotkeyButton
-          aria-label="stop"
-          title="stop"
-          size="tableicon"
-          variant="icon"
-          disabled={loading}
-          onclick={async () => {
-            try {
-              loading = true;
-              await auth.client.CustomCommand({
-                command: "stopagent",
-                id: item._id,
-                name: item.slug,
-                jwt: auth.access_token,
-              });
-              toast.success("Stopped successfully", {
-                description: "",
-              });
-              await getPods(true);
-            } catch (error: any) {
-              toast.error("Error while stopping", {
-                description: error.message,
-              });
-            } finally {
-              loading = false;
-            }
-          }}
-        >
-          <Square />
-        </HotkeyButton>
-        <HotkeyButton
-          aria-label="debug"
-          title="debug"
-          size="tableicon"
-          variant="icon"
-          disabled={loading}
-          onclick={() => goto(base + `/${page}/${item._id}/run`)}
-        >
-          <Wrench />
-        </HotkeyButton>
-        <HotkeyButton
-          aria-label="debug"
-          title="Open in web"
-          size="tableicon"
-          variant="icon"
-          disabled={(item.webserver != true && item.webserver != "true") ||
-            (item.status != "running" && item.status != "Running") ||
-            loading}
-          onclick={() => window.open(auth.weburl(item.slug), "_blank")}
-        >
-          <Webhook />
-        </HotkeyButton>
+    <Box />
+    Packages</HotkeyButton
+  >
+  <HotkeyButton
+    class="xl:col-start-9"
+    aria-label="reload"
+    title="reload"
+    size="sm"
+    variant="base"
+    disabled={loading}
+    onclick={async () => {
+      await GetData();
+      await getPods(true);
+    }}
+  >
+    <RefreshCcw />
+    Reload</HotkeyButton
+  >
+  <div></div>
+</div>
 
-        <DropdownMenu.Root>
-          <DropdownMenu.Trigger class="text-bw500 dark:text-bw300"
-            ><Ellipsis /></DropdownMenu.Trigger
+<Entities
+  {collectionname}
+  {query}
+  bind:searchstring
+  {page}
+  delete_selected={deleteitems}
+  {single_item_click}
+  total_count={data.total_count}
+  bind:selected_items
+  bind:entities
+  bind:this={ref}
+  bind:loading
+>
+  {#snippet status(item: any)}
+    {#if item && item.status}
+      <StatusCard bind:title={item.status as string} />
+    {:else}
+      <StatusCard title="missing" />
+    {/if}
+  {/snippet}
+  {#snippet _productname(item: any)}
+    {#if item && item._productname != null && item._productname != ""}
+      {item._productname}
+    {:else}
+      Free tier
+    {/if}
+  {/snippet}
+  {#snippet action(item: any)}
+    <div class="flex items-center justify-end space-x-2.5">
+      <HotkeyButton
+        aria-label="start"
+        title="start"
+        size="tableicon"
+        variant="icon"
+        disabled={loading}
+        onclick={async () => {
+          try {
+            loading = true;
+            await auth.client.CustomCommand({
+              command: "startagent",
+              id: item._id,
+              name: item.slug,
+              jwt: auth.access_token,
+            });
+            toast.success("Started successfully", {
+              description: "",
+            });
+            await getPods(true);
+          } catch (error: any) {
+            toast.error("Error while starting", {
+              description: error.message,
+            });
+          } finally {
+            loading = false;
+          }
+        }}
+      >
+        <Play />
+      </HotkeyButton>
+      <HotkeyButton
+        aria-label="stop"
+        title="stop"
+        size="tableicon"
+        variant="icon"
+        disabled={loading}
+        onclick={async () => {
+          try {
+            loading = true;
+            await auth.client.CustomCommand({
+              command: "stopagent",
+              id: item._id,
+              name: item.slug,
+              jwt: auth.access_token,
+            });
+            toast.success("Stopped successfully", {
+              description: "",
+            });
+            await getPods(true);
+          } catch (error: any) {
+            toast.error("Error while stopping", {
+              description: error.message,
+            });
+          } finally {
+            loading = false;
+          }
+        }}
+      >
+        <Square />
+      </HotkeyButton>
+      <HotkeyButton
+        aria-label="debug"
+        title="debug"
+        size="tableicon"
+        variant="icon"
+        disabled={loading}
+        onclick={() => goto(base + `/${page}/${item._id}/run`)}
+      >
+        <Wrench />
+      </HotkeyButton>
+      <HotkeyButton
+        aria-label="debug"
+        title="Open in web"
+        size="tableicon"
+        variant="icon"
+        disabled={(item.webserver != true && item.webserver != "true") ||
+          (item.status != "running" && item.status != "Running") ||
+          loading}
+        onclick={() => window.open(auth.weburl(item.slug), "_blank")}
+      >
+        <Webhook />
+      </HotkeyButton>
+
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger class="text-bw500 dark:text-bw300"
+          ><Ellipsis /></DropdownMenu.Trigger
+        >
+        <DropdownMenu.Content class="w-44 mr-6 bg-bw50 dark:bg-bw800">
+          <DropdownMenu.Item
+            class="cursor-pointer border border-transparent hover:border-bw500 rounded-[10px]"
+            disabled={loading}
+            onclick={() => single_item_click(item)}
           >
-          <DropdownMenu.Content class="w-44 mr-6 bg-bw50 dark:bg-bw800">
-            <DropdownMenu.Item
-              class="cursor-pointer border border-transparent hover:border-bw500 rounded-[10px]"
-              disabled={loading}
-              onclick={() => single_item_click(item)}
-            >
-              <div class="flex items-center">
-                <SquarePen class="mr-2 size-4" />
-                <span> Edit</span>
-              </div>
-            </DropdownMenu.Item>
+            <div class="flex items-center">
+              <SquarePen class="mr-2 size-4" />
+              <span> Edit</span>
+            </div>
+          </DropdownMenu.Item>
 
-            <!-- <DropdownMenu.Item class="cursor-pointer">
+          <!-- <DropdownMenu.Item class="cursor-pointer">
             <div class="flex items-center">
               <Webhook class="mr-2 size-4" />
               <span>Webhook</span>
             </div>
           </DropdownMenu.Item> -->
 
-            <DropdownMenu.Item
-              class="cursor-pointer border border-transparent hover:border-bw500 rounded-[10px]"
-              onclick={() => {
-                toast.error("Not implemented yet", {});
-              }}
-            >
-              <div class="flex items-center">
-                <Receipt class="mr-2 size-4" />
-                <span>Billing</span>
-              </div>
-            </DropdownMenu.Item>
+          <DropdownMenu.Item
+            class="cursor-pointer border border-transparent hover:border-bw500 rounded-[10px]"
+            onclick={() => {
+              toast.error("Not implemented yet", {});
+            }}
+          >
+            <div class="flex items-center">
+              <Receipt class="mr-2 size-4" />
+              <span>Billing</span>
+            </div>
+          </DropdownMenu.Item>
 
-            <DropdownMenu.Item
-              class="cursor-pointer border border-transparent hover:border-bw500 rounded-[10px]"
-              disabled={loading}
-              onclick={() => goto(base + `/user/${item.runas}`)}
-            >
-              <div class="flex items-center">
-                <User class="mr-2 size-4" />
-                <span>User</span>
-              </div>
-            </DropdownMenu.Item>
-            <DropdownMenu.Separator />
-            <DropdownMenu.Item
-              class="cursor-pointer border border-transparent hover:border-bw500 rounded-[10px] hover:bg-opacity-50"
-              disabled={loading}
-              onclick={() => {
-                deleteData = item;
-                showWarning = !showWarning;
-              }}
-            >
-              <div class="flex items-center">
-                <Trash2 class="mr-2 size-4" />
-                <span>Delete Agent</span>
-              </div>
-            </DropdownMenu.Item>
-          </DropdownMenu.Content>
-        </DropdownMenu.Root>
-      </div>
-    {/snippet}
-  </Entities>
-</div>
+          <DropdownMenu.Item
+            class="cursor-pointer border border-transparent hover:border-bw500 rounded-[10px]"
+            disabled={loading}
+            onclick={() => goto(base + `/user/${item.runas}`)}
+          >
+            <div class="flex items-center">
+              <User class="mr-2 size-4" />
+              <span>User</span>
+            </div>
+          </DropdownMenu.Item>
+          <DropdownMenu.Separator />
+          <DropdownMenu.Item
+            class="cursor-pointer border border-transparent hover:border-bw500 rounded-[10px] hover:bg-opacity-50"
+            disabled={loading}
+            onclick={() => {
+              deleteData = item;
+              showWarning = !showWarning;
+            }}
+          >
+            <div class="flex items-center">
+              <Trash2 class="mr-2 size-4" />
+              <span>Delete Agent</span>
+            </div>
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu.Root>
+    </div>
+  {/snippet}
+</Entities>
+
 <Warningdialogue
   bind:showWarning
   type="delete"

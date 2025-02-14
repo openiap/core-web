@@ -610,474 +610,694 @@
   }
 </script>
 
-<Tabs.Root value="2" class="w-full">
-  <Tabs.List
-    class="h-full grid grid-cols-1 md:block md:w-fit dark:bg-darkagenttab rounded-[15px] mb-10 p-1"
-  >
-    {#if $formData.docker == true}
-      <Tabs.Trigger value="1" onclick={() => getPods()}>Pods</Tabs.Trigger>
-    {/if}
-    <Tabs.Trigger value="2">Settings</Tabs.Trigger>
-    <Tabs.Trigger value="3">Scheduling</Tabs.Trigger>
-    <Tabs.Trigger
-      value="4"
-      onclick={() => {
-        if (browser) init();
-      }}>Running Packages</Tabs.Trigger
+<div class="mx-4">
+  <Tabs.Root value="2" class="w-full">
+    <Tabs.List
+      class="h-full grid grid-cols-1 md:block md:w-fit dark:bg-darkagenttab rounded-[15px] mb-6 p-1"
     >
-  </Tabs.List>
-  {#if $formData.docker == true}
-    <Tabs.Content value="1">
-      <HotkeyButton
-        aria-label="start"
-        title="start"
-        size="tableicon"
-        variant="icon"
-        disabled={loading}
-        onclick={async () => {
-          try {
-            loading = true;
-            await auth.client.CustomCommand({
-              command: "startagent",
-              id: $formData._id,
-              name: $formData.slug,
-              jwt: auth.access_token,
-            });
-            toast.success("Started successfully", {
-              description: "",
-            });
-            await getPods(true);
-          } catch (error: any) {
-            toast.error("Error while starting", {
-              description: error.message,
-            });
-          } finally {
-            loading = false;
-          }
-        }}
+      {#if $formData.docker == true}
+        <Tabs.Trigger value="1" onclick={() => getPods()}>Pods</Tabs.Trigger>
+      {/if}
+      <Tabs.Trigger value="2">Settings</Tabs.Trigger>
+      <Tabs.Trigger value="3">Scheduling</Tabs.Trigger>
+      <Tabs.Trigger
+        value="4"
+        onclick={() => {
+          if (browser) init();
+        }}>Running Packages</Tabs.Trigger
       >
-        <Play />
-      </HotkeyButton>
-      <HotkeyButton
-        aria-label="stop"
-        title="stop"
-        size="tableicon"
-        variant="icon"
-        disabled={loading}
-        onclick={async () => {
-          try {
-            loading = true;
-            await auth.client.CustomCommand({
-              command: "stopagent",
-              id: $formData._id,
-              name: $formData.slug,
-              jwt: auth.access_token,
-            });
-            toast.success("Stopped successfully", {
-              description: "",
-            });
-            await getPods(true);
-          } catch (error: any) {
-            toast.error("Error while stopping", {
-              description: error.message,
-            });
-          } finally {
-            loading = false;
-          }
-        }}
-      >
-        <Square />
-      </HotkeyButton>
-      <HotkeyButton
-        aria-label="stop"
-        title="stop"
-        size="tableicon"
-        variant="icon"
-        disabled={loading}
-        onclick={async () => {
-          try {
-            await getPods(true);
-          } catch (error: any) {
-            toast.error("Error while stopping", {
-              description: error.message,
-            });
-          }
-        }}
-      >
-        <Square />
-      </HotkeyButton>
-      {#each instances as resourceMonitor}
-        {#if resourceMonitor != null}
-          <div
-            class="my-4 text-[14px] border rounded-[10px] w-92 md:w-full overflow-hidden"
-          >
+    </Tabs.List>
+    {#if $formData.docker == true}
+      <Tabs.Content value="1">
+        <HotkeyButton
+          aria-label="start"
+          title="start"
+          size="tableicon"
+          variant="icon"
+          disabled={loading}
+          onclick={async () => {
+            try {
+              loading = true;
+              await auth.client.CustomCommand({
+                command: "startagent",
+                id: $formData._id,
+                name: $formData.slug,
+                jwt: auth.access_token,
+              });
+              toast.success("Started successfully", {
+                description: "",
+              });
+              await getPods(true);
+            } catch (error: any) {
+              toast.error("Error while starting", {
+                description: error.message,
+              });
+            } finally {
+              loading = false;
+            }
+          }}
+        >
+          <Play />
+        </HotkeyButton>
+        <HotkeyButton
+          aria-label="stop"
+          title="stop"
+          size="tableicon"
+          variant="icon"
+          disabled={loading}
+          onclick={async () => {
+            try {
+              loading = true;
+              await auth.client.CustomCommand({
+                command: "stopagent",
+                id: $formData._id,
+                name: $formData.slug,
+                jwt: auth.access_token,
+              });
+              toast.success("Stopped successfully", {
+                description: "",
+              });
+              await getPods(true);
+            } catch (error: any) {
+              toast.error("Error while stopping", {
+                description: error.message,
+              });
+            } finally {
+              loading = false;
+            }
+          }}
+        >
+          <Square />
+        </HotkeyButton>
+        <HotkeyButton
+          aria-label="stop"
+          title="stop"
+          size="tableicon"
+          variant="icon"
+          disabled={loading}
+          onclick={async () => {
+            try {
+              await getPods(true);
+            } catch (error: any) {
+              toast.error("Error while stopping", {
+                description: error.message,
+              });
+            }
+          }}
+        >
+          <Square />
+        </HotkeyButton>
+        {#each instances as resourceMonitor}
+          {#if resourceMonitor != null}
             <div
-              class="grid grid-cols-7 bg-lighttableheader dark:bg-darktableheader rounded-tr-[10px] rounded-tl-[10px] border-b"
+              class="my-4 text-[14px] border rounded-[10px] w-92 md:w-full overflow-hidden"
             >
-              <div class="text-center p-2 col-span-2">
-                <div class="flex items-center">
-                  <Tag class="h-3 w-3 mr-1" />
-                  Name
+              <div
+                class="grid grid-cols-7 bg-lighttableheader dark:bg-darktableheader rounded-tr-[10px] rounded-tl-[10px] border-b"
+              >
+                <div class="text-center p-2 col-span-2">
+                  <div class="flex items-center">
+                    <Tag class="h-3 w-3 mr-1" />
+                    Name
+                  </div>
+                </div>
+                <div class="text-center p-2 col-span-1">
+                  <div class="flex items-center justify-center">
+                    <Gauge class="h-4 w-4 mr-1" />
+                    Status
+                  </div>
+                </div>
+                <div class="text-center p-2 col-span-1">
+                  <div class="flex items-center justify-center">
+                    <Laptop class="h-4 w-4 mr-1" />
+                    CPU
+                  </div>
+                </div>
+                <div class="text-center p-2 col-span-1">
+                  <div class="flex items-center justify-center">
+                    <Zap class="h-4 w-4 mr-1" />
+                    Mem
+                  </div>
+                </div>
+                <div class="text-center p-2 col-span-2">
+                  <div class="flex items-center justify-center">
+                    <CalendarDays class="h-4 w-4 mr-1" />
+                    Created
+                  </div>
                 </div>
               </div>
-              <div class="text-center p-2 col-span-1">
-                <div class="flex items-center justify-center">
-                  <Gauge class="h-4 w-4 mr-1" />
-                  Status
-                </div>
-              </div>
-              <div class="text-center p-2 col-span-1">
-                <div class="flex items-center justify-center">
-                  <Laptop class="h-4 w-4 mr-1" />
-                  CPU
-                </div>
-              </div>
-              <div class="text-center p-2 col-span-1">
-                <div class="flex items-center justify-center">
-                  <Zap class="h-4 w-4 mr-1" />
-                  Mem
-                </div>
-              </div>
-              <div class="text-center p-2 col-span-2">
-                <div class="flex items-center justify-center">
-                  <CalendarDays class="h-4 w-4 mr-1" />
-                  Created
-                </div>
-              </div>
-            </div>
 
-            <div class="grid grid-cols-7 border-b">
-              <div class="flex items-center p-4 col-span-2">
-                {resourceMonitor.metadata.name}
+              <div class="grid grid-cols-7 border-b">
+                <div class="flex items-center p-4 col-span-2">
+                  {resourceMonitor.metadata.name}
+                </div>
+                <div class="flex items-center justify-center p-4 col-span-1">
+                  <Statuscard title={resourceMonitor.showstatus} />
+                </div>
+                <div class="text-center p-4 col-span-1">
+                  {resourceMonitor?.metrics?.cpu +
+                    "/" +
+                    resourceMonitor?.spec?.containers[0]?.resources?.limits
+                      ?.cpu}
+                </div>
+                <div class="text-center p-4 col-span-1">
+                  {resourceMonitor?.metrics?.memory +
+                    "/" +
+                    resourceMonitor?.spec?.containers[0]?.resources?.limits
+                      ?.memory}
+                </div>
+                <div class="text-center p-4 col-span-2">
+                  {resourceMonitor?.metadata?.creationTimestamp}
+                </div>
               </div>
-              <div class="flex items-center justify-center p-4 col-span-1">
-                <Statuscard title={resourceMonitor.showstatus} />
-              </div>
-              <div class="text-center p-4 col-span-1">
-                {resourceMonitor?.metrics?.cpu +
-                  "/" +
-                  resourceMonitor?.spec?.containers[0]?.resources?.limits?.cpu}
-              </div>
-              <div class="text-center p-4 col-span-1">
-                {resourceMonitor?.metrics?.memory +
-                  "/" +
-                  resourceMonitor?.spec?.containers[0]?.resources?.limits
-                    ?.memory}
-              </div>
-              <div class="text-center p-4 col-span-2">
-                {resourceMonitor?.metadata?.creationTimestamp}
-              </div>
-            </div>
 
-            <div class="p-2">
-              <HotkeyButton
-                variant="base"
-                size="base"
-                aria-label="Logs"
-                title="Logs"
-                onclick={async () => {
-                  loading = true;
-                  try {
-                    instancelog = null;
-                    var lines: any = await auth.client.CustomCommand({
-                      command: "getagentlog",
-                      id: data.item._id,
-                      name: resourceMonitor.metadata.name,
-                      jwt: auth.access_token,
-                    });
-                    lines = JSON.parse(lines);
-                    if (lines != null) {
-                      lines = ansi_up.ansi_to_html(lines);
-                      lines = lines.split("\n");
-                      lines = lines.reverse();
-                    } else {
-                      lines = [];
+              <div class="p-2">
+                <HotkeyButton
+                  variant="base"
+                  size="base"
+                  aria-label="Logs"
+                  title="Logs"
+                  onclick={async () => {
+                    loading = true;
+                    try {
+                      instancelog = null;
+                      var lines: any = await auth.client.CustomCommand({
+                        command: "getagentlog",
+                        id: data.item._id,
+                        name: resourceMonitor.metadata.name,
+                        jwt: auth.access_token,
+                      });
+                      lines = JSON.parse(lines);
+                      if (lines != null) {
+                        lines = ansi_up.ansi_to_html(lines);
+                        lines = lines.split("\n");
+                        lines = lines.reverse();
+                      } else {
+                        lines = [];
+                      }
+                      lines = lines.join("<br>");
+                      instancelog = lines;
+                      errormessage = "";
+                    } catch (error: any) {
+                      toast.error("Error while deleting", {
+                        description: error.message,
+                      });
+                      errormessage = error.message ? error.message : error;
+                      instancelog = "";
                     }
-                    lines = lines.join("<br>");
-                    instancelog = lines;
-                    errormessage = "";
-                  } catch (error: any) {
-                    toast.error("Error while deleting", {
-                      description: error.message,
-                    });
-                    errormessage = error.message ? error.message : error;
-                    instancelog = "";
-                  }
-                  loading = false;
-                }}
-              >
-                <Hourglass />
-                Logs</HotkeyButton
-              >
-              <HotkeyButton
-                class="ml-4"
-                variant="danger"
-                aria-label="Delete"
-                title="Delete"
-                onclick={() => {
-                  showWarningAgentDelete = true;
-                  deleteData = resourceMonitor;
-                }}
-              >
-                <Trash2 />
-                Delete Item</HotkeyButton
-              >
+                    loading = false;
+                  }}
+                >
+                  <Hourglass />
+                  Logs</HotkeyButton
+                >
+                <HotkeyButton
+                  class="ml-4"
+                  variant="danger"
+                  aria-label="Delete"
+                  title="Delete"
+                  onclick={() => {
+                    showWarningAgentDelete = true;
+                    deleteData = resourceMonitor;
+                  }}
+                >
+                  <Trash2 />
+                  Delete Item</HotkeyButton
+                >
+              </div>
             </div>
+          {/if}
+        {/each}
+        {#if instancelog != null}
+          <div class="border rounded-xl p-2 my-2">
+            <div>Logs</div>
+            {@html instancelog}
           </div>
         {/if}
-      {/each}
-      {#if instancelog != null}
-        <div class="border rounded-xl p-2 my-2">
-          <div>Logs</div>
-          {@html instancelog}
+      </Tabs.Content>
+    {/if}
+    <Tabs.Content value="2">
+      <form method="POST" use:enhance class="text-sm">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Form.Field {form} name="name" class="w-full">
+            <Form.Control>
+              {#snippet children({ props })}
+                <Form.Label>Name</Form.Label>
+                <CustomInput
+                  width="w-full"
+                  disabled={loading}
+                  bind:value={$formData.name}
+                />
+              {/snippet}
+            </Form.Control>
+            <Form.FieldErrors />
+          </Form.Field>
+
+          <Form.Field {form} name="slug" class="w-full">
+            <Form.Control>
+              {#snippet children({ props })}
+                <div class="flex items-center">
+                  <Form.Label>Slug</Form.Label>
+                  <HotkeyButton
+                    class="ml-2"
+                    aria-label="refresh"
+                    size="refresh"
+                    variant="refresh"
+                    title="refresh"
+                    disabled={loading}
+                    onclick={() => {
+                      $formData.name = randomname();
+                      $formData.slug = $formData.name;
+                    }}><RefreshCcw /></HotkeyButton
+                  >
+                </div>
+                <CustomInput
+                  width="w-full"
+                  disabled={loading}
+                  {...props}
+                  bind:value={$formData.slug}
+                />
+              {/snippet}
+            </Form.Control>
+            <Form.FieldErrors />
+          </Form.Field>
+
+          {#if $formData.image != null && $formData.image != ""}
+            <Form.Field {form} name="image" class="w-full">
+              <Form.Control>
+                {#snippet children({ props })}
+                  <Form.Label>Image</Form.Label>
+                  <CustomSelect
+                    width="w-full"
+                    type="single"
+                    {loading}
+                    {...props}
+                    bind:value={$formData.image}
+                    onValueChangeFunction={ImageUpdated}
+                    selectitems={images}
+                    triggerContent={triggerContentImage}
+                  />
+                {/snippet}
+              </Form.Control>
+              <Form.FieldErrors />
+            </Form.Field>
+
+            <Form.Field {form} name="_stripeprice" class="w-full">
+              <Form.Control>
+                {#snippet children({ props })}
+                  <Form.Label>Plan</Form.Label>
+                  <CustomSelect
+                    width="w-full"
+                    {loading}
+                    {...props}
+                    bind:value={$formData._stripeprice}
+                    onValueChangeFunction={PlanUpdated}
+                    selectitems={products}
+                    triggerContent={triggerContentPlan}
+                    type="single"
+                  />
+                {/snippet}
+              </Form.Control>
+              <Form.FieldErrors />
+            </Form.Field>
+          {:else}
+            <!-- add 2, to keep aligned with cloud agents -->
+            <div class="w-full"></div>
+            <div class="w-full"></div>
+          {/if}
+        </div>
+
+        {#if sizewarningtitle != ""}
+          <div
+            class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-4 rounded relative"
+          >
+            <strong class="font-bold">{sizewarningtitle}</strong>
+            <span class="block sm:inline">{sizewarning}</span>
+          </div>
+        {/if}
+
+        <div class="mb-6 mt-4 md:mb-4 md:mt-2">
+          <Form.Field {form} name="environment" class="w-full">
+            <Form.Control>
+              {#snippet children({ props })}
+                <Form.Label>Environment</Form.Label>
+                <ObjectInput
+                  disabled={loading}
+                  {...props}
+                  bind:value={$formData.environment}
+                />
+              {/snippet}
+            </Form.Control>
+            <Form.FieldErrors />
+          </Form.Field>
+        </div>
+
+        {#if $formData.image != null && $formData.image != ""}
+          <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4">
+            <Form.Field
+              {form}
+              name="autostart"
+              class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
+            >
+              <Form.Control>
+                {#snippet children({ props })}
+                  <div class="flex flex-col space-y-2">
+                    <Form.Label>Auto Start</Form.Label>
+                    <Form.Description></Form.Description>
+                    <div class="flex items-center space-x-4">
+                      <CustomSwitch
+                        disabled={loading}
+                        bind:checked={$formData.autostart}
+                        {...props}
+                        aria-readonly
+                      />
+                      <span> {$formData.autostart ? "On" : "Off"} </span>
+                    </div>
+                  </div>
+                {/snippet}
+              </Form.Control>
+              <Form.FieldErrors />
+            </Form.Field>
+
+            <Form.Field
+              {form}
+              name="webserver"
+              class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
+            >
+              <Form.Control>
+                {#snippet children({ props })}
+                  <div class="flex flex-col space-y-2">
+                    <Form.Label>Web Server</Form.Label>
+                    <Form.Description></Form.Description>
+                    <div class="flex space-x-4">
+                      <CustomSwitch
+                        disabled={loading}
+                        bind:checked={$formData.webserver}
+                        {...props}
+                        aria-readonly
+                      />
+                      <span> {$formData.webserver ? "On" : "Off"} </span>
+                    </div>
+                  </div>
+                {/snippet}
+              </Form.Control>
+              <Form.FieldErrors />
+            </Form.Field>
+
+            <Form.Field
+              {form}
+              name="sleep"
+              class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
+            >
+              <Form.Control>
+                {#snippet children({ props })}
+                  <div class="flex flex-col space-y-2">
+                    <Form.Label>Sleep</Form.Label>
+                    <Form.Description></Form.Description>
+                    <div class="flex space-x-4">
+                      <CustomSwitch
+                        disabled={loading}
+                        bind:checked={$formData.sleep}
+                        {...props}
+                        aria-readonly
+                      />
+                      <span> {$formData.sleep ? "On" : "Off"} </span>
+                    </div>
+                  </div>
+                {/snippet}
+              </Form.Control>
+              <Form.FieldErrors />
+            </Form.Field>
+
+            <Form.Field {form} name="timezone" class="mb-4">
+              <Form.Control>
+                {#snippet children({ props })}
+                  <div class="flex flex-col items-start space-y-2">
+                    <Form.Label class="mb-1">Timezone</Form.Label>
+                    <Timezoneselector
+                      disabled={loading}
+                      {...props}
+                      bind:value={$formData.timezone}
+                    />
+                  </div>
+                {/snippet}
+              </Form.Control>
+              <Form.FieldErrors />
+            </Form.Field>
+          </div>
+        {/if}
+
+        <Form.Field {form} name="runas">
+          <Form.Control>
+            {#snippet children({ props })}
+              <div class="flex flex-col items-start space-y-2">
+                <Form.Label>Runas</Form.Label>
+                <div class="md:flex md:items-center md:space-x-4 my-2">
+                  <Entityselector
+                    width="md:w-fit w-64"
+                    class="mb-2 md:mb-0"
+                    disabled={loading}
+                    {...props}
+                    collectionname="users"
+                    basefilter={{ _type: "user" }}
+                    bind:value={$formData.runas}
+                  />
+                  <HotkeyButton
+                    aria-label="User details"
+                    title="User details"
+                    disabled={loading}
+                    onclick={() => {
+                      goto(base + `/user/${$formData.runas}`);
+                    }}><User />User details</HotkeyButton
+                  >
+                </div>
+              </div>
+            {/snippet}
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
+
+        <div class="mb-4 space-y-2 md:space-x-4">
+          <HotkeyButton
+            class="w-full md:w-auto"
+            variant="success"
+            size="base"
+            disabled={loading}
+            aria-label="Save Changes"
+            type="submit"
+            data-shortcut="ctrl+s"
+          >
+            <Check />
+            Save Changes</HotkeyButton
+          >
+          {#if $formData.image != null && $formData.image != ""}
+            <HotkeyButton
+              class="w-full md:mr-4 md:w-auto"
+              aria-label="Refresh"
+              title="Refresh"
+              variant="base"
+              size="base"
+              disabled={loading}
+              onclick={() => {
+                getPods();
+              }}
+            >
+              <RefreshCcw />
+              Refresh</HotkeyButton
+            >
+            <HotkeyButton
+              class="w-full md:w-auto"
+              aria-label="Open in Web"
+              title="Open in Web"
+              variant="base"
+              size="base"
+              disabled={$formData.webserver != true ||
+                instances.find((x: any) => x.showstatus === "running") ||
+                loading}
+              onclick={() => window.open(auth.weburl($formData.slug), "_blank")}
+            >
+              <Webhook />
+              Open in Web</HotkeyButton
+            >
+          {/if}
+        </div>
+      </form>
+
+      {#if $formData.image != null && $formData.image != "" && data.agentInstance != null}
+        <div class="italic text-gray-500 py-2">
+          Agents using free plan will be shutdown after {data.agentInstance
+            ?.defaultmetadata.runtime_hours} hours. Buy one or more products on the
+          customer page, and then assign it to an agent to allow it to run 24/7.
+          You are limited to
+          {data.agentInstance?.defaultmetadata.agentcount} free agents. Add more
+          resources on the customer page to increase the limit.
         </div>
       {/if}
     </Tabs.Content>
-  {/if}
-  <Tabs.Content value="2">
-    <form method="POST" use:enhance class="text-sm">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Form.Field {form} name="name" class="w-full">
-          <Form.Control>
-            {#snippet children({ props })}
-              <Form.Label>Name</Form.Label>
-              <CustomInput
-                width="w-full"
-                disabled={loading}
-                bind:value={$formData.name}
+    <Tabs.Content value="3">
+      <form method="POST" use:enhance class="text-sm">
+        <div>
+          <div>Add schedule of package</div>
+          <div class="md:flex md:space-x-5 my-2">
+            <div class="flex items-center space-x-8 mb-2">
+              <Entityselector
+                width="md:w-fit w-64"
+                collectionname="agents"
+                handleChangeFunction={() => {
+                  if (packageData?.daemon == false) {
+                    packageData.cron = "* * * * *";
+                  } else {
+                    packageData.cron = "";
+                  }
+                }}
+                basefilter={{
+                  _type: "package",
+                  language: { $in: $formData.languages },
+                }}
+                returnObject={true}
+                bind:value={packageData}
               />
-            {/snippet}
-          </Form.Control>
-          <Form.FieldErrors />
-        </Form.Field>
-
-        <Form.Field {form} name="slug" class="w-full">
-          <Form.Control>
-            {#snippet children({ props })}
-              <div class="flex items-center">
-                <Form.Label>Slug</Form.Label>
-                <HotkeyButton
-                  class="ml-2"
-                  aria-label="refresh"
-                  size="refresh"
-                  variant="refresh"
-                  title="refresh"
-                  disabled={loading}
-                  onclick={() => {
-                    $formData.name = randomname();
-                    $formData.slug = $formData.name;
-                  }}><RefreshCcw /></HotkeyButton
-                >
-              </div>
-              <CustomInput
-                width="w-full"
-                disabled={loading}
-                {...props}
-                bind:value={$formData.slug}
-              />
-            {/snippet}
-          </Form.Control>
-          <Form.FieldErrors />
-        </Form.Field>
-
-        {#if $formData.image != null && $formData.image != ""}
-          <Form.Field {form} name="image" class="w-full">
-            <Form.Control>
-              {#snippet children({ props })}
-                <Form.Label>Image</Form.Label>
-                <CustomSelect
-                  width="w-full"
-                  type="single"
-                  {loading}
-                  {...props}
-                  bind:value={$formData.image}
-                  onValueChangeFunction={ImageUpdated}
-                  selectitems={images}
-                  triggerContent={triggerContentImage}
-                />
-              {/snippet}
-            </Form.Control>
-            <Form.FieldErrors />
-          </Form.Field>
-
-          <Form.Field {form} name="_stripeprice" class="w-full">
-            <Form.Control>
-              {#snippet children({ props })}
-                <Form.Label>Plan</Form.Label>
-                <CustomSelect
-                  width="w-full"
-                  {loading}
-                  {...props}
-                  bind:value={$formData._stripeprice}
-                  onValueChangeFunction={PlanUpdated}
-                  selectitems={products}
-                  triggerContent={triggerContentPlan}
-                  type="single"
-                />
-              {/snippet}
-            </Form.Control>
-            <Form.FieldErrors />
-          </Form.Field>
-        {:else}
-          <!-- add 2, to keep aligned with cloud agents -->
-          <div class="w-full"></div>
-          <div class="w-full"></div>
-        {/if}
-      </div>
-
-      {#if sizewarningtitle != ""}
-        <div
-          class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-4 rounded relative"
-        >
-          <strong class="font-bold">{sizewarningtitle}</strong>
-          <span class="block sm:inline">{sizewarning}</span>
-        </div>
-      {/if}
-
-      <div class="mb-6 mt-4 md:mb-4 md:mt-2">
-        <Form.Field {form} name="environment" class="w-full">
-          <Form.Control>
-            {#snippet children({ props })}
-              <Form.Label>Environment</Form.Label>
-              <ObjectInput
-                disabled={loading}
-                {...props}
-                bind:value={$formData.environment}
-              />
-            {/snippet}
-          </Form.Control>
-          <Form.FieldErrors />
-        </Form.Field>
-      </div>
-
-      {#if $formData.image != null && $formData.image != ""}
-        <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4">
-          <Form.Field
-            {form}
-            name="autostart"
-            class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
-          >
-            <Form.Control>
-              {#snippet children({ props })}
-                <div class="flex flex-col space-y-2">
-                  <Form.Label>Auto Start</Form.Label>
-                  <Form.Description></Form.Description>
-                  <div class="flex items-center space-x-4">
-                    <CustomSwitch
-                      disabled={loading}
-                      bind:checked={$formData.autostart}
-                      {...props}
-                      aria-readonly
-                    />
-                    <span> {$formData.autostart ? "On" : "Off"} </span>
-                  </div>
-                </div>
-              {/snippet}
-            </Form.Control>
-            <Form.FieldErrors />
-          </Form.Field>
-
-          <Form.Field
-            {form}
-            name="webserver"
-            class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
-          >
-            <Form.Control>
-              {#snippet children({ props })}
-                <div class="flex flex-col space-y-2">
-                  <Form.Label>Web Server</Form.Label>
-                  <Form.Description></Form.Description>
-                  <div class="flex space-x-4">
-                    <CustomSwitch
-                      disabled={loading}
-                      bind:checked={$formData.webserver}
-                      {...props}
-                      aria-readonly
-                    />
-                    <span> {$formData.webserver ? "On" : "Off"} </span>
-                  </div>
-                </div>
-              {/snippet}
-            </Form.Control>
-            <Form.FieldErrors />
-          </Form.Field>
-
-          <Form.Field
-            {form}
-            name="sleep"
-            class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
-          >
-            <Form.Control>
-              {#snippet children({ props })}
-                <div class="flex flex-col space-y-2">
-                  <Form.Label>Sleep</Form.Label>
-                  <Form.Description></Form.Description>
-                  <div class="flex space-x-4">
-                    <CustomSwitch
-                      disabled={loading}
-                      bind:checked={$formData.sleep}
-                      {...props}
-                      aria-readonly
-                    />
-                    <span> {$formData.sleep ? "On" : "Off"} </span>
-                  </div>
-                </div>
-              {/snippet}
-            </Form.Control>
-            <Form.FieldErrors />
-          </Form.Field>
-
-          <Form.Field {form} name="timezone" class="mb-4">
-            <Form.Control>
-              {#snippet children({ props })}
-                <div class="flex flex-col items-start space-y-2">
-                  <Form.Label class="mb-1">Timezone</Form.Label>
-                  <Timezoneselector
-                    disabled={loading}
-                    {...props}
-                    bind:value={$formData.timezone}
-                  />
-                </div>
-              {/snippet}
-            </Form.Control>
-            <Form.FieldErrors />
-          </Form.Field>
-        </div>
-      {/if}
-
-      <Form.Field {form} name="runas">
-        <Form.Control>
-          {#snippet children({ props })}
-            <div class="flex flex-col items-start space-y-2">
-              <Form.Label>Runas</Form.Label>
-              <div class="md:flex md:items-center md:space-x-4 my-2">
-                <Entityselector
-                  width="md:w-fit w-64"
-                  class="mb-2 md:mb-0"
-                  disabled={loading}
-                  {...props}
-                  collectionname="users"
-                  basefilter={{ _type: "user" }}
-                  bind:value={$formData.runas}
-                />
-                <HotkeyButton
-                  aria-label="User details"
-                  title="User details"
-                  disabled={loading}
-                  onclick={() => {
-                    goto(base + `/user/${$formData.runas}`);
-                  }}><User />User details</HotkeyButton
-                >
-              </div>
             </div>
-          {/snippet}
-        </Form.Control>
-        <Form.FieldErrors />
-      </Form.Field>
 
-      <div class="mb-4 space-y-2 md:space-x-4">
+            {#if packageData?.daemon == false}
+              <div class="flex items-center space-x-2">
+                <data>Cron</data>
+                <CustomInput
+                  disabled={loading}
+                  bind:value={packageData.cron}
+                  placeholder="* * * * *"
+                />
+              </div>
+            {/if}
+
+            <HotkeyButton onclick={addpackage}>
+              <Box />
+              Add package</HotkeyButton
+            >
+          </div>
+        </div>
+
+        {#if $formData.schedules}
+          {#each $formData.schedules as item, index}
+            <div class="my-4">
+              {#if $formData.schedules}
+                <div class="text-lg my-6">
+                  Package {index + 1}
+                </div>
+
+                <div class="flex items-center space-x-2 mb-4">
+                  <Form.Field {form} name="item.name">
+                    <Form.Control>
+                      <Form.Label>Name</Form.Label>
+                      <CustomInput bind:value={item.name} width="" />
+                    </Form.Control>
+                    <Form.FieldErrors />
+                  </Form.Field>
+                </div>
+
+                {#if item.cron != ""}
+                  <div class="mb-4">
+                    <div class="flex items-center space-x-2 mb-4">
+                      <Form.Field {form} name="item.cron">
+                        <Form.Control>
+                          <Form.Label>Cron</Form.Label>
+                          <CustomInput
+                            width=""
+                            disabled={loading}
+                            bind:value={item.cron}
+                            placeholder="* * * * *"
+                          />
+                        </Form.Control>
+                        <Form.FieldErrors />
+                      </Form.Field>
+                    </div>
+
+                    <div class="flex items-center space-x-2 mb-4">
+                      <Form.Field {form} name="item.allowConcurrentRuns">
+                        <Form.Control>
+                          <div
+                            class="flex items-center justify-center space-x-2"
+                          >
+                            <CustomSwitch
+                              disabled={loading}
+                              bind:checked={item.allowConcurrentRuns}
+                            />
+                            <Form.Label
+                              >Concurent Runs {item.allowConcurrentRuns
+                                ? "On"
+                                : "Off"}</Form.Label
+                            >
+                          </div>
+                        </Form.Control>
+                        <Form.FieldErrors />
+                      </Form.Field>
+                    </div>
+
+                    <div class="flex items-center space-x-2 mb-4">
+                      <Form.Field {form} name="item.terminateIfRunning">
+                        <Form.Control>
+                          <div
+                            class="flex items-center justify-center space-x-2"
+                          >
+                            <CustomCheckbox
+                              arialabel="Terminate If Running"
+                              disabled={loading}
+                              bind:checked={item.terminateIfRunning}
+                            />
+                            <Form.Label>Terminate If Running</Form.Label>
+                          </div>
+                        </Form.Control>
+                        <Form.FieldErrors />
+                      </Form.Field>
+                    </div>
+                  </div>
+                {/if}
+
+                <div class="flex items-center space-x-2 mb-4">
+                  <Form.Field {form} name="item.enabled">
+                    <Form.Control>
+                      <div class="flex items-center justify-center space-x-2">
+                        <CustomSwitch
+                          disabled={loading}
+                          bind:checked={item.enabled}
+                        />
+                        <Form.Label
+                          >Enabled {item.enabled ? "On" : "Off"}</Form.Label
+                        >
+                      </div>
+                    </Form.Control>
+                    <Form.FieldErrors />
+                  </Form.Field>
+                </div>
+
+                <div class="mb-4">
+                  <Form.Field {form} name="item.env">
+                    <Form.Control>
+                      <Form.Label>Environment</Form.Label>
+                      <ObjectInput disabled={loading} bind:value={item.env} />
+                    </Form.Control>
+                    <Form.FieldErrors />
+                  </Form.Field>
+                </div>
+
+                <HotkeyButton
+                  class="max-w-fit"
+                  aria-label="Delete package"
+                  variant="danger"
+                  onclick={() => {
+                    showWarning = true;
+                    deleteData = index;
+                  }}><Trash2 />Remove Schedule</HotkeyButton
+                >
+              {/if}
+            </div>
+          {/each}
+        {:else}
+          <div class="my-2">No packages found</div>
+        {/if}
+
         <HotkeyButton
-          class="w-full md:w-auto"
+          class="w-full md:w-auto mb-4"
           variant="success"
           size="base"
           disabled={loading}
@@ -1088,287 +1308,74 @@
           <Check />
           Save Changes</HotkeyButton
         >
-        {#if $formData.image != null && $formData.image != ""}
-          <HotkeyButton
-            class="w-full md:mr-4 md:w-auto"
-            aria-label="Refresh"
-            title="Refresh"
-            variant="base"
-            size="base"
-            disabled={loading}
-            onclick={() => {
-              getPods();
-            }}
-          >
-            <RefreshCcw />
-            Refresh</HotkeyButton
-          >
-          <HotkeyButton
-            class="w-full md:w-auto"
-            aria-label="Open in Web"
-            title="Open in Web"
-            variant="base"
-            size="base"
-            disabled={$formData.webserver != true ||
-              instances.find((x: any) => x.showstatus === "running") ||
-              loading}
-            onclick={() => window.open(auth.weburl($formData.slug), "_blank")}
-          >
-            <Webhook />
-            Open in Web</HotkeyButton
-          >
-        {/if}
-      </div>
-    </form>
+      </form>
+    </Tabs.Content>
+    <Tabs.Content value="4">
+      <div>View Logs for packages running on {agent.name}</div>
 
-    {#if $formData.image != null && $formData.image != "" && data.agentInstance != null}
-      <div class="italic text-gray-500 py-2">
-        Agents using free plan will be shutdown after {data.agentInstance
-          ?.defaultmetadata.runtime_hours} hours. Buy one or more products on the
-        customer page, and then assign it to an agent to allow it to run 24/7. You
-        are limited to
-        {data.agentInstance?.defaultmetadata.agentcount} free agents. Add more resources
-        on the customer page to increase the limit.
-      </div>
-    {/if}
-  </Tabs.Content>
-  <Tabs.Content value="3">
-    <form method="POST" use:enhance class="text-sm">
-      <div>
-        <div>Add schedule of package</div>
-        <div class="md:flex md:space-x-5 my-2">
-          <div class="flex items-center space-x-8 mb-2">
-            <Entityselector
-              width="md:w-fit w-64"
-              collectionname="agents"
-              handleChangeFunction={() => {
-                if (packageData?.daemon == false) {
-                  packageData.cron = "* * * * *";
-                } else {
-                  packageData.cron = "";
-                }
-              }}
-              basefilter={{
-                _type: "package",
-                language: { $in: $formData.languages },
-              }}
-              returnObject={true}
-              bind:value={packageData}
-            />
-          </div>
-
-          {#if packageData?.daemon == false}
-            <div class="flex items-center space-x-2">
-              <data>Cron</data>
-              <CustomInput
-                disabled={loading}
-                bind:value={packageData.cron}
-                placeholder="* * * * *"
-              />
-            </div>
-          {/if}
-
-          <HotkeyButton onclick={addpackage}>
-            <Box />
-            Add package</HotkeyButton
-          >
-        </div>
+      <div class="flex items-center justify-start space-x-2 my-2">
+        <Entityselector
+          collectionname="agents"
+          basefilter={{ _type: "package", language: { $in: agent.languages } }}
+          bind:value={packageId}
+        />
+        <!-- <Entityselector collectionname="agents" bind:value={packageId} /> -->
+        <HotkeyButton onclick={runpackage}>Run package</HotkeyButton>
       </div>
 
-      {#if $formData.schedules}
-        {#each $formData.schedules as item, index}
-          <div class="my-4">
-            {#if $formData.schedules}
-              <div class="text-lg my-6">
-                Package {index + 1}
-              </div>
+      <div></div>
+      <HotkeyButton onclick={init}>Init</HotkeyButton>
+      <HotkeyButton onclick={pokeagent}>refresh</HotkeyButton>
+      <HotkeyButton onclick={listprocesses}>List processes</HotkeyButton>
 
-              <div class="flex items-center space-x-2 mb-4">
-                <Form.Field {form} name="item.name">
-                  <Form.Control>
-                    <Form.Label>Name</Form.Label>
-                    <CustomInput bind:value={item.name} width="" />
-                  </Form.Control>
-                  <Form.FieldErrors />
-                </Form.Field>
-              </div>
-
-              {#if item.cron != ""}
-                <div class="mb-4">
-                  <div class="flex items-center space-x-2 mb-4">
-                    <Form.Field {form} name="item.cron">
-                      <Form.Control>
-                        <Form.Label>Cron</Form.Label>
-                        <CustomInput
-                          width=""
-                          disabled={loading}
-                          bind:value={item.cron}
-                          placeholder="* * * * *"
-                        />
-                      </Form.Control>
-                      <Form.FieldErrors />
-                    </Form.Field>
-                  </div>
-
-                  <div class="flex items-center space-x-2 mb-4">
-                    <Form.Field {form} name="item.allowConcurrentRuns">
-                      <Form.Control>
-                        <div class="flex items-center justify-center space-x-2">
-                          <CustomSwitch
-                            disabled={loading}
-                            bind:checked={item.allowConcurrentRuns}
-                          />
-                          <Form.Label
-                            >Concurent Runs {item.allowConcurrentRuns
-                              ? "On"
-                              : "Off"}</Form.Label
-                          >
-                        </div>
-                      </Form.Control>
-                      <Form.FieldErrors />
-                    </Form.Field>
-                  </div>
-
-                  <div class="flex items-center space-x-2 mb-4">
-                    <Form.Field {form} name="item.terminateIfRunning">
-                      <Form.Control>
-                        <div class="flex items-center justify-center space-x-2">
-                          <CustomCheckbox
-                            arialabel="Terminate If Running"
-                            disabled={loading}
-                            bind:checked={item.terminateIfRunning}
-                          />
-                          <Form.Label>Terminate If Running</Form.Label>
-                        </div>
-                      </Form.Control>
-                      <Form.FieldErrors />
-                    </Form.Field>
-                  </div>
-                </div>
-              {/if}
-
-              <div class="flex items-center space-x-2 mb-4">
-                <Form.Field {form} name="item.enabled">
-                  <Form.Control>
-                    <div class="flex items-center justify-center space-x-2">
-                      <CustomSwitch
-                        disabled={loading}
-                        bind:checked={item.enabled}
-                      />
-                      <Form.Label
-                        >Enabled {item.enabled ? "On" : "Off"}</Form.Label
-                      >
-                    </div>
-                  </Form.Control>
-                  <Form.FieldErrors />
-                </Form.Field>
-              </div>
-
-              <div class="mb-4">
-                <Form.Field {form} name="item.env">
-                  <Form.Control>
-                    <Form.Label>Environment</Form.Label>
-                    <ObjectInput disabled={loading} bind:value={item.env} />
-                  </Form.Control>
-                  <Form.FieldErrors />
-                </Form.Field>
-              </div>
-
-              <HotkeyButton
-                class="max-w-fit"
-                aria-label="Delete package"
-                variant="danger"
-                onclick={() => {
-                  showWarning = true;
-                  deleteData = index;
-                }}><Trash2 />Remove Schedule</HotkeyButton
-              >
-            {/if}
-          </div>
-        {/each}
-      {:else}
-        <div class="my-2">No packages found</div>
+      {#if processes.length > 0}
+        <ul>
+          <Accordion.Root type="single" class="w-full sm:max-w-[70%]">
+            {#each processes as process}
+              <Accordion.Item value={process.id}>
+                <Accordion.Trigger
+                  >{process.packagename}
+                  {process.schedulename}
+                  {process.id}
+                </Accordion.Trigger>
+                <Accordion.Content>
+                  <HotkeyButton
+                    onclick={() => {
+                      deleteData = process;
+                      showWarning = true;
+                    }}
+                    variant="danger">Kill process</HotkeyButton
+                  >
+                  <br />
+                  {@html ansi
+                    .ansi_to_html(process.output)
+                    .split("\n")
+                    .join("<br>")}
+                </Accordion.Content>
+              </Accordion.Item>
+            {/each}
+          </Accordion.Root>
+        </ul>
       {/if}
+    </Tabs.Content>
+  </Tabs.Root>
 
-      <HotkeyButton
-        class="w-full md:w-auto mb-4"
-        variant="success"
-        size="base"
-        disabled={loading}
-        aria-label="Save Changes"
-        type="submit"
-        data-shortcut="ctrl+s"
-      >
-        <Check />
-        Save Changes</HotkeyButton
-      >
-    </form>
-  </Tabs.Content>
-  <Tabs.Content value="4">
-    <div>View Logs for packages running on {agent.name}</div>
+  {#if errormessage && errormessage != ""}
+    {errormessage}
+  {/if}
 
-    <div class="flex items-center justify-start space-x-2 my-2">
-      <Entityselector
-        collectionname="agents"
-        basefilter={{ _type: "package", language: { $in: agent.languages } }}
-        bind:value={packageId}
-      />
-      <!-- <Entityselector collectionname="agents" bind:value={packageId} /> -->
-      <HotkeyButton onclick={runpackage}>Run package</HotkeyButton>
-    </div>
+  {#if message && $message != ""}
+    {$message}
+  {/if}
 
-    <div></div>
-    <HotkeyButton onclick={init}>Init</HotkeyButton>
-    <HotkeyButton onclick={pokeagent}>refresh</HotkeyButton>
-    <HotkeyButton onclick={listprocesses}>List processes</HotkeyButton>
+  <CustomSuperDebug {formData} />
 
-    {#if processes.length > 0}
-      <ul>
-        <Accordion.Root type="single" class="w-full sm:max-w-[70%]">
-          {#each processes as process}
-            <Accordion.Item value={process.id}>
-              <Accordion.Trigger
-                >{process.packagename}
-                {process.schedulename}
-                {process.id}
-              </Accordion.Trigger>
-              <Accordion.Content>
-                <HotkeyButton
-                  onclick={() => {
-                    deleteData = process;
-                    showWarning = true;
-                  }}
-                  variant="danger">Kill process</HotkeyButton
-                >
-                <br />
-                {@html ansi
-                  .ansi_to_html(process.output)
-                  .split("\n")
-                  .join("<br>")}
-              </Accordion.Content>
-            </Accordion.Item>
-          {/each}
-        </Accordion.Root>
-      </ul>
-    {/if}
-  </Tabs.Content>
-</Tabs.Root>
+  <Warningdialogue bind:showWarning type="delete" onaccept={handleAccept}
+  ></Warningdialogue>
 
-{#if errormessage && errormessage != ""}
-  {errormessage}
-{/if}
-
-{#if message && $message != ""}
-  {$message}
-{/if}
-
-<CustomSuperDebug {formData} />
-
-<Warningdialogue bind:showWarning type="delete" onaccept={handleAccept}
-></Warningdialogue>
-
-<Warningdialogue
-  bind:showWarning={showWarningAgentDelete}
-  type="delete"
-  onaccept={handleAcceptAgentDelete}
-></Warningdialogue>
+  <Warningdialogue
+    bind:showWarning={showWarningAgentDelete}
+    type="delete"
+    onaccept={handleAcceptAgentDelete}
+  ></Warningdialogue>
+</div>

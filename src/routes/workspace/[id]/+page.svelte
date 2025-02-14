@@ -2,27 +2,24 @@
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import type { Billing } from "$lib/billing.svelte.js";
+  import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
   import Button from "$lib/components/ui/button/button.svelte";
   import * as Card from "$lib/components/ui/card/index.js";
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
+  import Input from "$lib/components/ui/input/input.svelte";
   import { CustomInput } from "$lib/custominput/index.js";
   import { CustomSelect } from "$lib/customselect/index.js";
+  import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import { Check, Mail, SquareArrowDown, SquareArrowUp } from "lucide-svelte";
   import { toast } from "svelte-sonner";
-  import SuperDebug, { superForm } from "sveltekit-superforms";
+  import { superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newWorkspaceSchema } from "../schema.js";
 
-  import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-  import Input from "$lib/components/ui/input/input.svelte";
-  import { Label } from "$lib/components/ui/label/index.js";
-  import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
-
-  const key = "workspace";
   const { data } = $props();
   let _workspaceid = data.currentworkspace._id;
   let loading = $state(false);
@@ -239,10 +236,10 @@
     }
   }
 
-  const cardRoot = "w-[346px] h-[430px] dark:bg-bw850 grid grid-rows-4";
+  const cardRoot = "w-[346px] h-[430px] dark:bg-bw850 grid grid-rows-4 w-full";
   const cardHeader = "text-center";
   const cardTitle = "text-bw950 dark:text-bw100";
-  const cardDiv = "flex flex-col justify-between row-span-4";
+  const cardDiv = "flex flex-col justify-between row-span-4 w-full";
 
   $effect(() => {
     if (
@@ -260,19 +257,19 @@
   {$message}
 {/if}
 
-<div class="lg:m-6">
+<div class="mx-6 mt-4">
   <form method="POST" use:enhance>
     <Form.Field {form} name="name" class="mb-7">
       <Form.Control>
         {#snippet children({ props })}
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <div class="grid grid-col-1 lg:grid-cols-1 gap-2">
+          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+            <div class="grid grid-col-1 gap-2 w-full">
               <Form.Label class="font-medium">Workspace Name</Form.Label>
               <div class="text-bw400">
                 Your are managing the workspace below
               </div>
-              <div class="flex space-x-5">
-                <CustomInput {...props} bind:value={$formData.name} />
+              <div class="grid grid-cols-1 gap-4 lg:flex lg:space-x-5">
+                <CustomInput {...props} bind:value={$formData.name} width=""/>
                 <HotkeyButton
                   variant="success"
                   size="base"
@@ -287,7 +284,7 @@
               </div>
             </div>
 
-            <div class="grid grid-col-1 lg:grid-cols-1 gap-2">
+            <div class="grid grid-col-1 gap-2 w-full">
               {#if entities.length > 0}
                 {#if resourcecount == 0}
                   <Form.Label>Workspace Billing</Form.Label>
@@ -306,7 +303,7 @@
                     The current billing account for this workspace
                   </div>
                   <Button
-                    class="max-w-xs"
+                    class="md:max-w-xs"
                     variant="outline"
                     size="base"
                     disabled={loading}
@@ -321,14 +318,14 @@
               {/if}
             </div>
 
-            <div class="grid grid-col-1 lg:grid-cols-1 gap-2">
+            <div class="grid grid-col-1 gap-2 w-full">
               {#if data.currentbilling != null}
                 <Form.Label>Billing Account</Form.Label>
                 <div class="text-bw400">
                   Show billing details for this specific workspace
                 </div>
                 <Button
-                  class="max-w-xs"
+                  class="md:max-w-xs"
                   variant="outline"
                   size="base"
                   disabled={loading}
@@ -349,7 +346,7 @@
   </form>
 
   <div class="mb-4">Plans</div>
-  <div class="grid col-gap-4 row-gap-4 grid-cols-1 lg:grid-cols-3">
+  <div class="grid gap-8 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
     <Card.Root class={cardRoot}>
       <Card.Header class={cardHeader}>
         <Card.Title class={cardTitle}>Free</Card.Title>
@@ -508,6 +505,5 @@
       </AlertDialog.Footer>
     </AlertDialog.Content>
   </AlertDialog.Root>
+  <CustomSuperDebug {formData} />
 </div>
-
-<CustomSuperDebug {formData} />

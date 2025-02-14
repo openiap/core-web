@@ -13,14 +13,14 @@
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import { WarningDialogue } from "$lib/warningdialogue/index.js";
   import {
-      Folder,
-      History,
-      Layers2,
-      Pencil,
-      Plus,
-      RefreshCcw,
-      RotateCcw,
-      Trash2,
+    Folder,
+    History,
+    Layers2,
+    Pencil,
+    Plus,
+    RefreshCcw,
+    RotateCcw,
+    Trash2,
   } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
@@ -174,7 +174,7 @@
       </ScrollArea>
     </div>
   </div>
-  <div id="div2" class="ms-6 flex-1 h-full">
+  <div id="div2" class="ms-6 page">
     <div class="grid grid-cols-2 gap-2 xl:flex xl:gap-4 justify-between mb-4">
       <Searchinput bind:searchstring class="col-span-2" />
       <HotkeyButton
@@ -290,3 +290,13 @@
   type="delete"
   onaccept={handleEntityDelete}
 ></WarningDialogue>
+
+<style>
+  .page {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    /* This ensures it fills the entire window height */
+  }
+</style>
