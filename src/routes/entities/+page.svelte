@@ -139,7 +139,7 @@
 <div class="flex items-start justify-between h-full">
   <div
     id="div1"
-    class="w-full max-w-max flex-shrink-0 hidden sm:block p-2.5 rounded-[10px] bg-bw100 dark:bg-bw900 h-full overflow-hidden pb-10"
+    class="h-full max-w-max flex-shrink-0 p-2.5 rounded-[10px] bg-bw100 dark:bg-bw900 pb-10"
   >
     <div class="flex justify-center w-full px-4">
       <HotkeyButton
