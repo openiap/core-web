@@ -691,8 +691,8 @@
           <Square />
         </HotkeyButton>
         <HotkeyButton
-          aria-label="stop"
-          title="stop"
+          aria-label="refresh"
+          title="refresh"
           size="tableicon"
           variant="icon"
           disabled={loading}
@@ -700,13 +700,13 @@
             try {
               await getPods(true);
             } catch (error: any) {
-              toast.error("Error while stopping", {
+              toast.error("Error while refreshing", {
                 description: error.message,
               });
             }
           }}
         >
-          <Square />
+          <RefreshCcw />
         </HotkeyButton>
         {#each instances as resourceMonitor}
           {#if resourceMonitor != null}
