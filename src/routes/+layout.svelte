@@ -144,7 +144,9 @@
 					class="border border-gray-300 bg-white dark:border-bw500 dark:bg-bw800 rounded-xl mb-4 mx-4 h-full overflow-auto tourcontent px-4 py-5 page"
 				>
 					{#if auth.isAuthenticated == true || auth.isAuthenticated == false}
-						{@render children()}
+						<main>
+							{@render children()}
+						</main>
 					{/if}
 				</div>
 			</Sidebar.Inset>
@@ -153,10 +155,12 @@
 {:else}
 	{@render children()}
 {/if}
-
 <Toaster />
 
 <style>
+	:global(body) {
+		overflow: hidden;
+	}
 	.page {
 		display: flex;
 		flex-direction: column;

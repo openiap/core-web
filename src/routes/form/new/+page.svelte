@@ -165,9 +165,12 @@
   {message}
 </div>
 <div>
-  <div class="flex items-center justify-start space-x-4 mb-4">
+  <div
+    class="grid md:grid-cols-2 gap-2 xl:flex xl:items-center xl:justify-start xl:space-x-4 mb-4"
+  >
     <CustomInput
-      class="max-w-sm"
+      class="xl:max-w-sm"
+      width="w-full"
       type="text"
       placeholder="Enter form name"
       bind:value={data.name}
@@ -185,5 +188,8 @@
       Create form</HotkeyButton
     >
   </div>
-  <div class="bootstrap-scope formio-dialog-content" bind:this={ref}></div>
+  <div
+    class="bootstrap-scope formio-dialog-content dark:bg-bw1000"
+    bind:this={ref}
+  ></div>
 </div>

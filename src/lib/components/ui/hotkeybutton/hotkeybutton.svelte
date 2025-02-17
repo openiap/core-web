@@ -17,7 +17,7 @@
 				base: "shadow-light dark:shadow-dark border border-bw300 hover:border-bw400 bg-50 hover:bg-bw100 text-bw950  dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:hover:bg-bw700 dark:bg-bw850 dark:text-bw200 border border-bw600",
 				danger: "shadow-light dark:shadow-dark border bg-lightbgred hover:bg-lighthoverred dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:bg-darkbgred dark:hover:bg-darkbghoverred",
 				ghost: "hover:bg-accent hover:text-accent-foreground",
-				link: "text-primary underline-offset-4 hover:underline",
+				link: "underline-offset-4 hover:underline",
 				ghostfull: "",
 				icon: "text-bw500 hover:bg-bw200 hover:text-bw950 dark:text-bw300 dark:hover:bg-bw700 border border-transparent dark:hover:border-bw500",
 				headericon:

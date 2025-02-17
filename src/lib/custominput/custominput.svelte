@@ -12,6 +12,7 @@
 		placeholder = "Type here",
 		onchangefunction = null,
 		multiple = false,
+		...props
 	} = $props();
 
 	function getClass() {
@@ -27,7 +28,7 @@
 </script>
 
 <Input
-	id="searchstring"
+	{...props}
 	{placeholder}
 	bind:value
 	{disabled}
