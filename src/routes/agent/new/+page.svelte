@@ -24,7 +24,6 @@
   const { data } = $props();
 
   let loading = $state(false);
-  let errormessage = $state("");
   const form = superForm(defaults(zod(newFormSchema)), {
     dataType: "json",
     validators: zod(newFormSchema),
@@ -129,16 +128,17 @@
             goto(base + `/agent/${newagent._id}`);
           }
         } catch (error: any) {
-          errormessage = error.message;
           toast.error("Error", {
             description: error.message,
           });
           cancel();
-        } finally {
           loading = false;
         }
       } else {
-        errormessage = "Form is invalid";
+        loading = false;
+        toast.error("Error", {
+          description: "Form is invalid",
+        });
       }
     },
   });
@@ -324,10 +324,6 @@
 </script>
 
 <div class="mx-6">
-  {#if errormessage && errormessage != ""}
-    {errormessage}
-  {/if}
-
   {#if message && $message != ""}
     {$message}
   {/if}

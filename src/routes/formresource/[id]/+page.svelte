@@ -22,7 +22,6 @@
   const key = "formresource";
   const { data } = $props();
   let loading = $state(false);
-  let errormessage = $state("");
 
   const form = superForm(defaults(zod(editFormSchema)), {
     dataType: "json",
@@ -40,16 +39,16 @@
           toast.success("Form resource edited");
           goto(base + `/${key}`);
         } catch (error: any) {
-          errormessage = error.message;
           toast.error("Error", {
             description: error.message,
           });
           cancel();
           loading = false;
-        } finally {
         }
       } else {
-        errormessage = "Form is invalid";
+        toast.error("Error", {
+          description: "Form is invalid",
+        });
         loading = false;
       }
     },

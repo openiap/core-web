@@ -17,7 +17,6 @@
   const { data } = $props();
   const key = "workitem";
   let loading = $state(false);
-  let errormessage = $state("");
   let files: Array<File> = $state([]);
   let filedata: Array<{ filename: string; _id: string }> = $state([]);
   let imagesSize = $state(data.itemSize || []);
@@ -50,16 +49,17 @@
           toast.success("Workitem updated");
           goto(base + `/${key}`);
         } catch (error: any) {
-          errormessage = error.message;
           toast.error("Error", {
             description: error.message,
           });
           cancel();
           loading = false;
-        } finally {
         }
       } else {
-        errormessage = "Form is invalid";
+        loading = false;
+        toast.error("Error", {
+          description: "Form is invalid",
+        });
       }
     },
   });
@@ -141,10 +141,6 @@
     }
   }
 </script>
-
-{#if errormessage && errormessage != ""}
-  {errormessage}
-{/if}
 
 {#if message && $message != ""}
   {$message}

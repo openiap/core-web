@@ -41,9 +41,13 @@
             description: error.message,
           });
           cancel();
-        } finally {
           loading = false;
         }
+      } else {
+        loading = false;
+        toast.error("Error", {
+          description: "Form is invalid",
+        });
       }
     },
   });

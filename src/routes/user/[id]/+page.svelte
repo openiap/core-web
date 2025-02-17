@@ -20,7 +20,7 @@
 
   const key = "user";
   let loading = $state(false);
-  let errormessage = $state("");
+
   const { data } = $props();
   data.item = editFormSchema.parse(data.item);
 
@@ -44,16 +44,17 @@
           toast.success("User updated");
           goto(base + `/${key}`);
         } catch (error: any) {
-          errormessage = error.message;
           toast.error("Error", {
             description: error.message,
           });
           cancel();
           loading = false;
-        } finally {
         }
       } else {
-        errormessage = "Form is invalid";
+        loading = false;
+        toast.error("Error", {
+          description: "Form is invalid",
+        });
       }
     },
   });
@@ -62,10 +63,6 @@
   formData.set(data.item);
   validateForm({ update: true });
 </script>
-
-{#if errormessage && errormessage != ""}
-  {errormessage}
-{/if}
 
 {#if message && $message != ""}
   {$message}

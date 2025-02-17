@@ -19,7 +19,6 @@
   let screen = $state("set");
   const { data } = $props();
   let loading = $state(false);
-  let errormessage = $state("");
   const form = superForm(defaults(zod(editFormSchema)), {
     dataType: "json",
     validators: zod(editFormSchema),
@@ -37,16 +36,17 @@
           toast.success("Configuration updated");
           goto(base + `/${key}`);
         } catch (error: any) {
-          errormessage = error.message;
           toast.error("Error", {
             description: error.message,
           });
           cancel();
-        } finally {
           loading = false;
         }
       } else {
-        errormessage = "Form is invalid";
+        loading = false;
+        toast.error("Error", {
+          description: "Form is invalid",
+        });
       }
     },
   });

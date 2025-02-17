@@ -17,7 +17,6 @@
   const page = "package";
   let fileData = $state(null);
   let loading = $state(false);
-  let errormessage = $state("");
 
   const form = superForm(defaults(zod(newFormSchema)), {
     dataType: "json",
@@ -38,13 +37,14 @@
           toast.error("Error", {
             description: error.message,
           });
-          errormessage = error.message;
           cancel();
-        } finally {
           loading = false;
         }
       } else {
-        errormessage = "Form is invalid";
+        loading = false;
+        toast.error("Error", {
+          description: "Form is invalid",
+        });
       }
     },
   });
@@ -86,12 +86,6 @@
     reader.readAsArrayBuffer(file1);
   }
 </script>
-
-{#if errormessage && errormessage != ""}
-  <div class="text-red-800">
-    {errormessage}
-  </div>
-{/if}
 
 {#if message && $message != ""}
   {$message}

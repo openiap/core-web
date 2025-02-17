@@ -14,7 +14,6 @@
 
   const key = "credential";
   let loading = $state(false);
-  let errormessage = $state("");
   const form = superForm(defaults(zod(newFormSchema)), {
     dataType: "json",
     validators: zod(newFormSchema),
@@ -31,25 +30,22 @@
           toast.success("Credential added");
           goto(base + `/${key}`);
         } catch (error: any) {
-          errormessage = error.message;
           toast.error("Error", {
             description: error.message,
           });
           cancel();
-        } finally {
           loading = false;
         }
       } else {
-        errormessage = "Form is invalid";
+        toast.error("Error", {
+          description: "Form is invalid",
+        });
+        loading = false;
       }
     },
   });
   const { form: formData, enhance, message } = form;
 </script>
-
-{#if errormessage && errormessage != ""}
-  {errormessage}
-{/if}
 
 {#if message && $message != ""}
   {$message}

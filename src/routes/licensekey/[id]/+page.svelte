@@ -21,7 +21,7 @@
   import Textarea from "$lib/components/ui/textarea/textarea.svelte";
 
   let loading = $state(false);
-  let errormessage = $state("");
+
   let newid = $state("");
   let members: any = $state([]);
   let valueprompt = $state(false);
@@ -122,17 +122,17 @@
           }
           goto(base + `/licensekey`);
         } catch (error: any) {
-          errormessage = error.message;
           toast.error("Error", {
             description: error.message,
           });
           cancel();
           loading = false;
-        } finally {
         }
       } else {
         loading = false;
-        errormessage = "Form is invalid";
+        toast.error("Error", {
+          description: "Form is invalid",
+        });
       }
     },
   });
@@ -249,10 +249,6 @@
   let profileroles = auth.profile?.roles || [];
   const isAdmin = profileroles.includes("admins");
 </script>
-
-{#if errormessage && errormessage != ""}
-  {errormessage}
-{/if}
 
 {#if message && $message != ""}
   {$message}

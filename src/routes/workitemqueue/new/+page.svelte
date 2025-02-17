@@ -16,7 +16,6 @@
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
 
   let loading = $state(false);
-  let errormessage = $state("");
   let agentdata = $state({});
   let amqpqueuedata = $state({});
 
@@ -92,25 +91,22 @@
           toast.success("Workitemqueue added");
           goto(base + `/${key}`);
         } catch (error: any) {
-          errormessage = error.message;
           toast.error("Error", {
             description: error.message,
           });
           cancel();
           loading = false;
-        } finally {
         }
       } else {
-        errormessage = "Form is invalid";
+        loading = false;
+        toast.error("Error", {
+          description: "Form is invalid",
+        });
       }
     },
   });
   const { form: formData, enhance, message } = form;
 </script>
-
-{#if errormessage && errormessage != ""}
-  {errormessage}
-{/if}
 
 {#if message && $message != ""}
   {$message}

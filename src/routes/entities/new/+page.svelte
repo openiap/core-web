@@ -16,7 +16,6 @@
   let loading = $state(false);
   let type = $state("normal");
 
-  let errormessage = $state("");
   const form = superForm(defaults(zod(newFormSchema)), {
     dataType: "json",
     validators: zod(newFormSchema),
@@ -52,13 +51,11 @@
           toast.success("Entity created");
           goto(base + `/entities/${copyForm.collectionname}`);
         } catch (error: any) {
-          errormessage = error.message;
           toast.error("Error", {
             description: error.message,
           });
           cancel();
           loading = false;
-        } finally {
         }
       } else {
         toast.error("Error", {
@@ -73,10 +70,6 @@
 
 <!--  -->
 <div>
-  {#if errormessage && errormessage != ""}
-    {errormessage}
-  {/if}
-
   {#if message && $message != ""}
     {$message}
   {/if}

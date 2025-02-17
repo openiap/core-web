@@ -17,7 +17,6 @@
 
   const key = "role";
   let loading = $state(false);
-  let errormessage = $state("");
   let newid = $state("");
   let members: any = $state([]);
 
@@ -47,16 +46,17 @@
           toast.success("Role updated");
           goto(base + `/${key}`);
         } catch (error: any) {
-          errormessage = error.message;
           toast.error("Error", {
             description: error.message,
           });
           cancel();
           loading = false;
-        } finally {
         }
       } else {
-        errormessage = "Form is invalid";
+        loading = false;
+        toast.error("Error", {
+          description: "Form is invalid",
+        });
       }
     },
   });
@@ -82,10 +82,6 @@
     members.push({ _id: item._id, name: item.name });
   }
 </script>
-
-{#if errormessage && errormessage != ""}
-  {errormessage}
-{/if}
 
 {#if message && $message != ""}
   {$message}

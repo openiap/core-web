@@ -62,7 +62,7 @@
   const page = "agent";
   let loading = $state(false);
   let packageData: any = $state(null);
-  let errormessage = $state("");
+
   let showWarning = $state(false);
   let showWarningAgentDelete = $state(false);
   let deleteData: any = $state({});
@@ -237,16 +237,17 @@
           }
           goto(base + `/${page}`);
         } catch (error: any) {
-          errormessage = error.message;
           toast.error("Error", {
             description: error.message,
           });
           cancel();
-        } finally {
           loading = false;
         }
       } else {
-        errormessage = "Form is invalid";
+        loading = false;
+        toast.error("Error", {
+          description: "Form is invalid",
+        });
       }
     },
   });
@@ -797,12 +798,10 @@
                       }
                       lines = lines.join("<br>");
                       instancelog = lines;
-                      errormessage = "";
                     } catch (error: any) {
                       toast.error("Error while deleting", {
-                        description: error.message,
+                        description: error.message ? error.message : error,
                       });
-                      errormessage = error.message ? error.message : error;
                       instancelog = "";
                     }
                     loading = false;
@@ -1359,10 +1358,6 @@
       {/if}
     </Tabs.Content>
   </Tabs.Root>
-
-  {#if errormessage && errormessage != ""}
-    {errormessage}
-  {/if}
 
   {#if message && $message != ""}
     {$message}

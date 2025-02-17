@@ -14,9 +14,8 @@
   import { zod } from "sveltekit-superforms/adapters";
   import { newLicenseSchema } from "../schema.js";
 
-  const key = "license";
   let loading = $state(false);
-  let errormessage = $state("");
+
   const form = superForm(defaults(zod(newLicenseSchema)), {
     dataType: "json",
     validators: zod(newLicenseSchema),
@@ -35,17 +34,17 @@
           toast.success("License added");
           goto(base + `/licensekey/${license._id}`);
         } catch (error: any) {
-          errormessage = error.message;
           toast.error("Error", {
             description: error.message,
           });
           cancel();
           loading = false;
-        } finally {
         }
       } else {
         loading = false;
-        errormessage = "Form is invalid";
+        toast.error("Error", {
+          description: "Form is invalid",
+        });
       }
     },
   });
@@ -55,10 +54,6 @@
     $formData._billingid = "";
   }
 </script>
-
-{#if errormessage && errormessage != ""}
-  {errormessage}
-{/if}
 
 {#if message && $message != ""}
   {$message}
