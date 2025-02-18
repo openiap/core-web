@@ -17,6 +17,7 @@
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../schema.js";
+  import Objectinput from "$lib/objectinput/objectinput.svelte";
 
   const key = "user";
   let loading = $state(false);
@@ -233,42 +234,63 @@
   </Form.Field>
 
   {#if $formData.federationids}
-    {#each $formData.federationids as item, index}
-      <Form.Field {form} name="federationids">
-        <Form.Control>
-          {#snippet children({ props })}
-            {#if $formData.federationids}
-              <div class="flex items-center justify-start">
-                <CustomInput
-                  placeholder="Federation email"
-                  type="email"
-                  disabled={loading}
-                  {...props}
-                  bind:value={$formData.federationids[index]}
-                />
-                <HotkeyButton
-                  class="ml-2 dark:bg-darkbgred"
-                  aria-label="delete"
-                  size="base"
-                  disabled={loading}
-                  variant="icon"
-                  onclick={() => {
-                    let arr = $formData.federationids;
-                    if (arr) {
-                      arr.splice(index, 1);
-                    }
-                    $formData.federationids = arr;
-                  }}><Trash2 /></HotkeyButton
-                >
-              </div>
-            {/if}
-          {/snippet}
-        </Form.Control>
-        <Form.FieldErrors />
-      </Form.Field>
-    {/each}
+    <div class="mb-4">
+      {#each $formData.federationids as item, index}
+        <div class="flex items-center justify-start">
+          {index + 1}.
+          {item.id}
+          {item.issuer}
+          <HotkeyButton
+            class="ml-2 dark:bg-darkbgred"
+            aria-label="delete"
+            size="base"
+            disabled={loading}
+            variant="icon"
+            onclick={() => {
+              let arr = $formData.federationids;
+              if (arr) {
+                arr.splice(index, 1);
+              }
+              $formData.federationids = arr;
+            }}><Trash2 /></HotkeyButton
+          >
+        </div>
+        <!-- <Form.Field {form} name="federationids">
+          <Form.Control>
+            {#snippet children({ props })}
+              {#if $formData.federationids}
+                <div class="flex items-center justify-start">
+                  <Objectinput
+                    placeholder="Federation email"
+                    type="email"
+                    disabled={true}
+                    {...props}
+                    bind:value={$formData.federationids[index]}
+                  />
+                  <HotkeyButton
+                    class="ml-2 dark:bg-darkbgred"
+                    aria-label="delete"
+                    size="base"
+                    disabled={loading}
+                    variant="icon"
+                    onclick={() => {
+                      let arr = $formData.federationids;
+                      if (arr) {
+                        arr.splice(index, 1);
+                      }
+                      $formData.federationids = arr;
+                    }}><Trash2 /></HotkeyButton
+                  >
+                </div>
+              {/if}
+            {/snippet}
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field> -->
+      {/each}
+    </div>
   {/if}
-  <div>
+  <!-- <div>
     <HotkeyButton
       class="mb-7"
       aria-label="add federation id"
@@ -283,7 +305,7 @@
       <UserRoundPlus />
       Add federation id</HotkeyButton
     >
-  </div>
+  </div> -->
 
   <Form.Button
     disabled={loading}

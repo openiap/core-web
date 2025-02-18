@@ -216,7 +216,7 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  {#if $formData.federationids}
+  <!-- {#if $formData.federationids}
     {#each $formData.federationids as item, index}
       <Form.Field {form} name="federationids">
         <Form.Control>
@@ -266,7 +266,7 @@
       <UserRoundPlus />
       Add federation id</HotkeyButton
     >
-  </div>
+  </div> -->
 
   <Form.Button
     disabled={loading}
