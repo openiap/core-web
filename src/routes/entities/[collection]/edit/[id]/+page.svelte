@@ -78,7 +78,7 @@
 
   <Acl bind:value={$formData} />
 
-  <ObjectInput classname="min-h-[74vh]" bind:value={$formData} />
+  <ObjectInput height="min-h-[70vh]" bind:value={$formData} />
 </form>
 
 <CustomSuperDebug {formData} />

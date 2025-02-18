@@ -44,7 +44,7 @@
     }
   }
   function single_item_click(item: any) {
-    goto(base + `/entities/fs.files/${item._id}`);
+    goto(base + `/entities/fs.files/edit/${item._id}`);
   }
 
   function handleChange(e: any) {

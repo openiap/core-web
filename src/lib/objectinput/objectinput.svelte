@@ -4,6 +4,7 @@
         value = $bindable(),
         disabled = false,
         classname = "",
+        height = "min-h-52",
         ...restProps
     } = $props();
 
@@ -32,7 +33,11 @@
 </script>
 
 <Textarea
-    class={"w-full min-h-52 bg-bw200 dark:bg-bw850 border dark:border-bw600 rounded-[10px] " + classname}
+    class={"w-full bg-bw200 dark:bg-bw850 border dark:border-bw600 rounded-[10px] " +
+        " " +
+        height +
+        " " +
+        classname}
     {disabled}
     bind:value={intermediateJson}
     {...restProps}
