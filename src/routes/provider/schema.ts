@@ -8,11 +8,13 @@ export const newFormSchema = z.object({
     issuer: z.string().optional().default(""),
     provider: z.string().default("saml"),
     saml_federation_metadata: z.string().optional().default(""),
-    introspection: z.string().optional().default(""),
+    introspection_endpoint: z.string().optional().default(""),
+    introspection_client_id: z.string().optional().default(""),
+    introspection_client_secret: z.string().optional().default(""),
     consumerKey: z.string().optional().default(""),
     consumerSecret: z.string().optional().default(""),
     order: z.number().optional().default(0),
-
+    _type: z.string().optional().default("provider"),
 });
 export type NewFormSchema = typeof newFormSchema;
 

@@ -29,9 +29,27 @@
           form.data = removeEmptyKeys(form.data);
           // Removing extra keys
           switch (form.data.provider) {
+            case "":
+              // @ts-ignore
+              delete form.data.introspection_endpoint;
+              // @ts-ignore
+              delete form.data.introspection_client_id;
+              // @ts-ignore
+              delete form.data.introspection_client_secret;
+              // @ts-ignore
+              delete form.data.consumerKey;
+              // @ts-ignore
+              delete form.data.consumerSecret;
+              // @ts-ignore
+              delete form.data.saml_federation_metadata;
+              break;
             case "saml":
               // @ts-ignore
-              delete form.data.introspection;
+              delete form.data.introspection_endpoint;
+              // @ts-ignore
+              delete form.data.introspection_client_id;
+              // @ts-ignore
+              delete form.data.introspection_client_secret;
               // @ts-ignore
               delete form.data.consumerKey;
               // @ts-ignore
@@ -43,7 +61,11 @@
               break;
             case "google":
               // @ts-ignore
-              delete form.data.introspection;
+              delete form.data.introspection_endpoint;
+              // @ts-ignore
+              delete form.data.introspection_client_id;
+              // @ts-ignore
+              delete form.data.introspection_client_secret;
               // @ts-ignore
               delete form.data.saml_federation_metadata;
               // @ts-ignore
@@ -51,7 +73,11 @@
               break;
             case "local":
               // @ts-ignore
-              delete form.data.introspection;
+              delete form.data.introspection_endpoint;
+              // @ts-ignore
+              delete form.data.introspection_client_id;
+              // @ts-ignore
+              delete form.data.introspection_client_secret;
               // @ts-ignore
               delete form.data.consumerKey;
               // @ts-ignore
@@ -64,7 +90,7 @@
               delete form.data.id;
               break;
           }
-          // console.log("final formdata", form.data);
+          console.log("final formdata", form.data);
           const res = await auth.client.InsertOne({
             collectionname: "config",
             item: form.data,
@@ -185,7 +211,7 @@
     {/if}
 
     {#if $formData.provider === "oidc"}
-      <Form.Field {form} name="introspection" class="mb-7">
+      <Form.Field {form} name="introspection_endpoint" class="mb-7">
         <Form.Control>
           {#snippet children({ props })}
             <Form.Label>Introspection</Form.Label>
@@ -193,12 +219,42 @@
               disabled={loading}
               placeholder="Type introspection"
               {...props}
-              bind:value={$formData.introspection}
+              bind:value={$formData.introspection_endpoint}
             />
           {/snippet}
         </Form.Control>
         <Form.FieldErrors />
       </Form.Field>
+      {#if $formData.introspection_endpoint}
+        <Form.Field {form} name="introspection_client_id" class="mb-7">
+          <Form.Control>
+            {#snippet children({ props })}
+              <Form.Label>Introspection client id</Form.Label>
+              <CustomInput
+                disabled={loading}
+                placeholder="Type introspection client id"
+                {...props}
+                bind:value={$formData.introspection_client_id}
+              />
+            {/snippet}
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
+        <Form.Field {form} name="introspection_client_secret" class="mb-7">
+          <Form.Control>
+            {#snippet children({ props })}
+              <Form.Label>Introspection client secret</Form.Label>
+              <CustomInput
+                disabled={loading}
+                placeholder="Type introspection client secret"
+                {...props}
+                bind:value={$formData.introspection_client_secret}
+              />
+            {/snippet}
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
+      {/if}
     {/if}
 
     {#if $formData.provider === "google" || $formData.provider === "oidc"}
