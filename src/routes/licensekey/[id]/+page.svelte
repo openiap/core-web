@@ -46,6 +46,7 @@
     {
       stripeprice: "",
       name: "Free tier",
+      valueadd: false
     },
   ]);
   if (data.resource != null) {
@@ -53,7 +54,7 @@
       (x: any) => x.deprecated != true,
     );
     products = [
-      { stripeprice: "", name: "Free tier" },
+      { stripeprice: "", name: "Free tier",valueadd: false },
       ...data.resource.products,
     ];
   }
