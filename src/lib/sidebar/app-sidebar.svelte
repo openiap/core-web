@@ -71,6 +71,7 @@
 		}
 	}
 	const home = new SidebarItem("Home", "g h", "tourhome", `${base}/`, false);
+	const licensekey = new SidebarItem("Licenses", "g l", "tourlicenses", `${base}/licensekey`, true);
 	const agent = new SidebarItem(
 		"Agents",
 		"g a",
@@ -286,6 +287,7 @@
 		formresources,
 		hdrobots,
 		mailhistory,
+		licensekey
 	]);
 </script>
 

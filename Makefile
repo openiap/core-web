@@ -1,4 +1,4 @@
-VERSION = 0.0.41.2
+VERSION = 0.0.41.3
 HASH = $(shell git rev-parse --short HEAD)
 bump:
 	@echo "Bumping version to $(VERSION) recursively..."
@@ -21,5 +21,6 @@ publish:
 	@sed -i 's/version=.*/version=$(VERSION)/' .env
 	@sed -i 's/hash=.*/hash=$(HASH)/' .env
 	@sed -i 's/base: "\/ui"/base: ""/' svelte.config.js
-	@docker buildx build -t cloudhack/core-web:$(HASH) -t cloudhack/core-web:$(VERSION) -t cloudhack/core-web:latest --platform linux/amd64,linux/arm64,linux/arm/v7 --push .
+	# @docker buildx build -t cloudhack/core-web:$(HASH) -t cloudhack/core-web:$(VERSION) -t cloudhack/core-web:latest --platform linux/amd64,linux/arm64,linux/arm/v7 --push .
+	@docker buildx build -t cloudhack/core-web:$(HASH) -t cloudhack/core-web:$(VERSION) -t cloudhack/core-web:latest --platform linux/amd64 --push .
 	@sed -i 's/base: ""/base: "\/ui"/' svelte.config.js
