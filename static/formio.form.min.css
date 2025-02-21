@@ -2347,3 +2347,13 @@ span[role=link] {
     margin-top: 10px;
     margin-bottom: 10px;
 }
+
+.lightColor {
+    background-color: #FDFDFD !important;
+    color: #27292E !important;
+}
+
+.darkColor {
+    background-color: #27292E !important;
+    color: #EEEFF1 !important;
+}

@@ -63,25 +63,6 @@
         } else {
             console.warn("No elements in ref: ", refList2);
         }
-        // const refList6 = "[ref='datagrid-dataGrid-removeRow']";
-        // const sidebarRef6 = ref.querySelectorAll(refList6);
-        // if (sidebarRef6.length) {
-        //     if ($mode === "dark") {
-        //         sidebarRef6.forEach((el: any) => {
-        //             el.classList.add("lightDeleteButton");
-        //             el.classList.remove("lightThemeButton");
-        //         });
-        //     } else if ($mode === "light") {
-        //         sidebarRef6.forEach((el: any) => {
-        //             el.classList.add("lightDeleteButton");
-        //             el.classList.remove("darkThemeButton");
-        //         });
-        //     } else {
-        //         console.log("Uknown mode: ", $mode);
-        //     }
-        // } else {
-        //     console.warn("No elements in ref: ", refList6);
-        // }
 
         const refList3 = "[ref='sidebar-anchor']";
         const sidebarRef3 = ref.querySelectorAll(refList3);
@@ -135,6 +116,27 @@
             }
         } else {
             console.warn("No elements in ref: ", refList5);
+        }
+
+        const refList6 =
+            "[ref='copyComponent'], [ref='moveComponent'], [ref='editJson']";
+        const sidebarRef6 = ref.querySelectorAll(refList6);
+        if (sidebarRef6.length) {
+            if ($mode === "dark") {
+                sidebarRef6.forEach((el: any) => {
+                    el.classList.add("darkColor");
+                    el.classList.remove("lightColor");
+                });
+            } else if ($mode === "light") {
+                sidebarRef6.forEach((el: any) => {
+                    el.classList.add("lightColor");
+                    el.classList.remove("darkColor");
+                });
+            } else {
+                console.log("Uknown mode: ", $mode);
+            }
+        } else {
+            console.warn("No elements in ref: ", refList6);
         }
     }
     async function createfrom() {
@@ -195,7 +197,7 @@
                 createfrom();
                 firstrun = false;
             }
-            updateStyle();
+            // updateStyle();
         });
         onDestroy(() => {
             try {
@@ -240,6 +242,7 @@
     <link rel="stylesheet" href="{base}/formio.form.min.css" />
     <link rel="stylesheet" href="{base}/formio.builder.min.css" />
 </svelte:head>
+
 <div>
     {message}
 </div>
