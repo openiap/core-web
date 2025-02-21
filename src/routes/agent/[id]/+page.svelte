@@ -474,7 +474,7 @@
         arr.splice(index, 1);
       }
       $formData.schedules = arr;
-      toast.success("Deleted successfully", {
+      toast.success("Killed successfully", {
         description: "",
       });
     } catch (error: any) {
@@ -502,7 +502,7 @@
       });
     }
   }
-
+  let firstListProcess = true;
   async function init() {
     try {
       queuename = await auth.client.RegisterQueue(
@@ -512,11 +512,44 @@
         },
         (msg, payload, user, jwt) => {
           switch (payload.command) {
+            case "runpackage":
+              if (payload.completed != true) {
+                break;
+              }
+            case "completed":
+              const element = document.getElementById(
+                "process" + msg.correlationId,
+              );
+              console.log(element);
+              if (element == null) {
+                break;
+              }
+              // removing kill button
+              element.remove();
+              break;
+
             case "listprocesses":
               processes = payload.processes;
+              console.log(processes);
               processes.forEach((element) => {
-                element.output = "";
+                if (firstListProcess) {
+                  auth.client.QueueMessage(
+                    {
+                      data: {
+                        command: "setstreamid",
+                        streamid: element.id,
+                        streamqueue: queuename,
+                      },
+                      replyto: queuename,
+                      queuename: agent.slug + "agent",
+                      jwt: auth.access_token,
+                    },
+                    false,
+                  );
+                }
+                // element.output = "";
               });
+              firstListProcess = false;
 
               break;
             case "stream":
@@ -526,7 +559,9 @@
               const _string = decoder.decode(
                 new Uint8Array(payload.data.data as any),
               );
-              process.output = _string + process.output;
+              const reversedString = _string.split("\n").reverse().join("\n");
+              process.output = reversedString + process.output;
+
               break;
             default:
               break;
@@ -1323,13 +1358,13 @@
       </div>
 
       <div></div>
-      <HotkeyButton onclick={init}>Init</HotkeyButton>
+      <!-- <HotkeyButton onclick={init}>Init</HotkeyButton>
       <HotkeyButton onclick={pokeagent}>refresh</HotkeyButton>
-      <HotkeyButton onclick={listprocesses}>List processes</HotkeyButton>
+      <HotkeyButton onclick={listprocesses}>List processes</HotkeyButton> -->
 
       {#if processes.length > 0}
         <ul>
-          <Accordion.Root type="single" class="w-full sm:max-w-[70%]">
+          <Accordion.Root type="multiple" class="w-full sm:max-w-[70%]">
             {#each processes as process}
               <Accordion.Item value={process.id}>
                 <Accordion.Trigger
@@ -1339,6 +1374,8 @@
                 </Accordion.Trigger>
                 <Accordion.Content>
                   <HotkeyButton
+                    id={"process" + process.id}
+                    disabled={loading}
                     onclick={() => {
                       deleteData = process;
                       showWarning = true;
