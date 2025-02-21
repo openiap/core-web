@@ -11,14 +11,14 @@
   import { auth } from "$lib/stores/auth.svelte";
   import { WarningDialogue } from "$lib/warningdialogue/index.js";
   import {
-      Folder,
-      History,
-      Layers2,
-      Pencil,
-      Plus,
-      RefreshCcw,
-      RotateCcw,
-      Trash2,
+    Folder,
+    History,
+    Layers2,
+    Pencil,
+    Plus,
+    RefreshCcw,
+    RotateCcw,
+    Trash2,
   } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
@@ -132,58 +132,64 @@
 <div class="flex items-start justify-between h-full">
   <div
     id="div1"
-    class="w-full max-w-max flex-shrink-0 hidden sm:block p-2.5 rounded-[10px] bg-bw100 dark:bg-bw900 h-full overflow-hidden pb-10"
+    class="h-full max-w-max flex-shrink-0 p-2.5 rounded-[10px] bg-bw100 dark:bg-bw900 pb-10"
   >
-    <HotkeyButton
-      class="mb-2 w-full"
-      size="sm"
-      data-shortcut="n,ins"
-      disabled={loading}
-      onclick={() => goto(base + `/entities/new`)}
-    >
-      <Plus />
-      Add collection</HotkeyButton
-    >
-    <ScrollArea class="max-h-full w-[266px] overflow-auto">
-      <div class="pt-0 p-4">
-        {#each collections as collection, index}
-          {#if index != 0}
-            <Separator class="my-2" />
-          {/if}
-          <HotkeyButton
-            class="w-full justify-start"
-            size="entity"
-            variant={collectionvariant(collection.name)}
-            onclick={(e) => {
-              selectcollection(collection.name);
-            }}
-          >
-            <Folder class="size-4" />
-            {collection.name}</HotkeyButton
-          >
-        {/each}
-      </div>
-    </ScrollArea>
+    <div class="flex justify-center w-full px-4">
+      <HotkeyButton
+        class="mb-2 rounded-md w-full"
+        size="sm"
+        data-shortcut="n,ins"
+        disabled={loading}
+        onclick={() => goto(base + `/entities/new`)}
+      >
+        <Plus />
+        Add collection</HotkeyButton
+      >
+    </div>
+    <div class="h-full overflow-auto">
+      <ScrollArea class="max-h-full w-[266px] overflow-auto">
+        <div class="pt-0 p-4">
+          {#each collections as collection, index}
+            {#if index != 0}
+              <Separator class="my-2" />
+            {/if}
+            <HotkeyButton
+              class="w-full justify-start"
+              size="entity"
+              variant={collectionvariant(collection.name)}
+              onclick={(e) => {
+                selectcollection(collection.name);
+              }}
+            >
+              <Folder class="size-4" />
+              {collection.name}</HotkeyButton
+            >
+          {/each}
+        </div>
+      </ScrollArea>
+    </div>
   </div>
-  <div id="div2" class="ms-6 flex-1 h-full">
-    <div class="grid grid-cols-2 gap-2 xl:flex xl:gap-4 justify-between mb-4">
+  <div id="div2" class="ms-2 xl:ms-6 page bg-red-500">
+    <div
+      class="grid grid-cols-2 lg:grid-cols-2 gap-2 xl:grid xl:grid-cols-5 xl:gap-4 justify-between mb-4"
+    >
       <Searchinput bind:searchstring class="col-span-2" />
-      <HotkeyButton
-        size="sm"
-        disabled={loading}
-        onclick={() => goto(base + `/entities/${collectionname}/deleted`)}
-      >
-        <RotateCcw />
-        Deleted items</HotkeyButton
-      >
-      <HotkeyButton
-        size="sm"
-        disabled={loading}
-        onclick={() => goto(base + `/entities/${collectionname}/duplicates`)}
-      >
-        <Layers2 />
-        Show Duplicates</HotkeyButton
-      >
+      <!-- <HotkeyButton
+      size="sm"
+      disabled={loading}
+      onclick={() => goto(base + `/entities/${collectionname}/deleted`)}
+    >
+      <RotateCcw />
+      Deleted items</HotkeyButton
+    >
+    <HotkeyButton
+      size="sm"
+      disabled={loading}
+      onclick={() => goto(base + `/entities/${collectionname}/duplicates`)}
+    >
+      <Layers2 />
+      Show Duplicates</HotkeyButton
+    > -->
       <HotkeyButton size="sm" disabled={loading} onclick={getCollections}>
         <RefreshCcw />
         Refresh</HotkeyButton
@@ -281,3 +287,13 @@
   type="delete"
   onaccept={handleEntityDelete}
 ></WarningDialogue>
+
+<style>
+  .page {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    /* This ensures it fills the entire window height */
+  }
+</style>
