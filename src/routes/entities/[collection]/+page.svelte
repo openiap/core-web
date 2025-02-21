@@ -169,7 +169,7 @@
       </ScrollArea>
     </div>
   </div>
-  <div id="div2" class="ms-2 xl:ms-6 page bg-red-500">
+  <div id="div2" class="ms-2 xl:ms-6 page">
     <div
       class="grid grid-cols-2 lg:grid-cols-2 gap-2 xl:grid xl:grid-cols-5 xl:gap-4 justify-between mb-4"
     >
