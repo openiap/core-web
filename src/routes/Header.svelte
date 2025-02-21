@@ -20,12 +20,12 @@
 	import Sun from "lucide-svelte/icons/sun";
 	import { toggleMode } from "mode-watcher";
 	import { capitalizeFirstLetter } from "../helper";
+	import { onDestroy } from "svelte";
 
 	let sidebar = Sidebar.useSidebar();
 	let pagename = $derived(() =>
 		$page.url.pathname.replace(base, "").replace("/", ""),
 	);
-	let isMobile = $state(false);
 
 	function login() {
 		window.localStorage.setItem("redirect", window.location.pathname);
@@ -35,19 +35,6 @@
 		usersettings.reset();
 		goto(base + `/`);
 	}
-	function checkMobile() {
-		const currentState =
-			typeof navigator !== "undefined" &&
-			/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-		if (currentState) {
-			isMobile = true;
-			sidemenu.status = false;
-		} else {
-			isMobile = false;
-			sidemenu.status = true;
-		}
-	}
-	checkMobile();
 </script>
 
 <header
@@ -59,16 +46,19 @@
 			variant="ghost"
 			size="icon"
 			onclick={() => {
-				if (isMobile) {
+				if (sidebar.isMobile) {
 					sidebar.toggle();
 				} else {
+					sidebar.toggle();
 					sidemenu.status = !sidemenu.status;
 				}
 			}}
 			class="me-2 text-bw500"
 			title={sidemenu.status ? "Close sidebar" : "Open sidebar"}
 		>
-			{#if sidemenu.status}
+			{#if sidebar.isMobile}
+				<ArrowRightToLine class="block dark:text-bw500" />
+			{:else if sidemenu.status}
 				<ArrowLeftToLine class="block dark:text-bw500" />
 			{:else}
 				<ArrowRightToLine class="block dark:text-bw500" />
