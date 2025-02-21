@@ -7,6 +7,7 @@
     import { auth } from "$lib/stores/auth.svelte.js";
     import { Formio } from "formiojs";
     import { Check } from "lucide-svelte";
+    import { mode } from "mode-watcher";
     import { onDestroy } from "svelte";
     import { toast } from "svelte-sonner";
 
@@ -17,6 +18,125 @@
     let message = $state("");
     let loading = $state(false);
 
+    function updateStyle() {
+        const refList1 =
+            "input, select, textarea, div.card, div.dropdown, li.list-group-item, li.list-group-header, div.choices__inner, div.input-group-text, input.form-control, list-group-item";
+        const sidebarRef1 = ref.querySelectorAll(refList1);
+        if (sidebarRef1.length) {
+            if ($mode === "dark") {
+                console.log("dark mode: ", $mode);
+                sidebarRef1.forEach((el: any) => {
+                    el.classList.add("darkTheme");
+                    el.classList.remove("lightTheme");
+                    el.classList.remove("bg-light");
+                });
+            } else if ($mode === "light") {
+                console.log("light mode: ", $mode);
+                sidebarRef1.forEach((el: any) => {
+                    el.classList.add("lightTheme");
+                    el.classList.remove("darkTheme");
+                });
+            } else {
+                console.log("Uknown mode: ", $mode);
+            }
+        } else {
+            console.warn("No elements in ref: ", refList1);
+        }
+
+        const refList2 =
+            "[ref='button'], [ref='datagrid-dataMap-addRow'], [ref='editgrid-editGrid-addRow']";
+        const sidebarRef2 = ref.querySelectorAll(refList2);
+        if (sidebarRef2.length) {
+            if ($mode === "dark") {
+                sidebarRef2.forEach((el: any) => {
+                    el.classList.add("darkThemeButton");
+                    el.classList.remove("lightThemeButton");
+                });
+            } else if ($mode === "light") {
+                sidebarRef2.forEach((el: any) => {
+                    el.classList.add("lightThemeButton");
+                    el.classList.remove("darkThemeButton");
+                });
+            } else {
+                console.log("Uknown mode: ", $mode);
+            }
+        } else {
+            console.warn("No elements in ref: ", refList2);
+        }
+        // const refList6 = "[ref='datagrid-dataGrid-removeRow']";
+        // const sidebarRef6 = ref.querySelectorAll(refList6);
+        // if (sidebarRef6.length) {
+        //     if ($mode === "dark") {
+        //         sidebarRef6.forEach((el: any) => {
+        //             el.classList.add("lightDeleteButton");
+        //             el.classList.remove("lightThemeButton");
+        //         });
+        //     } else if ($mode === "light") {
+        //         sidebarRef6.forEach((el: any) => {
+        //             el.classList.add("lightDeleteButton");
+        //             el.classList.remove("darkThemeButton");
+        //         });
+        //     } else {
+        //         console.log("Uknown mode: ", $mode);
+        //     }
+        // } else {
+        //     console.warn("No elements in ref: ", refList6);
+        // }
+
+        const refList3 = "[ref='sidebar-anchor']";
+        const sidebarRef3 = ref.querySelectorAll(refList3);
+        if (sidebarRef3.length) {
+            if ($mode === "dark") {
+                sidebarRef3.forEach((el: any) => {
+                    el.classList.add("darkThemeSidebarButton");
+                    el.classList.remove("lightThemeSidebarButton");
+                });
+            } else if ($mode === "light") {
+                sidebarRef3.forEach((el: any) => {
+                    el.classList.add("lightThemeSidebarButton");
+                    el.classList.remove("darkThemeSidebarButton");
+                });
+            } else {
+                console.log("Uknown mode: ", $mode);
+            }
+        } else {
+            console.warn("No elements in ref: ", refList3);
+        }
+
+        const refList4 = "div.form-builder-panel";
+        const sidebarRef4 = ref.querySelectorAll(refList4);
+        if (sidebarRef4.length) {
+            sidebarRef4.forEach((el: any) => {
+                el.classList.add("themeMargin");
+            });
+        } else {
+            console.warn("No elements in ref: ", refList4);
+        }
+
+        const refList5 = "table";
+        const sidebarRef5 = ref.querySelectorAll(refList5);
+        console.log("sidebarRef5: ", sidebarRef5);
+        if (sidebarRef5.length) {
+            if ($mode === "dark") {
+                console.log("dark mode: ", $mode);
+                sidebarRef5.forEach((el: any) => {
+                    el.classList.add("darkTheme");
+                    el.classList.remove("lightTheme");
+                    el.classList.remove("bg-light");
+                });
+            } else if ($mode === "light") {
+                console.log("light mode: ", $mode);
+                sidebarRef5.forEach((el: any) => {
+                    el.classList.add("lightTheme");
+                    el.classList.remove("darkTheme");
+                });
+            } else {
+                console.log("Uknown mode: ", $mode);
+            }
+        } else {
+            console.warn("No elements in ref: ", refList5);
+        }
+    }
     async function createfrom() {
         loading = true;
         try {
@@ -47,6 +167,17 @@
                     },
                 },
             });
+            updateStyle();
+            builder.on("updateComponent", (component: any) => {
+                console.log("updateComponent", component);
+                updateStyle();
+            });
+            // builder.on("addComponent", (component: any) => {
+            //     console.log("addComponent", component);
+            // });
+            // builder.on("editComponent", (component: any) => {
+            //     console.log("editComponent", component);
+            // });
         } catch (e) {
             console.log(e);
         }
@@ -64,6 +195,7 @@
                 createfrom();
                 firstrun = false;
             }
+            updateStyle();
         });
         onDestroy(() => {
             try {
@@ -87,7 +219,7 @@
                 item: { ...data.item, _type: "form" },
                 jwt: auth.access_token,
             });
-            toast.success("Form created");
+            toast.success("Form updated");
             goto(base + `/form`);
         } catch (error: any) {
             message = error.message;
@@ -134,5 +266,8 @@
             Update form</HotkeyButton
         >
     </div>
-    <div class="bootstrap-scope formio-dialog-content" bind:this={ref}></div>
+    <div
+        class="bootstrap-scope formio-dialog-content dark:bg-bw1000"
+        bind:this={ref}
+    ></div>
 </div>
