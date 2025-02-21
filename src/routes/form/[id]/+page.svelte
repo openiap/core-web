@@ -17,6 +17,7 @@
     let ref = $state(null) as any;
     let message = $state("");
     let loading = $state(false);
+    let _mode = $state.snapshot($mode);
 
     function updateStyle() {
         const refList1 =
@@ -24,20 +25,20 @@
         const sidebarRef1 = ref.querySelectorAll(refList1);
         if (sidebarRef1.length) {
             if ($mode === "dark") {
-                console.log("dark mode: ", $mode);
+                //console.log("dark mode: ", $mode);
                 sidebarRef1.forEach((el: any) => {
                     el.classList.add("darkTheme");
                     el.classList.remove("lightTheme");
                     el.classList.remove("bg-light");
                 });
             } else if ($mode === "light") {
-                console.log("light mode: ", $mode);
+                //console.log("light mode: ", $mode);
                 sidebarRef1.forEach((el: any) => {
                     el.classList.add("lightTheme");
                     el.classList.remove("darkTheme");
                 });
             } else {
-                console.log("Uknown mode: ", $mode);
+                //console.log("Uknown mode: ", $mode);
             }
         } else {
             console.warn("No elements in ref: ", refList1);
@@ -58,7 +59,7 @@
                     el.classList.remove("darkThemeButton");
                 });
             } else {
-                console.log("Uknown mode: ", $mode);
+                //console.log("Uknown mode: ", $mode);
             }
         } else {
             console.warn("No elements in ref: ", refList2);
@@ -78,7 +79,7 @@
                     el.classList.remove("darkThemeSidebarButton");
                 });
             } else {
-                console.log("Uknown mode: ", $mode);
+                //console.log("Uknown mode: ", $mode);
             }
         } else {
             console.warn("No elements in ref: ", refList3);
@@ -96,23 +97,23 @@
 
         const refList5 = "table";
         const sidebarRef5 = ref.querySelectorAll(refList5);
-        console.log("sidebarRef5: ", sidebarRef5);
+        //console.log("sidebarRef5: ", sidebarRef5);
         if (sidebarRef5.length) {
             if ($mode === "dark") {
-                console.log("dark mode: ", $mode);
+                //console.log("dark mode: ", $mode);
                 sidebarRef5.forEach((el: any) => {
                     el.classList.add("darkTheme");
                     el.classList.remove("lightTheme");
                     el.classList.remove("bg-light");
                 });
             } else if ($mode === "light") {
-                console.log("light mode: ", $mode);
+                //console.log("light mode: ", $mode);
                 sidebarRef5.forEach((el: any) => {
                     el.classList.add("lightTheme");
                     el.classList.remove("darkTheme");
                 });
             } else {
-                console.log("Uknown mode: ", $mode);
+                //console.log("Uknown mode: ", $mode);
             }
         } else {
             console.warn("No elements in ref: ", refList5);
@@ -133,7 +134,7 @@
                     el.classList.remove("darkColor");
                 });
             } else {
-                console.log("Uknown mode: ", $mode);
+                //console.log("Uknown mode: ", $mode);
             }
         } else {
             console.warn("No elements in ref: ", refList6);
@@ -144,14 +145,14 @@
         try {
             // @ts-ignore
             if (Formio == null || typeof Formio.builder !== "function") {
-                console.log("Formio not loaded, try again in 200ms");
+                //console.log("Formio not loaded, try again in 200ms");
                 setTimeout(async () => {
                     createfrom();
                 }, 200);
                 return;
             }
         } catch (error) {
-            console.log("Formio not loaded, try again in 200ms");
+            //console.log("Formio not loaded, try again in 200ms");
             setTimeout(async () => {
                 createfrom();
             }, 200);
@@ -171,33 +172,36 @@
             });
             updateStyle();
             builder.on("updateComponent", (component: any) => {
-                console.log("updateComponent", component);
+                //console.log("updateComponent", component);
                 updateStyle();
             });
             // builder.on("addComponent", (component: any) => {
-            //     console.log("addComponent", component);
+            //     //console.log("addComponent", component);
             // });
             // builder.on("editComponent", (component: any) => {
-            //     console.log("editComponent", component);
+            //     //console.log("editComponent", component);
             // });
         } catch (e) {
-            console.log(e);
+            //console.log(e);
         }
         loading = false;
     }
     let firstrun = $state(true);
     if (browser) {
         $effect(() => {
+            if (_mode != $mode) {
+                _mode = $mode;
+                updateStyle();
+            }
             if (
                 ref != null &&
                 data.item.schema.components.length > 0 &&
                 firstrun == true
             ) {
-                console.log("calling createfrom()");
+                //console.log("calling createfrom()");
                 createfrom();
                 firstrun = false;
             }
-            // updateStyle();
         });
         onDestroy(() => {
             try {

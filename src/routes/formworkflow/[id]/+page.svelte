@@ -17,6 +17,8 @@
     let message = $state("");
     let submitbutton = $state("");
     let queuename = "";
+    let _mode = $state.snapshot($mode);
+
     async function init() {
         if (!browser) return;
         queuename = await auth.client.RegisterQueue(
@@ -448,10 +450,13 @@
     }
     if (browser) {
         $effect(() => {
+            if (_mode != $mode) {
+                _mode = $mode;
+                updateStyle();
+            }
             if (ref != null && firstrun == true) {
                 createfrom();
                 // firstrun = false;
-                updateStyle();
             }
         });
         createfrom();

@@ -15,6 +15,8 @@
   let ref = $state(null) as any;
   let loading = $state(false);
   let message = $state("");
+  let _mode = $state.snapshot($mode);
+
   let data = $state({
     _type: "form",
     name: "",
@@ -220,25 +222,25 @@
     }
 
     const refList6 =
-            "[ref='copyComponent'], [ref='moveComponent'], [ref='editJson']";
-        const sidebarRef6 = ref.querySelectorAll(refList6);
-        if (sidebarRef6.length) {
-            if ($mode === "dark") {
-                sidebarRef6.forEach((el: any) => {
-                    el.classList.add("darkColor");
-                    el.classList.remove("lightColor");
-                });
-            } else if ($mode === "light") {
-                sidebarRef6.forEach((el: any) => {
-                    el.classList.add("lightColor");
-                    el.classList.remove("darkColor");
-                });
-            } else {
-                console.log("Uknown mode: ", $mode);
-            }
-        } else {
-            console.warn("No elements in ref: ", refList6);
-        }
+      "[ref='copyComponent'], [ref='moveComponent'], [ref='editJson']";
+    const sidebarRef6 = ref.querySelectorAll(refList6);
+    if (sidebarRef6.length) {
+      if ($mode === "dark") {
+        sidebarRef6.forEach((el: any) => {
+          el.classList.add("darkColor");
+          el.classList.remove("lightColor");
+        });
+      } else if ($mode === "light") {
+        sidebarRef6.forEach((el: any) => {
+          el.classList.add("lightColor");
+          el.classList.remove("darkColor");
+        });
+      } else {
+        console.log("Uknown mode: ", $mode);
+      }
+    } else {
+      console.warn("No elements in ref: ", refList6);
+    }
   }
   async function saveform() {
     message = "";
@@ -268,6 +270,10 @@
 
   if (browser) {
     $effect(() => {
+      if (_mode != $mode) {
+        _mode = $mode;
+        updateStyle();
+      }
       if (ref != null && firstrun == true) {
         console.log("calling createfrom()");
         createfrom();

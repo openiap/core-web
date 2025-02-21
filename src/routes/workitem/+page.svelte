@@ -66,8 +66,8 @@
     }
   }
   async function filterData() {
-    sveltepage.url.pathname = base + `/${page}/${queue}`;
-    replaceState(sveltepage.url, sveltepage.state);
+    // sveltepage.url.pathname = base + `/${page}/${queue}`;
+    // replaceState(sveltepage.url, sveltepage.state);
 
     query = { ...query, wiqid: queue };
     if (queue) {
@@ -89,25 +89,10 @@
       collectionname="mq"
       bind:value={queue}
       basefilter={{ _type: "workitemqueue" }}
-      handleChangeFunction={filterData}
+      handleChangeFunction={() => goto(base + `/workitem/${queue}`)}
       name="Queue"
     />
   </div>
-  <HotkeyButton
-    class="border-dashed"
-    size="sm"
-    variant="base"
-    aria-label="Filter"
-    disabled={!queue || loading}
-    onclick={() => {
-      searchstring = "";
-      queue = "";
-      ref.reload();
-    }}
-  >
-    <X />
-    Clear</HotkeyButton
-  >
   <HotkeyButton
     class="xl:col-start-10"
     size="sm"
@@ -133,6 +118,16 @@
   bind:this={ref}
   bind:loading
 >
+  {#snippet wiq(item: any)}
+    <HotkeyButton
+      class="hover:underline"
+      variant="ghostfull"
+      onclick={() => goto(base + `/workitem/${item.wiqid}`)}
+    >
+      {item.wiq}
+    </HotkeyButton>
+  {/snippet}
+
   {#snippet state(item: any)}
     {#if item != null && item.state != null && item.state != ""}
       <StatusCard bind:title={item.state as string} />

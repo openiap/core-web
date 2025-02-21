@@ -110,11 +110,7 @@
     variant="base"
     disabled={loading}
     aria-label="Filter"
-    onclick={() => {
-      searchstring = "";
-      entities = data.entities;
-      queue = "";
-    }}
+    onclick={() => goto(base + `/workitem`)}
   >
     <X />
     Clear</HotkeyButton
