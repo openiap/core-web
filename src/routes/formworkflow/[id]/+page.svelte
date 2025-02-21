@@ -474,8 +474,7 @@
         class="bootstrap-scope formio-dialog-content p-2"
         bind:this={ref}
     ></div>
-    <Hotkeybutton onclick={updateStyle}>Toggle theme</Hotkeybutton>
 </div>
 
-<!-- <CustomSuperDebug formData={data.item} /> -->
+<CustomSuperDebug formData={data.item} />
 <CustomSuperDebug formData={data.form} />

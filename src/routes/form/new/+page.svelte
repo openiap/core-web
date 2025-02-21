@@ -316,7 +316,6 @@
       <Check />
       Create form</HotkeyButton
     >
-    <HotkeyButton onclick={updateStyle}>Toggle theme</HotkeyButton>
   </div>
   <div
     class="bootstrap-scope formio-dialog-content dark:bg-bw1000"
