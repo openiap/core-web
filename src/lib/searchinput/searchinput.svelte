@@ -29,7 +29,7 @@
 	});
 </script>
 
-<div class={"flex w-full flex-col gap-1.5" + " " + _class}>
+<div class={"flex flex-col gap-1.5" + " " + _class}>
 	<div class="relative">
 		<label for="searchstring" class="sr-only">Search</label>
 		<HotkeyInput
@@ -38,7 +38,7 @@
 			bind:value={_searchstring}
 			data-shortcut={"ctrl+f,meta+f"}
 			type="text"
-			class="shadow-light dark:shadow-dark bg-bw50 w-full h-7 pl-8 py-2 rounded-[10px] border dark:border-bw600 dark:placeholder-bw500 dark:text-bw500 dark:bg-bw850 focus:outline-none"
+			class="shadow-light dark:shadow-dark bg-bw50 h-7 pl-8 py-2 rounded-[10px] border dark:border-bw600 dark:placeholder-bw500 dark:text-bw500 dark:bg-bw850 focus:outline-none"
 		/>
 		<div></div>
 		<Search

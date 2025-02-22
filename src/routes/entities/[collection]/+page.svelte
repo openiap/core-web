@@ -5,6 +5,7 @@
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
   import { Separator } from "$lib/components/ui/separator/index.js";
+  import { CustomSelect } from "$lib/customselect/index.js";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
   import Searchinput from "$lib/searchinput/searchinput.svelte";
@@ -129,10 +130,10 @@
   const isAdmin = profileroles.includes("admins");
 </script>
 
-<div class="flex items-start justify-between h-full">
+<div class="flex items-start justify-between h-full mb-4">
   <div
     id="div1"
-    class="h-full max-w-max flex-shrink-0 p-2.5 rounded-[10px] bg-bw100 dark:bg-bw900 pb-10"
+    class="h-full max-w-max flex-shrink-0 p-2.5 rounded-[10px] bg-bw100 dark:bg-bw900 pb-10 hidden xl:block"
   >
     <div class="flex justify-center w-full px-4">
       <HotkeyButton
@@ -169,11 +170,32 @@
       </ScrollArea>
     </div>
   </div>
-  <div id="div2" class="ms-2 xl:ms-6 page">
+  <div id="div2" class="xl:ms-2 xl:ms-6 page">
     <div
-      class="grid grid-cols-2 lg:grid-cols-2 gap-2 xl:grid xl:grid-cols-5 xl:gap-4 justify-between mb-4"
+      class="flex flex-col xl:flex-row xl:items-center xl:justify-between xl:space-x-4 xl:mb-2"
     >
-      <Searchinput bind:searchstring class="col-span-2" />
+      <div
+        class="grid grid-cols-1 md:grid-cols-2 xl:flex xl:items-center gap-2 xl:gap-0 xl:space-x-4 mb-2"
+      >
+        <!-- <div class="w-full">  -->
+        <Searchinput bind:searchstring class="xl:w-[240px]" />
+        <!-- </div> -->
+        <div class="block xl:hidden">
+          <CustomSelect
+            class="h-7"
+            width="w-full"
+            type="single"
+            {loading}
+            bind:value={collectionname}
+            triggerContent={() => collectionname}
+            onValueChangeFunction={(item: any) => {
+              console.log("onValueChangeFunction", item);
+              selectcollection(item);
+            }}
+            selectitems={collections}
+          />
+        </div>
+      </div>
       <!-- <HotkeyButton
       size="sm"
       disabled={loading}
@@ -190,34 +212,38 @@
       <Layers2 />
       Show Duplicates</HotkeyButton
     > -->
-      <HotkeyButton size="sm" disabled={loading} onclick={getCollections}>
-        <RefreshCcw />
-        Refresh</HotkeyButton
+      <div
+        class="grid grid-cols-1 md:grid-cols-2 lg:flex gap-2 lg:gap-0 lg:space-x-4 mb-2"
       >
-      {#if isAdmin}
+        <HotkeyButton size="sm" disabled={loading} onclick={getCollections}>
+          <RefreshCcw />
+          Refresh</HotkeyButton
+        >
+        {#if isAdmin}
+          <HotkeyButton
+            size="sm"
+            variant="danger"
+            disabled={loading}
+            onclick={async () => {
+              showWarningEntityDelete = true;
+            }}
+          >
+            <Trash2 />
+            Delete {collectionname}</HotkeyButton
+          >
+        {/if}
         <HotkeyButton
           size="sm"
-          variant="danger"
+          data-shortcut="n,ins"
           disabled={loading}
-          onclick={async () => {
-            showWarningEntityDelete = true;
+          onclick={() => {
+            goto(base + `/entities/${collectionname}/new`);
           }}
         >
-          <Trash2 />
-          Delete {collectionname}</HotkeyButton
+          <Plus />
+          Add to {collectionname}</HotkeyButton
         >
-      {/if}
-      <HotkeyButton
-        size="sm"
-        data-shortcut="n,ins"
-        disabled={loading}
-        onclick={() => {
-          goto(base + `/entities/${collectionname}/new`);
-        }}
-      >
-        <Plus />
-        Add to {collectionname}</HotkeyButton
-      >
+      </div>
     </div>
 
     <Entities

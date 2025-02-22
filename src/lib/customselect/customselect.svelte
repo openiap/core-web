@@ -1,5 +1,6 @@
 <script lang="ts">
 	import * as Select from "$lib/components/ui/select";
+	import { Check } from "lucide-svelte";
 	function onvc(value: any) {}
 	let {
 		class: className = "h-8",
@@ -9,7 +10,6 @@
 		type,
 		loading = false,
 		selectitems = [],
-		width = "w-full md:w-1/2 lg:w-1/3",
 		width: _width = " w-full md:w-1/2 lg:w-1/3",
 	} = $props();
 
@@ -18,6 +18,7 @@
 		if (item._id != null) return item._id;
 		if (item.image != null) return item.image;
 		if (item.stripeprice != null) return item.stripeprice;
+		if (item.name != null) return item.name;
 		if (item.value != null) return item.value;
 		return "";
 	}
@@ -45,8 +46,12 @@
 			<Select.Item
 				value={getValue(item)}
 				label={item.name}
-				class={` ${value === (item?._id || item?.image || item?.stripeprice || item?.value) && "border dark:border-bw600 dark:bg-bw700 "} rounded-[10px] dark:text-bw100`}
-				>{item?.name || item?.label}</Select.Item
+				class={` ${value === (item?._id || item?.image || item?.stripeprice || item?.name || item?.value) && "border dark:border-bw600 dark:bg-bw700 "} rounded-[10px] dark:text-bw100`}
+			>
+				<!-- {#if value === (item?._id || item?.image || item?.stripeprice || item?.name || item?.value)}
+					<Check />
+				{/if} -->
+				{item?.name || item?.label}</Select.Item
 			>
 		{/each}
 	</Select.Content>

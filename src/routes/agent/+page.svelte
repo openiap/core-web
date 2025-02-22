@@ -292,98 +292,99 @@
   }
 </script>
 
-<div
-  class="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4 xl:grid-cols-9 xl:gap-4"
->
-  <div class="col-span-2">
-    <SearchInput bind:searchstring class="" />
+<div class="lg:flex lg:items-center lg:justify-between lg:mb-4">
+  <div class="lg:flex lg:items-center lg:space-x-4 mb-2 lg:mb-0 w-full">
+    <SearchInput bind:searchstring class="lg:max-w-[249px] mb-2 lg:mb-0" />
+    <div>
+      <Popover.Root open={filter}>
+        <Popover.Trigger
+          disabled={loading}
+          class={buttonVariants({ variant: "base", size: "sm" }) +
+            " border-dashed w-full"}
+          ><Filter />
+          Filter</Popover.Trigger
+        >
+        <Popover.Content class="w-fit">
+          <RadioGroup.Root value="All" class="flex flex-col">
+            <div class="flex items-center space-x-2 w-full">
+              <RadioGroup.Item
+                class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
+                value="All"
+                id="r1"
+                disabled={loading}
+                onclick={async () => {
+                  filterby = "all";
+                  await GetData();
+                  await getPods(false);
+                }}
+              />
+              <Label for="r1" class="cursor-pointer">All</Label>
+            </div>
+            <Separator />
+            <div class="flex items-center space-x-2">
+              <RadioGroup.Item
+                class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
+                value="Pods"
+                id="r3"
+                disabled={loading}
+                onclick={async () => {
+                  filterby = "pods";
+                  await GetData();
+                }}
+              />
+              <Label for="r3" class="cursor-pointer">Pods</Label>
+            </div>
+            <Separator />
+            <div class="flex items-center space-x-2">
+              <RadioGroup.Item
+                class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
+                value="Daemon"
+                id="r2"
+                disabled={loading}
+                onclick={async () => {
+                  filterby = "daemon";
+                  await GetData();
+                  await getPods(false);
+                }}
+              />
+              <Label for="r2" class="cursor-pointer">Daemon</Label>
+            </div>
+            <Separator />
+            <div class="flex items-center space-x-2">
+              <RadioGroup.Item
+                class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
+                value="Docker"
+                id="r4"
+                disabled={loading}
+                onclick={async () => {
+                  filterby = "docker";
+                  await GetData();
+                  await getPods(false);
+                }}
+              />
+              <Label for="r4" class="cursor-pointer">Docker</Label>
+            </div>
+            <Separator />
+            <div class="flex items-center space-x-2">
+              <RadioGroup.Item
+                class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
+                value="Assistant"
+                id="r5"
+                disabled={loading}
+                onclick={async () => {
+                  filterby = "assistant";
+                  await GetData();
+                  await getPods(false);
+                }}
+              />
+              <Label for="r5" class="cursor-pointer">Assistant</Label>
+            </div>
+          </RadioGroup.Root>
+        </Popover.Content>
+      </Popover.Root>
+    </div>
   </div>
-  <Popover.Root open={filter}>
-    <Popover.Trigger
-      disabled={loading}
-      class={buttonVariants({ variant: "base", size: "sm" }) + " border-dashed"}
-      ><Filter />
-      Filter</Popover.Trigger
-    >
-    <Popover.Content class="w-fit">
-      <RadioGroup.Root value="All" class="flex flex-col">
-        <div class="flex items-center space-x-2 w-full">
-          <RadioGroup.Item
-            class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
-            value="All"
-            id="r1"
-            disabled={loading}
-            onclick={async () => {
-              filterby = "all";
-              await GetData();
-              await getPods(false);
-            }}
-          />
-          <Label for="r1" class="cursor-pointer">All</Label>
-        </div>
-        <Separator />
-        <div class="flex items-center space-x-2">
-          <RadioGroup.Item
-            class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
-            value="Pods"
-            id="r3"
-            disabled={loading}
-            onclick={async () => {
-              filterby = "pods";
-              await GetData();
-            }}
-          />
-          <Label for="r3" class="cursor-pointer">Pods</Label>
-        </div>
-        <Separator />
-        <div class="flex items-center space-x-2">
-          <RadioGroup.Item
-            class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
-            value="Daemon"
-            id="r2"
-            disabled={loading}
-            onclick={async () => {
-              filterby = "daemon";
-              await GetData();
-              await getPods(false);
-            }}
-          />
-          <Label for="r2" class="cursor-pointer">Daemon</Label>
-        </div>
-        <Separator />
-        <div class="flex items-center space-x-2">
-          <RadioGroup.Item
-            class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
-            value="Docker"
-            id="r4"
-            disabled={loading}
-            onclick={async () => {
-              filterby = "docker";
-              await GetData();
-              await getPods(false);
-            }}
-          />
-          <Label for="r4" class="cursor-pointer">Docker</Label>
-        </div>
-        <Separator />
-        <div class="flex items-center space-x-2">
-          <RadioGroup.Item
-            class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
-            value="Assistant"
-            id="r5"
-            disabled={loading}
-            onclick={async () => {
-              filterby = "assistant";
-              await GetData();
-              await getPods(false);
-            }}
-          />
-          <Label for="r5" class="cursor-pointer">Assistant</Label>
-        </div>
-      </RadioGroup.Root>
-    </Popover.Content>
-  </Popover.Root>
-  <div class="xl:col-start-7">
+  <div class="flex overflow-auto md:overflow-visible md:items-center lg:justify-end gap-4 md:gap-0 md:space-x-4 mb-2 lg:mb-0">
     <HotkeyButton
       class="touraddagent"
       size="sm"
@@ -395,35 +396,32 @@
       <Plus />
       Add agent</HotkeyButton
     >
+    <HotkeyButton
+      aria-label="packages"
+      title="package"
+      size="sm"
+      variant="base"
+      disabled={loading}
+      onclick={() => goto(base + `/package`)}
+    >
+      <Box />
+      Packages</HotkeyButton
+    >
+    <HotkeyButton
+      aria-label="reload"
+      title="reload"
+      size="sm"
+      variant="base"
+      disabled={loading}
+      onclick={async () => {
+        await GetData();
+        await getPods(true);
+      }}
+    >
+      <RefreshCcw />
+      Reload</HotkeyButton
+    >
   </div>
-  <HotkeyButton
-    class="xl:col-start-8"
-    aria-label="packages"
-    title="package"
-    size="sm"
-    variant="base"
-    disabled={loading}
-    onclick={() => goto(base + `/package`)}
-  >
-    <Box />
-    Packages</HotkeyButton
-  >
-  <HotkeyButton
-    class="xl:col-start-9"
-    aria-label="reload"
-    title="reload"
-    size="sm"
-    variant="base"
-    disabled={loading}
-    onclick={async () => {
-      await GetData();
-      await getPods(true);
-    }}
-  >
-    <RefreshCcw />
-    Reload</HotkeyButton
-  >
-  <div></div>
 </div>
 
 <Entities

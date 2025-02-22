@@ -84,7 +84,7 @@
   </div>
   <div class="xl:col-span-2">
     <EntitySelector
-      width="w-full"
+      width=""
       height="h-7"
       collectionname="mq"
       bind:value={queue}
@@ -93,17 +93,18 @@
       name="Queue"
     />
   </div>
-  <HotkeyButton
-    class="xl:col-start-10"
-    size="sm"
-    variant="base"
-    disabled={loading}
-    aria-label="add"
-    onclick={() => goto(base + `/${page}/new/${queue ? queue : "new"}`)}
-  >
-    <Plus />
-    Add {page}</HotkeyButton
-  >
+  <div class="xl:col-start-10">
+    <HotkeyButton
+      size="sm"
+      variant="base"
+      disabled={loading}
+      aria-label="add"
+      onclick={() => goto(base + `/${page}/new/${queue ? queue : "new"}`)}
+    >
+      <Plus />
+      Add {page}</HotkeyButton
+    >
+  </div>
 </div>
 
 <Entities
@@ -122,6 +123,7 @@
     <HotkeyButton
       class="hover:underline"
       variant="ghostfull"
+      size="ghost"
       onclick={() => goto(base + `/workitem/${item.wiqid}`)}
     >
       {item.wiq}

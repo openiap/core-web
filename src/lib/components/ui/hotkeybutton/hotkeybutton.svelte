@@ -39,6 +39,7 @@
 				tableicon: "p-1 rounded-[10px]",
 				refresh: "h-5 p-1 rounded-[10px]",
 				entity: "h-8 px-2.5 py-1.5",
+				ghost: "",
 			},
 		},
 		defaultVariants: {
