@@ -645,7 +645,7 @@
 	</div>
 
 	<div
-		class="grid grid-cols-1 md:flex text-center md:justify-between items-center dark:text-bw300"
+		class="flex text-center justify-between items-center dark:text-bw300"
 	>
 		<HotkeyButton
 			size="base"
