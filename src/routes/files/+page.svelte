@@ -127,7 +127,7 @@
   class="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 xl:flex xl:justify-between mb-4 flex justify-between"
 >
   <div class="flex gap-2 w-full">
-    <SearchInput bind:searchstring class="xl:max-w-[288px]" />
+    <SearchInput bind:searchstring />
   </div>
   <div class="flex space-x-5">
     <CustomInput

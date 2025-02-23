@@ -5,7 +5,7 @@
 	let {
 		searchstring = $bindable(""),
 		debounc = 500,
-		class: _class = "w-full lg:max-w-[288px] mb-4",
+		class: _class = "w-full lg:max-w-[288px]",
 	} = $props();
 	let _searchstring = $state(searchstring);
 	let lastinput = new Date();
