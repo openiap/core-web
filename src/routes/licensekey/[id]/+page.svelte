@@ -464,7 +464,7 @@
         {/snippet}
       </Form.Control>
       <Form.Description
-        >License is linked to this Billing Account.</Form.Description
+        >If your openflow is version 1.5.10 or below use version 2, for newer versions select version 3</Form.Description
       >
       <Form.FieldErrors />
     </Form.Field>
