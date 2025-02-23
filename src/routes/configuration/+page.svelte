@@ -34,6 +34,7 @@
             jwt: auth.access_token,
           });
           toast.success("Configuration updated");
+          loading = false;
           goto(base + `/${key}`);
         } catch (error: any) {
           toast.error("Error", {

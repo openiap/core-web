@@ -43,6 +43,7 @@ const settings = [
     { "name": "stripe_api_secret", "type": "string", "default": "" },
     { "name": "stripe_force_vat", "type": "boolean", "default": false },
     { "name": "stripe_force_checkout", "type": "boolean", "default": false },
+    { "name": "stripe_alwaysinvoice", "type": "boolean", "default": true },    
     { "name": "stripe_allow_promotion_codes", "type": "boolean", "default": true },
     { "name": "stripe_log_eventhook", "type": "boolean", "default": true },
     { "name": "ensure_indexes", "type": "boolean", "default": true },
