@@ -15,6 +15,7 @@
 	import "../app.css";
 	import Header from "./Header.svelte";
 	import type { Workspace } from "./workspace/schema.js";
+	import { HotkeyDialogue } from "$lib/hotkeydialogue";
 
 	let { children, data } = $props();
 	datacomponent.parsesettings(data.settings);
@@ -131,6 +132,7 @@
 	<div
 		class={`flex flex-col w-full h-screen dark:text-bw100 font-custom max-w-full`}
 	>
+		<HotkeyDialogue />
 		<Sidebar.Provider open={sidemenu.status}>
 			<AppSidebar
 				{workspaces}
