@@ -54,6 +54,13 @@
     result: null,
   });
 
+  let confirmprice = $state(false);
+  let confirmpriceresource: Resource = $state(null as any);
+  let confirmpriceproduct: any = $state(null as any);
+  let confirmpricenextinvoice: any = $state(null as any);
+  let confirmpriceperiod_start: String = $state(null as any);
+  let confirmpriceperiod_end: String = $state(null as any);
+
   async function GetData() {
     try {
       loading = true;
@@ -193,6 +200,59 @@
         });
         target = data.workspace;
         if (target == null) throw new Error("Please select a Workspace first");
+      }
+      if(confirmprice == false && auth.config.stripe_api_key != null && auth.config.stripe_api_key != "") {
+        try {
+        confirmpriceresource = resource;
+        confirmpriceproduct = product;
+        console.log("product.lookup_key", product.lookup_key);
+        console.log("product.stripeprice", product.stripeprice);
+          confirmpricenextinvoice = JSON.parse(
+            await auth.client.CustomCommand({
+              command: "getnextinvoice",
+              id: data.billingaccount?._id,
+              data: JSON.stringify({
+                lookupkey: product.lookup_key,
+                stripeprice: product.stripeprice,
+                productname: product.name,
+                quantity: 1,
+              }),
+              jwt: auth.access_token,
+            }),
+          );
+          const period_start = new Date(confirmpricenextinvoice.period_start * 1000);
+          const period_end = new Date(confirmpricenextinvoice.period_end * 1000);
+          const monthNames = [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+          ];
+          confirmpriceperiod_start = period_start.getDate() + " " + monthNames[period_start.getMonth()] + " " + period_start.getFullYear();
+          confirmpriceperiod_end = period_end.getDate() + " " + monthNames[period_end.getMonth()] + " " + period_end.getFullYear();
+
+          console.log("confirmpricenextinvoice.period_start", confirmpricenextinvoice.period_start, $state.snapshot(confirmpriceperiod_start));
+          console.log("confirmpricenextinvoice.period_end", confirmpricenextinvoice.period_end, $state.snapshot(confirmpriceperiod_end));
+          if(confirmpricenextinvoice?.lines?.data != null) {
+            confirmpricenextinvoice.lines = confirmpricenextinvoice.lines.data
+          }
+          console.log("nextinvoice", $state.snapshot(confirmpricenextinvoice.lines.data));
+          loading = false;
+          confirmprice = true;
+          // svelte-ignore state_referenced_locally
+          console.log("nextinvoice", $state.snapshot(confirmpricenextinvoice));
+          return;
+        } catch (error) {}
+      } else{
+        confirmprice = false;
       }
       const { result, link } = JSON.parse(
         await auth.client.CustomCommand({
@@ -544,6 +604,74 @@
       <HotkeyButton
         disabled={loading}
         onclick={() => (meterusageprompt = false)}>Cancel</HotkeyButton
+      >
+    </AlertDialog.Footer>
+  </AlertDialog.Content>
+</AlertDialog.Root>
+
+<AlertDialog.Root bind:open={meterprompt}>
+  <AlertDialog.Content>
+    <AlertDialog.Header>
+      <AlertDialog.Title>Manually add value to meter</AlertDialog.Title>
+      <AlertDialog.Description>
+        Add to {selectedmeter.name}<br />
+        Please type the value to add to the meter
+        <CustomInput bind:value={metervalue} type="number" />
+      </AlertDialog.Description>
+    </AlertDialog.Header>
+    <AlertDialog.Footer>
+      <HotkeyButton disabled={loading} onclick={() => (meterprompt = false)}
+        >Cancel</HotkeyButton
+      >
+      <HotkeyButton
+        disabled={loading}
+        onclick={() => {
+          addvalues(selectedmeter);
+          meterprompt = false;
+        }}>Continue</HotkeyButton
+      >
+    </AlertDialog.Footer>
+  </AlertDialog.Content>
+</AlertDialog.Root>
+
+
+<AlertDialog.Root bind:open={confirmprice}>
+  <AlertDialog.Content>
+    <AlertDialog.Header>
+      <AlertDialog.Title>Next invoice</AlertDialog.Title>
+      <AlertDialog.Description>
+        {#if confirmpricenextinvoice && confirmpricenextinvoice.lines}
+          <!-- Adding {confirmpriceresource.name} / {confirmpriceproduct.name}<br />
+          Will issue an invoice for the period<br /> -->
+          {confirmpriceperiod_start} - {confirmpriceperiod_end}<br />
+          With a total of
+          {confirmpricenextinvoice.total_excluding_tax / 100} {confirmpricenextinvoice.currency}
+          {#if confirmpricenextinvoice.tax != null && confirmpricenextinvoice?.tax > 0}
+            plus {confirmpricenextinvoice.tax / 100} {confirmpricenextinvoice.currency} in taxes
+          {/if}
+          <br/>
+          <br/>
+          <b>Lines:</b>
+          <br/>
+          <ul>
+            {#each confirmpricenextinvoice.lines as line}
+              <li>
+                {line.description} {line.amount / 100} {line.currency}
+              </li>
+            {/each}
+          </ul>        
+        {/if}
+      </AlertDialog.Description>
+    </AlertDialog.Header>
+    <AlertDialog.Footer>
+      <HotkeyButton disabled={loading} onclick={() => (confirmprice = false)}
+        >Cancel</HotkeyButton
+      >
+      <HotkeyButton
+        disabled={loading}
+        onclick={() => {
+          increment(confirmpriceresource, confirmpriceproduct);
+        }}>Continue</HotkeyButton
       >
     </AlertDialog.Footer>
   </AlertDialog.Content>
