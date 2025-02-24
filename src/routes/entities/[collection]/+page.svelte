@@ -12,7 +12,9 @@
   import { auth } from "$lib/stores/auth.svelte";
   import { WarningDialogue } from "$lib/warningdialogue/index.js";
   import {
+    Clock,
     Folder,
+    FolderSymlink,
     History,
     Pencil,
     Plus,
@@ -160,7 +162,13 @@
                 selectcollection(collection.name);
               }}
             >
-              <Folder class="size-4" />
+              {#if collection.name.endsWith(".files")}
+                <FolderSymlink class="size-4" />
+              {:else if collection.type == "timeseries"}
+                <Clock class="size-4" />
+              {:else}
+                <Folder class="size-4" />
+              {/if}
               {collection.name}</HotkeyButton
             >
           {/each}
