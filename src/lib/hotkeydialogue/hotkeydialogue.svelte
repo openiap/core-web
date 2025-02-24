@@ -77,7 +77,7 @@
 					</div>
 					<div class="grid grid-cols-4">
 						<div class="justify-self-end col-span-1">
-							<div class="text-yellow-300 flex	">
+							<div class="text-yellow-300 flex">
 								<ArrowLeft class="h-4 w-4" />
 								<ArrowUp class="h-4 w-4" />
 								<ArrowRight class="h-4 w-4" />
@@ -88,6 +88,24 @@
 						<span class="col-span-3">
 							: Used to navigate the entities page
 						</span>
+					</div>
+					<div class="grid grid-cols-4">
+						<div class="justify-self-end col-span-1">
+							<span class="text-yellow-300">g</span>
+							<span>+</span>
+							<span class="text-yellow-300">t</span>
+						</div>
+
+						<span class="col-span-3"> : Provide tour for the page </span>
+					</div>
+					<div class="grid grid-cols-4">
+						<div class="justify-self-end col-span-1">
+							<span class="text-yellow-300">Ctrl</span>
+							<span>+</span>
+							<span class="text-yellow-300">d</span>
+						</div>
+
+						<span class="col-span-3"> : Open debug console on any page that has data </span>
 					</div>
 				</div>
 			</Dialog.Description>
