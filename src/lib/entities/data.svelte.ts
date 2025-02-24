@@ -547,6 +547,7 @@ class entitiesdata {
 			case "member":
 				return ["name", "status", "role", "_modified"];
 			case "/workspace/invites":
+			case "/ui/workspace/invites":
 			case "/ui/invites":
 			case "/invites":
 			case "invites":
