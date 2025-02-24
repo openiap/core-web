@@ -124,8 +124,8 @@
 	const gitrepo = new SidebarItem(
 		"Git Repositories",
 		"g g",
-		``,
 		"tourgit",
+		"/git",
 		true,
 		true,
 	);
@@ -391,6 +391,8 @@
 
 		if (auth.config?.enable_gitserver == true) {
 			gitrepo.hidden = false;
+			gitrepo.url = auth.baseurl + "/git";
+			console.log("Git repo url", gitrepo.url);
 		} else {
 			gitrepo.hidden = true;
 		}
