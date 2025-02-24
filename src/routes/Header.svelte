@@ -122,7 +122,7 @@
 								href="{base}/{pathname
 									.split('/')
 									.splice(0, index + 1)
-									.join('/')}">{page.trim()}</Breadcrumb.Link
+									.join('/').toLowerCase()}">{page.trim()}</Breadcrumb.Link
 							>
 						{:else}
 							<div class="font-bold text-[16px] dark:text-bw100">
