@@ -13,6 +13,7 @@
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../../schema.js";
+    import { browser } from "$app/environment";
 
   const { data } = $props();
   const key = "workitem";
@@ -136,8 +137,12 @@
       if (element == null) return;
       element.setAttribute("src", image_url);
       element.classList.remove("hidden");
-    } catch (error) {
-      console.error("Error loading image", error);
+    } catch (error:any) {
+      if(browser) {
+        toast.error("Error loading image", {
+          description: error.message,
+        });
+      }
     }
   }
 </script>

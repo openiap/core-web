@@ -59,8 +59,6 @@
   }
   function selectcollection(name: string) {
     collectionname = name;
-    // usersettings.entities_collectionname = name;
-    // datacomponent.persist();
     sveltepage.url.pathname = base + `/entities/${collectionname}`;
     replaceState(sveltepage.url, sveltepage.state);
   }
@@ -102,30 +100,6 @@
     }
     showWarningEntityDelete = false;
   }
-  // async function createCollection() {
-  //   if (!newCollectionName) {
-  //     toast.error("Name cannot be empty");
-  //     return;
-  //   }
-  //   try {
-  //     await auth.client.CreateCollection({
-  //       jwt: auth.access_token,
-  //       collectionname: newCollectionName,
-  //     });
-  //     toast.success(`Added ${newCollectionName} collection`);
-  //     setTimeout(() => {
-  //       getCollections();
-  //     }, 2000);
-  //     selectcollection(newCollectionName);
-  //     newCollectionName = "";
-  //     addCollectionDialoge = false;
-  //   } catch (error: any) {
-  //     toast.error("Error while creating collection", {
-  //       description: error,
-  //     });
-  //     return;
-  //   }
-  // }
   let profileroles = auth.profile?.roles || [];
   const isAdmin = profileroles.includes("admins");
 </script>

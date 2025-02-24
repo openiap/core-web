@@ -410,7 +410,6 @@
 	}
 	if (browser) {
 		Mousetrap.bind("g t", function (e) {
-			console.log("Starting tour", $page.url.pathname);
 			if (agent.isActive($page.url.pathname)) {
 				driverObj.setSteps(agentTour);
 				driverObj.drive();

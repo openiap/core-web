@@ -138,14 +138,6 @@
 			total_count = totalcount;
 			detectColumns();
 			SetHeaders();
-			// const _entities = await data.GetData(
-			// 	page,
-			// 	collectionname,
-			// 	query,
-			// 	auth.access_token,
-			// );
-			// entities = _entities;
-			// detectColumns();
 			return entities;
 		} catch (error: any) {
 			toast.error("Error while loading data", {
@@ -260,37 +252,66 @@
 		return value;
 	}
 	let _workspaceid = $state.snapshot(usersettings.currentworkspace);
+	let _updating = false;
+	let lastsearchinput = new Date();
+	let searchtimeout: any = null;
+	let debounc = 500;
 	$effect(() => {
-		if (_searchstring != searchstring) {
-			_searchstring = searchstring;
-			data.settings.searchstring = searchstring;
-			data.settings.page_index = 0;
-			page_index = 0;
-			data.persist();
-			GetData();
-			GetCount();
-		} else if (_workspaceid != usersettings.currentworkspace) {
-			_workspaceid = usersettings.currentworkspace;
-			GetData();
-		} else if (_collectionname != collectionname) {
-			usersettings.entities_collectionname = collectionname;
+		if (_updating) return;
+		_updating = true;
+		try {
+			if (_searchstring != searchstring) {
+				if (
+					new Date().getTime() - lastsearchinput.getTime() >
+					debounc
+				) {
+					if (searchtimeout != null) clearTimeout(searchtimeout);
+					lastsearchinput = new Date();
+					_searchstring = searchstring;
+					data.settings.searchstring = searchstring;
+					data.settings.page_index = 0;
+					page_index = 0;
+					data.persist();
+					GetData();
+				} else {
+					if (searchtimeout != null) clearTimeout(searchtimeout);
+					lastsearchinput = new Date();
+					searchtimeout = setTimeout(async () => {
+						lastsearchinput = new Date();
+						_searchstring = searchstring;
+						data.settings.searchstring = searchstring;
+						data.settings.page_index = 0;
+						page_index = 0;
+						data.persist();
+						GetData();
+					}, debounc);
+				}
+			} else if (_workspaceid != usersettings.currentworkspace) {
+				_workspaceid = usersettings.currentworkspace;
+				GetData();
+			} else if (_collectionname != collectionname) {
+				_collectionname = collectionname;
+				usersettings.entities_collectionname = collectionname;
+				data.settings.page_index = page_index;
+				const page = $componentpage?.url?.pathname;
+				data.loadsettings(page);
+				_searchstring = data.settings.searchstring;
+				searchstring = data.settings.searchstring;
+				total_count = 99999;
+				selected_items = data.settings.selected_items;
+				page_index = data.settings.page_index;
+				GetData();
+			}
+			data.settings.selected_items = selected_items;
 			data.settings.page_index = page_index;
-			data.persist();
-			const page = $componentpage?.url?.pathname;
-			data.loadsettings(page);
-			total_count = 99999;
-			_collectionname = collectionname;
-			_searchstring = data.settings.searchstring;
-			searchstring = data.settings.searchstring;
-			selected_items = data.settings.selected_items;
-			page_index = data.settings.page_index;
-			GetData();
-			GetCount();
+			SetHeaders();
+		} catch (error: any) {
+			toast.error("Error while updating", {
+				description: error.message,
+			});
+		} finally {
+			_updating = false;
 		}
-		data.settings.searchstring = $state.snapshot(searchstring);
-		data.settings.selected_items = selected_items;
-		data.settings.page_index = page_index;
-		SetHeaders();
 	});
 
 	SetHeaders();
@@ -611,26 +632,26 @@
 		<div
 			class="grid grid-cols-1 gap-2 md:grid-cols-2 md:space-y-0 lg:flex mt-4 lg:space-x-5 items-center mb-2"
 		>
-		{#if multi_select}
-			<HotkeyButton
-				disabled={selected_items.length === 0}
-				onclick={() => (showWarning = true)}
-				data-shortcut="del"
-				size="base"
-				variant="danger"
-			>
-				<Trash2 />
-				Delete {selected_items.length} items</HotkeyButton
-			>
-			<Hotkeybutton
-				disabled={selected_items.length === 0}
-				variant="base"
-				size="base"
-				onclick={ClearSelected}
-			>
-				<CircleX />
-				Clear All Selections</Hotkeybutton
-			>
+			{#if multi_select}
+				<HotkeyButton
+					disabled={selected_items.length === 0}
+					onclick={() => (showWarning = true)}
+					data-shortcut="del"
+					size="base"
+					variant="danger"
+				>
+					<Trash2 />
+					Delete {selected_items.length} items</HotkeyButton
+				>
+				<Hotkeybutton
+					disabled={selected_items.length === 0}
+					variant="base"
+					size="base"
+					onclick={ClearSelected}
+				>
+					<CircleX />
+					Clear All Selections</Hotkeybutton
+				>
 			{/if}
 			<Hotkeybutton
 				variant="base"

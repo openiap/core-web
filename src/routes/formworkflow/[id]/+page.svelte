@@ -316,8 +316,10 @@
                     }
                 }
             }
-        } catch (e) {
-            console.error(e);
+        } catch (e:any) {
+            toast.error("Error creating form", {
+                description: e.message,
+            });
         }
     }
     let firstrun = $state(true);

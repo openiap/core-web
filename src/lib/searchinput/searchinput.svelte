@@ -4,29 +4,8 @@
 
 	let {
 		searchstring = $bindable(""),
-		debounc = 500,
 		class: _class = "w-full lg:max-w-[288px]",
 	} = $props();
-	let _searchstring = $state(searchstring);
-	let lastinput = new Date();
-	let timeout: any = null;
-	$effect(() => {
-		_searchstring;
-		searchstring;
-		if (new Date().getTime() - lastinput.getTime() > debounc) {
-			if (timeout != null) clearTimeout(timeout);
-			searchstring = _searchstring;
-			lastinput = new Date();
-		} else {
-			if (timeout != null) clearTimeout(timeout);
-			lastinput = new Date();
-			timeout = setTimeout(async () => {
-				searchstring = _searchstring;
-				timeout = null;
-				lastinput = new Date();
-			}, debounc);
-		}
-	});
 </script>
 
 <div class={"flex flex-col gap-1.5" + " " + _class}>
@@ -35,7 +14,7 @@
 		<HotkeyInput
 			id="searchstring"
 			placeholder="Search string or JSON query"
-			bind:value={_searchstring}
+			bind:value={searchstring}
 			data-shortcut={"ctrl+f,meta+f"}
 			type="text"
 			class="shadow-light dark:shadow-dark bg-bw50 h-7 pl-8 py-2 rounded-[10px] border dark:border-bw600 dark:placeholder-bw500 dark:text-bw500 dark:bg-bw850 focus:outline-none"
