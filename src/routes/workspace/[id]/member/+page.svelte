@@ -21,7 +21,9 @@
 
   let { data } = $props();
   $effect(() => {
+    console.log("data.id", data.id, "usersettings.currentworkspace", usersettings.currentworkspace);
     if (data.id != usersettings.currentworkspace && usersettings.currentworkspace != "") {
+      console.log("goto", base + "/workspace/" + usersettings.currentworkspace + "/member");
       goto(base + "/workspace/" + usersettings.currentworkspace + "/member");
     } else if (usersettings.currentworkspace == "") {
       goto(base + "/workspace");

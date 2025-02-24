@@ -153,12 +153,10 @@ class entitiesdata {
 					total_count = await this.GetCount(page, "users", { _type: "workspace" }, access_token, false);
 					break;
 				case base + `/workspace/${id}/member`:
-					usersettings.currentworkspace = id as any;
 					entities = await this.GetData(page, "users", { _type: "member", workspaceid: id, status: { "$ne": "rejected" } }, access_token);
 					total_count = await this.GetCount(page, "users", { _type: "member", workspaceid: id, status: { "$ne": "rejected" } }, access_token);
 					break;
 				case base + `/workspace/${id}/member`:
-					usersettings.currentworkspace = id as any;
 					entities = await this.GetData(page, "users", { _type: "member" }, access_token, false);
 					total_count = await this.GetCount(page, "users", { _type: "member" }, access_token, false);
 					break;

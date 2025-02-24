@@ -24,7 +24,10 @@ export const load: PageLoad = async ({ parent, params }) => {
     entities = await auth.client.Query<any>({ collectionname: "users", query: { _type: "customer" }, jwt: access_token });
     total_count = await auth.client.Count({ collectionname: "users", query: { _type: "customer" }, jwt: access_token });
     if (params.id == null || params.id == "") { goto(base + `/workspace`); return { form, currentbilling, entities, total_count, currentworkspace, resourcecount }; }
-    usersettings.currentworkspace = params.id;
+    if (usersettings.currentworkspace != params.id) {
+      usersettings.currentworkspace = params.id;
+      await usersettings.dopersist();
+    }
 
     resourcecount = await auth.client.Count({ collectionname: "config", query: { _type: "resourceusage", workspaceid: params.id }, jwt: access_token });
 
