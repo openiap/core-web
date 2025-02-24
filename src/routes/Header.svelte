@@ -21,11 +21,45 @@
 	import { toggleMode } from "mode-watcher";
 	import { capitalizeFirstLetter } from "../helper";
 	import { onDestroy } from "svelte";
+    import type { Workspace } from "./workspace/schema";
+    import { browser } from "$app/environment";
+	let pathname = $state($state.snapshot($page.url.pathname.replace(base, "").replace("/", "").split("/").map(x=> x.toLowerCase().charAt(0).toUpperCase() + x.slice(1)).join("/")));
+	const workspacecache = new Map();
 
 	let sidebar = Sidebar.useSidebar();
-	let pagename = $derived(() =>
-		$page.url.pathname.replace(base, "").replace("/", ""),
-	);
+	$effect(() => {
+		if (pathname != $state.snapshot($page.url.pathname)) {
+			updateBreadcrumb();
+		}
+	});
+	async function updateBreadcrumb() {
+		let _pathname = $page.url.pathname.replace(base, "").replace("/", "").split("/").map(x=> x.toLowerCase().charAt(0).toUpperCase() + x.slice(1));
+		if (_pathname.length == 0) {
+			pathname = _pathname.join("/");
+		} else {
+			if (_pathname[0] == "Workspace") {
+				if (_pathname.length > 1 && _pathname[1].length == 24) {
+					if(workspacecache.has(_pathname[1])) {
+						// console.log("Update workspace name to ", _pathname[1], "from cache");
+						_pathname[1] = workspacecache.get(_pathname[1]);
+					} else {
+						const workspace = await auth.client.FindOne<Workspace>({collectionname: "users", query: { _id: _pathname[1] }, jwt: auth.access_token});
+						if(workspace != null) {
+							_pathname[1] = workspace.name;
+							workspacecache.set(_pathname[1], workspace.name);
+							// console.log("Update workspace name to ", _pathname[1]);
+						} else {
+							// console.log("workspace not found");
+						}
+					}
+				}
+			}
+			pathname = _pathname.join("/");
+		}
+	}
+	if(browser) {
+		updateBreadcrumb();
+	}
 
 	function login() {
 		window.localStorage.setItem("redirect", window.location.pathname);
@@ -67,11 +101,11 @@
 
 		<Breadcrumb.Root>
 			<Breadcrumb.List>
-				{#each pagename().split("/") as page, index}
+				{#each pathname.split("/") as page, index}
 					<Breadcrumb.Item class="hidden md:block ">
-						{#if pagename().split("/").length - 1 !== index}
+						{#if pathname.split("/").length - 1 !== index}
 							<Breadcrumb.Link
-								href="{base}/{pagename()
+								href="{base}/{pathname
 									.split('/')
 									.splice(0, index + 1)
 									.join('/')}">{page.trim()}</Breadcrumb.Link
@@ -82,7 +116,7 @@
 							</div>
 						{/if}
 					</Breadcrumb.Item>
-					{#if pagename().split("/").length - 1 !== index}
+					{#if pathname.split("/").length - 1 !== index}
 						<div class="hidden md:block dark:text-bw500">/</div>
 					{/if}
 				{/each}
