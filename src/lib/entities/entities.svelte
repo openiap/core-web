@@ -645,7 +645,7 @@
 	</div>
 
 	<div
-		class="flex text-center justify-between items-center dark:text-bw300"
+		class="flex text-center justify-between items-center dark:text-bw300 gap-4"
 	>
 		<HotkeyButton
 			size="base"
@@ -666,7 +666,7 @@
 				<div>Previous</div>
 			</div>
 		</HotkeyButton>
-		<div>
+		<div class="text-sm md:text-base">
 			Page {page_index + 1}
 			{#if entities.length == total_count}
 				showing {total_count}

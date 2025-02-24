@@ -292,9 +292,9 @@
   }
 </script>
 
-<div class="lg:flex lg:items-center lg:justify-between lg:mb-4">
+<div class="lg:flex lg:items-center lg:justify-between lg:mb-4 lg:space-x-4">
   <div class="lg:flex lg:items-center lg:space-x-4 mb-2 lg:mb-0 w-full">
-    <SearchInput bind:searchstring class="lg:max-w-[249px] mb-2 lg:mb-0" />
+    <SearchInput bind:searchstring class="w-full lg:max-w-[288px] mb-2 lg:mb-0" />
     <div>
       <Popover.Root open={filter}>
         <Popover.Trigger

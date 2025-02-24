@@ -23,7 +23,9 @@
   }
 </script>
 
-<Searchinput bind:searchstring />
+<div class="mb-4">
+  <Searchinput bind:searchstring />
+</div>
 
 <Entities
   bind:searchstring

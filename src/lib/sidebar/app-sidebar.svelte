@@ -71,7 +71,13 @@
 		}
 	}
 	const home = new SidebarItem("Home", "g h", "tourhome", `${base}/`, false);
-	const licensekey = new SidebarItem("Licenses", "g l", "tourlicenses", `${base}/licensekey`, true);
+	const licensekey = new SidebarItem(
+		"Licenses",
+		"g l",
+		"tourlicenses",
+		`${base}/licensekey`,
+		true,
+	);
 	const agent = new SidebarItem(
 		"Agents",
 		"g a",
@@ -287,7 +293,7 @@
 		formresources,
 		hdrobots,
 		mailhistory,
-		licensekey
+		licensekey,
 	]);
 </script>
 
@@ -388,7 +394,7 @@
 		}
 	}
 	if (browser) {
-		Mousetrap.bind("?", function (e) {
+		Mousetrap.bind("g t", function (e) {
 			console.log("Starting tour", $page.url.pathname);
 			if (agent.isActive($page.url.pathname)) {
 				driverObj.setSteps(agentTour);

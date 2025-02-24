@@ -62,7 +62,7 @@
 <div
   class="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 xl:flex xl:justify-between xl:items-center mb-4"
 >
-  <SearchInput bind:searchstring class="xl:max-w-[288px]" />
+  <SearchInput bind:searchstring />
   <!-- <HotkeyButton
       size="sm"
       variant="base"
