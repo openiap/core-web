@@ -82,7 +82,7 @@
       data-shortcut="ctrl+s"
     >
       <Check />
-      Update workspace</HotkeyButton
+      Create workspace</HotkeyButton
     >
     <HotkeyButton
       size="lg"
