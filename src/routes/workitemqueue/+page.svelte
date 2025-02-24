@@ -92,11 +92,11 @@
     size="sm"
     variant="base"
     disabled={loading}
-    aria-label="add"
+    aria-label="Create Work Item Queue"
     onclick={() => goto(base + `/${page}/new/`)}
   >
     <Plus />
-    Add Work Item Queue</HotkeyButton
+    Create Work Item Queue</HotkeyButton
   >
 </div>
 

@@ -118,7 +118,7 @@
         onclick={() => goto(base + `/entities/new`)}
       >
         <Plus />
-        Add collection</HotkeyButton
+        Insert collection</HotkeyButton
       >
     </div>
     <div class="h-full overflow-auto">

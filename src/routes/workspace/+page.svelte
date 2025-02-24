@@ -92,7 +92,7 @@
 
 <div class="flex justify-between mb-4">
   <div class="flex gap-2 w-full">
-      <SearchInput bind:searchstring />
+    <SearchInput bind:searchstring />
     <HotkeyButton
       size="sm"
       variant="base"
@@ -109,11 +109,11 @@
     size="sm"
     variant="base"
     disabled={loading}
-    aria-label="add"
+    aria-label="Create Workspace"
     onclick={() => goto(base + `/${page}/new`)}
   >
     <Plus />
-    Add {page}</HotkeyButton
+    Create Workspace</HotkeyButton
   >
 </div>
 

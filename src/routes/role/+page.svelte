@@ -60,11 +60,11 @@
     size="sm"
     variant="base"
     disabled={loading}
-    aria-label="add"
+    aria-label="Create Role"
     onclick={() => goto(base + `/${page}/new/`)}
   >
     <Plus />
-    Add {page}</HotkeyButton
+    Create Role</HotkeyButton
   >
 </div>
 

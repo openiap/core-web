@@ -294,7 +294,10 @@
 
 <div class="lg:flex lg:items-center lg:justify-between lg:mb-4 lg:space-x-4">
   <div class="lg:flex lg:items-center lg:space-x-4 mb-2 lg:mb-0 w-full">
-    <SearchInput bind:searchstring class="w-full lg:max-w-[288px] mb-2 lg:mb-0" />
+    <SearchInput
+      bind:searchstring
+      class="w-full lg:max-w-[288px] mb-2 lg:mb-0"
+    />
     <div>
       <Popover.Root open={filter}>
         <Popover.Trigger
@@ -384,17 +387,19 @@
       </Popover.Root>
     </div>
   </div>
-  <div class="flex overflow-auto md:overflow-visible md:items-center lg:justify-end gap-4 md:gap-0 md:space-x-4 mb-2 lg:mb-0">
+  <div
+    class="flex overflow-auto md:overflow-visible md:items-center lg:justify-end gap-4 md:gap-0 md:space-x-4 mb-2 lg:mb-0"
+  >
     <HotkeyButton
       class="touraddagent"
       size="sm"
       variant="base"
-      aria-label="add"
+      aria-label="Create Agent"
       disabled={loading}
       onclick={() => goto(base + `/${page}/new`)}
     >
       <Plus />
-      Add Agent</HotkeyButton
+      Create Agent</HotkeyButton
     >
     <HotkeyButton
       aria-label="packages"

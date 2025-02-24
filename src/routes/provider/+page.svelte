@@ -81,11 +81,11 @@
     size="sm"
     variant="base"
     disabled={loading}
-    aria-label="add"
+    aria-label="Create Provider"
     onclick={() => goto(base + `/${page}/new`)}
   >
     <Plus />
-    Add Provider</HotkeyButton
+    Create Provider</HotkeyButton
   >
 </div>
 

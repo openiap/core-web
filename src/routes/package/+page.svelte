@@ -67,11 +67,11 @@
     size="sm"
     variant="base"
     disabled={loading}
-    aria-label="add"
+    aria-label="Create Package"
     onclick={() => goto(base + `/${page}/new`)}
   >
     <Plus />
-    Add {page}</HotkeyButton
+    Create Package</HotkeyButton
   >
 </div>
 

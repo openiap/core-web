@@ -77,12 +77,12 @@
   <HotkeyButton
     size="sm"
     variant="base"
-    aria-label="add"
+    aria-label="Create Credential"
     disabled={loading}
     onclick={() => goto(base + `/${page}/new`)}
   >
     <Plus />
-    Add {page}</HotkeyButton
+    Create Credential</HotkeyButton
   >
 </div>
 

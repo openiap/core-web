@@ -74,13 +74,13 @@
   > -->
 
   <HotkeyButton
-    aria-label="add"
+    aria-label="Create Form Resource"
     disabled={loading}
     onclick={() => goto(base + `/${page}/new`)}
     size="sm"
   >
     <Plus />
-    Add {page}</HotkeyButton
+    Create Form Resource</HotkeyButton
   >
 </div>
 

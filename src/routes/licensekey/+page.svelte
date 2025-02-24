@@ -35,10 +35,10 @@
         jwt: auth.access_token,
       });
       ref.reload();
-    } catch (error:any) {
+    } catch (error: any) {
       toast.error("Error while deleting", {
         description: error.message,
-      });      
+      });
     } finally {
       loading = false;
     }
@@ -76,11 +76,11 @@
     size="sm"
     variant="base"
     disabled={loading}
-    aria-label="add"
+    aria-label="Create license Key"
     onclick={() => goto(base + `/${page}/new`)}
   >
     <Plus />
-    Add {page}</HotkeyButton
+    Create license Key</HotkeyButton
   >
 </div>
 
