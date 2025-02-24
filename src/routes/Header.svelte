@@ -139,7 +139,7 @@
 	</div>
 	<div class="flex items-center justify-end">
 		<div class="flex space-x-5 items-center">
-			<Search />
+			<!-- <Search /> -->
 			<HotkeyButton
 				onclick={() =>
 					window.open("https://github.com/openiap", "_blank")}
@@ -150,7 +150,7 @@
 			>
 				<Github />
 			</HotkeyButton>
-			<HotkeyButton
+			<!-- <HotkeyButton
 				variant="headericon"
 				size="icon"
 				aria-label="Clear cookies"
@@ -158,7 +158,7 @@
 				title="Clear filters and settings"
 			>
 				<Trash2 />
-			</HotkeyButton>
+			</HotkeyButton> -->
 			<HotkeyButton
 				onclick={toggleMode}
 				variant="headericon"

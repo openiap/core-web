@@ -1,11 +1,14 @@
 <script lang="ts">
+    import { goto } from "$app/navigation";
+    import { base } from "$app/paths";
     import * as Avatar from "$lib/components/ui/avatar/index.js";
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
     import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
     import * as Sidebar from "$lib/components/ui/sidebar/index.js";
     import { useSidebar } from "$lib/components/ui/sidebar/index.js";
     import { auth } from "$lib/stores/auth.svelte";
-    import { LogOut } from "lucide-svelte";
+    import { usersettings } from "$lib/stores/usersettings.svelte";
+    import { LogOut, Trash2 } from "lucide-svelte";
     import BadgeCheck from "lucide-svelte/icons/badge-check";
     import Bell from "lucide-svelte/icons/bell";
     import CreditCard from "lucide-svelte/icons/credit-card";
@@ -24,6 +27,10 @@
         } else {
             user.avatar = name?.substring(0, 2).toUpperCase() || "U";
         }
+    }
+    function reset() {
+        usersettings.reset();
+        goto(base + `/`);
     }
 </script>
 
@@ -70,17 +77,17 @@
                 </DropdownMenu.Label>
                 <DropdownMenu.Separator />
                 <DropdownMenu.Group>
-                    <DropdownMenu.Item>
+                    <!-- <DropdownMenu.Item>
                         <BadgeCheck />
                         Account
                     </DropdownMenu.Item>
                     <DropdownMenu.Item>
                         <CreditCard />
                         Billing
-                    </DropdownMenu.Item>
-                    <DropdownMenu.Item>
-                        <Bell />
-                        Notifications
+                    </DropdownMenu.Item> -->
+                    <DropdownMenu.Item onclick={reset}>
+                        <Trash2 />
+                        Clear filters and settings
                     </DropdownMenu.Item>
                 </DropdownMenu.Group>
                 <DropdownMenu.Separator />

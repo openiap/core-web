@@ -177,7 +177,7 @@
       </ScrollArea>
     </div>
   </div>
-  <div id="div2" class="xl:ms-2 xl:ms-6 page">
+  <div id="div2" class="xl:ms-2 page">
     <div
       class="flex flex-col xl:flex-row xl:items-center xl:justify-between xl:space-x-4 xl:mb-2"
     >
