@@ -5,6 +5,7 @@
   import { CustomInput } from "$lib/custominput/index.js";
   import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
+  import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import { Check } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
@@ -12,6 +13,13 @@
   import { newMemberSchema } from "../../schema.js";
 
   const { data } = $props();
+  $effect(() => {
+    if (data.id != usersettings.currentworkspace && usersettings.currentworkspace != "") {
+      goto(base + "/workspace/" + usersettings.currentworkspace + "/invite");
+    } else if (usersettings.currentworkspace == "") {
+      goto(base + "/workspace");
+    }
+  });
   const key = "workspace";
   let loading = $state(false);
   let errormessage = $state("");

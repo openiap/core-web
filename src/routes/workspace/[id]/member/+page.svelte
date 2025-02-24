@@ -4,6 +4,8 @@
 </script>
 
 <script lang="ts">
+    import { goto } from "$app/navigation";
+
   import { base } from "$app/paths";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { Label } from "$lib/components/ui/label/index.js";
@@ -18,6 +20,13 @@
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
+  $effect(() => {
+    if (data.id != usersettings.currentworkspace && usersettings.currentworkspace != "") {
+      goto(base + "/workspace/" + usersettings.currentworkspace + "/member");
+    } else if (usersettings.currentworkspace == "") {
+      goto(base + "/workspace");
+    }
+  });
   let ref: any;
   let loading = $state(false);
   datacomponent.parsesettings(data.settings);
