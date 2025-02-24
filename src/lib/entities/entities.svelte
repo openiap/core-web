@@ -611,6 +611,7 @@
 		<div
 			class="grid grid-cols-1 gap-2 md:grid-cols-2 md:space-y-0 lg:flex mt-4 lg:space-x-5 items-center mb-2"
 		>
+		{#if multi_select}
 			<HotkeyButton
 				disabled={selected_items.length === 0}
 				onclick={() => (showWarning = true)}
@@ -630,6 +631,7 @@
 				<CircleX />
 				Clear All Selections</Hotkeybutton
 			>
+			{/if}
 			<Hotkeybutton
 				variant="base"
 				size="base"
