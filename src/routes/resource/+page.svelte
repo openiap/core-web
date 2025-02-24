@@ -97,11 +97,11 @@
     size="sm"
     variant="base"
     disabled={loading}
-    aria-label="add"
+    aria-label="Create Common"
     onclick={createcommon}
   >
     <Plus />
-    Create common</HotkeyButton
+    Create Common</HotkeyButton
   >
 </div>
 

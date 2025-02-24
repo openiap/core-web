@@ -2,7 +2,6 @@
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-  import Button from "$lib/components/ui/button/button.svelte";
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import Input from "$lib/components/ui/input/input.svelte";
@@ -13,7 +12,7 @@
   import { EntitySelector } from "$lib/entityselector/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { ResourceUsage } from "$lib/types.svelte.js";
-  import { Check, KeyRound, Minus, Plus } from "lucide-svelte";
+  import { Check, KeyRound, SquareMinus, SquarePlus } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
@@ -309,41 +308,45 @@
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Connections</Form.Label>
-        <CustomInput
-          disabled={true}
-          placeholder="Type name"
-          {...props}
-          bind:value={$formData.connections}
-        />
-        <Button
-          variant="outline"
-          size="base"
-          disabled={loading}
-          onclick={() => {
-            valuepromptaction = "addconnection";
-            valueprompttitle = "Add connections";
-            valuepromptdescription = "How many connections do you want to add?";
-            valuepromptvalue = 1;
-            valueprompt = true;
-          }}
-        >
-          <Plus />
-        </Button>
-        <Button
-          variant="outline"
-          size="base"
-          disabled={loading}
-          onclick={() => {
-            valuepromptaction = "removeconnection";
-            valueprompttitle = "Remove connections";
-            valuepromptdescription =
-              "How many connections do you want to remove?";
-            valuepromptvalue = 1;
-            valueprompt = true;
-          }}
-        >
-          <Minus />
-        </Button>
+        <div class="flex items-center w-full md:w-1/2 lg:w-1/3 space-x-2">
+          <div class="w-full">
+            <CustomInput
+              width="w-full"
+              disabled={true}
+              placeholder="Type name"
+              {...props}
+              bind:value={$formData.connections}
+            />
+          </div>
+          <HotkeyButton
+            size="base"
+            disabled={loading}
+            onclick={() => {
+              valuepromptaction = "addconnection";
+              valueprompttitle = "Add connections";
+              valuepromptdescription =
+                "How many connections do you want to add?";
+              valuepromptvalue = 1;
+              valueprompt = true;
+            }}
+          >
+            <SquarePlus />
+          </HotkeyButton>
+          <HotkeyButton
+            size="base"
+            disabled={loading}
+            onclick={() => {
+              valuepromptaction = "removeconnection";
+              valueprompttitle = "Remove connections";
+              valuepromptdescription =
+                "How many connections do you want to remove?";
+              valuepromptvalue = 1;
+              valueprompt = true;
+            }}
+          >
+            <SquareMinus />
+          </HotkeyButton>
+        </div>
       {/snippet}
     </Form.Control>
     <Form.Description>Max number of concurent connections.</Form.Description>
@@ -354,41 +357,45 @@
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Workspaces</Form.Label>
-        <CustomInput
-          disabled={true}
-          placeholder="Type name"
-          {...props}
-          bind:value={$formData.workspaces}
-        />
-        <Button
-          variant="outline"
-          size="base"
-          disabled={loading}
-          onclick={() => {
-            valuepromptaction = "addworkspace";
-            valueprompttitle = "Add workspaces";
-            valuepromptdescription = "How many workspaces do you want to add?";
-            valuepromptvalue = 1;
-            valueprompt = true;
-          }}
-        >
-          <Plus />
-        </Button>
-        <Button
-          variant="outline"
-          size="base"
-          disabled={loading}
-          onclick={() => {
-            valuepromptaction = "removeworkspace";
-            valueprompttitle = "Remove workspaces";
-            valuepromptdescription =
-              "How many workspaces do you want to remove?";
-            valuepromptvalue = 1;
-            valueprompt = true;
-          }}
-        >
-          <Minus />
-        </Button>
+        <div class="flex items-center w-full md:w-1/2 lg:w-1/3 space-x-2">
+          <div class="w-full">
+            <CustomInput
+              width="w-full"
+              disabled={true}
+              placeholder="Type name"
+              {...props}
+              bind:value={$formData.workspaces}
+            />
+          </div>
+          <HotkeyButton
+            size="base"
+            disabled={loading}
+            onclick={() => {
+              valuepromptaction = "addworkspace";
+              valueprompttitle = "Add workspaces";
+              valuepromptdescription =
+                "How many workspaces do you want to add?";
+              valuepromptvalue = 1;
+              valueprompt = true;
+            }}
+          >
+            <SquarePlus />
+          </HotkeyButton>
+          <HotkeyButton
+            size="base"
+            disabled={loading}
+            onclick={() => {
+              valuepromptaction = "removeworkspace";
+              valueprompttitle = "Remove workspaces";
+              valuepromptdescription =
+                "How many workspaces do you want to remove?";
+              valuepromptvalue = 1;
+              valueprompt = true;
+            }}
+          >
+            <SquareMinus />
+          </HotkeyButton>
+        </div>
       {/snippet}
     </Form.Control>
     <Form.Description>Max number of workspaces.</Form.Description>
@@ -399,42 +406,45 @@
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Git repositories</Form.Label>
-        <CustomInput
-          disabled={true}
-          placeholder="Type name"
-          {...props}
-          bind:value={$formData.gitrepos}
-        />
-        <Button
-          variant="outline"
-          size="base"
-          disabled={loading}
-          onclick={() => {
-            valuepromptaction = "addgitrepo";
-            valueprompttitle = "Add git repositories";
-            valuepromptdescription =
-              "How many git repositories do you want to add?";
-            valuepromptvalue = 1;
-            valueprompt = true;
-          }}
-        >
-          <Plus />
-        </Button>
-        <Button
-          variant="outline"
-          size="base"
-          disabled={loading}
-          onclick={() => {
-            valuepromptaction = "removegitrepo";
-            valueprompttitle = "Remove git repositories";
-            valuepromptdescription =
-              "How many git repositories do you want to remove?";
-            valuepromptvalue = 1;
-            valueprompt = true;
-          }}
-        >
-          <Minus />
-        </Button>
+        <div class="flex items-center w-full md:w-1/2 lg:w-1/3 space-x-2">
+          <div class="w-full">
+            <CustomInput
+              width="w-full"
+              disabled={true}
+              placeholder="Type name"
+              {...props}
+              bind:value={$formData.gitrepos}
+            />
+          </div>
+          <HotkeyButton
+            size="base"
+            disabled={loading}
+            onclick={() => {
+              valuepromptaction = "addgitrepo";
+              valueprompttitle = "Add git repositories";
+              valuepromptdescription =
+                "How many git repositories do you want to add?";
+              valuepromptvalue = 1;
+              valueprompt = true;
+            }}
+          >
+            <SquarePlus />
+          </HotkeyButton>
+          <HotkeyButton
+            size="base"
+            disabled={loading}
+            onclick={() => {
+              valuepromptaction = "removegitrepo";
+              valueprompttitle = "Remove git repositories";
+              valuepromptdescription =
+                "How many git repositories do you want to remove?";
+              valuepromptvalue = 1;
+              valueprompt = true;
+            }}
+          >
+            <SquareMinus />
+          </HotkeyButton>
+        </div>
       {/snippet}
     </Form.Control>
     <Form.Description>Max number of git repositories.</Form.Description>
@@ -464,50 +474,52 @@
     </Form.Field>
   {/if}
 
-  <HotkeyButton
-    variant="success"
-    size="base"
-    disabled={loading}
-    aria-label="Update licence"
-    type="submit"
-    data-shortcut="ctrl+s"
-  >
-    <Check />
-    Update licence</HotkeyButton
-  >
-  <HotkeyButton
-    variant="success"
-    size="base"
-    disabled={loading}
-    aria-label="Update"
-    onclick={async () => {
-      try {
-        loading = true;
-        const payload: any = { domain: $formData.name };
-        licensekey = await auth.client.CustomCommand({
-          command: "issuelicense",
-          data: JSON.stringify(payload),
-          jwt: auth.access_token,
-        });
-        licensekey = licensekey.replace(/"/g, "");
+  <div class="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0">
+    <HotkeyButton
+      variant="success"
+      size="base"
+      disabled={loading}
+      aria-label="Update licence"
+      type="submit"
+      data-shortcut="ctrl+s"
+    >
+      <Check />
+      Update licence</HotkeyButton
+    >
+    <HotkeyButton
+      variant="success"
+      size="base"
+      disabled={loading}
+      aria-label="Update"
+      onclick={async () => {
         try {
-          console.log("licensekey: ", atob(licensekey));
+          loading = true;
+          const payload: any = { domain: $formData.name };
+          licensekey = await auth.client.CustomCommand({
+            command: "issuelicense",
+            data: JSON.stringify(payload),
+            jwt: auth.access_token,
+          });
+          licensekey = licensekey.replace(/"/g, "");
+          try {
+            console.log("licensekey: ", atob(licensekey));
+          } catch (error: any) {
+            console.log("licensekey: ", licensekey, error.message);
+          }
+          showlicenseprompt = true;
         } catch (error: any) {
-          console.log("licensekey: ", licensekey, error.message);
+          toast.error("Error", {
+            description: error.message,
+          });
+        } finally {
+          loading = false;
         }
-        showlicenseprompt = true;
-      } catch (error: any) {
-        toast.error("Error", {
-          description: error.message,
-        });
-      } finally {
-        loading = false;
-      }
-    }}
-  >
-    <KeyRound />
-    Generate license key</HotkeyButton
-  >
+      }}
+    >
+      <KeyRound />
+      Generate license key</HotkeyButton
+    >
+  </div>
 </form>
 
 <CustomSuperDebug {formData} />
