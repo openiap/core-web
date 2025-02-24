@@ -316,7 +316,7 @@
     data-shortcut="ctrl+s"
   >
     <Check />
-    Update workitemqueue</HotkeyButton
+    Update Work Item Queue</HotkeyButton
   >
 
   <Form.Field {form} name="success_wiq" class="mb-7">

@@ -318,7 +318,7 @@
     data-shortcut="ctrl+s"
   >
     <Check />
-    Add workitemqueue</HotkeyButton
+    Add Work Item Queue</HotkeyButton
   >
 
   <Form.Field {form} name="success_wiqid" class="mb-7">

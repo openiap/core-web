@@ -86,21 +86,21 @@
 		false,
 	);
 	const workitem = new SidebarItem(
-		"Workitems",
+		"Work Items",
 		"g w",
 		"tourworkitems",
 		`${base}/workitem`,
 		false,
 	);
 	const workitemqueue = new SidebarItem(
-		"Workitem queue",
+		"Work Item Queues",
 		"",
 		"tourworkitemqueues",
 		`${base}/workitemqueue`,
 		false,
 	);
 	const formworkflow = new SidebarItem(
-		"Form workflows",
+		"Form Workflows",
 		"",
 		"tourformworkflow",
 		`${base}/formworkflow`,
@@ -137,7 +137,7 @@
 		formworkflow,
 		rpaworkflow,
 		grafana,
-		gitrepo
+		gitrepo,
 	]);
 	const members = new SidebarItem(
 		"Members",
@@ -223,7 +223,7 @@
 		true,
 	);
 	const auditlogs = new SidebarItem(
-		"Audit logs",
+		"Audit Logs",
 		"",
 		"touraudit",
 		`${base}/auditlog`,
@@ -251,7 +251,7 @@
 		true,
 	);
 	const billingaccounts = new SidebarItem(
-		"Billing accounts",
+		"Billing Accounts",
 		"g b",
 		"tourbillingaccounts",
 		`${base}/billingaccount`,
@@ -379,7 +379,7 @@
 		) {
 			billingaccounts.hidden = false;
 			if (auth.config?.workspace_enabled == true) {
-				billingaccounts.title = "Billing accounts";
+				billingaccounts.title = "Billing Accounts";
 			} else {
 				billingaccounts.title = "Customers";
 			}

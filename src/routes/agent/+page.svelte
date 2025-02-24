@@ -394,7 +394,7 @@
       onclick={() => goto(base + `/${page}/new`)}
     >
       <Plus />
-      Add agent</HotkeyButton
+      Add Agent</HotkeyButton
     >
     <HotkeyButton
       aria-label="packages"

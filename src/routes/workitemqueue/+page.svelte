@@ -96,7 +96,7 @@
     onclick={() => goto(base + `/${page}/new/`)}
   >
     <Plus />
-    Add Workitemqueue</HotkeyButton
+    Add Work Item Queue</HotkeyButton
   >
 </div>
 

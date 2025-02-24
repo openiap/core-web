@@ -13,7 +13,7 @@
 		<label for="searchstring" class="sr-only">Search</label>
 		<HotkeyInput
 			id="searchstring"
-			placeholder="Search string or JSON query"
+			placeholder="Search String or JSON Query"
 			bind:value={searchstring}
 			data-shortcut={"ctrl+f,meta+f"}
 			type="text"

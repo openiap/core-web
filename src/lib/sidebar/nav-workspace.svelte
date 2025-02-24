@@ -20,6 +20,7 @@
     import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
     import Plus from "lucide-svelte/icons/plus";
     import type { Workspace } from "../../routes/workspace/schema";
+    import { capitalizeWords } from "../../helper";
 
     let {
         workspaces,
@@ -76,17 +77,19 @@
                                     class="grid flex-1 text-left leading-tight justify-between"
                                 >
                                     <span class="truncate font-semibold">
-                                        {activeWorkspacename()}
+                                        {capitalizeWords(activeWorkspacename())}
                                     </span>
                                     <span class="truncate text-xs text-bw400"
-                                        >{activeWorkspace()?._productname}</span
+                                        >{capitalizeWords(
+                                            activeWorkspace()?._productname,
+                                        )}</span
                                     >
                                 </div>
                                 <ChevronsUpDown class="ml-auto" />
                             {:else}
                                 <div class="flex items-center">
                                     <span class="truncate font-semibold">
-                                        Select workspace
+                                        Select Workspace
                                     </span>
                                 </div>
                                 {#if isMobile}
@@ -116,10 +119,12 @@
                                 class="grid flex-1 text-left leading-tight justify-between"
                             >
                                 <span class="truncate font-semibold">
-                                    {workspace.name}
+                                    {capitalizeWords(workspace.name)}
                                 </span>
                                 <span class="truncate text-xs text-bw400"
-                                    >{workspace._productname}</span
+                                    >{capitalizeWords(
+                                        workspace._productname,
+                                    )}</span
                                 >
                             </div>
                             {#if workspace._id == currentworkspace}
@@ -159,7 +164,7 @@
                             class="gap-2 p-2 text-muted-foreground font-medium"
                         >
                             <DollarSignIcon class="size-4" />
-                            Billing for {activeWorkspacename()}
+                            Billing for {capitalizeWords(activeWorkspacename())}
                         </DropdownMenu.Item>
                     {/if}
                     <DropdownMenu.Separator class="mx-1" />

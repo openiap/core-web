@@ -102,7 +102,7 @@
       onclick={() => goto(base + `/${page}/new/${queue ? queue : "new"}`)}
     >
       <Plus />
-      Add {page}</HotkeyButton
+      Add Work Item</HotkeyButton
     >
   </div>
 </div>

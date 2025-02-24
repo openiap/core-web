@@ -25,7 +25,7 @@
   }
 </script>
 
-<div class="mb-5.5">
+<div class="mb-4">
   <SearchInput bind:searchstring />
 </div>
 

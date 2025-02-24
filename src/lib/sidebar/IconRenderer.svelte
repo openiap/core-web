@@ -29,7 +29,7 @@
 
 {#if title == "RPA Workflows"}
     <Bot />
-{:else if title == "Form workflows"}
+{:else if title == "Form Workflows"}
     <ClipboardList />
 {:else if title == "Workitems"}
     <Dumbbell />
@@ -57,7 +57,7 @@
     <CloudCog />
 {:else if title == "Mail History"}
     <Mail />
-{:else if title == "Billing accounts"}
+{:else if title == "Billing Accounts"}
     <Receipt />
 {:else if title == "Files"}
     <Files />
@@ -67,7 +67,7 @@
     <ChevronsLeftRightEllipsis />
 {:else if title == "Form Resources"}
     <CircleGauge />
-{:else if title == "Audit logs"}
+{:else if title == "Audit Logs"}
     <FileClock />
 {:else if title == "Entities"}
     <DatabaseZap />
@@ -76,7 +76,7 @@
 {:else if title == "Grafana"}
     <ChartSpline />
 {:else if title == "Git Repositories"}
-    <GitBranch />    
+    <GitBranch />
 {:else}
     <MessageSquare />
 {/if}
