@@ -292,7 +292,6 @@
   </div>
 
   {#if files.length > 0}
-    {console.log("files", JSON.stringify(files))}
     <div class="mb-2">New files:</div>
     {#each files as file, index}
       <div class="flex space-x-2 mb-2">

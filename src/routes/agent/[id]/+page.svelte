@@ -93,7 +93,6 @@
         }
         if (instance.metadata.deletionTimestamp)
           instance.showstatus = "Deleting";
-        console.log(instance.showstatus);
       }
     }
   }
@@ -520,7 +519,6 @@
               const element = document.getElementById(
                 "process" + msg.correlationId,
               );
-              console.log(element);
               if (element == null) {
                 break;
               }
@@ -530,7 +528,6 @@
 
             case "listprocesses":
               processes = payload.processes;
-              console.log(processes);
               processes.forEach((element) => {
                 if (firstListProcess) {
                   auth.client.QueueMessage(

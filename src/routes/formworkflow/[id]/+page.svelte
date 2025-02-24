@@ -2,7 +2,6 @@
     import { browser } from "$app/environment";
     import { goto } from "$app/navigation";
     import { base } from "$app/paths";
-    import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
     import { CustomSuperDebug } from "$lib/customsuperdebug";
     import { auth } from "$lib/stores/auth.svelte.js";
     import { Formio } from "formiojs";
@@ -46,9 +45,6 @@
                     jwt: auth.access_token,
                 });
                 if (_item == null) {
-                    console.error(
-                        "workflow_instances '" + payload._id + "' not found",
-                    );
                     return;
                 }
                 data.item = _item;
@@ -63,9 +59,6 @@
                         jwt: auth.access_token,
                     });
                     if (_form == null) {
-                        console.error(
-                            "Form '" + data.item.form + "' not found",
-                        );
                         return;
                     }
                     data.form = _form;
@@ -301,7 +294,6 @@
                 }
                 form.on("error", (error: any) => {
                     message = error.message ? error.message : error;
-                    console.error(message);
                 });
                 updateStyle();
                 setTimeout(() => {
@@ -335,23 +327,17 @@
         const sidebarRef1 = ref.querySelectorAll(refList1);
         if (sidebarRef1.length) {
             if ($mode === "dark") {
-                console.log("dark mode: ", $mode);
                 sidebarRef1.forEach((el: any) => {
                     el.classList.add("darkTheme");
                     el.classList.remove("lightTheme");
                     el.classList.remove("bg-light");
                 });
             } else if ($mode === "light") {
-                console.log("light mode: ", $mode);
                 sidebarRef1.forEach((el: any) => {
                     el.classList.add("lightTheme");
                     el.classList.remove("darkTheme");
                 });
-            } else {
-                console.log("Uknown mode: ", $mode);
             }
-        } else {
-            console.warn("No elements in ref: ", refList1);
         }
 
         const refList2 =
@@ -368,11 +354,7 @@
                     el.classList.add("lightThemeButton");
                     el.classList.remove("darkThemeButton");
                 });
-            } else {
-                console.log("Uknown mode: ", $mode);
             }
-        } else {
-            console.warn("No elements in ref: ", refList2);
         }
         // const refList6 = "[ref='datagrid-dataGrid-removeRow']";
         // const sidebarRef6 = ref.querySelectorAll(refList6);
@@ -387,11 +369,7 @@
         //             el.classList.add("lightDeleteButton");
         //             el.classList.remove("darkThemeButton");
         //         });
-        //     } else {
-        //         console.log("Uknown mode: ", $mode);
         //     }
-        // } else {
-        //     console.warn("No elements in ref: ", refList6);
         // }
 
         const refList3 = "[ref='sidebar-anchor']";
@@ -407,11 +385,7 @@
                     el.classList.add("lightThemeSidebarButton");
                     el.classList.remove("darkThemeSidebarButton");
                 });
-            } else {
-                console.log("Uknown mode: ", $mode);
             }
-        } else {
-            console.warn("No elements in ref: ", refList3);
         }
 
         const refList4 = "[ref='form-builder-panel']";
@@ -420,32 +394,23 @@
             sidebarRef4.forEach((el: any) => {
                 el.classList.add("themeMargin");
             });
-        } else {
-            console.warn("No elements in ref: ", refList4);
         }
 
         const refList5 = "table";
         const sidebarRef5 = ref.querySelectorAll(refList5);
-        console.log("sidebarRef5: ", sidebarRef5);
         if (sidebarRef5.length) {
             if ($mode === "dark") {
-                console.log("dark mode: ", $mode);
                 sidebarRef5.forEach((el: any) => {
                     el.classList.add("darkTheme");
                     el.classList.remove("lightTheme");
                     el.classList.remove("bg-light");
                 });
             } else if ($mode === "light") {
-                console.log("light mode: ", $mode);
                 sidebarRef5.forEach((el: any) => {
                     el.classList.add("lightTheme");
                     el.classList.remove("darkTheme");
                 });
-            } else {
-                console.log("Uknown mode: ", $mode);
             }
-        } else {
-            console.warn("No elements in ref: ", refList5);
         }
     }
     if (browser) {

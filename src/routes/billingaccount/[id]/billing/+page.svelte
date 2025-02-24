@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { goto } from "$app/navigation";
-  import { base } from "$app/paths";
   import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
   import * as Card from "$lib/components/ui/card/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
@@ -12,13 +10,12 @@
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import { Resource, ResourceUsage, type Product } from "$lib/types.svelte.js";
   import {
-    Clock,
-    Info,
-    LucideBadgeDollarSign,
-    Minus,
-    Plus,
-    ReceiptText,
-    Trash2,
+      Clock,
+      Info,
+      LucideBadgeDollarSign,
+      Minus,
+      Plus,
+      Trash2
   } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
@@ -140,12 +137,6 @@
   const candecrease = $derived((resource: Resource, product: Product) => {
     if (product.allowdirectassign == false) return false;
     if (resource.allowdirectassign == false) return false;
-    if (resource.name == "Workspaces" && product.name == "Basic tier") {
-      //debugger;
-      console.log("entities", $state.snapshot(entities));
-      console.log("resourceid", resource._id);
-      console.log("stripeprice", product.stripeprice);
-    }
     if (quantity(resource, product) == 0) return false;
     if (resource.target != "customer") return false;
     if (resource.assign == "singlevariant") {
@@ -201,12 +192,14 @@
         target = data.workspace;
         if (target == null) throw new Error("Please select a Workspace first");
       }
-      if(confirmprice == false && auth.config.stripe_api_key != null && auth.config.stripe_api_key != "") {
+      if (
+        confirmprice == false &&
+        auth.config.stripe_api_key != null &&
+        auth.config.stripe_api_key != ""
+      ) {
         try {
-        confirmpriceresource = resource;
-        confirmpriceproduct = product;
-        console.log("product.lookup_key", product.lookup_key);
-        console.log("product.stripeprice", product.stripeprice);
+          confirmpriceresource = resource;
+          confirmpriceproduct = product;
           confirmpricenextinvoice = JSON.parse(
             await auth.client.CustomCommand({
               command: "getnextinvoice",
@@ -220,8 +213,12 @@
               jwt: auth.access_token,
             }),
           );
-          const period_start = new Date(confirmpricenextinvoice.period_start * 1000);
-          const period_end = new Date(confirmpricenextinvoice.period_end * 1000);
+          const period_start = new Date(
+            confirmpricenextinvoice.period_start * 1000,
+          );
+          const period_end = new Date(
+            confirmpricenextinvoice.period_end * 1000,
+          );
           const monthNames = [
             "January",
             "February",
@@ -236,22 +233,28 @@
             "November",
             "December",
           ];
-          confirmpriceperiod_start = period_start.getDate() + " " + monthNames[period_start.getMonth()] + " " + period_start.getFullYear();
-          confirmpriceperiod_end = period_end.getDate() + " " + monthNames[period_end.getMonth()] + " " + period_end.getFullYear();
+          confirmpriceperiod_start =
+            period_start.getDate() +
+            " " +
+            monthNames[period_start.getMonth()] +
+            " " +
+            period_start.getFullYear();
+          confirmpriceperiod_end =
+            period_end.getDate() +
+            " " +
+            monthNames[period_end.getMonth()] +
+            " " +
+            period_end.getFullYear();
 
-          console.log("confirmpricenextinvoice.period_start", confirmpricenextinvoice.period_start, $state.snapshot(confirmpriceperiod_start));
-          console.log("confirmpricenextinvoice.period_end", confirmpricenextinvoice.period_end, $state.snapshot(confirmpriceperiod_end));
-          if(confirmpricenextinvoice?.lines?.data != null) {
-            confirmpricenextinvoice.lines = confirmpricenextinvoice.lines.data
+          if (confirmpricenextinvoice?.lines?.data != null) {
+            confirmpricenextinvoice.lines = confirmpricenextinvoice.lines.data;
           }
-          console.log("nextinvoice", $state.snapshot(confirmpricenextinvoice.lines.data));
           loading = false;
           confirmprice = true;
           // svelte-ignore state_referenced_locally
-          console.log("nextinvoice", $state.snapshot(confirmpricenextinvoice));
           return;
         } catch (error) {}
-      } else{
+      } else {
         confirmprice = false;
       }
       const { result, link } = JSON.parse(
@@ -634,7 +637,6 @@
   </AlertDialog.Content>
 </AlertDialog.Root>
 
-
 <AlertDialog.Root bind:open={confirmprice}>
   <AlertDialog.Content>
     <AlertDialog.Header>
@@ -645,21 +647,25 @@
           Will issue an invoice for the period<br /> -->
           {confirmpriceperiod_start} - {confirmpriceperiod_end}<br />
           With a total of
-          {confirmpricenextinvoice.total_excluding_tax / 100} {confirmpricenextinvoice.currency}
+          {confirmpricenextinvoice.total_excluding_tax / 100}
+          {confirmpricenextinvoice.currency}
           {#if confirmpricenextinvoice.tax != null && confirmpricenextinvoice?.tax > 0}
-            plus {confirmpricenextinvoice.tax / 100} {confirmpricenextinvoice.currency} in taxes
+            plus {confirmpricenextinvoice.tax / 100}
+            {confirmpricenextinvoice.currency} in taxes
           {/if}
-          <br/>
-          <br/>
+          <br />
+          <br />
           <b>Lines:</b>
-          <br/>
+          <br />
           <ul>
             {#each confirmpricenextinvoice.lines as line}
               <li>
-                {line.description} {line.amount / 100} {line.currency}
+                {line.description}
+                {line.amount / 100}
+                {line.currency}
               </li>
             {/each}
-          </ul>        
+          </ul>
         {/if}
       </AlertDialog.Description>
     </AlertDialog.Header>

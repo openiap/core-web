@@ -6,19 +6,18 @@
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import Input from "$lib/components/ui/input/input.svelte";
+  import Textarea from "$lib/components/ui/textarea/textarea.svelte";
   import { CustomInput } from "$lib/custominput/index.js";
   import { CustomSelect } from "$lib/customselect/index.js";
   import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { EntitySelector } from "$lib/entityselector/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
+  import { ResourceUsage } from "$lib/types.svelte.js";
   import { Check, KeyRound, Minus, Plus } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { LicenseSchema } from "../schema.js";
-  import { client } from "@openiap/jsapi/dist/client.js";
-  import { ResourceUsage } from "$lib/types.svelte.js";
-  import Textarea from "$lib/components/ui/textarea/textarea.svelte";
 
   let loading = $state(false);
 
@@ -46,7 +45,7 @@
     {
       stripeprice: "",
       name: "Free tier",
-      valueadd: false
+      valueadd: false,
     },
   ]);
   if (data.resource != null) {
@@ -54,7 +53,7 @@
       (x: any) => x.deprecated != true,
     );
     products = [
-      { stripeprice: "", name: "Free tier",valueadd: false },
+      { stripeprice: "", name: "Free tier", valueadd: false },
       ...data.resource.products,
     ];
   }
@@ -83,12 +82,6 @@
             jwt: auth.access_token,
           });
           toast.success("License updated");
-          console.log(
-            "data.item._stripeprice: ",
-            data.item._stripeprice,
-            "form.data._stripeprice: ",
-            form.data._stripeprice,
-          );
           if (data.item._stripeprice != form.data._stripeprice) {
             if (
               form.data._stripeprice == null ||
@@ -464,7 +457,8 @@
         {/snippet}
       </Form.Control>
       <Form.Description
-        >If your openflow is version 1.5.10 or below use version 2, for newer versions select version 3</Form.Description
+        >If your openflow is version 1.5.10 or below use version 2, for newer
+        versions select version 3</Form.Description
       >
       <Form.FieldErrors />
     </Form.Field>

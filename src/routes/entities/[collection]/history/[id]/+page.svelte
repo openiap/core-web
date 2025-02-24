@@ -28,7 +28,6 @@
     const collectionname = usersettings.entities_collectionname;
     viewData = item;
     try {
-      console.log("collectionname", collectionname, "id", item.id, "version", item._version);
       entity = await auth.client.GetDocumentVersion({collectionname: collectionname, id: item.id, version: item._version, jwt: auth.access_token});
     if(action == "view") {
       viewEntity = true;

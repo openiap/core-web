@@ -14,7 +14,6 @@ export const load: PageLoad = async ({ parent, params }) => {
         projection: { name: 1, _type: 1 },
         jwt: auth.access_token,
       });
-      console.log(amqpqueuedata);
     }
 
     if (item.amqpqueue) {
@@ -30,7 +29,6 @@ export const load: PageLoad = async ({ parent, params }) => {
           await setAmqpQueueData();
         } else {
           agentdata = FindOneRes
-          console.log(agentdata);
         }
       } else {
         await setAmqpQueueData()

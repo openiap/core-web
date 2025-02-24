@@ -25,23 +25,17 @@
         const sidebarRef1 = ref.querySelectorAll(refList1);
         if (sidebarRef1.length) {
             if ($mode === "dark") {
-                //console.log("dark mode: ", $mode);
                 sidebarRef1.forEach((el: any) => {
                     el.classList.add("darkTheme");
                     el.classList.remove("lightTheme");
                     el.classList.remove("bg-light");
                 });
             } else if ($mode === "light") {
-                //console.log("light mode: ", $mode);
                 sidebarRef1.forEach((el: any) => {
                     el.classList.add("lightTheme");
                     el.classList.remove("darkTheme");
                 });
-            } else {
-                //console.log("Uknown mode: ", $mode);
             }
-        } else {
-            console.warn("No elements in ref: ", refList1);
         }
 
         const refList2 =
@@ -58,11 +52,7 @@
                     el.classList.add("lightThemeButton");
                     el.classList.remove("darkThemeButton");
                 });
-            } else {
-                //console.log("Uknown mode: ", $mode);
             }
-        } else {
-            console.warn("No elements in ref: ", refList2);
         }
 
         const refList3 = "[ref='sidebar-anchor']";
@@ -78,11 +68,7 @@
                     el.classList.add("lightThemeSidebarButton");
                     el.classList.remove("darkThemeSidebarButton");
                 });
-            } else {
-                //console.log("Uknown mode: ", $mode);
             }
-        } else {
-            console.warn("No elements in ref: ", refList3);
         }
 
         const refList4 = "div.form-builder-panel";
@@ -91,32 +77,23 @@
             sidebarRef4.forEach((el: any) => {
                 el.classList.add("themeMargin");
             });
-        } else {
-            console.warn("No elements in ref: ", refList4);
         }
 
         const refList5 = "table";
         const sidebarRef5 = ref.querySelectorAll(refList5);
-        //console.log("sidebarRef5: ", sidebarRef5);
         if (sidebarRef5.length) {
             if ($mode === "dark") {
-                //console.log("dark mode: ", $mode);
                 sidebarRef5.forEach((el: any) => {
                     el.classList.add("darkTheme");
                     el.classList.remove("lightTheme");
                     el.classList.remove("bg-light");
                 });
             } else if ($mode === "light") {
-                //console.log("light mode: ", $mode);
                 sidebarRef5.forEach((el: any) => {
                     el.classList.add("lightTheme");
                     el.classList.remove("darkTheme");
                 });
-            } else {
-                //console.log("Uknown mode: ", $mode);
             }
-        } else {
-            console.warn("No elements in ref: ", refList5);
         }
 
         const refList6 =
@@ -133,11 +110,7 @@
                     el.classList.add("lightColor");
                     el.classList.remove("darkColor");
                 });
-            } else {
-                //console.log("Uknown mode: ", $mode);
             }
-        } else {
-            console.warn("No elements in ref: ", refList6);
         }
     }
     async function createfrom() {
@@ -145,14 +118,12 @@
         try {
             // @ts-ignore
             if (Formio == null || typeof Formio.builder !== "function") {
-                //console.log("Formio not loaded, try again in 200ms");
                 setTimeout(async () => {
                     createfrom();
                 }, 200);
                 return;
             }
         } catch (error) {
-            //console.log("Formio not loaded, try again in 200ms");
             setTimeout(async () => {
                 createfrom();
             }, 200);
@@ -172,18 +143,9 @@
             });
             updateStyle();
             builder.on("updateComponent", (component: any) => {
-                //console.log("updateComponent", component);
                 updateStyle();
             });
-            // builder.on("addComponent", (component: any) => {
-            //     //console.log("addComponent", component);
-            // });
-            // builder.on("editComponent", (component: any) => {
-            //     //console.log("editComponent", component);
-            // });
-        } catch (e) {
-            //console.log(e);
-        }
+        } catch (e) {}
         loading = false;
     }
     let firstrun = $state(true);
@@ -198,7 +160,6 @@
                 data.item.schema.components.length > 0 &&
                 firstrun == true
             ) {
-                //console.log("calling createfrom()");
                 createfrom();
                 firstrun = false;
             }

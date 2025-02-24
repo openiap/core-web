@@ -17,7 +17,7 @@
       LucideBadgeDollarSign,
       Minus,
       Plus,
-      Trash2
+      Trash2,
   } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
@@ -39,7 +39,10 @@
     }
   }
   $effect(() => {
-    if (data.id != usersettings.currentworkspace && usersettings.currentworkspace != "") {
+    if (
+      data.id != usersettings.currentworkspace &&
+      usersettings.currentworkspace != ""
+    ) {
       goto(base + "/workspace/" + usersettings.currentworkspace + "/billing");
     } else if (usersettings.currentworkspace == "") {
       goto(base + "/workspace");
@@ -146,12 +149,6 @@
   const candecrease = $derived((resource: Resource, product: Product) => {
     if (product.allowdirectassign == false) return false;
     if (resource.allowdirectassign == false) return false;
-    if (resource.name == "Workspaces" && product.name == "Basic tier") {
-      //debugger;
-      console.log("entities", $state.snapshot(entities));
-      console.log("resourceid", resource._id);
-      console.log("stripeprice", product.stripeprice);
-    }
     if (quantity(resource, product) == 0) return false;
     if (resource.target != "customer") return false;
     if (resource.assign == "singlevariant") {
@@ -215,8 +212,6 @@
         try {
           confirmpriceresource = resource;
           confirmpriceproduct = product;
-          console.log("product.lookup_key", product.lookup_key);
-          console.log("product.stripeprice", product.stripeprice);
           confirmpricenextinvoice = JSON.parse(
             await auth.client.CustomCommand({
               command: "getnextinvoice",
@@ -263,27 +258,12 @@
             " " +
             period_end.getFullYear();
 
-          console.log(
-            "confirmpricenextinvoice.period_start",
-            confirmpricenextinvoice.period_start,
-            $state.snapshot(confirmpriceperiod_start),
-          );
-          console.log(
-            "confirmpricenextinvoice.period_end",
-            confirmpricenextinvoice.period_end,
-            $state.snapshot(confirmpriceperiod_end),
-          );
           if (confirmpricenextinvoice?.lines?.data != null) {
             confirmpricenextinvoice.lines = confirmpricenextinvoice.lines.data;
           }
-          console.log(
-            "nextinvoice",
-            $state.snapshot(confirmpricenextinvoice.lines.data),
-          );
           loading = false;
           confirmprice = true;
           // svelte-ignore state_referenced_locally
-          console.log("nextinvoice", $state.snapshot(confirmpricenextinvoice));
           return;
         } catch (error) {}
       } else {

@@ -77,7 +77,6 @@
               delete form.data.id;
               break;
           }
-          // console.log("final formdata", form.data);
           await auth.client.UpdateOne({
             collectionname: "config",
             item: form.data,
@@ -118,7 +117,6 @@
 
   const { form: formData, enhance, message, validateForm } = form;
   formData.set(data.item);
-  console.log("$formData", $formData);
   validateForm({ update: true });
 
   // Adding missing keys

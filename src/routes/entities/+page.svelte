@@ -196,7 +196,6 @@
             bind:value={collectionname}
             triggerContent={() => collectionname}
             onValueChangeFunction={(item: any) => {
-              console.log("onValueChangeFunction", item);
               selectcollection(item);
             }}
             selectitems={collections}

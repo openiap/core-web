@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { browser } from "$app/environment";
 	import { goto } from "$app/navigation";
 	import { base } from "$app/paths";
 	import { page } from "$app/stores";
@@ -20,10 +21,19 @@
 	import Sun from "lucide-svelte/icons/sun";
 	import { toggleMode } from "mode-watcher";
 	import { capitalizeFirstLetter } from "../helper";
-	import { onDestroy } from "svelte";
-    import type { Workspace } from "./workspace/schema";
-    import { browser } from "$app/environment";
-	let pathname = $state($state.snapshot($page.url.pathname.replace(base, "").replace("/", "").split("/").map(x=> x.toLowerCase().charAt(0).toUpperCase() + x.slice(1)).join("/")));
+	import type { Workspace } from "./workspace/schema";
+	let pathname = $state(
+		$state.snapshot(
+			$page.url.pathname
+				.replace(base, "")
+				.replace("/", "")
+				.split("/")
+				.map(
+					(x) => x.toLowerCase().charAt(0).toUpperCase() + x.slice(1),
+				)
+				.join("/"),
+		),
+	);
 	const workspacecache = new Map();
 
 	let sidebar = Sidebar.useSidebar();
@@ -33,23 +43,27 @@
 		}
 	});
 	async function updateBreadcrumb() {
-		let _pathname = $page.url.pathname.replace(base, "").replace("/", "").split("/").map(x=> x.toLowerCase().charAt(0).toUpperCase() + x.slice(1));
+		let _pathname = $page.url.pathname
+			.replace(base, "")
+			.replace("/", "")
+			.split("/")
+			.map((x) => x.toLowerCase().charAt(0).toUpperCase() + x.slice(1));
 		if (_pathname.length == 0) {
 			pathname = _pathname.join("/");
 		} else {
 			if (_pathname[0] == "Workspace") {
 				if (_pathname.length > 1 && _pathname[1].length == 24) {
-					if(workspacecache.has(_pathname[1])) {
-						// console.log("Update workspace name to ", _pathname[1], "from cache");
+					if (workspacecache.has(_pathname[1])) {
 						_pathname[1] = workspacecache.get(_pathname[1]);
 					} else {
-						const workspace = await auth.client.FindOne<Workspace>({collectionname: "users", query: { _id: _pathname[1] }, jwt: auth.access_token});
-						if(workspace != null) {
+						const workspace = await auth.client.FindOne<Workspace>({
+							collectionname: "users",
+							query: { _id: _pathname[1] },
+							jwt: auth.access_token,
+						});
+						if (workspace != null) {
 							_pathname[1] = workspace.name;
 							workspacecache.set(_pathname[1], workspace.name);
-							// console.log("Update workspace name to ", _pathname[1]);
-						} else {
-							// console.log("workspace not found");
 						}
 					}
 				}
@@ -57,7 +71,7 @@
 			pathname = _pathname.join("/");
 		}
 	}
-	if(browser) {
+	if (browser) {
 		updateBreadcrumb();
 	}
 

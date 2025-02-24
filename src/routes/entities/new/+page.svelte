@@ -24,7 +24,6 @@
       if (form.valid) {
         loading = true;
         try {
-          console.log("type", type);
           const copyForm = form.data;
           if (type === "normal") {
             delete copyForm.timefield;
@@ -36,7 +35,6 @@
               expireAfterSeconds: copyForm.expireafterseconds,
             });
           } else {
-            console.log("copyForm", copyForm);
             await auth.client.CreateCollection({
               jwt: auth.access_token,
               collectionname: copyForm.collectionname,

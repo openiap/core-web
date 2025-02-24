@@ -14,11 +14,9 @@
   import {
     Folder,
     History,
-    Layers2,
     Pencil,
     Plus,
     RefreshCcw,
-    RotateCcw,
     Trash2,
   } from "lucide-svelte";
   import { toast } from "svelte-sonner";
@@ -189,7 +187,6 @@
             bind:value={collectionname}
             triggerContent={() => collectionname}
             onValueChangeFunction={(item: any) => {
-              console.log("onValueChangeFunction", item);
               selectcollection(item);
             }}
             selectitems={collections}

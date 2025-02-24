@@ -137,7 +137,6 @@
                 {#each entities as item}
                     <Command.Item
                         onSelect={() => {
-                            console.log("onSelect", item);
                             if (returnObject) {
                                 value = item;
                             } else {

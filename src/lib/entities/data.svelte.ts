@@ -80,7 +80,6 @@ class entitiesdata {
 					total_count = await this.GetCount(page, usersettings.entities_collectionname + "_hist", {}, access_token);
 					break;
 				case base + `/entities/${usersettings.entities_collectionname}/history/${id}`:
-					console.log("history", id);
 					entities = await this.GetData(page, usersettings.entities_collectionname + "_hist", { id }, access_token);
 					total_count = await this.GetCount(page, usersettings.entities_collectionname + "_hist", { id }, access_token);
 					break;
@@ -178,16 +177,15 @@ class entitiesdata {
 					console.log("Unknown page", page, id);
 					break;
 			}
-		} catch (error:any) {
-			if(browser) {
+		} catch (error: any) {
+			if (browser) {
 				toast.error("Error getting data", {
 					description: error.message,
-				  });
+				});
 			} else {
 				console.error("Error getting data", error.message);
 			}
 		}
-		// console.log("page:", page, "count:", entities.length, "total:", total_count);
 		return { entities, total_count };
 	}
 

@@ -90,13 +90,11 @@
               delete form.data.id;
               break;
           }
-          console.log("final formdata", form.data);
           const res = await auth.client.InsertOne({
             collectionname: "config",
             item: form.data,
             jwt: auth.access_token,
           });
-          console.log("res", res);
           toast.success("Provider added");
           goto(base + `/${key}`);
         } catch (error: any) {
