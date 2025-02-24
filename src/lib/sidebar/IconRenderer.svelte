@@ -12,6 +12,7 @@
         FileClock,
         Files,
         Ghost,
+        GitBranch,
         House,
         IdCard,
         Mail,
@@ -74,6 +75,8 @@
     <House />
 {:else if title == "Grafana"}
     <ChartSpline />
+{:else if title == "Git Repositories"}
+    <GitBranch />    
 {:else}
     <MessageSquare />
 {/if}

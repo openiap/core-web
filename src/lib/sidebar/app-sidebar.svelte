@@ -121,6 +121,14 @@
 		false,
 		true,
 	);
+	const gitrepo = new SidebarItem(
+		"Git Repositories",
+		"g g",
+		``,
+		"tourgit",
+		true,
+		true,
+	);
 	const actions = new SidebarCategory("", false, [
 		home,
 		agent,
@@ -129,6 +137,7 @@
 		formworkflow,
 		rpaworkflow,
 		grafana,
+		gitrepo
 	]);
 	const members = new SidebarItem(
 		"Members",
@@ -380,6 +389,11 @@
 		hdrobots.hidden = !isWorkspaceAdmin;
 		mailhistory.hidden = !isAdmin;
 
+		if (auth.config?.enable_gitserver == true) {
+			gitrepo.hidden = false;
+		} else {
+			gitrepo.hidden = true;
+		}
 		if (!auth.isAuthenticated) {
 			if (grafana.hidden != true) {
 				grafana.hidden = true;
