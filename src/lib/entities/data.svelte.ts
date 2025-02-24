@@ -411,6 +411,8 @@ class entitiesdata {
 				return "ID*";
 			case "name":
 				return "Name";
+			case "os":
+				return "OS";
 			case "type":
 				return "Type";
 			case "_acl":

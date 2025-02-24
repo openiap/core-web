@@ -563,7 +563,7 @@
 										class="w-8"
 										onclick={() => ToggleSelect(item)}
 										><CustomCheckbox
-											arialabel="Select item"
+											arialabel="Select Item"
 											checked={selected_items.indexOf(
 												item._id,
 											) > -1}
@@ -574,7 +574,8 @@
 									{#if head.show}
 										{#if head.field == "name"}
 											<Table.Cell
-												class={head.cellclass}
+												class={head.cellclass +
+													" cursor-pointer "}
 												onclick={() => {
 													if (
 														multi_select &&
@@ -641,7 +642,7 @@
 					variant="danger"
 				>
 					<Trash2 />
-					Delete {selected_items.length} items</HotkeyButton
+					Delete {selected_items.length} Items</HotkeyButton
 				>
 				<Hotkeybutton
 					disabled={selected_items.length === 0}
@@ -662,7 +663,7 @@
 				}}
 			>
 				<Check />
-				Select columns
+				Select Columns
 			</Hotkeybutton>
 		</div>
 	</div>
@@ -692,9 +693,9 @@
 		<div class="text-sm md:text-base">
 			Page {page_index + 1}
 			{#if entities.length == total_count}
-				showing {total_count}
+				Showing {total_count}
 			{:else}
-				showing {page_index * data.pagesize + 1}
+				Showing {page_index * data.pagesize + 1}
 				{#if entities.length > 1}
 					to {page_index * data.pagesize + entities.length}
 				{/if}

@@ -139,6 +139,7 @@
   {/snippet}
   {#snippet role(item: any)}
     <CustomSelect
+    width=""
       class="h-6"
       type="single"
       bind:value={item.role}

@@ -17,6 +17,8 @@
 
 {#if title == "Action"}
     <Clapperboard class="h-4 w-4 me-1.5" />
+{:else if title == "name"}
+    <Tag class="h-4 w-4 me-1.5" />
 {:else if title == "_created"}
     <CalendarDays class="h-4 w-4 me-1.5" />
 {:else if title == "_modified"}
