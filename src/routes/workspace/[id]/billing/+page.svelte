@@ -437,7 +437,7 @@
   </div>
 </header>
 
-<div class="grid lg:grid-cols-3 gap-4 lg:gap-10">
+<div class={"grid lg:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-10"}>
   {#each resources as resource}
     <Card.Root class={cardRoot}>
       <Card.Header class={cardHeader}>

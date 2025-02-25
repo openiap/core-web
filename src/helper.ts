@@ -14,4 +14,6 @@ function capitalizeWords(str: any) {
         .join(" ");
 }
 
-export { capitalizeFirstLetter, capitalizeWords };
+const responsiveTestClass = " bg-white sm:bg-red-500 md:bg-yellow=500 lg:bg-green-500 xl:bg-blue-500 "
+
+export { capitalizeFirstLetter, capitalizeWords, responsiveTestClass };

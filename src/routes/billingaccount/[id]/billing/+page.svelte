@@ -10,12 +10,12 @@
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import { Resource, ResourceUsage, type Product } from "$lib/types.svelte.js";
   import {
-      Clock,
-      Info,
-      LucideBadgeDollarSign,
-      Minus,
-      Plus,
-      Trash2
+    Clock,
+    Info,
+    LucideBadgeDollarSign,
+    Minus,
+    Plus,
+    Trash2,
   } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
@@ -425,7 +425,7 @@
   </div>
 </header>
 
-<div class="grid lg:grid-cols-3 gap-4 lg:gap-10">
+<div class="grid lg:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-10">
   {#each resources as resource}
     <Card.Root class={cardRoot}>
       <Card.Header class={cardHeader}>
