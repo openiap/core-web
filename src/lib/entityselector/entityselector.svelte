@@ -19,6 +19,7 @@
         noitem = false,
         width = "w-full md:w-1/2 lg:w-1/3",
         showType = false,
+        queryas = null,
         ...restProps
     } = $props();
 
@@ -46,6 +47,7 @@
             collectionname,
             query: { _id: id },
             jwt: auth.access_token,
+            queryas,
         });
         if (item != null) {
             if (showType) {
@@ -68,6 +70,7 @@
                 top: 8,
                 jwt: auth.access_token,
                 projection,
+                queryas,
             });
         } catch (error: any) {
             toast.error("Error loading entities", {

@@ -13,7 +13,8 @@
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../../schema.js";
-    import { browser } from "$app/environment";
+  import { browser } from "$app/environment";
+  import { usersettings } from "$lib/stores/usersettings.svelte.js";
 
   const { data } = $props();
   const key = "workitem";
@@ -137,8 +138,8 @@
       if (element == null) return;
       element.setAttribute("src", image_url);
       element.classList.remove("hidden");
-    } catch (error:any) {
-      if(browser) {
+    } catch (error: any) {
+      if (browser) {
         toast.error("Error loading image", {
           description: error.message,
         });
@@ -172,6 +173,7 @@
       {#snippet children({ props })}
         <Form.Label>Queue</Form.Label>
         <EntitySelector
+          queryas={usersettings.currentworkspace}
           collectionname="mq"
           bind:value={$formData.wiqid}
           basefilter={{ _type: "workitemqueue" }}

@@ -128,26 +128,6 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  {#if auth.config?.workspace_enabled == true}
-    <Form.Field {form} name="_workspaceid" class="mb-7">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Workspace</Form.Label>
-          <EntitySelector
-            collectionname="users"
-            bind:value={$formData._workspaceid}
-            basefilter={{ _type: "workspace" }}
-            projection={{ name: 1 }}
-            class="w-64"
-            name="project"
-            noitem={true}
-          />
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
-  {/if}
-
   <Form.Field {form} name="projectid" class="mb-7">
     <Form.Control>
       {#snippet children({ props })}
@@ -274,6 +254,7 @@
   <div class="mb-7">
     <div class="mb-2">Agent</div>
     <EntitySelector
+      queryas={usersettings.currentworkspace}
       collectionname="agents"
       bind:value={agentdata}
       basefilter={{ _type: "agent" }}
@@ -295,6 +276,7 @@
       {#snippet children({ props })}
         <Form.Label>Package</Form.Label>
         <EntitySelector
+          queryas={usersettings.currentworkspace}
           collectionname="agents"
           bind:value={$formData.packageid}
           basefilter={{ _type: "package" }}
@@ -326,6 +308,7 @@
       {#snippet children({ props })}
         <Form.Label>on success, push to</Form.Label>
         <EntitySelector
+          queryas={usersettings.currentworkspace}
           collectionname="mq"
           bind:value={$formData.success_wiqid}
           basefilter={{ _type: "workitemqueue" }}
@@ -343,6 +326,7 @@
       {#snippet children({ props })}
         <Form.Label>on failure, push to</Form.Label>
         <EntitySelector
+          queryas={usersettings.currentworkspace}
           collectionname="mq"
           bind:value={$formData.failed_wiqid}
           basefilter={{ _type: "workitemqueue" }}

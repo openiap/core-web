@@ -287,7 +287,7 @@
             <div class="grid grid-col-1 gap-2 w-full">
               {#if entities.length > 0}
                 {#if resourcecount == 0}
-                  <Form.Label>Workspace Billing</Form.Label>
+                  <Form.Label>Billing Account</Form.Label>
                   <div class="text-bw400">
                     Select a billing account for this workspace
                   </div>
@@ -298,7 +298,7 @@
                     selectitems={[{ name: "Create new", _id: "" }, ...entities]}
                   />
                 {:else}
-                  <Form.Label>Workspace Billing</Form.Label>
+                  <Form.Label>Billing Account</Form.Label>
                   <div class="text-bw400">
                     The current billing account for this workspace
                   </div>
@@ -320,9 +320,9 @@
 
             <div class="grid grid-col-1 gap-2 w-full">
               {#if data.currentbilling != null}
-                <Form.Label>Billing Account</Form.Label>
+                <Form.Label>Workspace Billing</Form.Label>
                 <div class="text-bw400">
-                  Show billing details for this specific workspace
+                  Show billing details for this workspace
                 </div>
                 <Button
                   class="md:max-w-xs"

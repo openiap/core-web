@@ -1085,6 +1085,7 @@
                 <Form.Label>Runas</Form.Label>
                 <div class="md:flex md:items-center md:space-x-4 my-2">
                   <Entityselector
+                    queryas={usersettings.currentworkspace}
                     width="md:w-fit w-64"
                     class="mb-2 md:mb-0"
                     disabled={loading}
@@ -1172,6 +1173,7 @@
           <div class="md:flex md:space-x-5 my-2">
             <div class="flex items-center space-x-8 mb-2">
               <Entityselector
+                queryas={agent?.runas}
                 width="md:w-fit w-64"
                 collectionname="agents"
                 handleChangeFunction={() => {
@@ -1346,6 +1348,7 @@
 
       <div class="flex items-center justify-start space-x-2 my-2">
         <Entityselector
+          queryas={agent.runas}
           collectionname="agents"
           basefilter={{ _type: "package", language: { $in: agent.languages } }}
           bind:value={packageId}

@@ -13,6 +13,7 @@
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newFormSchema } from "../../schema.js";
+  import { usersettings } from "$lib/stores/usersettings.svelte.js";
 
   const key = "workitem";
   let { data } = $props();
@@ -122,6 +123,7 @@
         <div class="flex flex-col items-start space-y-2">
           <Form.Label>Queue</Form.Label>
           <EntitySelector
+            queryas={usersettings.currentworkspace}
             collectionname="mq"
             bind:value={$formData.wiqid}
             basefilter={{ _type: "workitemqueue" }}
