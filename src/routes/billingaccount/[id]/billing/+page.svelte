@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { goto } from "$app/navigation";
+  import { base } from "$app/paths";
   import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
   import * as Card from "$lib/components/ui/card/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
@@ -513,56 +515,84 @@
               <Separator />
             </div>
           {/if}
-          <div class="flex items-center justify-between p-4">
-            <p class="text-muted-foreground text-sm max-w-[200px]">
-              {resource.name}<br />
-              {#if resource.product.assign == "metered"}
-                <HotkeyButton
-                  disabled={loading}
-                  onclick={async () => {
-                    try {
-                      loading = true;
-                      metervalues = JSON.parse(
-                        await auth.client.CustomCommand({
-                          command: "getmeteredresourceusage",
-                          id: resource._id,
-                          jwt: auth.access_token,
-                        }),
-                      );
+          <div class="p-4">
+            <div class="flex items-center justify-between">
+              <p class="text-muted-foreground text-sm max-w-[200px]">
+                {resource.name}<br />
+                {#if resource.product.assign == "metered"}
+                  <HotkeyButton
+                    disabled={loading}
+                    onclick={async () => {
+                      try {
+                        loading = true;
+                        metervalues = JSON.parse(
+                          await auth.client.CustomCommand({
+                            command: "getmeteredresourceusage",
+                            id: resource._id,
+                            jwt: auth.access_token,
+                          }),
+                        );
+                        selectedmeter = resource;
+                        meterusageprompt = true;
+                      } catch (error: any) {
+                        toast.error("Error getting data", {
+                          description: error.message,
+                        });
+                      } finally {
+                        loading = false;
+                      }
+                    }}
+                  >
+                    <Clock />
+                  </HotkeyButton>
+                {/if}
+                {#if resource.product.assign == "metered" && isAdmin}
+                  <HotkeyButton
+                    disabled={loading}
+                    onclick={() => {
                       selectedmeter = resource;
-                      meterusageprompt = true;
-                    } catch (error: any) {
-                      toast.error("Error getting data", {
-                        description: error.message,
-                      });
-                    } finally {
-                      loading = false;
-                    }
-                  }}
-                >
-                  <Clock />
-                </HotkeyButton>
-              {/if}
-              {#if resource.product.assign == "metered" && isAdmin}
+                      meterprompt = true;
+                    }}
+                  >
+                    <Plus />
+                  </HotkeyButton>
+                {/if}
+              </p>
+              <HotkeyButton
+                variant="danger"
+                size="icon"
+                disabled={loading}
+                onclick={() => removeresourceusage(resource)}
+              >
+                <Trash2 />
+              </HotkeyButton>
+            </div>
+
+            <div class="mt-2">
+              {#if resource.licenseid != null && resource.licenseid != ""}
                 <HotkeyButton
-                  disabled={loading}
-                  onclick={() => {
-                    selectedmeter = resource;
-                    meterprompt = true;
-                  }}
+                  onclick={() =>
+                    goto(base + "/licensekey/" + resource.licenseid)}
+                  >Edit license</HotkeyButton
                 >
-                  <Plus />
-                </HotkeyButton>
+              {:else if resource.agentid != null && resource.agentid != ""}
+                <HotkeyButton
+                  onclick={() => goto(base + "/agent/" + resource.agentid)}
+                  >Edit Agent</HotkeyButton
+                >
+              {:else if resource.userid != null && resource.userid != ""}
+                <HotkeyButton
+                  onclick={() => goto(base + "/user/" + resource.userid)}
+                  >Edit User</HotkeyButton
+                >
+              {:else if resource.workspaceid != null && resource.workspaceid != ""}
+                <HotkeyButton
+                  onclick={() =>
+                    goto(base + "/workspace/" + resource.workspaceid)}
+                  >Edit Workspace</HotkeyButton
+                >
               {/if}
-            </p>
-            <HotkeyButton
-              variant="danger"
-              size="icon"
-              disabled={loading}
-              onclick={() => removeresourceusage(resource)}
-            >
-              <Trash2 />
-            </HotkeyButton>
+            </div>
           </div>
         {/each}
       </ScrollArea>

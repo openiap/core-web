@@ -50,6 +50,8 @@ export class ResourceUsage {
     /** "subscription_item" */
     siid: string = "";
     key: number = $state(0);
+    licenseid: string = "";
+    agentid: string = "";
 }
 export declare enum ResourceTargetType {
     customer = "customer",

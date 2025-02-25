@@ -21,6 +21,13 @@
     import Plus from "lucide-svelte/icons/plus";
     import type { Workspace } from "../../routes/workspace/schema";
     import { capitalizeWords } from "../../helper";
+    import { EntitySelector } from "$lib/entityselector";
+    import * as Command from "$lib/components/ui/command/index.js";
+    import { usersettings } from "$lib/stores/usersettings.svelte";
+    import { toast } from "svelte-sonner";
+    import Separator from "$lib/components/ui/separator/separator.svelte";
+    import * as Popover from "$lib/components/ui/popover/index.js";
+    import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
 
     let {
         workspaces,
@@ -59,6 +66,51 @@
         }
     }
     checkMobile();
+    async function loadSearchResult() {
+        console.log("search", search);
+        let query = { _type: "workspace" };
+        if (search != null || search != "") {
+            query = {
+                _type: "workspace",
+                // @ts-ignore
+                name: { $regex: search, $options: "i" },
+            };
+        }
+        // else{
+        //     return entities = [];
+        // }
+        try {
+            console.log("query", query);
+            entities = await auth.client.Query({
+                collectionname: "users",
+                query,
+                top: 5,
+                jwt: auth.access_token,
+                // projection,
+                // queryas:usersettings.workspaceid,
+            });
+            console.log("entities");
+            // if (!entities) {
+            //     entities = [];
+            // }
+            $state.snapshot(entities);
+        } catch (error: any) {
+            toast.error("Error loading entities", {
+                description: error.message,
+            });
+            entities = [];
+        }
+        // entities.unshift({
+        //     _id: "",
+        //     name: `(no workspace)`,
+        //     value: null,
+        //     _type: null,
+        // } as any);
+    }
+    let entities: any[] = $state([]);
+    let search: string = $state("");
+
+    let triggerRef = $state<HTMLButtonElement>(null!);
 </script>
 
 {#if auth.config?.workspace_enabled == true}
@@ -102,6 +154,7 @@
                     {/snippet}
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content
+                    loop={false}
                     class="w-[--bits-dropdown-menu-anchor-width] min-w-56 rounded-lg shadow-light dark:shadow-dark bg-bw50 dark:bg-bw800"
                     align="start"
                     side={sidebar.isMobile ? "bottom" : "right"}
@@ -110,32 +163,70 @@
                     <DropdownMenu.Label class="text-muted-foreground font-bold "
                         >Workspaces</DropdownMenu.Label
                     >
-                    {#each workspaces as workspace, index (workspace._id)}
-                        <DropdownMenu.Item
-                            onSelect={() => selectWorkspace(workspace)}
-                            class={`gap-2 px-2 py-1`}
-                        >
-                            <div
-                                class="grid flex-1 text-left leading-tight justify-between"
+                    <!-- <Command.Root
+                        shouldFilter={false}
+                        class="bg-bw50 dark:bg-bw800"
+                    >
+                        <Command.Input
+                            placeholder="Search workspace"
+                            onkeyup={async (e) => {
+                                // @ts-ignore
+                                search = e.target.value;
+                                await loadSearchResult();
+                            }}
+                        />
+                        {#if search != null && search != ""}
+                            <Command.List>
+                                <Command.Empty>No entity found.</Command.Empty>
+                                {#each entities as item}
+                                    <Command.Item
+                                        onSelect={() => {
+                                            const returnObject = false;
+                                            if (returnObject) {
+                                                currentworkspace = item;
+                                            } else {
+                                                currentworkspace = item._id;
+                                            }
+                                            // closeAndRefocusTrigger();
+                                        }}
+                                        value={item._id}
+                                        class="text-sm"
+                                    >
+                                        {item.name}
+                                    </Command.Item>
+                                {/each}
+                            </Command.List>
+                        {/if}
+                    </Command.Root>
+                    <Separator /> -->
+                    {#if search == null || search == ""}
+                        {#each workspaces as workspace, index (workspace._id)}
+                            <DropdownMenu.Item
+                                onSelect={() => selectWorkspace(workspace)}
+                                class={`gap-2 px-2 py-1`}
                             >
-                                <span class="truncate font-semibold">
-                                    {capitalizeWords(workspace.name)}
-                                </span>
-                                <span class="truncate text-xs text-bw400"
-                                    >{capitalizeWords(
-                                        workspace._productname,
-                                    )}</span
-                                >
-                            </div>
-                            {#if workspace._id == currentworkspace}
                                 <div
-                                    class="bg-darkbordergreen text-bw50 rounded-full"
+                                    class="grid flex-1 text-left leading-tight justify-between"
                                 >
-                                    <Check class="p-0.5" />
+                                    <span class="truncate font-semibold">
+                                        {capitalizeWords(workspace.name)}
+                                    </span>
+                                    <span class="truncate text-xs text-bw400"
+                                        >{capitalizeWords(
+                                            workspace._productname,
+                                        )}</span
+                                    >
                                 </div>
-                            {/if}
-                        </DropdownMenu.Item>
-                    {/each}
+                                {#if workspace._id == currentworkspace}
+                                    <div
+                                        class="bg-darkbordergreen text-bw50 rounded-full"
+                                    >
+                                        <Check class="p-0.5" />
+                                    </div>
+                                {/if}
+                            </DropdownMenu.Item>
+                        {/each}
+                    {/if}
                     <DropdownMenu.Separator class="mx-1" />
                     {#if workspaces.length > 0}
                         {#if currentworkspace != ""}
@@ -187,3 +278,114 @@
 {:else}
     OpenCore <small>{auth.config?.version}</small>
 {/if}
+
+<!-- {#if auth.config?.workspace_enabled == true}
+    <Popover.Root>
+        <Popover.Trigger bind:ref={triggerRef} onclick={loadSearchResult}>
+            {#snippet child({ props })}
+                <HotkeyButton
+                    {...props}
+                    class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground border-[1px] border-bw500 rounded-[10px] px-4 py-6 bg-bw50 dark:bg-bw800 "
+                >
+                    {#if activeWorkspacename() != ""}
+                        <Building />
+                        <div
+                            class="grid flex-1 text-left leading-tight justify-between"
+                        >
+                            <span class="truncate font-semibold">
+                                {capitalizeWords(activeWorkspacename())}
+                            </span>
+                            <span class="truncate text-xs text-bw400"
+                                >{capitalizeWords(
+                                    activeWorkspace()?._productname,
+                                )}</span
+                            >
+                        </div>
+                        <ChevronsUpDown class="ml-auto" />
+                    {:else}
+                        <div class="flex items-center">
+                            <span class="truncate font-semibold">
+                                Select Workspace
+                            </span>
+                        </div>
+                        {#if isMobile}
+                            <ChevronDown class="ml-auto" />
+                        {:else}
+                            <ChevronRight class="ml-auto" />
+                        {/if}
+                    {/if}
+                </HotkeyButton>
+            {/snippet}
+        </Popover.Trigger>
+        <Popover.Content class="w-[200px] p-0">
+            <Command.Root>
+                <Command.Input
+                    placeholder="Search workspace"
+                    onkeyup={async (e) => {
+                        // @ts-ignore
+                        search = e.target.value;
+                        await loadSearchResult();
+                    }}
+                />
+                <Command.List>
+                    <Command.Empty>No workspace found.</Command.Empty>
+                    <Command.Group>
+                        {#each entities as workspace, index (workspace._id)}
+                            <Command.Item
+                                onSelect={() => selectWorkspace(workspace)}
+                                class={`gap-2 px-2 py-1`}
+                            >
+                                <div
+                                    class="grid flex-1 text-left leading-tight justify-between"
+                                >
+                                    <span class="truncate font-semibold">
+                                        {capitalizeWords(workspace.name)}
+                                    </span>
+                                    <span class="truncate text-xs text-bw400"
+                                        >{capitalizeWords(
+                                            workspace._productname,
+                                        )}</span
+                                    >
+                                </div>
+                                {#if workspace._id == currentworkspace}
+                                    <div
+                                        class="bg-darkbordergreen text-bw50 rounded-full"
+                                    >
+                                        <Check class="p-0.5" />
+                                    </div>
+                                {/if}
+                            </Command.Item>
+                        {/each}
+                    </Command.Group>
+                </Command.List>
+            </Command.Root>
+            <Popover.Content>
+                {#if currentworkspace != ""}
+                    <div
+                        onSelect={() =>
+                            goto(base + "/workspace/" + currentworkspace)}
+                        class="gap-2 p-2 text-muted-foreground font-medium"
+                    >
+                        <DollarSignIcon class="size-4" />
+                        Billing for {capitalizeWords(activeWorkspacename())}
+                    </div>
+                {/if}
+                <Popover.Separator class="mx-1" />
+
+                <div
+                    class="gap-2 p-2 cursor-pointer"
+                    onclick={() => goto(base + "/workspace/new")}
+                >
+                    <div
+                        class="bg-background flex size-6 items-center justify-center rounded-md border"
+                    >
+                        <Plus class="size-4" />
+                    </div>
+                    <div class=" font-medium">Create Workspace</div>
+                </div>
+            </Popover.Content>
+        </Popover.Content>
+    </Popover.Root>
+{:else}
+    OpenCore <small>{auth.config?.version}</small>
+{/if} -->

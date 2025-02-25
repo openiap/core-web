@@ -34,6 +34,9 @@
 				.join("/"),
 		),
 	);
+	let realpathname = $state(
+		$state.snapshot($page.url.pathname.replace(base, "").replace("/", "")),
+	);
 	const workspacecache = new Map();
 
 	let sidebar = Sidebar.useSidebar();
@@ -48,10 +51,17 @@
 			.replace("/", "")
 			.split("/")
 			.map((x) => x.toLowerCase().charAt(0).toUpperCase() + x.slice(1));
+		realpathname = $state.snapshot(
+			$page.url.pathname.replace(base, "").replace("/", ""),
+		);
+
 		if (_pathname.length == 0) {
 			pathname = _pathname.join("/");
 		} else {
-			if (_pathname[0] == "Workspace") {
+			if (
+				_pathname[0] == "Workspace" ||
+				_pathname[0] == "Billingaccount"
+			) {
 				if (_pathname.length > 1 && _pathname[1].length == 24) {
 					if (workspacecache.has(_pathname[1])) {
 						_pathname[1] = workspacecache.get(_pathname[1]);
@@ -119,10 +129,10 @@
 					<Breadcrumb.Item class="hidden md:block ">
 						{#if pathname.split("/").length - 1 !== index}
 							<Breadcrumb.Link
-								href="{base}/{pathname
+								href="{base}/{realpathname
 									.split('/')
 									.splice(0, index + 1)
-									.join('/').toLowerCase()}">{page.trim()}</Breadcrumb.Link
+									.join('/')}">{page.trim()}</Breadcrumb.Link
 							>
 						{:else}
 							<div class="font-bold text-[16px] dark:text-bw100">
