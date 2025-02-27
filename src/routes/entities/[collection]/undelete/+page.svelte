@@ -1,4 +1,4 @@
-<!-- <script lang="ts">
+<script lang="ts">
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
   import { CustomSelect } from "$lib/customselect";
   import Entities from "$lib/entities/entities.svelte";
@@ -7,7 +7,6 @@
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
-    import { CustomInput } from "$lib/custominput/index.js";
 
   const { data } = $props();
   let ref: any;
@@ -28,34 +27,38 @@
   }
 </script>
 
-<div>Mongodb Query</div>
-<CustomInput
-  placeholder="Mongodb query"
-  width="w-full"
-  bind:value={mongodbQuery}
-/>
-<div class="flex space-x-4 justify-between items-center mb-2">
-  <div class="flex items-center space-x-2">
-    <div>Uniqueness</div>
-    <CustomInput
-      placeholder="uniqueness"
-      width="w-full"
-      bind:value={uniqueness}
-    />
-    <div class="flex items-center space-x-2">
-      <CustomCheckbox bind:checked={includeOnes} />
-      <div>Include 1's</div>
-    </div>
-  </div>
-  <div class="flex items-center space-x-4">
-    <HotkeyButton>
-      <Trash2 /> One
+<Searchinput bind:searchstring class="xl:w-[240px]" />
+
+<Entities
+  {collectionname}
+  page={page()}
+  total_count={data.total_count}
+  bind:searchstring
+  bind:selected_items
+  bind:entities
+  {single_item_click}
+  bind:this={ref}
+  bind:loading
+>
+  {#snippet action(item: any)}
+    <HotkeyButton
+      aria-label="history"
+      disabled={loading}
+      onclick={() =>
+        goto(base + `/entities/${collectionname}/history/${item._id}`)}
+      size="tableicon"
+      variant="icon"
+    >
+      <History />
     </HotkeyButton>
-    <HotkeyButton>
-      <Trash2 /> All but One
+    <HotkeyButton
+      aria-label="edit"
+      disabled={loading}
+      onclick={() => single_item_click(item)}
+      size="tableicon"
+      variant="icon"
+    >
+      <Pencil />
     </HotkeyButton>
-    <HotkeyButton>
-      <Trash2 /> All
-    </HotkeyButton>
-  </div>
-</div> -->
+  {/snippet}
+</Entities>

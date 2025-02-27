@@ -32,6 +32,7 @@ class entitiesdata {
 	pagesize = $state(13);
 
 	async Fetch(page: string, id: string | undefined, access_token: string): Promise<{ entities: any[], total_count: number }> {
+		console.log("Fetch", page, id);
 		let entities: any[] = [], total_count: number = 0;
 		try {
 			switch (page) {
@@ -72,8 +73,13 @@ class entitiesdata {
 					entities = await this.GetData(page, "openrpa", { _type: "credential" }, access_token);
 					total_count = await this.GetCount(page, "openrpa", { _type: "credential" }, access_token);
 				case base + `/entities/${usersettings.entities_collectionname}`:
+				case base + `/entities/${usersettings.entities_collectionname}/view`:
 					entities = await this.GetData(page, usersettings.entities_collectionname, {}, access_token);
 					total_count = await this.GetCount(page, usersettings.entities_collectionname, {}, access_token);
+					break;
+				case base + `/entities/${usersettings.entities_collectionname}/undelete`:
+					entities = await this.GetData(page, usersettings.entities_collectionname + "_hist", { _deleted: { $exists: true } }, access_token);
+					total_count = await this.GetCount(page, usersettings.entities_collectionname + "_hist", { _deleted: { $exists: true } }, access_token);
 					break;
 				case base + `/entities/${usersettings.entities_collectionname}/deleted`:
 					entities = await this.GetData(page, usersettings.entities_collectionname + "_hist", { _deleted: { "$exists": true } }, access_token);
@@ -190,6 +196,7 @@ class entitiesdata {
 	}
 
 	async GetData(page: string, collectionname: string, query: any, access_token: string, workspacefilter: boolean = true) {
+		console.log("** ", collectionname)
 		let orderby = this.getOrderBy(page, collectionname);
 		let usequery = this.createQuery(this.settings.searchstring, query);
 		let top = this.pagesize;
@@ -570,7 +577,7 @@ class entitiesdata {
 				if (page.indexOf("/history/") > -1) {
 					console.log("Unknown history page", page);
 					return ["_id", "name", "_createdby", "_modified", "_deleted", "_version"];
-				} else if (page.endsWith("/deleted")) {
+				} else if (page.endsWith("/deleted") || page.endsWith("/undelete")) {
 					console.log("Unknown deleted page", page);
 					return ["_id", "name", "_type", "_deleted", "_deletedby", "_created", "_version"];
 				}
