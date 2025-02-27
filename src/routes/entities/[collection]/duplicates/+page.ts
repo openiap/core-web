@@ -9,7 +9,12 @@ export const load: PageLoad = async ({ parent, params }) => {
     { $match: { count: { $gt: 1 } } },
     { $sort: { count: -1 } },
   ]
-  const entities = await auth.client.Aggregate<any>({ collectionname, aggregates, jwt: access_token });
 
-  return { entities, collectionname };
+  try {
+    const entities = await auth.client.Aggregate<any>({ collectionname, aggregates, jwt: access_token });
+    const collections = await auth.client.ListCollections({ jwt: access_token });
+    return { collections, collectionname, entities };
+  } catch (error) {
+    return { collections: [], collectionname, entities: [] };
+  }
 };

@@ -5,10 +5,19 @@
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
   import { Separator } from "$lib/components/ui/separator/index.js";
+  import * as Tabs from "$lib/components/ui/tabs/index.js";
+  import { CustomSelect } from "$lib/customselect/index.js";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
   import Searchinput from "$lib/searchinput/searchinput.svelte";
-  import { Folder } from "lucide-svelte";
+  import {
+    Clock,
+    Folder,
+    FolderSymlink,
+    History,
+    Pencil,
+    Plus,
+  } from "lucide-svelte";
 
   let { data } = $props();
   let ref: any;
@@ -38,34 +47,94 @@
   }
 </script>
 
-<div class="flex items-start justify-between">
+<div class="flex items-start justify-between h-full mb-4">
   <div
     id="div1"
-    class="w-full max-w-max flex-shrink-0 hidden sm:block p-2.5 rounded-[10px] dark:bg-bw900"
+    class="h-full max-w-max flex-shrink-0 p-2.5 rounded-[10px] bg-bw100 dark:bg-bw900 pb-10 hidden xl:block"
   >
-    <small class="ps-4">{collectionname}</small>
-    <ScrollArea class="max-h-[79.5vh] w-[266px] overflow-auto ">
-      <div class="pt-0 p-4">
-        {#each collections as collection}
-          <HotkeyButton
-            class="w-full justify-start"
-            size="entity"
-            disabled={loading}
-            variant={collectionvariant(collection.name)}
-            onclick={(e) => {
-              selectcollection(collection.name);
-            }}
-          >
-            <Folder class="size-4" />
-            {collection.name}</HotkeyButton
-          >
-          <Separator class="my-2" />
-        {/each}
-      </div>
-    </ScrollArea>
+    <div class="flex justify-center w-full px-4">
+      <HotkeyButton
+        class="mb-2 rounded-md w-full"
+        size="sm"
+        data-shortcut="n,ins"
+        disabled={loading}
+        onclick={() => goto(base + `/entities/new`)}
+      >
+        <Plus />
+        Insert collection</HotkeyButton
+      >
+    </div>
+    <div class="h-full overflow-auto">
+      <ScrollArea class="max-h-full w-[266px] overflow-auto">
+        <div class="pt-0 p-4">
+          {#each collections as collection, index}
+            {#if index != 0}
+              <Separator class="my-2" />
+            {/if}
+            <HotkeyButton
+              class="w-full justify-start"
+              size="entity"
+              variant={collectionvariant(collection.name)}
+              onclick={(e) => {
+                selectcollection(collection.name);
+              }}
+            >
+              {#if collection.name.endsWith(".files")}
+                <FolderSymlink class="size-4" />
+              {:else if collection.type == "timeseries"}
+                <Clock class="size-4" />
+              {:else}
+                <Folder class="size-4" />
+              {/if}
+              {collection.name}</HotkeyButton
+            >
+          {/each}
+        </div>
+      </ScrollArea>
+    </div>
   </div>
-  <div id="div2" class="ms-6 flex-1">
-    <div class="flex justify-between">
+  <div id="div2" class="xl:ms-2 page">
+    <Tabs.Root value={"undelete"} class="mb-4">
+      <Tabs.List
+        class="grid grid-cols-1 md:block md:w-fit dark:bg-darkagenttab rounded-[15px] p-1"
+      >
+        <Tabs.Trigger
+          value="view"
+          onclick={() => {
+            goto(base + `/entities/${collectionname}`);
+          }}>View</Tabs.Trigger
+        >
+        <Tabs.Trigger
+          value="duplicates"
+          onclick={() => {
+            goto(base + `/entities/${collectionname}/duplicates`);
+          }}>Show duplicates</Tabs.Trigger
+        >
+        <Tabs.Trigger
+          value="undelete"
+          onclick={() => {
+            goto(base + `/entities/${collectionname}/deleted`);
+          }}>Undelete</Tabs.Trigger
+        >
+      </Tabs.List>
+    </Tabs.Root>
+
+    <div class="block xl:hidden mb-4 xl:mb-0">
+      <CustomSelect
+        class="h-7"
+        width="w-full"
+        type="single"
+        {loading}
+        bind:value={collectionname}
+        triggerContent={() => collectionname}
+        onValueChangeFunction={(item: any) => {
+          selectcollection(item);
+        }}
+        selectitems={collections}
+      />
+    </div>
+
+    <div class="flex justify-between mb-4">
       <div class="flex gap-2 w-full">
         <Searchinput bind:searchstring />
       </div>
@@ -73,17 +142,36 @@
 
     <Entities
       {collectionname}
-      {query}
       page={page()}
       total_count={data.total_count}
-      multi_select={false}
       bind:searchstring
       bind:selected_items
       bind:entities
-      {single_item_click}
       bind:this={ref}
       bind:loading
-    ></Entities>
+    >
+      {#snippet action(item: any)}
+        <HotkeyButton
+          aria-label="history"
+          disabled={loading}
+          onclick={() =>
+            goto(base + `/entities/${collectionname}/history/${item._id}`)}
+          size="tableicon"
+          variant="icon"
+        >
+          <History />
+        </HotkeyButton>
+        <HotkeyButton
+          aria-label="edit"
+          disabled={loading}
+          onclick={() => single_item_click(item)}
+          size="tableicon"
+          variant="icon"
+        >
+          <Pencil />
+        </HotkeyButton>
+      {/snippet}</Entities
+    >
   </div>
 </div>
 
@@ -113,4 +201,11 @@
 >
 
 <style>
+  .page {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    /* This ensures it fills the entire window height */
+  }
 </style>

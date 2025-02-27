@@ -5,6 +5,7 @@
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
   import { Separator } from "$lib/components/ui/separator/index.js";
+  import * as Tabs from "$lib/components/ui/tabs/index.js";
   import { CustomSelect } from "$lib/customselect/index.js";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
@@ -157,48 +158,53 @@
     </div>
   </div>
   <div id="div2" class="xl:ms-2 page">
-    <div
-      class="flex flex-col xl:flex-row xl:items-center xl:justify-between xl:space-x-4 xl:mb-2"
-    >
-      <div
-        class="grid grid-cols-1 md:grid-cols-2 xl:flex xl:items-center gap-2 xl:gap-0 xl:space-x-4 mb-2"
+    <Tabs.Root value={"view"} class="mb-4">
+      <Tabs.List
+        class="grid grid-cols-1 md:block md:w-fit dark:bg-darkagenttab rounded-[15px] p-1"
       >
-        <!-- <div class="w-full">  -->
-        <Searchinput bind:searchstring class="xl:w-[240px]" />
-        <!-- </div> -->
-        <div class="block xl:hidden">
-          <CustomSelect
-            class="h-7"
-            width="w-full"
-            type="single"
-            {loading}
-            bind:value={collectionname}
-            triggerContent={() => collectionname}
-            onValueChangeFunction={(item: any) => {
-              selectcollection(item);
-            }}
-            selectitems={collections}
-          />
-        </div>
-      </div>
-      <!-- <HotkeyButton
-      size="sm"
-      disabled={loading}
-      onclick={() => goto(base + `/entities/${collectionname}/deleted`)}
+        <Tabs.Trigger
+          value="view"
+          onclick={() => {
+            goto(base + `/entities/${collectionname}`);
+          }}>View</Tabs.Trigger
+        >
+        <Tabs.Trigger
+          value="duplicates"
+          onclick={() => {
+            goto(base + `/entities/${collectionname}/duplicates`);
+          }}>Show duplicates</Tabs.Trigger
+        >
+        <Tabs.Trigger
+          value="undelete"
+          onclick={() => {
+            goto(base + `/entities/${collectionname}/deleted`);
+          }}>Undelete</Tabs.Trigger
+        >
+      </Tabs.List>
+    </Tabs.Root>
+
+    <div class="block xl:hidden mb-4 xl:mb-0">
+      <CustomSelect
+        class="h-7"
+        width="w-full"
+        type="single"
+        {loading}
+        bind:value={collectionname}
+        triggerContent={() => collectionname}
+        onValueChangeFunction={(item: any) => {
+          selectcollection(item);
+        }}
+        selectitems={collections}
+      />
+    </div>
+
+    <div
+      class="flex flex-col xl:flex-row xl:items-center xl:justify-between xl:space-x-4 lg:mb-4"
     >
-      <RotateCcw />
-      Deleted items</HotkeyButton
-    >
-    <HotkeyButton
-      size="sm"
-      disabled={loading}
-      onclick={() => goto(base + `/entities/${collectionname}/duplicates`)}
-    >
-      <Layers2 />
-      Show Duplicates</HotkeyButton
-    > -->
+      <Searchinput bind:searchstring class="xl:w-[240px] mb-4 xl:mb-0" />
+
       <div
-        class="grid grid-cols-1 md:grid-cols-2 lg:flex gap-2 lg:gap-0 lg:space-x-4 mb-2"
+        class="grid grid-cols-1 md:grid-cols-2 lg:flex gap-2 lg:gap-0 lg:space-x-4 mb-4 lg:mb-0"
       >
         <HotkeyButton size="sm" disabled={loading} onclick={getCollections}>
           <RefreshCcw />

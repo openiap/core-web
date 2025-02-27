@@ -29,7 +29,7 @@ class entitiesdata {
 	settings: pageSettings = null as any;
 	hide_empty_on_sort = true;
 	errormessage = "";
-	pagesize = $state(13);
+	pagesize = $state(12);
 
 	async Fetch(page: string, id: string | undefined, access_token: string): Promise<{ entities: any[], total_count: number }> {
 		let entities: any[] = [], total_count: number = 0;
