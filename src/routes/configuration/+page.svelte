@@ -88,7 +88,7 @@
 
 <form method="POST" use:enhance>
   {#each settings as setting}
-    {#if setting.type === "boolean"}
+    <!-- {#if setting.type === "boolean"}
       <div
         class={`${screen !== "all" ? (screen === "unset" && $formData[setting.name] !== setting.default && "hidden") || (screen === "set" && $formData[setting.name] === setting.default && "hidden") : "block"}`}
       >
@@ -156,7 +156,7 @@
           </Form.Control>
         </Form.Field>
       </div>
-    {/if}
+    {/if} -->
     {#if setting.type === "string"}
       <div
         class={`${screen !== "all" ? (screen === "unset" && $formData[setting.name] !== setting.default && "hidden") || (screen === "set" && $formData[setting.name] === setting.default && "hidden") : "block"}`}
@@ -185,20 +185,18 @@
                 >
               </Form.Label>
               <div class="space-y-2">
-                {#if setting.name != "stripe_proration_behavior"}
-                  <CustomInput
-                    width="w-full"
-                    {...props}
-                    bind:value={$formData[setting.name]}
-                  />
-                {/if}
+                <CustomInput
+                  width="w-full"
+                  {...props}
+                  bind:value={$formData[setting.name]}
+                />
               </div>
             {/snippet}
           </Form.Control>
         </Form.Field>
       </div>
     {/if}
-    {#if setting.type === "string[]"}
+    <!-- {#if setting.type === "string[]"}
       <div
         class={`${screen !== "all" ? (screen === "unset" && $formData[setting.name] !== setting.default && "hidden") || (screen === "set" && $formData[setting.name] === setting.default && "hidden") : "block"}`}
       >
@@ -248,7 +246,7 @@
           </Form.Control>
         </Form.Field>
       </div>
-    {/if}
+    {/if} -->
   {/each}
   <HotkeyButton
     variant="success"
