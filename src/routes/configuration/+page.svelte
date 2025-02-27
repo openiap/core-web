@@ -85,6 +85,7 @@
     Unset
   </HotkeyButton>
 </div>
+
 <form method="POST" use:enhance>
   {#each settings as setting}
     {#if setting.type === "boolean"}
@@ -184,11 +185,13 @@
                 >
               </Form.Label>
               <div class="space-y-2">
-                <CustomInput
-                  width="w-full"
-                  {...props}
-                  bind:value={$formData[setting.name]}
-                />
+                {#if setting.name != "stripe_proration_behavior"}
+                  <CustomInput
+                    width="w-full"
+                    {...props}
+                    bind:value={$formData[setting.name]}
+                  />
+                {/if}
               </div>
             {/snippet}
           </Form.Control>
