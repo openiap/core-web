@@ -35,6 +35,12 @@
   let page = $derived(() => "entities-" + collectionname);
   let query = {};
   let searchstring = $state(datacomponent.settings.searchstring);
+  console.log(sveltepage.state);
+  // @ts-ignore
+  if (sveltepage.state?.searchstring) {
+    // @ts-ignore
+    searchstring = JSON.stringify(sveltepage.state.searchstring);
+  }
   let selected_items = $state([]);
   let collections: any[] = $state(data.collections);
   let entities = $state(data.entities);

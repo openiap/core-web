@@ -574,6 +574,9 @@ class entitiesdata {
 					console.log("Unknown deleted page", page);
 					return ["_id", "name", "_type", "_deleted", "_deletedby", "_created", "_version"];
 				}
+				else if (page.endsWith("/duplicates")) {
+					return ["_id", "name", "count"];
+				}
 				console.log("Unknown page", page);
 				return ["_id", "name", "_type", "_createdby", "_created"];
 		}
