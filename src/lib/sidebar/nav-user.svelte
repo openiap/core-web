@@ -89,14 +89,16 @@
                         <Trash2 />
                         Clear Filters and Settings
                     </DropdownMenu.Item>
-                    <DropdownMenu.Item
-                        onclick={() =>
-                            window.open("https://openiap.io", "_blank")}
-                        class="cursor-pointer"
-                    >
-                        <Crown />
-                        Premium Features
-                    </DropdownMenu.Item>
+                    {#if auth.config?.validlicense == false}
+                        <DropdownMenu.Item
+                            onclick={() =>
+                                window.open("https://openiap.io", "_blank")}
+                            class="cursor-pointer"
+                        >
+                            <Crown />
+                            Premium Features
+                        </DropdownMenu.Item>
+                    {/if}
                 </DropdownMenu.Group>
                 <DropdownMenu.Separator />
                 <DropdownMenu.Item class="cursor-pointer" onclick={logout}>

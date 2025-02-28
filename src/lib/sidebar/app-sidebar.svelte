@@ -333,7 +333,10 @@
 
 	const navMain = $state([actions, workspace, management]);
 	function loadMenu() {
-		if (auth.config?.workspace_enabled == true) {
+		if (
+			auth.config?.workspace_enabled == true &&
+			auth.config?.validlicense
+		) {
 			workspace.hidden = workspaces.length == 0;
 			users.hidden = true;
 			members.hidden =
