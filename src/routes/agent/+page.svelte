@@ -290,6 +290,24 @@
   if (browser) {
     getPods(false);
   }
+  $effect(() => {
+    let needsUpdate = false;
+
+    if (data.entities.length != entities.length) {
+      needsUpdate = true;
+    } else if (
+      data.entities.length > 0 &&
+      data.entities[0]._id != entities[0]._id
+    ) {
+      needsUpdate = true;
+    } else if (data.entities.length == 0) {
+      needsUpdate = true;
+    }
+    if (needsUpdate) {
+      data.entities = entities;
+      getPods(false);
+    }
+  });
 </script>
 
 <div class="lg:flex lg:items-center lg:justify-between lg:mb-4 lg:space-x-4">

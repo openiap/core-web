@@ -123,7 +123,7 @@
 	);
 	const gitrepo = new SidebarItem(
 		"Git Repositories",
-		"g g",
+		"",
 		"tourgit",
 		"/git",
 		true,

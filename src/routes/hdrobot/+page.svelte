@@ -45,7 +45,7 @@
     }
   }
   function single_item_click(item: any) {
-    goto(base + `/entities/hdrobots/edit/${item._id}`);
+    goto(base + `/entities/openrpa/edit/${item._id}`);
   }
   async function handleAccept() {
     try {
