@@ -15,7 +15,6 @@
   import { cleanMatchingKeys, settings } from "./helper.js";
   import { editFormSchema } from "./schema.js";
 
-  const key = "configuration";
   let screen = $state("set");
   const { data } = $props();
   let loading = $state(false);
@@ -35,7 +34,9 @@
           });
           toast.success("Configuration updated");
           loading = false;
-          goto(base + `/${key}`);
+          // But not real data shown only persistig old data
+          cancel();
+          // goto(base + `/`);
         } catch (error: any) {
           toast.error("Error", {
             description: error.message,
@@ -88,7 +89,7 @@
 
 <form method="POST" use:enhance>
   {#each settings as setting}
-    <!-- {#if setting.type === "boolean"}
+    {#if setting.type === "boolean"}
       <div
         class={`${screen !== "all" ? (screen === "unset" && $formData[setting.name] !== setting.default && "hidden") || (screen === "set" && $formData[setting.name] === setting.default && "hidden") : "block"}`}
       >
@@ -156,7 +157,7 @@
           </Form.Control>
         </Form.Field>
       </div>
-    {/if} -->
+    {/if}
     {#if setting.type === "string"}
       <div
         class={`${screen !== "all" ? (screen === "unset" && $formData[setting.name] !== setting.default && "hidden") || (screen === "set" && $formData[setting.name] === setting.default && "hidden") : "block"}`}
@@ -196,7 +197,7 @@
         </Form.Field>
       </div>
     {/if}
-    <!-- {#if setting.type === "string[]"}
+    {#if setting.type === "string[]"}
       <div
         class={`${screen !== "all" ? (screen === "unset" && $formData[setting.name] !== setting.default && "hidden") || (screen === "set" && $formData[setting.name] === setting.default && "hidden") : "block"}`}
       >
@@ -246,7 +247,7 @@
           </Form.Control>
         </Form.Field>
       </div>
-    {/if} -->
+    {/if}
   {/each}
   <HotkeyButton
     variant="success"
