@@ -459,30 +459,19 @@ class entitiesdata {
 		}
 	}
 	defaultcolumnnames(page: string) {
-		switch (page) {
-			case "/ui/user":
+		let _page = page.replace(base, "");
+		switch (_page) {
 			case "/user":
-			case "user":
 				return ["_id", "name", "username", "email", "lastseen", "_created"];
-			case "/ui/role":
 			case "/role":
-			case "role":
 				return ["_id", "name", "members", "_created"];
-			case "/ui/workitem":
 			case "/workitem":
-			case "workitem":
 				return ["name", "state", "errortype", "retries", "priority", "wiq", "lastrun", "_created"];
-			case "/ui/resource":
 			case "/resource":
-			case "resource":
 				return ["name", "_created", "_modified"];
-			case "/ui/provider":
 			case "/provider":
-			case "provider":
 				return ["name", "provider", "_created", "_modified"];
-			case "/ui/licensekey":
 			case "/licensekey":
-			case "licensekey":
 				return [
 					"name",
 					"licenseversion",
@@ -492,9 +481,7 @@ class entitiesdata {
 					"gitrepos",
 					"_created",
 				];
-			case "/ui/mailhistory":
 			case "/mailhistory":
-			case "mailhistory":
 				return [
 					"_id",
 					"name",
@@ -503,68 +490,37 @@ class entitiesdata {
 					"lastseen",
 					"_created",
 				];
-			case "/ui/hdrobot":
 			case "/hdrobot":
-			case "hdrobot":
 				return ["name", "_created", "_modified"];
-			case "/ui/formresource":
 			case "/formresource":
-			case "formresource":
 				return ["name", "collection", "_createdby", "_created", "_modified"];
-			case "/ui/files":
 			case "/files":
-			case "files":
 				return ["filename", "metadata.name", "length", "metadata._created"];
-			case "/ui/billingaccount":
 			case "/billingaccount":
-			case "billingaccount":
 				return ["name", "dbusage", "_created", "_modified"];
-			case "/ui/credential":
 			case "/credential":
-			case "credential":
 				return ["name", "username", "_created", "_modified"];
-			case "/ui/client":
 			case "/client":
-			case "client":
 				return ["id", "name", "clientagent", "clientversion", "_created", "remoteip"];
-			case "/ui/auditlog":
 			case "/auditlog":
-			case "auditlog":
 				return ["_id", "name", "_type", "impostorname", "clientagent", "clientversion", "remoteip", "_created"];
-			case "/ui/agent":
 			case "/agent":
-			case "agent":
 				return ["name", "image", "os", "_productname", "_createdby", "status"];
-			case "/ui/package":
 			case "/package":
-			case "package":
 				return ["name", "language", "_createdby", "_created"];
-			case "/ui/workspace":
 			case "/workspace":
-			case "workspace":
 				return ["name", "_productname", "_created", "_modified"];
-			case `/ui/workspace/${usersettings?.currentworkspace}/member`:
 			case `/workspace/${usersettings?.currentworkspace}/member`:
 			case "/member":
-			case "member":
 				return ["name", "status", "role", "_modified"];
 			case "/workspace/invites":
-			case "/ui/workspace/invites":
-			case "/ui/invites":
 			case "/invites":
-			case "invites":
 				return ["workspacename", "status", "role"];
-			case "/ui/formworkflow":
 			case "/formworkflow":
-			case "formworkflow":
 				return ["name", "_created"];
-			case "/ui/rpaworkflow":
 			case "/rpaworkflow":
-			case "rpaworkflow":
 				return ["name", "_createdby", "_modified", "runtime"];
-			case "/ui/entities/cvr":
 			case "/entities/cvr":
-			case "entities-cvr":
 				return ["name", "cvr", "virksomhedsformkort", "sidstOpdateret", "stiftelsesDato", "ophoersDato", "cvrstatus"];
 			default:
 				if (page.indexOf("/history/") > -1) {
