@@ -495,7 +495,7 @@
 					{/if}
 					<Table.Header>
 						<Table.Row
-							class="bg-lighttableheader hover:bg-lighttableheader dark:bg-bw900 dark:hover:bg-bw900 "
+							class="bg-lighttableheader hover:bg-lighttableheader dark:bg-bw900 dark:hover:bg-bw900 text-nowrap  "
 						>
 							{#if multi_select}
 								<Table.Head class="w-8 " role="cell"
@@ -553,7 +553,7 @@
 					<Table.Body>
 						{#each entities as item}
 							<Table.Row
-								class="border-b border-bw500 text-bw950 dark:text-bw200"
+								class="border-b border-bw500 text-bw950 dark:text-bw200 text-nowrap"
 								ondblclick={() => {
 									single_item_click(item);
 								}}
