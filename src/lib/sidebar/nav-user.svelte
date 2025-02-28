@@ -8,7 +8,7 @@
     import { useSidebar } from "$lib/components/ui/sidebar/index.js";
     import { auth } from "$lib/stores/auth.svelte";
     import { usersettings } from "$lib/stores/usersettings.svelte";
-    import { LogOut, Trash2 } from "lucide-svelte";
+    import { Crown, LogOut, Trash2 } from "lucide-svelte";
     import BadgeCheck from "lucide-svelte/icons/badge-check";
     import Bell from "lucide-svelte/icons/bell";
     import CreditCard from "lucide-svelte/icons/credit-card";
@@ -85,9 +85,17 @@
                         <CreditCard />
                         Billing
                     </DropdownMenu.Item> -->
-                    <DropdownMenu.Item onclick={reset}>
+                    <DropdownMenu.Item onclick={reset} class="cursor-pointer">
                         <Trash2 />
-                        Clear filters and settings
+                        Clear Filters and Settings
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Item
+                        onclick={() =>
+                            window.open("https://openiap.io", "_blank")}
+                        class="cursor-pointer"
+                    >
+                        <Crown />
+                        Premium Features
                     </DropdownMenu.Item>
                 </DropdownMenu.Group>
                 <DropdownMenu.Separator />
