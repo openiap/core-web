@@ -8,19 +8,12 @@
   import * as Tabs from "$lib/components/ui/tabs/index.js";
   import { CustomCheckbox } from "$lib/customcheckbox/index.js";
   import { CustomInput } from "$lib/custominput/index.js";
-    import { CustomSelect } from "$lib/customselect/index.js";
+  import { CustomSelect } from "$lib/customselect/index.js";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import Entities from "$lib/entities/entities.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
-  import {
-    Clock,
-    Folder,
-    FolderSymlink,
-    History,
-    Pencil,
-    Plus,
-  } from "lucide-svelte";
+  import { Clock, Folder, FolderSymlink, Plus } from "lucide-svelte";
 
   let loading = $state(false);
   let errormessage = $state("");
@@ -114,7 +107,7 @@
   <div id="div2" class="xl:ms-2 page">
     <Tabs.Root value={"duplicates"} class="mb-4">
       <Tabs.List
-        class="grid grid-cols-1 md:block md:w-fit dark:bg-darkagenttab rounded-[15px] p-1"
+        class="md:block md:w-fit dark:bg-darkagenttab rounded-[15px] p-1"
       >
         <Tabs.Trigger
           value="view"
@@ -161,50 +154,55 @@
       />
     </div>
 
-    <div class="flex items-center justify-between space-x-4 mb-2">
-      <div>Uniqueness</div>
-      <div class="w-full">
+    <div
+      class="flex flex-col lg:flex-row items-center justify-start lg:space-x-4 mb-2 lg:mb-4"
+    >
+      <div class="text-start">Uniqueness</div>
+      <div class="w-full mb-2 lg:mb-0">
         <CustomInput
           width="w-full"
           placeholder="Uniqueness"
           bind:value={uniqueness}
         />
       </div>
-      <div class="flex items-center">
-        <CustomCheckbox bind:checked={includeones} />
-        <div>Include 1's</div>
+      <div class="flex lg:flex-0 justify-start items-center lg:space-x-4">
+        <div class="flex items-center">
+          <CustomCheckbox bind:checked={includeones} />
+          <div class="text-nowrap">Include 1's</div>
+        </div>
+        <HotkeyButton
+          onclick={async () => {
+            const uniquenessFields = uniqueness
+              .split(",")
+              .map((field) => field.trim());
+            const _id: any = {};
+            uniquenessFields.forEach((field) => {
+              _id[field] = `$${field}`;
+            });
+            const aggregates: any[] = [{ $group: { _id, count: { $sum: 1 } } }];
+            if (query != "") {
+              aggregates.unshift({ $match: query });
+            }
+            if (!includeones) {
+              aggregates.push({ $match: { count: { $gt: 1 } } });
+            }
+            aggregates.push({ $sort: { count: -1 } });
+            const _entities = await auth.client.Aggregate<any>({
+              collectionname: data.collectionname,
+              aggregates,
+              jwt: data.access_token,
+            });
+            for (let i = 0; i < _entities.length; i++) {
+              _entities[i].name = _entities[i]._id;
+            }
+            entities = _entities;
+          }}
+        >
+          Update
+        </HotkeyButton>
       </div>
-      <HotkeyButton
-        onclick={async () => {
-          const uniquenessFields = uniqueness
-            .split(",")
-            .map((field) => field.trim());
-          const _id: any = {};
-          uniquenessFields.forEach((field) => {
-            _id[field] = `$${field}`;
-          });
-          const aggregates: any[] = [{ $group: { _id, count: { $sum: 1 } } }];
-          if (query != "") {
-            aggregates.unshift({ $match: query });
-          }
-          if (!includeones) {
-            aggregates.push({ $match: { count: { $gt: 1 } } });
-          }
-          aggregates.push({ $sort: { count: -1 } });
-          const _entities = await auth.client.Aggregate<any>({
-            collectionname: data.collectionname,
-            aggregates,
-            jwt: data.access_token,
-          });
-          for (let i = 0; i < _entities.length; i++) {
-            _entities[i].name = _entities[i]._id;
-          }
-          entities = _entities;
-        }}
-      >
-        Update
-      </HotkeyButton>
     </div>
+
     <!-- <div class="flex items-center space-x-4">
             <HotkeyButton>
               <Trash2 /> One
@@ -228,17 +226,7 @@
       bind:loading
       single_item_click={(item: any) => single_item_click(item)}
     >
-      {#snippet action(item: any)}
-        <HotkeyButton
-          aria-label="history"
-          disabled={loading}
-          onclick={() =>
-            goto(base + `/entities/${collectionname}/history/${item._id}`)}
-          size="tableicon"
-          variant="icon"
-        >
-          <History />
-        </HotkeyButton>
+      <!-- {#snippet action(item: any)}
         <HotkeyButton
           aria-label="edit"
           disabled={loading}
@@ -248,8 +236,8 @@
         >
           <Pencil />
         </HotkeyButton>
-      {/snippet}</Entities
-    >
+      {/snippet} -->
+    </Entities>
   </div>
 </div>
 

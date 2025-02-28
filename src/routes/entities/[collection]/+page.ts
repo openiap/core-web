@@ -1,12 +1,12 @@
 import { data } from "$lib/entities/data.svelte.js";
 import { auth } from "$lib/stores/auth.svelte.js";
 import { usersettings } from "$lib/stores/usersettings.svelte.js";
-import type { PageServerLoad } from "./$types.js";
+import type { PageLoad } from "./$types.js";
 
-export const load: PageServerLoad = async ({ parent }) => {
+export const load: PageLoad = async ({ parent, params }) => {
     const { access_token } = await parent();
     await usersettings.dbload(access_token);
-    let collectionname = usersettings.entities_collectionname;
+    let collectionname = params.collection;
     if (collectionname == null || collectionname == "") {
         collectionname = "entities";
     }

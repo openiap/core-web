@@ -160,7 +160,7 @@
   <div id="div2" class="xl:ms-2 page">
     <Tabs.Root value={"view"} class="mb-4">
       <Tabs.List
-        class="grid grid-cols-1 md:block md:w-fit dark:bg-darkagenttab rounded-[15px] p-1"
+        class="md:block md:w-fit dark:bg-darkagenttab rounded-[15px] p-1"
       >
         <Tabs.Trigger
           value="view"
@@ -252,6 +252,7 @@
       {#snippet action(item: any)}
         <HotkeyButton
           aria-label="history"
+          title="history"
           disabled={loading}
           onclick={() =>
             goto(base + `/entities/${collectionname}/history/${item._id}`)}
@@ -262,6 +263,7 @@
         </HotkeyButton>
         <HotkeyButton
           aria-label="edit"
+          title="edit"
           disabled={loading}
           onclick={() => single_item_click(item)}
           size="tableicon"
