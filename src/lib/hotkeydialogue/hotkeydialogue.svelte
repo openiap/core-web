@@ -21,21 +21,21 @@
 				<div class="grid grid-cols-2 overflow-auto p-2">
 					<div class="grid grid-cols-4">
 						<div class="justify-self-end col-span-1">
-							<span class="text-yellow-300">Ctrl</span>
+							<span class="text-yellow-300">g</span>
 							<span>+</span>
-							<span class="text-yellow-300">s</span>
+							<span class="text-yellow-300">e</span>
 						</div>
 
-						<span class="col-span-3"> : Save form </span>
+						<span class="col-span-3"> : Goto entities </span>
 					</div>
 					<div class="grid grid-cols-4">
 						<div class="justify-self-end col-span-1">
 							<span class="text-yellow-300">g</span>
 							<span>+</span>
-							<span class="text-yellow-300">l</span>
+							<span class="text-yellow-300">h</span>
 						</div>
 
-						<span class="col-span-3"> : Goto licence page </span>
+						<span class="col-span-3"> : Goto home page </span>
 					</div>
 					<div class="grid grid-cols-4">
 						<div class="justify-self-end col-span-1">
@@ -70,10 +70,55 @@
 						<div class="justify-self-end col-span-1">
 							<span class="text-yellow-300">g</span>
 							<span>+</span>
+							<span class="text-yellow-300">u</span>
+						</div>
+
+						<span class="col-span-3"> : Goto users page </span>
+					</div>
+					<div class="grid grid-cols-4">
+						<div class="justify-self-end col-span-1">
+							<span class="text-yellow-300">g</span>
+							<span>+</span>
+							<span class="text-yellow-300">r</span>
+						</div>
+
+						<span class="col-span-3"> : Goto roles page </span>
+					</div>
+					<div class="grid grid-cols-4">
+						<div class="justify-self-end col-span-1">
+							<span class="text-yellow-300">g</span>
+							<span>+</span>
 							<span class="text-yellow-300">f</span>
 						</div>
 
 						<span class="col-span-3"> : Goto grafana page </span>
+					</div>
+					<div class="grid grid-cols-4">
+						<div class="justify-self-end col-span-1">
+							<span class="text-yellow-300">g</span>
+							<span>+</span>
+							<span class="text-yellow-300">l</span>
+						</div>
+
+						<span class="col-span-3"> : Goto licence page </span>
+					</div>
+					<div class="grid grid-cols-4">
+						<div class="justify-self-end col-span-1">
+							<span class="text-yellow-300">g</span>
+							<span>+</span>
+							<span class="text-yellow-300">b</span>
+						</div>
+
+						<span class="col-span-3"> : Goto billing accounts </span>
+					</div>
+					<div class="grid grid-cols-4">
+						<div class="justify-self-end col-span-1">
+							<span class="text-yellow-300">g</span>
+							<span>+</span>
+							<span class="text-yellow-300">t</span>
+						</div>
+
+						<span class="col-span-3"> : Open page tour </span>
 					</div>
 					<div class="grid grid-cols-4">
 						<div class="justify-self-end col-span-1">
@@ -91,15 +136,6 @@
 					</div>
 					<div class="grid grid-cols-4">
 						<div class="justify-self-end col-span-1">
-							<span class="text-yellow-300">g</span>
-							<span>+</span>
-							<span class="text-yellow-300">t</span>
-						</div>
-
-						<span class="col-span-3"> : Open page tour </span>
-					</div>
-					<div class="grid grid-cols-4">
-						<div class="justify-self-end col-span-1">
 							<span class="text-yellow-300">Ctrl</span>
 							<span>+</span>
 							<span class="text-yellow-300">d</span>
@@ -107,6 +143,25 @@
 
 						<span class="col-span-3"> : Open Debug pane </span>
 					</div>
+					<div class="grid grid-cols-4">
+						<div class="justify-self-end col-span-1">
+							<span class="text-yellow-300">Ctrl</span>
+							<span>+</span>
+							<span class="text-yellow-300">f</span>
+						</div>
+
+						<span class="col-span-3"> : Focus local search </span>
+					</div>
+					<div class="grid grid-cols-4">
+						<div class="justify-self-end col-span-1">
+							<span class="text-yellow-300">Ctrl</span>
+							<span>+</span>
+							<span class="text-yellow-300">s</span>
+						</div>
+
+						<span class="col-span-3"> : Save form </span>
+					</div>
+
 				</div>
 			</Dialog.Description>
 		</Dialog.Header>
