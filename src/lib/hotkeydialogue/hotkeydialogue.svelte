@@ -59,11 +59,11 @@
 						<div class="justify-self-end col-span-1">
 							<span class="text-yellow-300">g</span>
 							<span>+</span>
-							<span class="text-yellow-300"></span>
+							<span class="text-yellow-300">i</span>
 						</div>
 
 						<span class="col-span-3">
-							: Goto Workitem queue page
+							: Goto Git Repositories
 						</span>
 					</div>
 					<div class="grid grid-cols-4">
@@ -86,7 +86,7 @@
 						</div>
 
 						<span class="col-span-3">
-							: Used to navigate the entities page
+							: Navigate entities
 						</span>
 					</div>
 					<div class="grid grid-cols-4">
@@ -96,7 +96,7 @@
 							<span class="text-yellow-300">t</span>
 						</div>
 
-						<span class="col-span-3"> : Provide tour for the page </span>
+						<span class="col-span-3"> : Open page tour </span>
 					</div>
 					<div class="grid grid-cols-4">
 						<div class="justify-self-end col-span-1">
@@ -105,7 +105,7 @@
 							<span class="text-yellow-300">d</span>
 						</div>
 
-						<span class="col-span-3"> : Open debug console on any page that has data </span>
+						<span class="col-span-3"> : Open Debug pane </span>
 					</div>
 				</div>
 			</Dialog.Description>
