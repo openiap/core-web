@@ -66,6 +66,7 @@
 
   async function handleAcceptPurge() {
     try {
+      loading = true;
       let data = JSON.parse(JSON.stringify(purgeQueueData));
       data._created = new Date(data._created);
       data._modified = new Date(data._modified);
@@ -83,6 +84,7 @@
         description: error.message,
       });
     }
+    loading = false;
   }
 </script>
 
