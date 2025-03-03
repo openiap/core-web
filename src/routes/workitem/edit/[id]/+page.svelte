@@ -48,7 +48,7 @@
             workitem: form.data,
           });
           toast.success("Workitem updated");
-          goto(base + `/workitem`);
+          goto(base + `/workitem/${form.data.wiqid}`);
         } catch (error: any) {
           toast.error("Error", {
             description: error.message,

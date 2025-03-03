@@ -30,6 +30,7 @@
   let newbillingaccountname = $state(auth.profile.name + "s Billing Account");
 
   let _billingid = "";
+  let currentbilling = $state(data.currentbilling);
   if (data.currentbilling != null) {
     _billingid = data.currentbilling._id;
   }
@@ -38,6 +39,8 @@
   const billingname = $derived(() => {
     if (billingid == null || billingid == "") return "Create new";
     let entity = entities.find((e) => e._id == billingid);
+    console.log("billingid", billingid);
+    console.log("entities", entities);
     if (entity == null) return "???";
     return entity.name;
   });
@@ -169,12 +172,7 @@
         document.location.href = link;
         return;
       }
-      entities = await datacomponent.GetData(
-        "workspace",
-        "users",
-        { _type: "customer" },
-        auth.access_token,
-      );
+      await getData();
 
       toast.success("Plan added");
       // goto(base + "/");
@@ -212,12 +210,7 @@
         id: currentworkspace._resourceusageid,
         jwt: auth.access_token,
       });
-      entities = await datacomponent.GetData(
-        "workspace",
-        "users",
-        { _type: "customer" },
-        auth.access_token,
-      );
+      await getData();
 
       toast.success("Plan removed");
       // goto(base + "/");
@@ -240,7 +233,44 @@
   const cardHeader = "text-center";
   const cardTitle = "text-bw950 dark:text-bw100";
   const cardDiv = "flex flex-col justify-between row-span-4 w-full";
-
+  async function getData() {
+    try {
+      entities = await datacomponent.GetData(
+        "workspace",
+        "users",
+        { _type: "customer" },
+        auth.access_token,
+        false,
+      );
+      if (
+        currentworkspace._billingid != null &&
+        currentworkspace._billingid != ""
+      ) {
+        currentbilling = entities.find(
+          (x) => x._id == currentworkspace._billingid,
+        );
+        if (currentbilling == null) {
+          currentbilling = await auth.client.FindOne<Billing>({
+            collectionname: "users",
+            query: { _type: "customer", _id: currentworkspace._billingid },
+            jwt: auth.access_token,
+          });
+          if (currentbilling != null) {
+            entities.push(currentbilling);
+          }
+        }
+      }
+      resourcecount = await auth.client.Count({
+        collectionname: "config",
+        query: { _type: "resourceusage", workspaceid: data.id },
+        jwt: auth.access_token,
+      });
+    } catch (error: any) {
+      toast.error("Error getting data", {
+        description: error.message,
+      });
+    }
+  }
   $effect(() => {
     if (
       usersettings.currentworkspace != "" &&
@@ -269,7 +299,7 @@
                 Your are managing the workspace below
               </div>
               <div class="grid grid-cols-1 gap-4 lg:flex lg:space-x-5">
-                <CustomInput {...props} bind:value={$formData.name} width=""/>
+                <CustomInput {...props} bind:value={$formData.name} width="" />
                 <HotkeyButton
                   variant="success"
                   size="base"
@@ -292,6 +322,7 @@
                     Select a billing account for this workspace
                   </div>
                   <CustomSelect
+                    width="w-full"
                     type="single"
                     triggerContent={billingname}
                     bind:value={billingid}
@@ -319,7 +350,7 @@
             </div>
 
             <div class="grid grid-col-1 gap-2 w-full">
-              {#if data.currentbilling != null}
+              {#if currentbilling != null}
                 <Form.Label>Workspace Billing</Form.Label>
                 <div class="text-bw400">
                   Show billing details for this workspace

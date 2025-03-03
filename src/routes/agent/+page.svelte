@@ -409,8 +409,8 @@
     class="flex overflow-auto md:overflow-visible md:items-center lg:justify-end gap-4 md:gap-0 md:space-x-4 mb-2 lg:mb-0"
   >
     <HotkeyButton
-      title="Create Agent (Ctrl + i, insert key)"
-      data-shortcut="ctrl+i,ins"
+      title="Create Agent (insert key)"
+      data-shortcut="ins"
       class="touraddagent"
       size="sm"
       variant="base"

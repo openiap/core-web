@@ -136,16 +136,16 @@ class entitiesdata {
 					total_count = await this.GetCount(page, "users", { _type: "user" }, access_token);
 					break;
 				case base + "/workitem":
-					entities = await this.GetData(page, "workitems", {}, access_token, false);
-					total_count = await this.GetCount(page, "workitems", {}, access_token, false);
+					entities = await this.GetData(page, "workitems", {}, access_token, true);
+					total_count = await this.GetCount(page, "workitems", {}, access_token, true);
 					break;
 				case base + `/workitem/${id}`:
-					entities = await this.GetData(page, "workitems", { wiqid: id }, access_token, false);
-					total_count = await this.GetCount(page, "workitems", { wiqid: id }, access_token, false);
+					entities = await this.GetData(page, "workitems", { wiqid: id }, access_token, true);
+					total_count = await this.GetCount(page, "workitems", { wiqid: id }, access_token, true);
 					break;
 				case base + "/workitemqueue":
-					entities = await this.GetData(page, "mq", { _type: "workitemqueue" }, access_token, false);
-					total_count = await this.GetCount(page, "mq", { _type: "workitemqueue" }, access_token, false);
+					entities = await this.GetData(page, "mq", { _type: "workitemqueue" }, access_token, true);
+					total_count = await this.GetCount(page, "mq", { _type: "workitemqueue" }, access_token, true);
 					break;
 				case base + "/workspace":
 					entities = await this.GetData(page, "users", { _type: "workspace" }, access_token, false);

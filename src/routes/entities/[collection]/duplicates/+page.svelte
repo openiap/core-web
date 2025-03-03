@@ -66,10 +66,10 @@
   >
     <div class="flex justify-center w-full px-4">
       <HotkeyButton
+        title="Insert Collection"
         aria-label="Insert Collection"
         class="mb-2 rounded-md w-full"
         size="sm"
-        data-shortcut="n,ins"
         disabled={loading}
         onclick={() => goto(base + `/entities/new`)}
       >

@@ -119,8 +119,7 @@
   >
     <div class="flex justify-center w-full px-4">
       <HotkeyButton
-        title="Create Form (Ctrl + i), insert key"
-        data-shortcut="ctrl+i,ins"
+        title="Insert Collection"
         aria-label="Insert Collection"
         class="mb-2 rounded-md w-full"
         size="sm"
@@ -237,9 +236,9 @@
           >
         {/if}
         <HotkeyButton
-          aria-label={`Add to ${capitalizeWords(collectionname)}`}
+          aria-label={`Add to ${capitalizeWords(collectionname)} (Insert Key)`}
           size="sm"
-          data-shortcut="n,ins"
+          data-shortcut="ins"
           disabled={loading}
           onclick={() => {
             goto(base + `/entities/${collectionname}/new`);

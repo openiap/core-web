@@ -8,16 +8,17 @@
   import Separator from "$lib/components/ui/separator/separator.svelte";
   import * as Sheet from "$lib/components/ui/sheet/index.js";
   import { CustomInput } from "$lib/custominput/index.js";
+  import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import { Resource, ResourceUsage, type Product } from "$lib/types.svelte.js";
   import {
-      Clock,
-      Info,
-      LucideBadgeDollarSign,
-      Minus,
-      Plus,
-      Trash2,
+    Clock,
+    Info,
+    LucideBadgeDollarSign,
+    Minus,
+    Plus,
+    Trash2,
   } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
@@ -73,14 +74,20 @@
   async function GetData() {
     try {
       loading = true;
-      entities = await auth.client.Query<ResourceUsage>({
-        collectionname: "config",
-        query: { _type: "resourceusage", customerid: data.id },
-        jwt: auth.access_token,
-      });
+      const { entities: entitiesdata } = await datacomponent.Fetch(
+        data.page,
+        data.id,
+        auth.access_token,
+      );
+
+      entities = entitiesdata;
+
       resources = await auth.client.Query<Resource>({
         collectionname: "config",
-        query: { _type: "resource" },
+        query: {
+          _type: "resource",
+          target: { $in: ["workspace", "agent", "member"] },
+        },
         jwt: auth.access_token,
       });
       cleanResources();

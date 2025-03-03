@@ -93,7 +93,7 @@
   <SearchInput bind:searchstring />
   <HotkeyButton
     title="Create Work Item Queue (Ctrl + i) insert key"
-    data-shortcut="ctrl+i,ins"
+    data-shortcut="ins"
     size="sm"
     variant="base"
     disabled={loading}

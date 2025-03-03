@@ -38,7 +38,7 @@
             jwt: auth.access_token,
           });
           toast.success("Workitem added");
-          goto(base + `/workitem`);
+          goto(base + `/workitem/${form.data.wiqid}`);
         } catch (error: any) {
           toast.error("Error", {
             description: error.message,

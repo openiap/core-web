@@ -64,8 +64,8 @@
 >
   <SearchInput bind:searchstring />
   <HotkeyButton
-    title="Create Provider (Ctrl + i), insert key"
-    data-shortcut="ctrl+i,ins"
+    title="Create Provider (insert key)"
+    data-shortcut="ins"
     size="sm"
     variant="base"
     disabled={loading}

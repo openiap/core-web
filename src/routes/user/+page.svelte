@@ -78,8 +78,8 @@
   </div>
 
   <HotkeyButton
-    title="Create User (Ctrl + i), insert key"
-    data-shortcut="ctrl+i,ins"
+    title="Create User (insert key)"
+    data-shortcut="ins"
     size="sm"
     variant="base"
     disabled={loading}

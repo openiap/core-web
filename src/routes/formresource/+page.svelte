@@ -64,8 +64,8 @@
 >
   <SearchInput bind:searchstring />
   <HotkeyButton
-    title="Create Form Resource (Ctrl + i), insert key"
-    data-shortcut="ctrl+i,ins"
+    title="Create Form Resource (insert key)"
+    data-shortcut="ins"
     aria-label="Create Form Resource"
     disabled={loading}
     onclick={() => {

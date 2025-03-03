@@ -64,8 +64,8 @@
 >
   <SearchInput bind:searchstring />
   <HotkeyButton
-    title="Create Credential (Ctrl + i), insert key"
-    data-shortcut="ctrl+i,ins"
+    title="Create Credential (insert key)"
+    data-shortcut="ins"
     size="sm"
     variant="base"
     aria-label="Create Credential"

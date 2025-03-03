@@ -66,8 +66,8 @@
   </div> -->
 
   <HotkeyButton
-    title="Create Package (Ctrl + i), insert key"
-    data-shortcut="ctrl+i,ins"
+    title="Create Package (insert key)"
+    data-shortcut="ins"
     size="sm"
     variant="base"
     disabled={loading}
