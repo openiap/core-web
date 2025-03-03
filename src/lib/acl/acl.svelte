@@ -53,6 +53,7 @@
 >
     <Accordion.Item value="item-1" class="border-0 p-0 m-0">
         <Hotkeybutton
+            aria-label="Access Control List"
             class={"mb-2 " +
                 (open == "item-1"
                     ? "flex items-center justify-between space-x-2 w-full border-0"
@@ -84,6 +85,7 @@
                 >
                     <Ace bind:value={value._acl[i]} {loading} />
                     <Hotkeybutton
+                        aria-label="Delete"
                         disabled={loading}
                         class="ml-2.5 m-1"
                         variant="danger"
@@ -99,7 +101,7 @@
                 </div>
             {/each}
             <div
-                class={"flex space-x-2 " + (value?._acl?.length > 0 && " mt-5")}
+                class={"flex space-x-4 " + (value?._acl?.length > 0 && " mt-5")}
             >
                 <EntitySelector
                     bind:value={newid}
@@ -107,6 +109,7 @@
                     {loading}
                 ></EntitySelector>
                 <Hotkeybutton
+                    aria-label="Add"
                     disabled={loading}
                     variant="success"
                     size="base"

@@ -48,9 +48,11 @@
   }
 </script>
 
-<div class="flex justify-between">
-  <div class="flex gap-2 w-full">
-    <SearchInput bind:searchstring />
+<div
+  class="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 xl:flex xl:justify-between xl:items-center mb-4"
+>
+  <SearchInput bind:searchstring />
+  <!-- <div class="flex gap-4 w-full">
     <HotkeyButton
       size="sm"
       variant="base"
@@ -61,7 +63,7 @@
       <Filter />
       Filter</HotkeyButton
     >
-  </div>
+  </div> -->
 
   <HotkeyButton
     size="sm"

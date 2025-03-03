@@ -88,22 +88,8 @@
   }
 </script>
 
-<div class="flex justify-between mb-4">
-  <div class="flex gap-4 w-full">
-    <SearchInput bind:searchstring />
-    <HotkeyButton
-      size="sm"
-      variant="base"
-      aria-label="Filter"
-      class="border-dashed dark:text-bw600"
-      onclick={() => {
-        ref.reload();
-      }}
-    >
-      <Filter />
-      Filter</HotkeyButton
-    >
-  </div>
+<div class="mb-4">
+  <SearchInput bind:searchstring />
 </div>
 
 <Entities

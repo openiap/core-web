@@ -11,6 +11,7 @@
   import { CustomSelect } from "$lib/customselect/index.js";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import Entities from "$lib/entities/entities.svelte";
+  import Search from "$lib/search/search.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import { Clock, Folder, FolderSymlink, Plus } from "lucide-svelte";
@@ -58,13 +59,14 @@
   {errormessage}
 {/if}
 
-<div class="flex items-start justify-between h-full mb-4">
+<div class="flex items-start justify-between h-full overflow-auto">
   <div
     id="div1"
     class="h-full max-w-max flex-shrink-0 p-2.5 rounded-[10px] bg-bw100 dark:bg-bw900 pb-10 hidden xl:block"
   >
     <div class="flex justify-center w-full px-4">
       <HotkeyButton
+        aria-label="Insert Collection"
         class="mb-2 rounded-md w-full"
         size="sm"
         data-shortcut="n,ins"
@@ -72,7 +74,7 @@
         onclick={() => goto(base + `/entities/new`)}
       >
         <Plus />
-        Insert collection</HotkeyButton
+        Insert Collection</HotkeyButton
       >
     </div>
     <div class="h-full overflow-auto">
@@ -83,6 +85,7 @@
               <Separator class="my-2" />
             {/if}
             <HotkeyButton
+              aria-label={collection.name}
               class="w-full justify-start"
               size="entity"
               variant={collectionvariant(collection.name)}
@@ -104,7 +107,7 @@
       </ScrollArea>
     </div>
   </div>
-  <div id="div2" class="xl:ms-2 page">
+  <div id="div2" class="xl:ms-2 page overflow-auto pr-2">
     <Tabs.Root value={"duplicates"} class="mb-4">
       <Tabs.List
         class="md:block md:w-fit dark:bg-darkagenttab rounded-[15px] p-1"
@@ -198,6 +201,7 @@
             entities = _entities;
           }}
         >
+          <Search />
           Update
         </HotkeyButton>
       </div>
@@ -213,8 +217,7 @@
       bind:this={ref}
       bind:loading
       single_item_click={(item: any) => single_item_click(item)}
-    >
-    </Entities>
+    ></Entities>
   </div>
 </div>
 

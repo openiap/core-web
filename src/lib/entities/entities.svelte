@@ -495,7 +495,7 @@
 					{/if}
 					<Table.Header>
 						<Table.Row
-							class="bg-lighttableheader hover:bg-lighttableheader dark:bg-bw900 dark:hover:bg-bw900 text-nowrap  "
+							class="bg-lighttableheader hover:bg-lighttableheader dark:bg-bw900 dark:hover:bg-bw900 text-nowrap cursor-pointer "
 						>
 							{#if multi_select}
 								<Table.Head class="w-8 " role="cell"
@@ -635,6 +635,7 @@
 		>
 			{#if multi_select}
 				<HotkeyButton
+					aria-label={`Delete ${selected_items.length} Items`}
 					disabled={selected_items.length === 0}
 					onclick={() => (showWarning = true)}
 					data-shortcut="del"
@@ -645,6 +646,7 @@
 					Delete {selected_items.length} Items</HotkeyButton
 				>
 				<Hotkeybutton
+					aria-label="Clear All Selections"
 					disabled={selected_items.length === 0}
 					variant="base"
 					size="base"
@@ -655,6 +657,7 @@
 				>
 			{/if}
 			<Hotkeybutton
+				aria-label="Select Columns"
 				variant="base"
 				size="base"
 				disabled={tableheaders.length == 0}
@@ -669,9 +672,10 @@
 	</div>
 
 	<div
-		class="flex text-center justify-between items-center dark:text-bw300 gap-4"
+		class="flex text-center justify-between items-center dark:text-bw300 gap-4 overflow-auto"
 	>
 		<HotkeyButton
+			aria-label="Previous"
 			size="base"
 			variant="base"
 			data-shortcut="left"
@@ -703,6 +707,7 @@
 			{/if}
 		</div>
 		<HotkeyButton
+			aria-label="Next"
 			size="base"
 			variant="base"
 			data-shortcut="right"

@@ -3,8 +3,8 @@
 	import Mousetrap from "mousetrap";
 	import { onDestroy, onMount } from "svelte";
 	import type {
-	    HTMLAnchorAttributes,
-	    HTMLButtonAttributes,
+		HTMLAnchorAttributes,
+		HTMLButtonAttributes,
 	} from "svelte/elements";
 	import { type VariantProps, tv } from "tailwind-variants";
 
@@ -58,6 +58,7 @@
 
 <script lang="ts">
 	import { cn } from "$lib/utils.js";
+	import { toast } from "svelte-sonner";
 
 	let {
 		class: className,
@@ -103,17 +104,21 @@
 		}
 	});
 	function addTitle() {
-		const searchTerms = ["Create", "Add", "Update"];
-		if (!ariaLabel) return "";
-		const lowerMainString = ariaLabel.toLowerCase();
-		const foundOne = searchTerms.some((term) =>
-			lowerMainString.includes(term.toLowerCase()),
-		);
-		if (foundOne) {
-			return ariaLabel + " (Ctrl + S)";
+		try {
+			const searchTerms = ["Create", "Update"];
+			if (!ariaLabel) return "";
+			const lowerMainString = ariaLabel.toLowerCase();
+			const foundOne = searchTerms.some((term) =>
+				lowerMainString.includes(term.toLowerCase()),
+			);
+			if (foundOne) {
+				return ariaLabel + " (Ctrl + S)";
+			}
+			return ariaLabel;
+		} catch (error) {
+			toast.error("Error in addTitle: " + error);
+			return ariaLabel;
 		}
-
-		return ariaLabel;
 	}
 </script>
 

@@ -13,16 +13,17 @@
   import { auth } from "$lib/stores/auth.svelte";
   import { WarningDialogue } from "$lib/warningdialogue/index.js";
   import {
-      Clock,
-      Folder,
-      FolderSymlink,
-      History,
-      Pencil,
-      Plus,
-      RefreshCcw,
-      Trash2,
+    Clock,
+    Folder,
+    FolderSymlink,
+    History,
+    Pencil,
+    Plus,
+    RefreshCcw,
+    Trash2,
   } from "lucide-svelte";
   import { toast } from "svelte-sonner";
+  import { capitalizeWords } from "../../../helper.js";
 
   let { data } = $props();
   let ref: any;
@@ -36,7 +37,6 @@
   let page = $derived(() => "entities-" + collectionname);
   let query = {};
   let searchstring = $state(datacomponent.settings.searchstring);
-  console.log(sveltepage.state);
   // @ts-ignore
   if (sveltepage.state?.searchstring) {
     // @ts-ignore
@@ -111,13 +111,14 @@
   const isAdmin = profileroles.includes("admins");
 </script>
 
-<div class="flex items-start justify-between h-full mb-4">
+<div class="flex items-start justify-between h-full overflow-auto">
   <div
     id="div1"
     class="h-full max-w-max flex-shrink-0 p-2.5 rounded-[10px] bg-bw100 dark:bg-bw900 pb-10 hidden xl:block"
   >
     <div class="flex justify-center w-full px-4">
       <HotkeyButton
+        aria-label="Insert Collection"
         class="mb-2 rounded-md w-full"
         size="sm"
         data-shortcut="n,ins"
@@ -125,7 +126,7 @@
         onclick={() => goto(base + `/entities/new`)}
       >
         <Plus />
-        Insert collection</HotkeyButton
+        Insert Collection</HotkeyButton
       >
     </div>
     <div class="h-full overflow-auto">
@@ -136,6 +137,7 @@
               <Separator class="my-2" />
             {/if}
             <HotkeyButton
+              aria-label={collection.name}
               class="w-full justify-start"
               size="entity"
               variant={collectionvariant(collection.name)}
@@ -157,7 +159,7 @@
       </ScrollArea>
     </div>
   </div>
-  <div id="div2" class="xl:ms-2 page">
+  <div id="div2" class="xl:ms-2 page overflow-auto pr-2">
     <Tabs.Root value={"view"} class="mb-4">
       <Tabs.List
         class="md:block md:w-fit dark:bg-darkagenttab rounded-[15px] p-1"
@@ -206,12 +208,18 @@
       <div
         class="grid grid-cols-1 md:grid-cols-2 lg:flex gap-2 lg:gap-0 lg:space-x-4 mb-4 lg:mb-0"
       >
-        <HotkeyButton size="sm" disabled={loading} onclick={getCollections}>
+        <HotkeyButton
+          size="sm"
+          disabled={loading}
+          onclick={getCollections}
+          aria-label="Refresh"
+        >
           <RefreshCcw />
           Refresh</HotkeyButton
         >
         {#if isAdmin}
           <HotkeyButton
+            aria-label={`Delete ${capitalizeWords(collectionname)}`}
             size="sm"
             variant="danger"
             disabled={loading}
@@ -220,10 +228,11 @@
             }}
           >
             <Trash2 />
-            Delete {collectionname}</HotkeyButton
+            Delete {capitalizeWords(collectionname)}</HotkeyButton
           >
         {/if}
         <HotkeyButton
+          aria-label={`Add to ${capitalizeWords(collectionname)}`}
           size="sm"
           data-shortcut="n,ins"
           disabled={loading}
@@ -232,7 +241,7 @@
           }}
         >
           <Plus />
-          Add to {collectionname}</HotkeyButton
+          Add to {capitalizeWords(collectionname)}</HotkeyButton
         >
       </div>
     </div>
