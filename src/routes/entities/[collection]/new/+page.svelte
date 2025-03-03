@@ -6,6 +6,7 @@
   import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { ObjectInput } from "$lib/objectinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
+  import { Check } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
@@ -60,9 +61,12 @@
     data-shortcut="ctrl+s"
     class="mb-4"
     disabled={loading}
-    aria-label="submit"
+    aria-label="Save Changes"
     variant="success"
-    size="base">Save Changes</Form.Button
+    size="base"
+  >
+    <Check />
+    Save Changes</Form.Button
   >
 
   <Acl bind:value={$formData} />

@@ -11,12 +11,12 @@
   import { Entities } from "$lib/entities/index.js";
   import Searchinput from "$lib/searchinput/searchinput.svelte";
   import {
-    Clock,
-    Folder,
-    FolderSymlink,
-    History,
-    Pencil,
-    Plus,
+      Clock,
+      Folder,
+      FolderSymlink,
+      History,
+      Pencil,
+      Plus,
   } from "lucide-svelte";
 
   let { data } = $props();
@@ -152,8 +152,7 @@
     >
       {#snippet action(item: any)}
         <HotkeyButton
-          aria-label="history"
-          title="history"
+          aria-label="History"
           disabled={loading}
           onclick={() =>
             goto(base + `/entities/${collectionname}/history/${item._id}`)}
@@ -163,8 +162,7 @@
           <History />
         </HotkeyButton>
         <HotkeyButton
-          aria-label="edit"
-          title="edit"
+          aria-label="Edit"
           disabled={loading}
           onclick={() => single_item_click(item)}
           size="tableicon"

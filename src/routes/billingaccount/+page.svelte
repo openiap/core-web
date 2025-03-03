@@ -7,7 +7,7 @@
   import { SearchInput } from "$lib/searchinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
-  import { DollarSign, Filter, Pencil, Plus, Trash2 } from "lucide-svelte";
+  import { DollarSign, Pencil, Plus, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
@@ -97,16 +97,6 @@
   class="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 xl:flex xl:justify-between xl:items-center mb-4"
 >
   <SearchInput bind:searchstring />
-  <!-- <HotkeyButton
-      size="sm"
-      variant="base"
-      aria-label="Filter"
-      class="border-dashed dark:text-bw600"
-    >
-      <Filter />
-      Filter</HotkeyButton
-    > -->
-
   <HotkeyButton
     size="sm"
     variant="base"

@@ -3,6 +3,8 @@
   import { base } from "$app/paths";
   import { CollectionSelector } from "$lib/collectionselector/index.js";
   import * as Form from "$lib/components/ui/form/index.js";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
+  import { CustomInput } from "$lib/custominput/index.js";
   import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { ObjectInput } from "$lib/objectinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
@@ -11,8 +13,6 @@
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newFormSchema } from "../schema.js";
-  import { CustomInput } from "$lib/custominput/index.js";
-  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
 
   const key = "formresource";
   let loading = $state(false);
@@ -92,12 +92,12 @@
     variant="success"
     size="base"
     disabled={loading}
-    aria-label="Create formresource"
+    aria-label="Create Form Resource"
     type="submit"
     data-shortcut="ctrl+s"
   >
     <Check />
-    Create formresource</HotkeyButton
+    Create Form Resource</HotkeyButton
   >
 </form>
 

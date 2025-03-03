@@ -42,8 +42,7 @@
 >
   {#snippet action(item: any)}
     <HotkeyButton
-      title="View on map"
-      aria-label="view"
+      aria-label="View on Map"
       disabled={loading}
       onclick={() => {
         window.open(
@@ -55,8 +54,7 @@
       variant="icon"><MapPinHouse /></HotkeyButton
     >
     <HotkeyButton
-      title="Edit"
-      aria-label="edit"
+      aria-label="Edit"
       disabled={loading}
       onclick={() => single_item_click(item)}
       size="tableicon"

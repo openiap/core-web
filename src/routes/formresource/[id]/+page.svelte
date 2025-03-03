@@ -8,16 +8,16 @@
   import { Acl } from "$lib/acl/index.js";
   import { CollectionSelector } from "$lib/collectionselector/index.js";
   import * as Form from "$lib/components/ui/form/index.js";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { CustomInput } from "$lib/custominput/index.js";
   import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { ObjectInput } from "$lib/objectinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
+  import { Check } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../schema.js";
-  import { Check } from "lucide-svelte";
-  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
 
   const key = "formresource";
   const { data } = $props();
@@ -103,12 +103,12 @@
     variant="success"
     size="base"
     disabled={loading}
-    aria-label="Update formresource"
+    aria-label="Update Form Resource"
     type="submit"
     data-shortcut="ctrl+s"
   >
     <Check />
-    Update formresource</HotkeyButton
+    Update Form Resource</HotkeyButton
   >
 </form>
 

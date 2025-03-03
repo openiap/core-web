@@ -216,7 +216,7 @@
           <HotkeyButton
             disabled={loading || !fileData}
             onclick={() => (fileData = null)}
-            aria-label="Delete"
+            aria-label="Clear"
             variant="danger"
             size="lg"
           >

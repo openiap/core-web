@@ -12,7 +12,7 @@
   import { Entities } from "$lib/entities/index.js";
   import { SearchInput } from "$lib/searchinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
-  import { Filter, Pencil, Plus, Trash2 } from "lucide-svelte";
+  import { Pencil, Plus, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
@@ -46,16 +46,6 @@
   class="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 mb-4 xl:flex xl:justify-between xl:items-center"
 >
   <SearchInput bind:searchstring />
-  <!-- <HotkeyButton
-      size="sm"
-      variant="base"
-      disabled={loading}
-      aria-label="Filter"
-      class="border-dashed dark:text-bw600"
-    >
-      <Filter />
-      Filter</HotkeyButton
-    > -->
   <HotkeyButton
     size="sm"
     variant="base"
@@ -85,7 +75,7 @@
   {/snippet}
   {#snippet action(item: any)}
     <HotkeyButton
-      aria-label="edit"
+      aria-label="Edit"
       disabled={loading}
       onclick={() => single_item_click(item)}
       size="tableicon"
@@ -94,7 +84,7 @@
       <Pencil />
     </HotkeyButton>
     <HotkeyButton
-      aria-label="delete"
+      aria-label="Delete"
       disabled={loading}
       onclick={() => deleteitem(item)}
       size="tableicon"

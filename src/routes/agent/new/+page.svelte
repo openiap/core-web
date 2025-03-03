@@ -363,10 +363,9 @@
               <Form.Label>Slug</Form.Label>
               <HotkeyButton
                 class="ml-2"
-                aria-label="refresh"
+                aria-label="Refresh"
                 size="refresh"
                 variant="refresh"
-                title="refresh"
                 disabled={loading}
                 onclick={() => {
                   $formData.name = randomname();
@@ -556,12 +555,11 @@
                 bind:value={$formData.runas}
               />
               <HotkeyButton
-                aria-label="User details"
-                title="User details"
+                aria-label="User Details"
                 disabled={loading}
                 onclick={() => {
                   goto(base + `/user/${$formData.runas}`);
-                }}><User />User details</HotkeyButton
+                }}><User />User Details</HotkeyButton
               >
             </div>
           </div>

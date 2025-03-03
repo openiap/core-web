@@ -2,9 +2,8 @@
 </script>
 
 <script lang="ts">
-  import { goto, replaceState } from "$app/navigation";
+  import { goto } from "$app/navigation";
   import { base } from "$app/paths";
-  import { page as sveltepage } from "$app/state";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
@@ -13,11 +12,10 @@
   import { StatusCard } from "$lib/statuscard/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
-  import { Pencil, Plus, Trash2, X } from "lucide-svelte";
+  import { Pencil, Plus, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   let collectionname = "workitems";
-  let page = "workitem";
   let query = $state({});
 
   let { data } = $props();
@@ -47,7 +45,7 @@
     }
   }
   function single_item_click(item: any) {
-    goto(base + `/${page}/edit/${item._id}`);
+    goto(base + `/workitem/edit/${item._id}`);
   }
   async function GetData() {
     ref.reload();
@@ -99,7 +97,7 @@
       variant="base"
       disabled={loading}
       aria-label="Create Work Item"
-      onclick={() => goto(base + `/${page}/new/${queue ? queue : "new"}`)}
+      onclick={() => goto(base + `/workitem/new/${queue ? queue : "new"}`)}
     >
       <Plus />
       Create Work Item</HotkeyButton
@@ -147,7 +145,7 @@
   {#snippet action(item: any)}
     <div class="flex items-center justify-end space-x-2">
       <HotkeyButton
-        aria-label="edit"
+        aria-label="Edit"
         disabled={loading}
         onclick={() => single_item_click(item)}
         size="tableicon"
@@ -156,7 +154,7 @@
         <Pencil />
       </HotkeyButton>
       <HotkeyButton
-        aria-label="delete"
+        aria-label="Delete"
         disabled={loading}
         onclick={() => {
           deleteData = item;

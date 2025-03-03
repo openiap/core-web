@@ -76,11 +76,11 @@
     size="sm"
     variant="base"
     disabled={loading}
-    aria-label="Create license Key"
+    aria-label="Create License Key"
     onclick={() => goto(base + `/${page}/new`)}
   >
     <Plus />
-    Create license Key</HotkeyButton
+    Create License Key</HotkeyButton
   >
 </div>
 
@@ -99,7 +99,7 @@
   {#snippet action(item: any)}
     <div class="flex items-center justify-end space-x-2">
       <HotkeyButton
-        aria-label="edit"
+        aria-label="Edit"
         disabled={loading}
         onclick={() => single_item_click(item)}
         size="tableicon"
@@ -108,7 +108,7 @@
         <Pencil />
       </HotkeyButton>
       <HotkeyButton
-        aria-label="delete"
+        aria-label="Delete"
         disabled={loading}
         onclick={() => {
           deleteData = item;

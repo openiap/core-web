@@ -44,18 +44,16 @@
 >
   {#snippet action(item: any)}
     <HotkeyButton
-      aria-label="view"
+      aria-label="View"
       disabled={loading}
       onclick={() => single_item_click(item)}
       size="tableicon"
       variant="icon"
-      title="view"
     >
       <Eye />
     </HotkeyButton>
     <HotkeyButton
-      title="edit"
-      aria-label="edit"
+      aria-label="Edit"
       disabled={loading}
       onclick={() => goto(base + `/user/${item._createdbyid}`)}
       size="tableicon"

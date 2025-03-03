@@ -176,7 +176,7 @@
       variant="success"
       size="base"
       disabled={loading}
-      aria-label="Create formresource"
+      aria-label="Create Entity"
       type="submit"
       data-shortcut="ctrl+s"
     >

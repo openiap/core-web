@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { browser } from "$app/environment";
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import * as Form from "$lib/components/ui/form/index.js";
@@ -8,16 +9,14 @@
   import { EntitySelector } from "$lib/entityselector/index.js";
   import { ObjectInput } from "$lib/objectinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
+  import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import { Check, Download } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../../schema.js";
-  import { browser } from "$app/environment";
-  import { usersettings } from "$lib/stores/usersettings.svelte.js";
 
   const { data } = $props();
-  const key = "workitem";
   let loading = $state(false);
   let files: Array<File> = $state([]);
   let filedata: Array<{ filename: string; _id: string }> = $state([]);
@@ -49,7 +48,7 @@
             workitem: form.data,
           });
           toast.success("Workitem updated");
-          goto(base + `/${key}`);
+          goto(base + `/workitem`);
         } catch (error: any) {
           toast.error("Error", {
             description: error.message,
@@ -232,7 +231,7 @@
           <HotkeyButton
             onclick={() => downloadFile(file)}
             title="download"
-            aria-label="download"
+            aria-label="Download"
             size="tableicon"
             variant="icon"><Download /></HotkeyButton
           >
@@ -331,12 +330,12 @@
     variant="success"
     size="base"
     disabled={loading}
-    aria-label="Update workitem"
+    aria-label="Update Work Item"
     type="submit"
     data-shortcut="ctrl+s"
   >
     <Check />
-    Update workitem</HotkeyButton
+    Update Work Item</HotkeyButton
   >
 </form>
 

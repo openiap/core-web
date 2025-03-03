@@ -8,14 +8,13 @@
   import { EntitySelector } from "$lib/entityselector/index.js";
   import { ObjectInput } from "$lib/objectinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
+  import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import { Check } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newFormSchema } from "../../schema.js";
-  import { usersettings } from "$lib/stores/usersettings.svelte.js";
 
-  const key = "workitem";
   let { data } = $props();
   let loading = $state(false);
   let files = $state([]);
@@ -39,7 +38,7 @@
             jwt: auth.access_token,
           });
           toast.success("Workitem added");
-          goto(base + `/${key}`);
+          goto(base + `/workitem`);
         } catch (error: any) {
           toast.error("Error", {
             description: error.message,
@@ -210,12 +209,12 @@
     variant="success"
     size="base"
     disabled={loading}
-    aria-label="Add workitem"
+    aria-label="Add Work Item"
     type="submit"
     data-shortcut="ctrl+s"
   >
     <Check />
-    Add workitem</HotkeyButton
+    Add Work Item</HotkeyButton
   >
 </form>
 

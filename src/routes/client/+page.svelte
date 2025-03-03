@@ -19,7 +19,7 @@
   let entities = $state(data.entities);
 
   function single_item_click(item: any) {
-    if(item.user != null && item.user._id != "") {
+    if (item.user != null && item.user._id != "") {
       goto(base + `/user/${item.user._id}`);
     }
   }
@@ -39,23 +39,25 @@
   bind:this={ref}
   bind:loading
 >
-{#snippet id(item: any)}
-  <button type="button" onclick={() => single_item_click(item)} aria-label="View item details">{item.id}</button>
-{/snippet}
+  {#snippet id(item: any)}
+    <button
+      type="button"
+      onclick={() => single_item_click(item)}
+      aria-label="View item details">{item.id}</button
+    >
+  {/snippet}
   {#snippet action(item: any)}
     {#if item.user != null}
-    <HotkeyButton
-      title="go to user"
-      aria-label="go to user"
-      disabled={loading}
-      onclick={() => goto(base + `/user/${item.user._id}`)}
-      size="tableicon"
-      variant="icon"><User /></HotkeyButton
-    >
+      <HotkeyButton
+        aria-label="Go to User"
+        disabled={loading}
+        onclick={() => goto(base + `/user/${item.user._id}`)}
+        size="tableicon"
+        variant="icon"><User /></HotkeyButton
+      >
     {/if}
     <HotkeyButton
-      title="View on map"
-      aria-label="view"
+      aria-label="View on Map"
       disabled={loading}
       onclick={() => {
         window.open(

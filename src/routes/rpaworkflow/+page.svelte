@@ -44,7 +44,7 @@
   {#snippet action(item: any)}
     <div class="flex items-center justify-end space-x-2">
       <Button
-        aria-label="edit"
+        aria-label="Edit"
         disabled={loading}
         onclick={() => single_item_click(item)}
         size="icon"

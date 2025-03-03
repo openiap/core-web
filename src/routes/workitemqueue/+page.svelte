@@ -10,11 +10,10 @@
   import { SearchInput } from "$lib/searchinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
-  import { Eraser, Filter, Pencil, Plus, Trash2 } from "lucide-svelte";
+  import { Eraser, Pencil, Plus, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   let collectionname = "mq";
-  let page = "workitemqueue";
   let query = { _type: "workitemqueue" };
 
   let { data } = $props();
@@ -45,7 +44,7 @@
     }
   }
   function single_item_click(item: any) {
-    goto(base + `/${page}/${item._id}`);
+    goto(base + `/workitemqueue/${item._id}`);
   }
   async function GetData() {
     ref.reload();
@@ -92,22 +91,12 @@
   class="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 mb-4 xl:flex xl:justify-between xl:items-center"
 >
   <SearchInput bind:searchstring />
-  <!-- <HotkeyButton
-      size="sm"
-      variant="base"
-      disabled={loading}
-      aria-label="Filter"
-      class="border-dashed dark:text-bw600"
-    >
-      <Filter />
-      Filter</HotkeyButton
-    > -->
   <HotkeyButton
     size="sm"
     variant="base"
     disabled={loading}
     aria-label="Create Work Item Queue"
-    onclick={() => goto(base + `/${page}/new/`)}
+    onclick={() => goto(base + `/workitemqueue/new/`)}
   >
     <Plus />
     Create Work Item Queue</HotkeyButton
@@ -129,7 +118,7 @@
   {#snippet action(item: any)}
     <div class="flex items-center justify-end space-x-2">
       <HotkeyButton
-        aria-label="edit"
+        aria-label="Edit"
         title="Edit"
         disabled={loading}
         onclick={() => single_item_click(item)}
@@ -139,8 +128,7 @@
         <Pencil />
       </HotkeyButton>
       <HotkeyButton
-        aria-label="purge"
-        title="Purge"
+        aria-label="Purge"
         disabled={loading}
         onclick={() => {
           purgeQueueData = item;
@@ -152,8 +140,7 @@
         <Eraser />
       </HotkeyButton>
       <HotkeyButton
-        aria-label="delete"
-        title="Delete"
+        aria-label="Delete"
         disabled={loading}
         onclick={() => {
           deleteData = item;

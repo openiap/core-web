@@ -164,14 +164,12 @@
   {#snippet action(item: any)}
     <HotkeyButton
       onclick={() => downloadFile(item)}
-      title="download"
-      aria-label="download"
+      aria-label="Download"
       size="tableicon"
       variant="icon"><Download /></HotkeyButton
     >
     <HotkeyButton
-      title="Edit"
-      aria-label="edit"
+      aria-label="Edit"
       onclick={() => single_item_click(item)}
       size="tableicon"
       variant="icon"
@@ -180,8 +178,7 @@
     </HotkeyButton>
 
     <HotkeyButton
-      title="Delete"
-      aria-label="delete"
+      aria-label="Delete"
       onclick={() => {
         deleteData = item;
         showWarning = !showWarning;

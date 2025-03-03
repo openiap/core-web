@@ -2,18 +2,16 @@
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import * as Form from "$lib/components/ui/form/index.js";
-  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { CustomCheckbox } from "$lib/customcheckbox";
   import { CustomInput } from "$lib/custominput/index.js";
   import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
-  import { Check, Trash2, UserRoundPlus } from "lucide-svelte";
+  import { Check } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newFormSchema } from "../schema.js";
 
-  const key = "user";
   let loading = $state(false);
 
   const form = superForm(defaults(zod(newFormSchema)), {
@@ -30,7 +28,7 @@
             jwt: auth.access_token,
           });
           toast.success("User added");
-          goto(base + `/${key}`);
+          goto(base + `/user`);
         } catch (error: any) {
           toast.error("Error", {
             description: error.message,
@@ -216,66 +214,14 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  <!-- {#if $formData.federationids}
-    {#each $formData.federationids as item, index}
-      <Form.Field {form} name="federationids">
-        <Form.Control>
-          {#snippet children({ props })}
-            {#if $formData.federationids}
-              <div class="flex items-center justify-start">
-                <CustomInput
-                  type="email"
-                  disabled={loading}
-                  {...props}
-                  bind:value={$formData.federationids[index]}
-                />
-                <HotkeyButton
-                  class="ml-2 dark:bg-darkbgred"
-                  aria-label="delete"
-                  size="base"
-                  disabled={loading}
-                  variant="icon"
-                  onclick={() => {
-                    let arr = $formData.federationids;
-                    if (arr) {
-                      arr.splice(index, 1);
-                    }
-                    $formData.federationids = arr;
-                  }}><Trash2 /></HotkeyButton
-                >
-              </div>
-            {/if}
-          {/snippet}
-        </Form.Control>
-        <Form.FieldErrors />
-      </Form.Field>
-    {/each}
-  {/if}
-  <div>
-    <HotkeyButton
-      class="mb-7"
-      aria-label="add federation id"
-      disabled={loading}
-      variant="base"
-      size="base"
-      onclick={() => {
-        let arr = $formData.federationids || [];
-        $formData.federationids = [...arr, "test"];
-      }}
-    >
-      <UserRoundPlus />
-      Add federation id</HotkeyButton
-    >
-  </div> -->
-
   <Form.Button
     disabled={loading}
-    aria-label="Add"
+    aria-label="Add User"
     variant="success"
     size="base"
   >
     <Check />
-    Add {key}</Form.Button
+    Add User</Form.Button
   >
 </form>
 

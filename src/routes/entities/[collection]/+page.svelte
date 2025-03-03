@@ -13,14 +13,14 @@
   import { auth } from "$lib/stores/auth.svelte";
   import { WarningDialogue } from "$lib/warningdialogue/index.js";
   import {
-    Clock,
-    Folder,
-    FolderSymlink,
-    History,
-    Pencil,
-    Plus,
-    RefreshCcw,
-    Trash2,
+      Clock,
+      Folder,
+      FolderSymlink,
+      History,
+      Pencil,
+      Plus,
+      RefreshCcw,
+      Trash2,
   } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
@@ -251,8 +251,7 @@
     >
       {#snippet action(item: any)}
         <HotkeyButton
-          aria-label="history"
-          title="history"
+          aria-label="History"
           disabled={loading}
           onclick={() =>
             goto(base + `/entities/${collectionname}/history/${item._id}`)}
@@ -262,8 +261,7 @@
           <History />
         </HotkeyButton>
         <HotkeyButton
-          aria-label="edit"
-          title="edit"
+          aria-label="Edit"
           disabled={loading}
           onclick={() => single_item_click(item)}
           size="tableicon"

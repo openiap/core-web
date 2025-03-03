@@ -14,7 +14,6 @@
   import { zod } from "sveltekit-superforms/adapters";
   import { newFormSchema } from "../schema.js";
 
-  const page = "package";
   let fileData = $state(null);
   let loading = $state(false);
 
@@ -32,7 +31,7 @@
             jwt: auth.access_token,
           });
           toast.success("Package added");
-          goto(base + `/${page}`);
+          goto(base + `/package`);
         } catch (error: any) {
           toast.error("Error", {
             description: error.message,
@@ -179,7 +178,7 @@
           <HotkeyButton
             disabled={loading || !fileData}
             onclick={() => (fileData = null)}
-            aria-label="Delete"
+            aria-label="Clear"
             variant="danger"
             size="lg"
           >
@@ -197,13 +196,13 @@
 
   <Form.Button
     disabled={loading}
-    aria-label="Submit"
+    aria-label="Add Package"
     variant="success"
     size="base"
     data-shortcut="ctrl+s"
   >
     <Check />
-    Add {page}</Form.Button
+    Add Package</Form.Button
   >
 </form>
 

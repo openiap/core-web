@@ -5,19 +5,18 @@
 
 <script lang="ts">
     import { goto } from "$app/navigation";
-
-  import { base } from "$app/paths";
-  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
-  import { Label } from "$lib/components/ui/label/index.js";
-  import { CustomSelect } from "$lib/customselect";
-  import { data as datacomponent } from "$lib/entities/data.svelte.js";
-  import { Entities } from "$lib/entities/index.js";
-  import { SearchInput } from "$lib/searchinput/index.js";
-  import { auth } from "$lib/stores/auth.svelte.js";
-  import { usersettings } from "$lib/stores/usersettings.svelte.js";
-  import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
-  import { Trash2 } from "lucide-svelte";
-  import { toast } from "svelte-sonner";
+    import { base } from "$app/paths";
+    import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
+    import { Label } from "$lib/components/ui/label/index.js";
+    import { CustomSelect } from "$lib/customselect";
+    import { data as datacomponent } from "$lib/entities/data.svelte.js";
+    import { Entities } from "$lib/entities/index.js";
+    import { SearchInput } from "$lib/searchinput/index.js";
+    import { auth } from "$lib/stores/auth.svelte.js";
+    import { usersettings } from "$lib/stores/usersettings.svelte.js";
+    import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
+    import { Trash2 } from "lucide-svelte";
+    import { toast } from "svelte-sonner";
 
   let { data } = $props();
   $effect(() => {
@@ -126,12 +125,12 @@
   {#snippet status(item: any)}
     {#if item.status == "pending"}
       <HotkeyButton
-        aria-label="Copy invite link"
+        aria-label="Copy Invite Link"
         disabled={loading}
         onclick={() => copylink(item.workspaceid, item.token)}
         size="sm"
       >
-        Copy invite link
+        Copy Invite Link
       </HotkeyButton>
     {:else}
       <Label>{item.status}</Label>

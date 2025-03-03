@@ -479,18 +479,18 @@
       variant="success"
       size="base"
       disabled={loading}
-      aria-label="Update licence"
+      aria-label="Update Licence"
       type="submit"
       data-shortcut="ctrl+s"
     >
       <Check />
-      Update licence</HotkeyButton
+      Update Licence</HotkeyButton
     >
     <HotkeyButton
       variant="success"
       size="base"
       disabled={loading}
-      aria-label="Update"
+      aria-label="Generate License Key"
       onclick={async () => {
         try {
           loading = true;
@@ -517,7 +517,7 @@
       }}
     >
       <KeyRound />
-      Generate license key</HotkeyButton
+      Generate License Key</HotkeyButton
     >
   </div>
 </form>

@@ -14,8 +14,6 @@
   import { zod } from "sveltekit-superforms/adapters";
   import { newFormSchema } from "../schema.js";
 
-  const key = "role";
-
   let loading = $state(false);
   let newid = $state("");
   let members: any = $state([]);
@@ -43,7 +41,7 @@
             jwt: auth.access_token,
           });
           toast.success("Role added");
-          goto(base + `/${key}`);
+          goto(base + `/role`);
         } catch (error: any) {
           toast.error("Error", {
             description: error.message,
@@ -163,7 +161,7 @@
             {/if}
             <div class="col-span-3">
               <HotkeyButton
-                aria-label="delete"
+                aria-label="Remove Member"
                 class="dark:bg-darkbgred"
                 disabled={loading}
                 variant="danger"
@@ -212,12 +210,12 @@
     variant="success"
     size="base"
     disabled={loading}
-    aria-label="Add role"
+    aria-label="Add Role"
     type="submit"
     data-shortcut="ctrl+s"
   >
     <Check />
-    Add role</HotkeyButton
+    Add Role</HotkeyButton
   >
 </form>
 

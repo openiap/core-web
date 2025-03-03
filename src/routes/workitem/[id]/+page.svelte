@@ -16,7 +16,6 @@
   import { toast } from "svelte-sonner";
 
   let collectionname = "workitems";
-  let page = "workitem";
 
   let { data } = $props();
   let loading = $state(false);
@@ -45,7 +44,7 @@
     }
   }
   function single_item_click(item: any) {
-    goto(base + `/${page}/edit/${item._id}`);
+    goto(base + `/workitem/edit/${item._id}`);
   }
   async function GetData() {
     try {
@@ -75,7 +74,7 @@
     }
   }
   async function filterData() {
-    sveltepage.url.pathname = base + `/${page}/${queue}`;
+    sveltepage.url.pathname = base + `/workitem/${queue}`;
     replaceState(sveltepage.url, sveltepage.state);
 
     query = { ...query, wiqid: queue };
@@ -121,11 +120,11 @@
     size="sm"
     variant="base"
     disabled={loading}
-    aria-label="add"
-    onclick={() => goto(base + `/${page}/new/${queue ? queue : "new"}`)}
+    aria-label="Add Work Item"
+    onclick={() => goto(base + `/workitem/new/${queue ? queue : "new"}`)}
   >
     <Plus />
-    Add {page}</HotkeyButton
+    Add Work Item</HotkeyButton
   >
 </div>
 
@@ -143,7 +142,7 @@
   {#snippet action(item: any)}
     <div class="flex items-center space-x-2 justify-end">
       <HotkeyButton
-        aria-label="edit"
+        aria-label="Edit"
         disabled={loading}
         onclick={() => single_item_click(item)}
         size="tableicon"
@@ -152,7 +151,7 @@
         <Pencil />
       </HotkeyButton>
       <HotkeyButton
-        aria-label="delete"
+        aria-label="Delete"
         disabled={loading}
         onclick={() => {
           deleteData = item;

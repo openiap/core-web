@@ -13,7 +13,6 @@
   import { zod } from "sveltekit-superforms/adapters";
   import { newWorkspaceSchema } from "../schema.js";
 
-  const key = "workspace";
   let loading = $state(false);
   let errormessage = $state("");
   const form = superForm(defaults(zod(newWorkspaceSchema)), {
@@ -34,7 +33,7 @@
           toast.success("Workspace added");
           usersettings.currentworkspace = workspace._id;
           await usersettings.dopersist();
-          goto(base + `/${key}/${workspace._id}`);
+          goto(base + `/workspace/${workspace._id}`);
         } catch (error: any) {
           errormessage = error.message;
           toast.error("Error", {
@@ -77,17 +76,17 @@
       variant="success"
       size="base"
       disabled={loading}
-      aria-label="Create workspace"
+      aria-label="Create Workspace"
       type="submit"
       data-shortcut="ctrl+s"
     >
       <Check />
-      Create workspace</HotkeyButton
+      Create Workspace</HotkeyButton
     >
     <HotkeyButton
       size="lg"
       aria-label="Cancel"
-      onclick={() => goto(base + `/${key}`)}>Cancel</HotkeyButton
+      onclick={() => goto(base + `/workspace`)}>Cancel</HotkeyButton
     >
   </div>
 </form>

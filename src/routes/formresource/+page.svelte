@@ -13,7 +13,7 @@
   import { SearchInput } from "$lib/searchinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
-  import { Filter, Pencil, Plus, Trash2 } from "lucide-svelte";
+  import { Pencil, Plus, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
@@ -63,16 +63,6 @@
   class="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 xl:flex xl:justify-between xl:items-center mb-4"
 >
   <SearchInput bind:searchstring />
-  <!-- <HotkeyButton
-    aria-label="Filter"
-    class="border-dashed dark:text-bw600"
-    disabled={loading}
-    size="sm"
-  >
-    <Filter />
-    Filter</HotkeyButton
-  > -->
-
   <HotkeyButton
     aria-label="Create Form Resource"
     disabled={loading}
@@ -98,7 +88,7 @@
 >
   {#snippet action(item: any)}
     <HotkeyButton
-      aria-label="edit"
+      aria-label="Edit"
       disabled={loading}
       onclick={() => single_item_click(item)}
       size="tableicon"
@@ -107,7 +97,7 @@
       <Pencil />
     </HotkeyButton>
     <HotkeyButton
-      aria-label="delete"
+      aria-label="Delete"
       disabled={loading}
       onclick={() => {
         deleteData = item;

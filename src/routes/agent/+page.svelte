@@ -420,8 +420,7 @@
       Create Agent</HotkeyButton
     >
     <HotkeyButton
-      aria-label="packages"
-      title="package"
+      aria-label="Packages"
       size="sm"
       variant="base"
       disabled={loading}
@@ -431,8 +430,7 @@
       Packages</HotkeyButton
     >
     <HotkeyButton
-      aria-label="reload"
-      title="reload"
+      aria-label="Reload"
       size="sm"
       variant="base"
       disabled={loading}
@@ -477,8 +475,7 @@
   {#snippet action(item: any)}
     <div class="flex items-center justify-end space-x-2.5">
       <HotkeyButton
-        aria-label="start"
-        title="start"
+        aria-label="Start"
         size="tableicon"
         variant="icon"
         disabled={loading}
@@ -507,8 +504,7 @@
         <Play />
       </HotkeyButton>
       <HotkeyButton
-        aria-label="stop"
-        title="stop"
+        aria-label="Stop"
         size="tableicon"
         variant="icon"
         disabled={loading}
@@ -537,8 +533,7 @@
         <Square />
       </HotkeyButton>
       <HotkeyButton
-        aria-label="debug"
-        title="debug"
+        aria-label="Debug"
         size="tableicon"
         variant="icon"
         disabled={loading}
@@ -547,7 +542,7 @@
         <Wrench />
       </HotkeyButton>
       <HotkeyButton
-        aria-label="debug"
+        aria-label="Open in Web"
         title="Open in web"
         size="tableicon"
         variant="icon"

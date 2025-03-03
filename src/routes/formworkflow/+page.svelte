@@ -77,8 +77,7 @@
   {#snippet action(item: any)}
     <div class="flex items-center justify-end space-x-2">
       <HotkeyButton
-        aria-label="start"
-        title="start"
+        aria-label="Start"
         disabled={loading}
         onclick={() => single_item_click(item)}
         size="tableicon"
@@ -87,7 +86,7 @@
         <Play />
       </HotkeyButton>
       <HotkeyButton
-        aria-label="delete"
+        aria-label="Delete"
         disabled={loading}
         onclick={() => {
           deleteData = item;

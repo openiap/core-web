@@ -120,7 +120,7 @@
         }}
       ></CustomSwitch>
       <HotkeyButton
-        aria-label="edit"
+        aria-label="Edit"
         disabled={loading}
         onclick={() => single_item_click(item)}
         size="tableicon"
@@ -129,7 +129,7 @@
         <Pencil />
       </HotkeyButton>
       <HotkeyButton
-        aria-label="delete"
+        aria-label="Delete"
         disabled={loading}
         onclick={() => {
           deleteData = item;

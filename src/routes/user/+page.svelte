@@ -103,7 +103,7 @@
 >
   {#snippet action(item: any)}
     <HotkeyButton
-      aria-label="edit"
+      aria-label="Edit"
       disabled={loading}
       onclick={() => single_item_click(item)}
       size="tableicon"
@@ -113,7 +113,7 @@
     </HotkeyButton>
     <HotkeyButton
       variant="danger"
-      aria-label="delete"
+      aria-label="Delete"
       disabled={loading}
       onclick={() => {
         deleteData = item;

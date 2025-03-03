@@ -5,9 +5,8 @@
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { CustomInput } from "$lib/custominput/index.js";
   import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
-  import { auth } from "$lib/stores/auth.svelte.js";
-  import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import { EntitySelector } from "$lib/entityselector/index.js";
+  import { auth } from "$lib/stores/auth.svelte.js";
   import { Check } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
@@ -96,12 +95,12 @@
         variant="success"
         size="base"
         disabled={loading}
-        aria-label="Create licence"
+        aria-label="Create Licence"
         type="submit"
         data-shortcut="ctrl+s"
       >
         <Check />
-        Create licence</HotkeyButton
+        Create Licence</HotkeyButton
       >
       <HotkeyButton
         size="lg"

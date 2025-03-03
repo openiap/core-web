@@ -6,16 +6,15 @@
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import { Acl } from "$lib/acl";
-  import * as Form from "$lib/components/ui/form/index.js";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { ObjectInput } from "$lib/objectinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
+  import { Check } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../../schema.js";
-  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
-  import { Check } from "lucide-svelte";
 
   let loading = $state(false);
   let errormessage = $state("");

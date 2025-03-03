@@ -663,8 +663,7 @@
     {#if $formData.docker == true}
       <Tabs.Content value="1">
         <HotkeyButton
-          aria-label="start"
-          title="start"
+          aria-label="Start"
           size="tableicon"
           variant="icon"
           disabled={loading}
@@ -693,8 +692,7 @@
           <Play />
         </HotkeyButton>
         <HotkeyButton
-          aria-label="stop"
-          title="stop"
+          aria-label="Stop"
           size="tableicon"
           variant="icon"
           disabled={loading}
@@ -723,8 +721,7 @@
           <Square />
         </HotkeyButton>
         <HotkeyButton
-          aria-label="refresh"
-          title="refresh"
+          aria-label="Refresh"
           size="tableicon"
           variant="icon"
           disabled={loading}
@@ -809,7 +806,6 @@
                   variant="base"
                   size="base"
                   aria-label="Logs"
-                  title="Logs"
                   onclick={async () => {
                     loading = true;
                     try {
@@ -846,7 +842,6 @@
                   class="ml-4"
                   variant="danger"
                   aria-label="Delete"
-                  title="Delete"
                   onclick={() => {
                     showWarningAgentDelete = true;
                     deleteData = resourceMonitor;
@@ -891,10 +886,9 @@
                   <Form.Label>Slug</Form.Label>
                   <HotkeyButton
                     class="ml-2"
-                    aria-label="refresh"
+                    aria-label="Refresh"
                     size="refresh"
                     variant="refresh"
-                    title="refresh"
                     disabled={loading}
                     onclick={() => {
                       $formData.name = randomname();
@@ -1095,12 +1089,11 @@
                     bind:value={$formData.runas}
                   />
                   <HotkeyButton
-                    aria-label="User details"
-                    title="User details"
+                    aria-label="User Details"
                     disabled={loading}
                     onclick={() => {
                       goto(base + `/user/${$formData.runas}`);
-                    }}><User />User details</HotkeyButton
+                    }}><User />User Details</HotkeyButton
                   >
                 </div>
               </div>
@@ -1126,7 +1119,6 @@
             <HotkeyButton
               class="w-full md:mr-4 md:w-auto"
               aria-label="Refresh"
-              title="Refresh"
               variant="base"
               size="base"
               disabled={loading}
@@ -1140,7 +1132,6 @@
             <HotkeyButton
               class="w-full md:w-auto"
               aria-label="Open in Web"
-              title="Open in Web"
               variant="base"
               size="base"
               disabled={$formData.webserver != true ||

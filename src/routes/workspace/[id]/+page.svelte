@@ -274,12 +274,12 @@
                   variant="success"
                   size="base"
                   disabled={loading}
-                  aria-label="Update workspace"
+                  aria-label="Update Workspace"
                   type="submit"
                   data-shortcut="ctrl+s"
                 >
                   <Check />
-                  Update workspace</HotkeyButton
+                  Update Workspace</HotkeyButton
                 >
               </div>
             </div>

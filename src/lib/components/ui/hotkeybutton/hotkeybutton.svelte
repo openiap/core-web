@@ -1,12 +1,10 @@
 <script lang="ts" module>
-	// import { install, uninstall } from "@github/hotkey";
-	import Mousetrap from "mousetrap";
-
 	import type { WithElementRef } from "bits-ui";
+	import Mousetrap from "mousetrap";
 	import { onDestroy, onMount } from "svelte";
 	import type {
-		HTMLAnchorAttributes,
-		HTMLButtonAttributes,
+	    HTMLAnchorAttributes,
+	    HTMLButtonAttributes,
 	} from "svelte/elements";
 	import { type VariantProps, tv } from "tailwind-variants";
 
@@ -104,6 +102,19 @@
 			}
 		}
 	});
+	function addTitle() {
+		const searchTerms = ["Create", "Add", "Update"];
+		if (!ariaLabel) return "";
+		const lowerMainString = ariaLabel.toLowerCase();
+		const foundOne = searchTerms.some((term) =>
+			lowerMainString.includes(term.toLowerCase()),
+		);
+		if (foundOne) {
+			return ariaLabel + " (Ctrl + S)";
+		}
+
+		return ariaLabel;
+	}
 </script>
 
 {#if href}
@@ -118,6 +129,7 @@
 	</a>
 {:else}
 	<button
+		title={addTitle()}
 		bind:this={ref}
 		aria-label={ariaLabel}
 		class={cn(buttonVariants({ variant, size, className }))}

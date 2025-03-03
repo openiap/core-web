@@ -323,7 +323,7 @@
         <pre>{auth.baseurl}/{$formData.id}/FederationMetadata/2007-06/FederationMetadata.xml</pre>
         <HotkeyButton
           class="mb-7"
-          aria-label="add federation id"
+          aria-label="Test"
           disabled={loading}
           variant="link"
           size="base"
@@ -334,7 +334,7 @@
             );
           }}
         >
-          test</HotkeyButton
+          Test</HotkeyButton
         >
       </div>
     {/if}
@@ -357,7 +357,7 @@
                 />
                 <HotkeyButton
                   class="ml-2 dark:bg-darkbgred"
-                  aria-label="delete"
+                  aria-label="Delete"
                   size="base"
                   disabled={loading}
                   variant="icon"
@@ -380,7 +380,7 @@
   <div>
     <HotkeyButton
       class="mb-7"
-      aria-label="add federation id"
+      aria-label="Add Domain"
       disabled={loading}
       variant="base"
       size="base"
@@ -390,7 +390,7 @@
       }}
     >
       <UserRoundPlus />
-      Add domain</HotkeyButton
+      Add Domain</HotkeyButton
     >
   </div>
 
@@ -414,12 +414,12 @@
     variant="success"
     size="base"
     disabled={loading}
-    aria-label="Update provider"
+    aria-label="Update Provider"
     type="submit"
     data-shortcut="ctrl+s"
   >
     <Check />
-    Add provider</HotkeyButton
+    Add Provider</HotkeyButton
   >
 </form>
 

@@ -7,12 +7,12 @@
   import { base } from "$app/paths";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import Switch from "$lib/components/ui/switch/switch.svelte";
+  import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
+  import { ArrowLeft } from "lucide-svelte";
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../schema.js";
-  import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
 
-  const key = "mailhistory";
   const { data } = $props();
   const form = superForm(defaults(zod(editFormSchema)), {
     dataType: "json",
@@ -32,8 +32,11 @@
 <div>
   <HotkeyButton
     class="mb-4"
-    aria-label="back"
-    onclick={() => goto(base + `/${key}`)}>Back</HotkeyButton
+    aria-label="Back"
+    onclick={() => goto(base + `/mailhistory`)}
+  >
+    <ArrowLeft />
+    Back</HotkeyButton
   >
 
   <div class="mb-4">

@@ -6,22 +6,21 @@
 	import * as Breadcrumb from "$lib/components/ui/breadcrumb/index.js";
 	import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
-	import Search from "$lib/search/search.svelte";
 	import NavUser from "$lib/sidebar/nav-user.svelte";
 	import { auth } from "$lib/stores/auth.svelte";
 	import { sidemenu } from "$lib/stores/sidemenu.svelte";
 	import { usersettings } from "$lib/stores/usersettings.svelte.js";
 	import {
-		ArrowLeftToLine,
-		ArrowRightToLine,
-		Github,
-		Trash2,
+	    ArrowLeftToLine,
+	    ArrowRightToLine,
+	    Github
 	} from "lucide-svelte";
 	import Moon from "lucide-svelte/icons/moon";
 	import Sun from "lucide-svelte/icons/sun";
 	import { toggleMode } from "mode-watcher";
 	import { capitalizeFirstLetter } from "../helper";
 	import type { Workspace } from "./workspace/schema";
+	
 	let pathname = $state(
 		$state.snapshot(
 			$page.url.pathname
@@ -156,25 +155,14 @@
 				variant="headericon"
 				size="icon"
 				aria-label="Visit us at Github"
-				title="Github"
 			>
 				<Github />
 			</HotkeyButton>
-			<!-- <HotkeyButton
-				variant="headericon"
-				size="icon"
-				aria-label="Clear cookies"
-				onclick={reset}
-				title="Clear filters and settings"
-			>
-				<Trash2 />
-			</HotkeyButton> -->
 			<HotkeyButton
 				onclick={toggleMode}
 				variant="headericon"
 				size="icon"
-				aria-label="Toggle darkmode"
-				title="Toggle theme"
+				aria-label="Toggle Theme"
 			>
 				<Sun
 					class="rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"

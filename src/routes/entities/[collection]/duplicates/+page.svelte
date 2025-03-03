@@ -203,18 +203,6 @@
       </div>
     </div>
 
-    <!-- <div class="flex items-center space-x-4">
-            <HotkeyButton>
-              <Trash2 /> One
-            </HotkeyButton>
-            <HotkeyButton>
-              <Trash2 /> All but One
-            </HotkeyButton>
-            <HotkeyButton>
-              <Trash2 /> All
-            </HotkeyButton>
-          </div> -->
-
     <Entities
       {collectionname}
       page={page()}
@@ -226,17 +214,6 @@
       bind:loading
       single_item_click={(item: any) => single_item_click(item)}
     >
-      <!-- {#snippet action(item: any)}
-        <HotkeyButton
-          aria-label="edit"
-          disabled={loading}
-          onclick={() => single_item_click(item)}
-          size="tableicon"
-          variant="icon"
-        >
-          <Pencil />
-        </HotkeyButton>
-      {/snippet} -->
     </Entities>
   </div>
 </div>
@@ -247,6 +224,5 @@
     flex-direction: column;
     height: 100%;
     width: 100%;
-    /* This ensures it fills the entire window height */
   }
 </style>

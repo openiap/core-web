@@ -7,7 +7,6 @@
   import { Entities } from "$lib/entities/index.js";
   import { SearchInput } from "$lib/searchinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
-  import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import { Download, Filter, Inspect, Upload } from "lucide-svelte";
   import { toast } from "svelte-sonner";
@@ -117,8 +116,7 @@
 >
   {#snippet action(item: any)}
     <HotkeyButton
-      title="view"
-      aria-label="view"
+      aria-label="View"
       onclick={() => single_item_click(item, "view")}
       size="tableicon"
       variant="icon"
@@ -126,8 +124,7 @@
       <Inspect />
     </HotkeyButton>
     <HotkeyButton
-      title="download"
-      aria-label="download"
+      aria-label="Download"
       onclick={() => single_item_click(item, "download")}
       size="tableicon"
       variant="icon"
@@ -135,8 +132,7 @@
       <Download />
     </HotkeyButton>
     <HotkeyButton
-      title="restore"
-      aria-label="restore"
+      aria-label="Restore"
       onclick={() => single_item_click(item, "restore")}
       size="tableicon"
       variant="icon"
@@ -162,8 +158,7 @@
     </AlertDialog.Header>
     <AlertDialog.Footer>
       <HotkeyButton
-        aria-label="download"
-        title="Download"
+        aria-label="Download"
         class="w-full justify-start"
         size="entity"
         onclick={(e) => {
@@ -173,8 +168,7 @@
         Download
       </HotkeyButton>
       <HotkeyButton
-        aria-label="restore"
-        title="restore"
+        aria-label="Restore"
         class="w-full justify-start"
         size="entity"
         onclick={(e) => {
@@ -185,7 +179,6 @@
       </HotkeyButton>
       <HotkeyButton
         aria-label="Cancel"
-        title="Cancel"
         class="w-full justify-start"
         size="entity"
         onclick={(e) => {
