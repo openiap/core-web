@@ -20,7 +20,7 @@
       goto(base + "/workspace");
     }
   });
-  const key = "workspace";
+
   let loading = $state(false);
   let errormessage = $state("");
   const form = superForm(defaults(zod(newMemberSchema)), {
@@ -37,7 +37,7 @@
             jwt: auth.access_token,
           });
           toast.success("User invited successfully");
-          goto(base + `/${key}/${data.id}/member`);
+          goto(base + `/workspace/${data.id}/member`);
         } catch (error: any) {
           errormessage = error.message;
           toast.error("Error", {

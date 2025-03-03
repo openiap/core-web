@@ -16,7 +16,6 @@
   import { zod } from "sveltekit-superforms/adapters";
   import { customerSchema } from "../schema.js";
 
-  const key = "billingaccount";
   let loading = $state(false);
   const { data } = $props();
   const form = superForm(defaults(zod(customerSchema)), {
@@ -33,7 +32,7 @@
             jwt: auth.access_token,
           });
           toast.success("Billing account updated");
-          goto(base + `/${key}`);
+          goto(base + `/billingaccount`);
         } catch (error: any) {
           toast.error("Error", {
             description: error.message,

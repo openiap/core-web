@@ -11,8 +11,7 @@
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newCustomerSchema } from "../schema.js";
-
-  const key = "billingaccount";
+  
   let loading = $state(false);
   const form = superForm(defaults(zod(newCustomerSchema)), {
     dataType: "json",
@@ -28,7 +27,7 @@
             jwt: auth.access_token,
           });
           toast.success("Billand Account Created");
-          goto(base + `/${key}`);
+          goto(base + `/billingaccount`);
         } catch (error: any) {
           toast.error("Error", {
             description: error.message,

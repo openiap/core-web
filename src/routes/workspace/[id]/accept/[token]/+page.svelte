@@ -11,7 +11,6 @@
   import { zod } from "sveltekit-superforms/adapters";
   import { memberSchema } from "../../../schema.js";
 
-  const key = "workspace";
   const { data } = $props();
   const form = superForm(data.form, {
     dataType: "json",
@@ -40,7 +39,7 @@
       });
       usersettings.currentworkspace = $formData.workspaceid;
       await usersettings.dopersist();
-      goto(base + `/${key}/${$formData.workspaceid}/member`);
+      goto(base + `/workspace/${$formData.workspaceid}/member`);
     } catch (error: any) {
       toast.error("Error while accepting", {
         description: error.message,
@@ -57,7 +56,7 @@
       toast.error("Declined successfully", {
         description: "",
       });
-      goto(base + `/${key}/${$formData.workspaceid}/member`);
+      goto(base + `/workspace/${$formData.workspaceid}/member`);
     } catch (error: any) {
       toast.error("Error while declining", {
         description: error.message,

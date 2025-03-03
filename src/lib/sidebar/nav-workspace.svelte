@@ -10,24 +10,15 @@
         Check,
         ChevronDown,
         ChevronRight,
-        CircleCheck,
         DollarSignIcon,
-        Pencil,
         Rows3,
-        Ticket,
-        X,
+        X
     } from "lucide-svelte";
     import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
     import Plus from "lucide-svelte/icons/plus";
-    import type { Workspace } from "../../routes/workspace/schema";
-    import { capitalizeWords } from "../../helper";
-    import { EntitySelector } from "$lib/entityselector";
-    import * as Command from "$lib/components/ui/command/index.js";
-    import { usersettings } from "$lib/stores/usersettings.svelte";
     import { toast } from "svelte-sonner";
-    import Separator from "$lib/components/ui/separator/separator.svelte";
-    import * as Popover from "$lib/components/ui/popover/index.js";
-    import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
+    import { capitalizeWords } from "../../helper";
+    import type { Workspace } from "../../routes/workspace/schema";
 
     let {
         workspaces,

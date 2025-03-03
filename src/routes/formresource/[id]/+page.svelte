@@ -19,7 +19,6 @@
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../schema.js";
 
-  const key = "formresource";
   const { data } = $props();
   let loading = $state(false);
 
@@ -37,7 +36,7 @@
             jwt: auth.access_token,
           });
           toast.success("Form resource edited");
-          goto(base + `/${key}`);
+          goto(base + `/formresource`);
         } catch (error: any) {
           toast.error("Error", {
             description: error.message,

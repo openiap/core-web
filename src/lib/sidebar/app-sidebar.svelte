@@ -6,10 +6,10 @@
 	import "driver.js/dist/driver.css";
 	import Mousetrap from "mousetrap";
 	import {
-		agentTour,
-		baseTour,
-		driverObj,
-		entitiesTour,
+	    agentTour,
+	    baseTour,
+	    driverObj,
+	    entitiesTour,
 	} from "./onboarding.js";
 
 	class SidebarCategory {

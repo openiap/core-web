@@ -14,7 +14,6 @@
   import { zod } from "sveltekit-superforms/adapters";
   import { newFormSchema } from "../schema.js";
 
-  const key = "formresource";
   let loading = $state(false);
   const form = superForm(defaults(zod(newFormSchema)), {
     dataType: "json",
@@ -30,7 +29,7 @@
             jwt: auth.access_token,
           });
           toast.success("form resource added");
-          goto(base + `/${key}`);
+          goto(base + `/formresource`);
         } catch (error: any) {
           toast.error("Error", {
             description: error.message,

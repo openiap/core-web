@@ -20,7 +20,6 @@
   import { randomname } from "../helper.js";
   import { newFormSchema } from "../schema.js";
 
-  const key = "agent";
   const { data } = $props();
 
   let loading = $state(false);

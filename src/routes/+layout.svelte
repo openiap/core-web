@@ -6,6 +6,7 @@
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import { Toaster } from "$lib/components/ui/sonner/index.js";
 	import { data as datacomponent } from "$lib/entities/data.svelte.js";
+	import { HotkeyDialogue } from "$lib/hotkeydialogue";
 	import AppSidebar from "$lib/sidebar/app-sidebar.svelte";
 	import { auth } from "$lib/stores/auth.svelte";
 	import { sidemenu } from "$lib/stores/sidemenu.svelte";
@@ -15,7 +16,6 @@
 	import "../app.css";
 	import Header from "./Header.svelte";
 	import type { Workspace } from "./workspace/schema.js";
-	import { HotkeyDialogue } from "$lib/hotkeydialogue";
 
 	let { children, data } = $props();
 	datacomponent.parsesettings(data.settings);

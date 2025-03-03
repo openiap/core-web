@@ -14,7 +14,6 @@
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../schema.js";
 
-  const key = "provider";
   let loading = $state(false);
 
   const { data } = $props();
@@ -83,7 +82,7 @@
             jwt: auth.access_token,
           });
           toast.success("Provider updated");
-          goto(base + `/${key}`);
+          goto(base + `/provider`);
         } catch (error: any) {
           toast.error("Error", {
             description: error.message,
