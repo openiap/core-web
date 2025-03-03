@@ -122,7 +122,7 @@
     variant="base"
     disabled={loading}
     aria-label="add"
-    onclick={() => goto(base + `/${page}/new`)}
+    onclick={() => goto(base + `/${page}/new/${queue ? queue : "new"}`)}
   >
     <Plus />
     Add {page}</HotkeyButton

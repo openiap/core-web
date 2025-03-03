@@ -35,6 +35,12 @@
                 "This action is irreversible. This will permanently delete all selected items.";
             buttonaname = "Delete All";
             break;
+        case "purgequeue":
+            title = "Are you absolutely sure?";
+            description =
+                "This action is irreversible. This will permanently purge all workitems inside this queue.";
+            buttonaname = "Purge All";
+            break;
         case "toggle":
             title = "Are you sure?";
             description = "This is toggle the state of the item.";

@@ -10,7 +10,6 @@
   import { SearchInput } from "$lib/searchinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
-  import { client } from "@openiap/jsapi/dist/client.js";
   import { Eraser, Filter, Pencil, Plus, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
@@ -26,6 +25,8 @@
   let selected_items = $state([]);
   let entities = $state(data.entities);
   let showWarning = $state(false);
+  let showWarningPurge = $state(false);
+  let purgeQueueData: any = $state();
   let deleteData: any = $state({});
 
   async function deleteitem(item: any) {
@@ -63,14 +64,25 @@
     }
   }
 
-  async function purgeData(item: any) {
-    item.purge = true;
-    await auth.client.UpdateOne({
-      collectionname: "mq",
-      item,
-      jwt: auth.access_token,
-    });
-    toast.success("Data purged");
+  async function handleAcceptPurge() {
+    try {
+      let data = JSON.parse(JSON.stringify(purgeQueueData));
+      data._created = new Date(data._created);
+      data._modified = new Date(data._modified);
+      console.log("data", $state.snapshot(data));
+      await auth.client.UpdateWorkitemQueue({
+        workitemqueue: data,
+        purge: true,
+        jwt: auth.access_token,
+        skiprole: true,
+      });
+
+      toast.success("Data purged");
+    } catch (error: any) {
+      toast.error("Error while purging", {
+        description: error.message,
+      });
+    }
   }
 </script>
 
@@ -116,6 +128,7 @@
     <div class="flex items-center justify-end space-x-2">
       <HotkeyButton
         aria-label="edit"
+        title="Edit"
         disabled={loading}
         onclick={() => single_item_click(item)}
         size="tableicon"
@@ -125,8 +138,12 @@
       </HotkeyButton>
       <HotkeyButton
         aria-label="purge"
+        title="Purge"
         disabled={loading}
-        onclick={() => purgeData(item)}
+        onclick={() => {
+          purgeQueueData = item;
+          showWarningPurge = true;
+        }}
         size="tableicon"
         variant="icon"
       >
@@ -134,6 +151,7 @@
       </HotkeyButton>
       <HotkeyButton
         aria-label="delete"
+        title="Delete"
         disabled={loading}
         onclick={() => {
           deleteData = item;
@@ -149,4 +167,10 @@
 </Entities>
 
 <Warningdialogue bind:showWarning type="delete" onaccept={handleAccept}
+></Warningdialogue>
+
+<Warningdialogue
+  bind:showWarning={showWarningPurge}
+  type="purgequeue"
+  onaccept={handleAcceptPurge}
 ></Warningdialogue>

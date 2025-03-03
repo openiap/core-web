@@ -250,6 +250,7 @@
     {/if}
   {/each}
   <HotkeyButton
+    class="mt-4"
     variant="success"
     size="base"
     disabled={loading}
