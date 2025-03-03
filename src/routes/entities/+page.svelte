@@ -119,12 +119,16 @@
   >
     <div class="flex justify-center w-full px-4">
       <HotkeyButton
+        title="Create Form (Ctrl + i), insert key"
+        data-shortcut="ctrl+i,ins"
         aria-label="Insert Collection"
         class="mb-2 rounded-md w-full"
         size="sm"
-        data-shortcut="n,ins"
         disabled={loading}
-        onclick={() => goto(base + `/entities/new`)}
+        onclick={() => {
+          loading = true;
+          goto(base + `/entities/new`);
+        }}
       >
         <Plus />
         Insert Collection</HotkeyButton

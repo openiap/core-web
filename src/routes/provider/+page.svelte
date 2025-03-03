@@ -64,11 +64,16 @@
 >
   <SearchInput bind:searchstring />
   <HotkeyButton
+    title="Create Provider (Ctrl + i), insert key"
+    data-shortcut="ctrl+i,ins"
     size="sm"
     variant="base"
     disabled={loading}
     aria-label="Create Provider"
-    onclick={() => goto(base + `/${page}/new`)}
+    onclick={() => {
+      loading = true;
+      goto(base + `/${page}/new`);
+    }}
   >
     <Plus />
     Create Provider</HotkeyButton

@@ -57,27 +57,22 @@
   }
 </script>
 
-<div class="flex justify-between mb-4">
-  <div class="flex gap-2 w-full">
-    <SearchInput bind:searchstring />
-    <HotkeyButton
-      size="sm"
-      variant="base"
-      disabled={loading}
-      aria-label="Filter"
-      class="border-dashed dark:text-bw600"
-    >
-      <Filter />
-      Filter</HotkeyButton
-    >
-  </div>
+<div
+  class="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 xl:flex xl:justify-between xl:items-center mb-4"
+>
+  <SearchInput bind:searchstring />
 
   <HotkeyButton
+    title="Create License Key (Ctrl + i), insert key"
+    data-shortcut="ctrl+i,ins"
     size="sm"
     variant="base"
     disabled={loading}
     aria-label="Create License Key"
-    onclick={() => goto(base + `/${page}/new`)}
+    onclick={() => {
+      loading = true;
+      goto(base + `/${page}/new`);
+    }}
   >
     <Plus />
     Create License Key</HotkeyButton

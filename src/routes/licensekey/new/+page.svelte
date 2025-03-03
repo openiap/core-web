@@ -30,7 +30,7 @@
               jwt: auth.access_token,
             }),
           );
-          toast.success("License added");
+          toast.success("License created");
           goto(base + `/licensekey/${license._id}`);
         } catch (error: any) {
           toast.error("Error", {

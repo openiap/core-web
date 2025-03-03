@@ -30,7 +30,7 @@
             item: { ...form.data },
             jwt: auth.access_token,
           });
-          toast.success("Package added");
+          toast.success("Package created");
           goto(base + `/package`);
         } catch (error: any) {
           toast.error("Error", {
@@ -196,13 +196,13 @@
 
   <Form.Button
     disabled={loading}
-    aria-label="Add Package"
+    aria-label="Create Package"
     variant="success"
     size="base"
     data-shortcut="ctrl+s"
   >
     <Check />
-    Add Package</Form.Button
+    Create Package</Form.Button
   >
 </form>
 

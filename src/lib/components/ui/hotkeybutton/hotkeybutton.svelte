@@ -61,6 +61,7 @@
 	import { toast } from "svelte-sonner";
 
 	let {
+		title,
 		class: className,
 		variant = "base",
 		size = "base",
@@ -134,7 +135,7 @@
 	</a>
 {:else}
 	<button
-		title={addTitle()}
+		title={title || addTitle()}
 		bind:this={ref}
 		aria-label={ariaLabel}
 		class={cn(buttonVariants({ variant, size, className }))}

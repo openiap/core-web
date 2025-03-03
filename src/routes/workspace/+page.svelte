@@ -16,6 +16,7 @@
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import { Filter, Pencil, Plus, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
+  import { load } from "../proxy+layout.server.js";
 
   let { data } = $props();
   let ref: any;
@@ -106,11 +107,16 @@
   </div>
 
   <HotkeyButton
+    title="Create Workspace (Ctrl + i), insert key"
+    data-shortcut="ctrl+i,ins"
     size="sm"
     variant="base"
     disabled={loading}
     aria-label="Create Workspace"
-    onclick={() => goto(base + `/${page}/new`)}
+    onclick={() => {
+      loading = true;
+      goto(base + `/${page}/new`);
+    }}
   >
     <Plus />
     Create Workspace</HotkeyButton

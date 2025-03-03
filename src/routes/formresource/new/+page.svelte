@@ -28,7 +28,7 @@
             item: form.data,
             jwt: auth.access_token,
           });
-          toast.success("form resource added");
+          toast.success("form resource created");
           goto(base + `/formresource`);
         } catch (error: any) {
           toast.error("Error", {

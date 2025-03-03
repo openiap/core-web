@@ -95,7 +95,7 @@
             item: form.data,
             jwt: auth.access_token,
           });
-          toast.success("Provider added");
+          toast.success("Provider created");
           goto(base + `/${key}`);
         } catch (error: any) {
           toast.error("Error", {
@@ -414,12 +414,12 @@
     variant="success"
     size="base"
     disabled={loading}
-    aria-label="Update Provider"
+    aria-label="Create Provider"
     type="submit"
     data-shortcut="ctrl+s"
   >
     <Check />
-    Add Provider</HotkeyButton
+    Create Provider</HotkeyButton
   >
 </form>
 

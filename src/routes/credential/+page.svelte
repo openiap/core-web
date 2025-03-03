@@ -64,11 +64,16 @@
 >
   <SearchInput bind:searchstring />
   <HotkeyButton
+    title="Create Credential (Ctrl + i), insert key"
+    data-shortcut="ctrl+i,ins"
     size="sm"
     variant="base"
     aria-label="Create Credential"
     disabled={loading}
-    onclick={() => goto(base + `/${page}/new`)}
+    onclick={() => {
+      loading = true;
+      goto(base + `/${page}/new`);
+    }}
   >
     <Plus />
     Create Credential</HotkeyButton

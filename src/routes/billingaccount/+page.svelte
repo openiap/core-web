@@ -98,11 +98,16 @@
 >
   <SearchInput bind:searchstring />
   <HotkeyButton
+    title="Create Billing Account (Ctrl + i, insert key)"
+    data-shortcut="ctrl+i,ins"
     size="sm"
     variant="base"
     disabled={loading}
     aria-label="Create Billing Account"
-    onclick={() => goto(base + `/billingaccount/new`)}
+    onclick={() => {
+      loading = true;
+      goto(base + `/billingaccount/new`);
+    }}
   >
     <Plus />
     Create Billing Account</HotkeyButton

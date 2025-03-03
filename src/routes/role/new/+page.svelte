@@ -40,7 +40,7 @@
             item: { ...form.data },
             jwt: auth.access_token,
           });
-          toast.success("Role added");
+          toast.success("Role created");
           goto(base + `/role`);
         } catch (error: any) {
           toast.error("Error", {
@@ -210,12 +210,12 @@
     variant="success"
     size="base"
     disabled={loading}
-    aria-label="Add Role"
+    aria-label="Create Role"
     type="submit"
     data-shortcut="ctrl+s"
   >
     <Check />
-    Add Role</HotkeyButton
+    Create Role</HotkeyButton
   >
 </form>
 

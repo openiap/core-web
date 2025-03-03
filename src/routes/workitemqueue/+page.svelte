@@ -92,11 +92,16 @@
 >
   <SearchInput bind:searchstring />
   <HotkeyButton
+    title="Create Work Item Queue (Ctrl + i) insert key"
+    data-shortcut="ctrl+i,ins"
     size="sm"
     variant="base"
     disabled={loading}
     aria-label="Create Work Item Queue"
-    onclick={() => goto(base + `/workitemqueue/new/`)}
+    onclick={() => {
+      loading = true;
+      goto(base + `/workitemqueue/new/`);
+    }}
   >
     <Plus />
     Create Work Item Queue</HotkeyButton
