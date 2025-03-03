@@ -1,16 +1,15 @@
 <script lang="ts">
     import {
-        Clapperboard,
-        MessageSquare,
-        CalendarDays,
-        Contact,
-        Tag,
-        Mail,
-        Eye,
         CalendarCheck,
+        CalendarDays,
+        Clapperboard,
+        Contact,
+        Eye,
+        Gauge,
         Image,
         Laptop,
-        Gauge,
+        Mail,
+        Tag
     } from "lucide-svelte";
     export let title: string;
 </script>

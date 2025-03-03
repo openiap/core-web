@@ -1,28 +1,32 @@
 <script lang="ts">
     import {
         Bot,
-        BotMessageSquare,
         ChartSpline,
-        ChevronsLeftRightEllipsis,
         CircleGauge,
         ClipboardList,
-        CloudCog,
+        Cloudy,
         DatabaseZap,
-        Dumbbell,
+        Drama,
         FileClock,
-        Files,
+        FolderOpen,
         Ghost,
-        GitBranch,
+        GitMerge,
         House,
         IdCard,
+        ListTodo,
         Mail,
         MessageSquare,
         Receipt,
+        Rocket,
+        ScanFace,
         ServerCog,
-        UserPlus,
+        Settings,
+        SquareCode,
+        SquareTerminal,
+        UserRoundCheck,
+        UserRoundPlus,
         Users,
-        WalletCards,
-        Zap,
+        Zap
     } from "lucide-svelte";
     export let title: string;
 </script>
@@ -31,8 +35,12 @@
     <Bot />
 {:else if title == "Form Workflows"}
     <ClipboardList />
-{:else if title == "Workitems"}
-    <Dumbbell />
+{:else if title == "Roles"}
+    <Drama />
+{:else if title == "Work Items"}
+    <SquareCode />
+{:else if title == "Work Item Queues"}
+    <ListTodo />
 {:else if title == "Agents"}
     <Ghost />
 {:else if title == "Users"}
@@ -40,11 +48,11 @@
 {:else if title == "My Memberships"}
     <IdCard />
 {:else if title == "Members"}
-    <Users />
+    <UserRoundCheck  />
 {:else if title == "Invite Member"}
-    <UserPlus />
+    <UserRoundPlus  />
 {:else if title == "Clients"}
-    <Users />
+    <Cloudy />
 {:else if title == "Forms"}
     <ClipboardList />
 {:else if title == "Providers"}
@@ -52,19 +60,19 @@
 {:else if title == "Resources"}
     <Zap />
 {:else if title == "HD Robots"}
-    <BotMessageSquare />
+    <Rocket />
 {:else if title == "Config"}
-    <CloudCog />
+    <Settings />
 {:else if title == "Mail History"}
     <Mail />
 {:else if title == "Billing Accounts"}
     <Receipt />
 {:else if title == "Files"}
-    <Files />
+    <FolderOpen  />
 {:else if title == "Credentials"}
-    <WalletCards />
+    <ScanFace  />
 {:else if title == "Console"}
-    <ChevronsLeftRightEllipsis />
+    <SquareTerminal  />
 {:else if title == "Form Resources"}
     <CircleGauge />
 {:else if title == "Audit Logs"}
@@ -76,7 +84,7 @@
 {:else if title == "Grafana"}
     <ChartSpline />
 {:else if title == "Git Repositories"}
-    <GitBranch />
+    <GitMerge />
 {:else}
     <MessageSquare />
 {/if}

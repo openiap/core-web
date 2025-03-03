@@ -26,16 +26,20 @@
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import {
     Box,
+    Check,
     Ellipsis,
     Filter,
+    HandHelping,
     Play,
     Plus,
     Receipt,
     RefreshCcw,
     Square,
     SquarePen,
+    SquareStack,
     Trash2,
     User,
+    VenetianMask,
     Webhook,
     Wrench,
   } from "lucide-svelte";
@@ -327,7 +331,11 @@
         >
         <Popover.Content class="w-fit">
           <RadioGroup.Root value="All" class="flex flex-col">
-            <div class="flex items-center space-x-2 w-full">
+            <div class="flex items-center space-x-20 w-full">
+              <div class="flex items-center space-x-4 w-full">
+                <Check class="h-4 w-4" />
+                <Label for="r3" class="cursor-pointer">All</Label>
+              </div>
               <RadioGroup.Item
                 class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
                 value="All"
@@ -339,10 +347,13 @@
                   await getPods(false);
                 }}
               />
-              <Label for="r1" class="cursor-pointer">All</Label>
             </div>
             <Separator />
-            <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-20">
+              <div class="flex items-center space-x-4 w-full">
+                <SquareStack class="h-4 w-4" />
+                <Label for="r3" class="cursor-pointer">Pods</Label>
+              </div>
               <RadioGroup.Item
                 class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
                 value="Pods"
@@ -353,10 +364,14 @@
                   await GetData();
                 }}
               />
-              <Label for="r3" class="cursor-pointer">Pods</Label>
             </div>
             <Separator />
-            <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-20">
+              <div class="flex items-center space-x-4 w-full">
+                <VenetianMask class="h-4 w-4" />
+                <Label for="r3" class="cursor-pointer">Daemon</Label>
+              </div>
+
               <RadioGroup.Item
                 class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
                 value="Daemon"
@@ -368,10 +383,13 @@
                   await getPods(false);
                 }}
               />
-              <Label for="r2" class="cursor-pointer">Daemon</Label>
             </div>
             <Separator />
-            <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-20">
+              <div class="flex items-center space-x-4 w-full">
+                <Box class="h-4 w-4" />
+                <Label for="r3" class="cursor-pointer">Docker</Label>
+              </div>
               <RadioGroup.Item
                 class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
                 value="Docker"
@@ -383,10 +401,13 @@
                   await getPods(false);
                 }}
               />
-              <Label for="r4" class="cursor-pointer">Docker</Label>
             </div>
             <Separator />
-            <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-20">
+              <div class="flex items-center space-x-4 w-full">
+                <HandHelping class="h-4 w-4" />
+                <Label for="r3" class="cursor-pointer">Assistant</Label>
+              </div>
               <RadioGroup.Item
                 class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
                 value="Assistant"
@@ -398,7 +419,6 @@
                   await getPods(false);
                 }}
               />
-              <Label for="r5" class="cursor-pointer">Assistant</Label>
             </div>
           </RadioGroup.Root>
         </Popover.Content>

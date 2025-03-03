@@ -12,7 +12,7 @@
         ChevronRight,
         DollarSignIcon,
         Rows3,
-        X
+        X,
     } from "lucide-svelte";
     import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
     import Plus from "lucide-svelte/icons/plus";
@@ -255,12 +255,14 @@
                         class="gap-2 p-2 cursor-pointer"
                         onclick={() => goto(base + "/workspace/new")}
                     >
-                        <div
+                        <!-- <div
                             class="bg-background flex size-6 items-center justify-center rounded-md border"
                         >
                             <Plus class="size-4" />
                         </div>
-                        <div class=" font-medium">Create Workspace</div>
+                        <div class=" font-medium">Create Workspace</div> -->
+                        <Plus class="size-4" />
+                        <div class=" font-medium">New Workspace</div>
                     </DropdownMenu.Item>
                 </DropdownMenu.Content>
             </DropdownMenu.Root>
