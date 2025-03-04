@@ -500,6 +500,7 @@
 							{#if multi_select}
 								<Table.Head class="w-8 " role="cell"
 									><CustomCheckbox
+										class=" "
 										arialabel="Select all"
 										checked={is_all_selected()}
 										handleClick={ToogleAll}
@@ -525,7 +526,7 @@
 										{ontouchmove}
 									>
 										<div
-											class="flex items-center justify-right"
+											class="flex items-center justify-center w-max"
 										>
 											<IconRenderer title={head.field} />
 											{data.RenderHeaderName(head)}
@@ -542,9 +543,11 @@
 								<Table.Head
 									class="text-bw950 dark:text-bw200 font-normal {actionheadclass}"
 								>
-									<div class="flex items-center justify-end">
+									<div
+										class={`flex items-center justify-end `}
+									>
 										<IconRenderer title="Action" />
-										Action
+										Actions
 									</div>
 								</Table.Head>
 							{/if}
@@ -565,6 +568,7 @@
 										class="w-8"
 										onclick={() => ToggleSelect(item)}
 										><CustomCheckbox
+											class=" "
 											arialabel="Select Item"
 											checked={selected_items.indexOf(
 												item._id,

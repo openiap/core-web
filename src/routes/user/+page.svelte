@@ -60,7 +60,7 @@
 </script>
 
 <div class="flex justify-between mb-4">
-  <div class="flex gap-2 w-full">
+  <div class="flex gap-4 w-full">
     <SearchInput bind:searchstring />
     <HotkeyButton
       size="sm"
