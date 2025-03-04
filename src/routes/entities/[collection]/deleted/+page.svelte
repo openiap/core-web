@@ -51,12 +51,13 @@
     id="div1"
     class="h-full max-w-max flex-shrink-0 p-2.5 rounded-[10px] bg-bw100 dark:bg-bw900 pb-10 hidden xl:block"
   >
-    <div class="flex justify-center w-full px-4">
+    <div class="w-full px-1">
       <HotkeyButton
+        variant="entitycreate"
         title="Insert Collection"
+        class="w-full justify-start"
+        size="entity"
         aria-label="Insert Collection"
-        class="mb-2 rounded-md w-full"
-        size="sm"
         disabled={loading}
         onclick={() => goto(base + `/entities/new`)}
       >
@@ -66,11 +67,9 @@
     </div>
     <div class="h-full overflow-auto">
       <ScrollArea class="max-h-full w-[266px] overflow-auto">
-        <div class="pt-0 p-4">
+        <div class="pt-0 py-4 px-1 flex flex-col">
           {#each collections as collection, index}
-            {#if index != 0}
-              <Separator class="my-2" />
-            {/if}
+            <Separator class="my-1 w-3/4 self-center" />
             <HotkeyButton
               aria-label={collection.name}
               class="w-full justify-start"
