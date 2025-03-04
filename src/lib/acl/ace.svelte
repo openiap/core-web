@@ -25,17 +25,17 @@
     }
 </script>
 
-<div class="flex flex-row items-center p-2 justify-between w-full">
+<div class="flex flex-col space-y-2 lg:space-y-0 lg:flex-row items-center p-2 justify-between w-full">
     <div>
         {value.name}
     </div>
 
-    <div class="flex">
+    <div class="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 gap-4 items-center lg:flex">
         {#each items as item}
             <div
                 role="button"
                 tabindex="0"
-                class="flex items-center"
+                class="flex items-center justify-end"
                 onclick={() =>
                     !loading && (value.rights = toogleBit(item.value))}
                 onkeydown={(e) => {
@@ -53,7 +53,7 @@
                     disabled={loading}
                     checked={IsBitSet(item.value)}
                     aria-label={item.label}
-                    class={`dark:border dark:border-bw300 dark:text-bw100 w-6 h-6 md:w-4 md:h-4 mr-5 ml-1.5 ${IsBitSet(item.value) && "dark:bg-bw500"}`}
+                    class={`dark:border dark:border-bw300 dark:text-bw100 w-4 h-4 ml-1.5 ${IsBitSet(item.value) && "dark:bg-bw500"}`}
                 />
             </div>
         {/each}

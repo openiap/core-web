@@ -122,6 +122,26 @@
 
 						<span class="col-span-3"> : Open page tour </span>
 					</div>
+					<!-- <div class="grid grid-cols-4">
+						<div class="justify-self-end col-span-1">
+							<div class="text-yellow-300 flex">
+								<ArrowUp class="h-4 w-4" />
+								<ArrowRight class="h-4 w-4" />
+							</div>
+						</div>
+
+						<span class="col-span-3"> : Change collection </span>
+					</div>
+					<div class="grid grid-cols-4">
+						<div class="justify-self-end col-span-1">
+							<div class="text-yellow-300 flex">
+								<ArrowLeft class="h-4 w-4" />
+								<ArrowRight class="h-4 w-4" />
+							</div>
+						</div>
+
+						<span class="col-span-3"> : Change page </span>
+					</div> -->
 					<div class="grid grid-cols-4">
 						<div class="justify-self-end col-span-1">
 							<div class="text-yellow-300 flex">

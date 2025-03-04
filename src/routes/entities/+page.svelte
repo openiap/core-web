@@ -142,6 +142,7 @@
             {/if}
             <HotkeyButton
               aria-label={collection.name}
+              title={`${collection.name} (Up/Down Arrow Keys)`}
               class="w-full justify-start"
               size="entity"
               variant={collectionvariant(collection.name)}

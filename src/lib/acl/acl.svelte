@@ -48,7 +48,7 @@
 
 <Accordion.Root
     type="single"
-    class={`mb-2 w-[752px] ${open ? " border rounded-[10px] dark:border-bw600 dark:bg-bw850 dark:text-bw100" : ""}`}
+    class={`mb-2 w-full ${open ? " border rounded-[10px] dark:border-bw600 dark:bg-bw850 dark:text-bw100" : ""}`}
     value={open}
 >
     <Accordion.Item value="item-1" class="border-0 p-0 m-0">
@@ -81,7 +81,7 @@
         <Accordion.Content class="px-2.5 border-0">
             {#each value._acl as ace, i}
                 <div
-                    class="flex flex-row items-center justify-between border dark:border-bw600 dark:bg-bw1000 p-0.75 rounded-lg my-1.5"
+                    class="flex flex-col lg:flex-row items-center justify-between border dark:border-bw600 dark:bg-bw1000 p-0.75 rounded-lg my-1.5"
                 >
                     <Ace bind:value={value._acl[i]} {loading} />
                     <Hotkeybutton

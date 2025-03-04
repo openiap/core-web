@@ -75,7 +75,9 @@
     Update Item</HotkeyButton
   >
 
-  <Acl bind:value={$formData} />
+  <div class="mb-3">
+    <Acl bind:value={$formData} />
+  </div>
 
   <ObjectInput height="min-h-[70vh]" bind:value={$formData} />
 </form>

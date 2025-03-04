@@ -19,14 +19,14 @@
         Receipt,
         Rocket,
         ScanFace,
-        ServerCog,
+        Server,
         Settings,
         SquareCode,
         SquareTerminal,
         UserRoundCheck,
         UserRoundPlus,
         Users,
-        Zap
+        Zap,
     } from "lucide-svelte";
     export let title: string;
 </script>
@@ -48,15 +48,15 @@
 {:else if title == "My Memberships"}
     <IdCard />
 {:else if title == "Members"}
-    <UserRoundCheck  />
+    <UserRoundCheck />
 {:else if title == "Invite Member"}
-    <UserRoundPlus  />
+    <UserRoundPlus />
 {:else if title == "Clients"}
     <Cloudy />
 {:else if title == "Forms"}
     <ClipboardList />
 {:else if title == "Providers"}
-    <ServerCog />
+    <Server />
 {:else if title == "Resources"}
     <Zap />
 {:else if title == "HD Robots"}
@@ -68,11 +68,11 @@
 {:else if title == "Billing Accounts"}
     <Receipt />
 {:else if title == "Files"}
-    <FolderOpen  />
+    <FolderOpen />
 {:else if title == "Credentials"}
-    <ScanFace  />
+    <ScanFace />
 {:else if title == "Console"}
-    <SquareTerminal  />
+    <SquareTerminal />
 {:else if title == "Form Resources"}
     <CircleGauge />
 {:else if title == "Audit Logs"}

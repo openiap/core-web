@@ -62,12 +62,12 @@
     data-shortcut="ctrl+s"
     class="mb-4"
     disabled={loading}
-    aria-label="Update Item"
+    aria-label="Create Item"
     variant="success"
     size="base"
   >
     <Check />
-    Update Item</HotkeyButton
+    Create Item</HotkeyButton
   >
 
   <Acl bind:value={$formData} />

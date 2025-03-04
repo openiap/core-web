@@ -686,6 +686,7 @@
 	>
 		<HotkeyButton
 			aria-label="Previous"
+			title="Previous (Left Arrow Key)"
 			size="base"
 			variant="base"
 			data-shortcut="left"
@@ -718,6 +719,7 @@
 		</div>
 		<HotkeyButton
 			aria-label="Next"
+			title="Previous (Right Arrow Key)"
 			size="base"
 			variant="base"
 			data-shortcut="right"

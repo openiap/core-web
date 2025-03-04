@@ -328,18 +328,6 @@
   {/if}
 
   <form method="POST" use:enhance>
-    <HotkeyButton
-      class="w-full md:w-auto mb-4"
-      variant="success"
-      size="base"
-      disabled={loading}
-      aria-label="Create agent"
-      type="submit"
-      data-shortcut="ctrl+s"
-    >
-      <Check />
-      Create agent</HotkeyButton
-    >
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       <Form.Field {form} name="name" class="w-full">
         <Form.Control>
@@ -538,7 +526,7 @@
       </Form.Field>
     </div>
 
-    <Form.Field {form} name="runas" class="mb-4">
+    <Form.Field {form} name="runas" class="mb-6">
       <Form.Control>
         {#snippet children({ props })}
           <div class="flex flex-col items-start space-y-2">
@@ -566,6 +554,19 @@
       </Form.Control>
       <Form.FieldErrors />
     </Form.Field>
+
+    <HotkeyButton
+      class="w-full md:w-auto mb-4"
+      variant="success"
+      size="base"
+      disabled={loading}
+      aria-label="Create agent"
+      type="submit"
+      data-shortcut="ctrl+s"
+    >
+      <Check />
+      Create agent</HotkeyButton
+    >
   </form>
 
   <div class="italic text-gray-500 py-2">
