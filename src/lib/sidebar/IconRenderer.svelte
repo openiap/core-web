@@ -1,5 +1,6 @@
 <script lang="ts">
     import {
+        BookUser,
         Bot,
         ChartSpline,
         CircleGauge,
@@ -12,7 +13,7 @@
         Ghost,
         GitMerge,
         House,
-        IdCard,
+        Layers2,
         ListTodo,
         Mail,
         MessageSquare,
@@ -23,10 +24,10 @@
         Settings,
         SquareCode,
         SquareTerminal,
-        UserRoundCheck,
         UserRoundPlus,
         Users,
-        Zap,
+        UsersRound,
+        Zap
     } from "lucide-svelte";
     export let title: string;
 </script>
@@ -39,6 +40,8 @@
     <Drama />
 {:else if title == "Work Items"}
     <SquareCode />
+{:else if title == "All Workspaces"}
+    <Layers2 />
 {:else if title == "Work Item Queues"}
     <ListTodo />
 {:else if title == "Agents"}
@@ -46,9 +49,9 @@
 {:else if title == "Users"}
     <Users />
 {:else if title == "My Memberships"}
-    <IdCard />
+    <BookUser  />
 {:else if title == "Members"}
-    <UserRoundCheck />
+    <UsersRound />
 {:else if title == "Invite Member"}
     <UserRoundPlus />
 {:else if title == "Clients"}
