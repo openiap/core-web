@@ -6,42 +6,44 @@
         Contact,
         Eye,
         Gauge,
+        IdCard,
         Image,
         Laptop,
         Mail,
-        Tag
+        Tag,
     } from "lucide-svelte";
     export let title: string;
+    const iconClass = "h-4 w-4 me-1.5 text-bw500";
 </script>
 
 {#if title == "Action"}
-    <Clapperboard class="h-4 w-4 me-1.5" />
+    <Clapperboard class={iconClass} />
 {:else if title == "name"}
-    <Tag class="h-4 w-4 me-1.5" />
+    <IdCard class={iconClass} />
 {:else if title == "_created"}
-    <CalendarDays class="h-4 w-4 me-1.5" />
+    <CalendarDays class={iconClass} />
 {:else if title == "_modified"}
-    <CalendarDays class="h-4 w-4 me-1.5" />
+    <CalendarDays class={iconClass} />
 {:else if title == "_createdby"}
-    <Contact class="h-4 w-4 me-1.5" />
+    <Contact class={iconClass} />
 {:else if title == "_type" || title == "stripeprice" || title == "_productname"}
-    <Tag class="h-4 w-4 me-1.5" />
+    <Tag class={iconClass} />
 {:else if title == "email"}
-    <Mail class="h-4 w-4 me-1.5" />
+    <Mail class={iconClass} />
 {:else if title == "lastseen"}
-    <Eye class="h-4 w-4 me-1.5" />
+    <Eye class={iconClass} />
 {:else if title == "metadata._created"}
-    <CalendarCheck class="h-4 w-4 me-1.5" />
+    <CalendarCheck class={iconClass} />
 {:else if title == "image"}
-    <Image class="h-4 w-4 me-1.5" />
+    <Image class={iconClass} />
 {:else if title == "os"}
-    <Laptop class="h-4 w-4 me-1.5" />
+    <Laptop class={iconClass} />
     <!-- {:else if title == "stripeprice"}
-    <Tag class="h-4 w-4 me-1.5" /> -->
+    <Tag class={iconClass} /> -->
 {:else if title == "status"}
-    <Gauge class="h-4 w-4 me-1.5" />
+    <Gauge class={iconClass} />
 {:else if title == "image"}
-    <Image class="h-4 w-4 me-1.5" />
+    <Image class={iconClass} />
 {:else}
-    <!-- <MessageSquare class="h-4 w-4 me-1.5" /> -->
+    <!-- <MessageSquare class={iconClass} /> -->
 {/if}

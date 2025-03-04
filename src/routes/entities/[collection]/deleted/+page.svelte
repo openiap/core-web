@@ -154,6 +154,7 @@
       {#snippet action(item: any)}
         <HotkeyButton
           aria-label="History"
+          title="Show Version History"
           disabled={loading}
           onclick={() =>
             goto(base + `/entities/${collectionname}/history/${item._id}`)}

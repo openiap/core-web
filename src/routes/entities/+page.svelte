@@ -21,6 +21,7 @@
     Pencil,
     Plus,
     RefreshCcw,
+    SquarePlus,
     Trash2,
   } from "lucide-svelte";
   import { toast } from "svelte-sonner";
@@ -245,7 +246,7 @@
             goto(base + `/entities/${collectionname}/new`);
           }}
         >
-          <Plus />
+          <SquarePlus />
           Add to {capitalizeWords(collectionname)}</HotkeyButton
         >
       </div>
@@ -266,6 +267,7 @@
       {#snippet action(item: any)}
         <HotkeyButton
           aria-label="History"
+          title="Show Version History"
           disabled={loading}
           onclick={() =>
             goto(base + `/entities/${collectionname}/history/${item._id}`)}

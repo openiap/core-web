@@ -675,7 +675,7 @@
 					toggleSheet = true;
 				}}
 			>
-				<Check />
+				<SquareMousePointer />
 				Select Columns
 			</Hotkeybutton>
 		</div>
