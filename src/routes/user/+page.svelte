@@ -78,7 +78,7 @@
   </div>
 
   <HotkeyButton
-    title="Create User (insert key)"
+    title="Create User (Insert Key)"
     data-shortcut="ins"
     size="sm"
     variant="base"

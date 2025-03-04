@@ -2,6 +2,7 @@
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import * as Form from "$lib/components/ui/form/index.js";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { CustomInput } from "$lib/custominput/index.js";
   import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
@@ -14,7 +15,10 @@
 
   const { data } = $props();
   $effect(() => {
-    if (data.id != usersettings.currentworkspace && usersettings.currentworkspace != "") {
+    if (
+      data.id != usersettings.currentworkspace &&
+      usersettings.currentworkspace != ""
+    ) {
       goto(base + "/workspace/" + usersettings.currentworkspace + "/invite");
     } else if (usersettings.currentworkspace == "") {
       goto(base + "/workspace");
@@ -76,14 +80,16 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Button
+  <HotkeyButton
+    type="submit"
+    data-shortcut="ctrl+s"
     disabled={loading}
     aria-label="Create Invitation"
     variant="success"
     size="base"
   >
     <Check />
-    Create Invitation</Form.Button
+    Create Invitation</HotkeyButton
   >
 </form>
 

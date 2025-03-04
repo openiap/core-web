@@ -194,7 +194,8 @@
     git example <span> https://github.com/openiap/nodeworkitemagent.git </span>
   </div>
 
-  <Form.Button
+  <HotkeyButton
+    type="submit"
     disabled={loading}
     aria-label="Create Package"
     variant="success"
@@ -202,7 +203,7 @@
     data-shortcut="ctrl+s"
   >
     <Check />
-    Create Package</Form.Button
+    Create Package</HotkeyButton
   >
 </form>
 

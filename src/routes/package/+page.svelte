@@ -66,7 +66,7 @@
   </div> -->
 
   <HotkeyButton
-    title="Create Package (insert key)"
+    title="Create Package (Insert Key)"
     data-shortcut="ins"
     size="sm"
     variant="base"

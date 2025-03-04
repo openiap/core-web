@@ -63,7 +63,7 @@
   <SearchInput bind:searchstring />
 
   <HotkeyButton
-    title="Create License Key (insert key)"
+    title="Create License Key (Insert Key)"
     data-shortcut="ins"
     size="sm"
     variant="base"

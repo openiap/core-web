@@ -228,12 +228,13 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Button
+  <HotkeyButton
+    type="submit"
     data-shortcut="ctrl+s"
     disabled={loading}
-    aria-label="Save Changes"
+    aria-label="Update Package"
     variant="success"
-    size="base">Save Changes</Form.Button
+    size="base">Update Package</HotkeyButton
   >
 </form>
 

@@ -64,7 +64,7 @@
 >
   <SearchInput bind:searchstring />
   <HotkeyButton
-    title="Create Credential (insert key)"
+    title="Create Credential (Insert Key)"
     data-shortcut="ins"
     size="sm"
     variant="base"

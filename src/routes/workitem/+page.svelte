@@ -93,7 +93,7 @@
   </div>
   <div class="xl:col-start-10">
     <HotkeyButton
-      title="Create Work Item (insert key)"
+      title="Create Work Item (Insert Key)"
       data-shortcut="ins"
       size="sm"
       variant="base"

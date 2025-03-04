@@ -64,7 +64,7 @@
 >
   <SearchInput bind:searchstring />
   <HotkeyButton
-    title="Create Form (insert key)"
+    title="Create Form (Insert Key)"
     data-shortcut="ins"
     size="sm"
     variant="base"

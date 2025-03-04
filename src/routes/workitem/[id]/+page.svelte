@@ -117,14 +117,18 @@
 
   <HotkeyButton
     class="xl:col-start-10"
+    data-shortcut="ins"
     size="sm"
     variant="base"
     disabled={loading}
-    aria-label="Add Work Item"
-    onclick={() => goto(base + `/workitem/new/${queue ? queue : "new"}`)}
+    aria-label="Create Work Item"
+    onclick={() => {
+      loading = true;
+      goto(base + `/workitem/new/${queue ? queue : "new"}`);
+    }}
   >
     <Plus />
-    Add Work Item</HotkeyButton
+    Create Work Item</HotkeyButton
   >
 </div>
 

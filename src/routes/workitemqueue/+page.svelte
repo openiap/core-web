@@ -92,7 +92,7 @@
 >
   <SearchInput bind:searchstring />
   <HotkeyButton
-    title="Create Work Item Queue (Ctrl + i) insert key"
+    title="Create Work Item Queue (Insert Key)"
     data-shortcut="ins"
     size="sm"
     variant="base"
@@ -124,7 +124,6 @@
     <div class="flex items-center justify-end space-x-2">
       <HotkeyButton
         aria-label="Edit"
-        title="Edit"
         disabled={loading}
         onclick={() => single_item_click(item)}
         size="tableicon"

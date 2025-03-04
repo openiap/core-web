@@ -1108,12 +1108,12 @@
             variant="success"
             size="base"
             disabled={loading}
-            aria-label="Save Changes"
+            aria-label="Update Agent"
             type="submit"
             data-shortcut="ctrl+s"
           >
             <Check />
-            Save Changes</HotkeyButton
+            Update Agent</HotkeyButton
           >
           {#if $formData.image != null && $formData.image != ""}
             <HotkeyButton
@@ -1325,12 +1325,12 @@
           variant="success"
           size="base"
           disabled={loading}
-          aria-label="Save Changes"
+          aria-label="Update Package"
           type="submit"
           data-shortcut="ctrl+s"
         >
           <Check />
-          Save Changes</HotkeyButton
+          Update Package</HotkeyButton
         >
       </form>
     </Tabs.Content>

@@ -257,14 +257,16 @@
     </div>
   {/if}
 
-  <Form.Button
+  <HotkeyButton
+    type="submit"
     disabled={loading}
     aria-label="Update User"
     variant="success"
     size="base"
+    data-shortcut="ctrl+s"
   >
     <Check />
-    Update User</Form.Button
+    Update User</HotkeyButton
   >
 </form>
 

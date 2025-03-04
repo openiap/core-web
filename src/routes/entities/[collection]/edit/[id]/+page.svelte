@@ -67,12 +67,12 @@
     variant="success"
     size="base"
     disabled={loading}
-    aria-label="Save Changes"
+    aria-label="Update Item"
     type="submit"
     data-shortcut="ctrl+s"
   >
     <Check />
-    Save Changes</HotkeyButton
+    Update Item</HotkeyButton
   >
 
   <Acl bind:value={$formData} />

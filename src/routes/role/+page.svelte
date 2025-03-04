@@ -47,7 +47,7 @@
 >
   <SearchInput bind:searchstring />
   <HotkeyButton
-    title="Create Role (insert key)"
+    title="Create Role (Insert Key)"
     data-shortcut="ins"
     size="sm"
     variant="base"

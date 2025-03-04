@@ -495,7 +495,7 @@
 					{/if}
 					<Table.Header>
 						<Table.Row
-							class="bg-lighttableheader hover:bg-lighttableheader dark:bg-bw900 dark:hover:bg-bw900 text-nowrap cursor-pointer "
+							class={`bg-lighttableheader hover:bg-lighttableheader dark:bg-bw900 dark:hover:bg-bw900 text-nowrap ${!loading && "cursor-pointer"} `}
 						>
 							{#if multi_select}
 								<Table.Head class="w-8 " role="cell"
@@ -555,7 +555,9 @@
 							<Table.Row
 								class="border-b border-bw500 text-bw950 dark:text-bw200 text-nowrap"
 								ondblclick={() => {
-									single_item_click(item);
+									if (!loading) {
+										single_item_click(item);
+									}
 								}}
 							>
 								{#if multi_select}
@@ -575,7 +577,7 @@
 										{#if head.field == "name"}
 											<Table.Cell
 												class={head.cellclass +
-													" cursor-pointer "}
+													` ${!loading && "cursor-pointer"} `}
 												onclick={() => {
 													if (
 														multi_select &&
@@ -584,7 +586,11 @@
 													) {
 														ToggleSelect(item);
 													} else {
-														single_item_click(item);
+														if (!loading) {
+															single_item_click(
+																item,
+															);
+														}
 													}
 												}}
 												>{RenderItemData(
@@ -605,7 +611,11 @@
 													if (multi_select) {
 														ToggleSelect(item);
 													} else {
-														single_item_click(item);
+														if (!loading) {
+															single_item_click(
+																item,
+															);
+														}
 													}
 												}}
 												>{RenderItemData(

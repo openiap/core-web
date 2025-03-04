@@ -230,7 +230,6 @@
           </div>
           <HotkeyButton
             onclick={() => downloadFile(file)}
-            title="download"
             aria-label="Download"
             size="tableicon"
             variant="icon"><Download /></HotkeyButton

@@ -209,12 +209,12 @@
     variant="success"
     size="base"
     disabled={loading}
-    aria-label="Add Work Item"
+    aria-label="Create Work Item"
     type="submit"
     data-shortcut="ctrl+s"
   >
     <Check />
-    Add Work Item</HotkeyButton
+    Create Work Item</HotkeyButton
   >
 </form>
 

@@ -98,7 +98,7 @@
 >
   <SearchInput bind:searchstring />
   <HotkeyButton
-    title="Create Billing Account (insert key)"
+    title="Create Billing Account (Insert Key)"
     data-shortcut="ins"
     size="sm"
     variant="base"

@@ -252,12 +252,12 @@
     variant="success"
     size="base"
     disabled={loading}
-    aria-label="Save Changes"
+    aria-label="Update Configuration"
     type="submit"
     data-shortcut="ctrl+s"
   >
     <Check />
-    Save Changes</HotkeyButton
+    Update Configuration"</HotkeyButton
   >
 </form>
 

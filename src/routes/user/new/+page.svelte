@@ -2,6 +2,7 @@
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import * as Form from "$lib/components/ui/form/index.js";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { CustomCheckbox } from "$lib/customcheckbox";
   import { CustomInput } from "$lib/custominput/index.js";
   import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
@@ -214,14 +215,16 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Button
+  <HotkeyButton
+    type="submit"
     disabled={loading}
-    aria-label="Add User"
+    aria-label="Create User"
     variant="success"
     size="base"
+    data-shortcut="ctrl+s"
   >
     <Check />
-    Add User</Form.Button
+    Create User</HotkeyButton
   >
 </form>
 

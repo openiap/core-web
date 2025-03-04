@@ -293,12 +293,12 @@
     variant="success"
     size="base"
     disabled={loading}
-    aria-label="Add Work Item Queue"
+    aria-label="Create Work Item Queue"
     type="submit"
     data-shortcut="ctrl+s"
   >
     <Check />
-    Add Work Item Queue</HotkeyButton
+    Create Work Item Queue</HotkeyButton
   >
 
   <Form.Field {form} name="success_wiqid" class="mb-7">

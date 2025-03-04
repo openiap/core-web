@@ -2,7 +2,7 @@
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import { Acl } from "$lib/acl";
-  import * as Form from "$lib/components/ui/form/index.js";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { ObjectInput } from "$lib/objectinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
@@ -57,17 +57,17 @@
 {/if}
 
 <form method="POST" use:enhance>
-  <Form.Button
+  <HotkeyButton
+    type="submit"
     data-shortcut="ctrl+s"
     class="mb-4"
     disabled={loading}
-    aria-label="Save Changes"
-    title="Save Changes"
+    aria-label="Update Item"
     variant="success"
     size="base"
   >
     <Check />
-    Save Changes</Form.Button
+    Update Item</HotkeyButton
   >
 
   <Acl bind:value={$formData} />

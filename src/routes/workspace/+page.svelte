@@ -106,7 +106,7 @@
   </div>
 
   <HotkeyButton
-    title="Create Workspace (insert key)"
+    title="Create Workspace (Insert Key)"
     data-shortcut="ins"
     size="sm"
     variant="base"
