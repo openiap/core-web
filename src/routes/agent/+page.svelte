@@ -100,6 +100,8 @@
         usersettings.currentworkspace != ""
       ) {
         query._workspaceid = usersettings.currentworkspace;
+      } else {
+        delete query._workspaceid;
       }
       const _entities = await datacomponent.GetData(
         page,
@@ -107,6 +109,7 @@
         query,
         auth.access_token,
       );
+      console.log("_entities", _entities);
       if (filterby == "pods") {
         entities = _entities.filter((x: any) =>
           knownpods.some((y: any) => x._id === y.metadata.labels.agentid),
@@ -318,7 +321,7 @@
   <div class="lg:flex lg:items-center lg:space-x-4 mb-2 lg:mb-0 w-full">
     <SearchInput
       bind:searchstring
-      class="w-full lg:max-w-[288px] mb-2 lg:mb-0"
+      class="w-full lg:max-w-[224px] mb-2 lg:mb-0"
     />
     <div>
       <Popover.Root open={filter}>
@@ -329,12 +332,12 @@
           ><Filter />
           Filter</Popover.Trigger
         >
-        <Popover.Content class="w-fit">
+        <Popover.Content class="w-fit bg-bw50 dark:bg-bw700 py-2 px-3">
           <RadioGroup.Root value="All" class="flex flex-col">
-            <div class="flex items-center space-x-20 w-full">
-              <div class="flex items-center space-x-4 w-full">
+            <div class="flex items-center">
+              <div class="flex items-center space-x-2 w-full">
                 <Check class="h-4 w-4" />
-                <Label for="r3" class="cursor-pointer">All</Label>
+                <Label for="r1" class="cursor-pointer">All</Label>
               </div>
               <RadioGroup.Item
                 class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
@@ -349,27 +352,10 @@
               />
             </div>
             <Separator />
-            <div class="flex items-center space-x-20">
-              <div class="flex items-center space-x-4 w-full">
-                <SquareStack class="h-4 w-4" />
-                <Label for="r3" class="cursor-pointer">Pods</Label>
-              </div>
-              <RadioGroup.Item
-                class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
-                value="Pods"
-                id="r3"
-                disabled={loading}
-                onclick={async () => {
-                  filterby = "pods";
-                  await GetData();
-                }}
-              />
-            </div>
-            <Separator />
-            <div class="flex items-center space-x-20">
-              <div class="flex items-center space-x-4 w-full">
+            <div class="flex items-center py-1">
+              <div class="flex items-center space-x-2 w-full">
                 <VenetianMask class="h-4 w-4" />
-                <Label for="r3" class="cursor-pointer">Daemon</Label>
+                <Label for="r2" class="cursor-pointer">Daemon</Label>
               </div>
 
               <RadioGroup.Item
@@ -384,11 +370,26 @@
                 }}
               />
             </div>
-            <Separator />
-            <div class="flex items-center space-x-20">
-              <div class="flex items-center space-x-4 w-full">
+            <div class="flex items-center py-1">
+              <div class="flex items-center space-x-2 w-full">
+                <SquareStack class="h-4 w-4" />
+                <Label for="r3" class="cursor-pointer">Pods</Label>
+              </div>
+              <RadioGroup.Item
+                class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
+                value="Pods"
+                id="r3"
+                disabled={loading}
+                onclick={async () => {
+                  filterby = "pods";
+                  await GetData();
+                }}
+              />
+            </div>
+            <div class="flex items-center py-1">
+              <div class="flex items-center space-x-2 w-full">
                 <Box class="h-4 w-4" />
-                <Label for="r3" class="cursor-pointer">Docker</Label>
+                <Label for="r4" class="cursor-pointer">Docker</Label>
               </div>
               <RadioGroup.Item
                 class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
@@ -402,11 +403,10 @@
                 }}
               />
             </div>
-            <Separator />
-            <div class="flex items-center space-x-20">
-              <div class="flex items-center space-x-4 w-full">
+            <div class="flex items-center py-1 space-x-10">
+              <div class="flex items-center space-x-2 w-full">
                 <HandHelping class="h-4 w-4" />
-                <Label for="r3" class="cursor-pointer">Assistant</Label>
+                <Label for="r5" class="cursor-pointer">Assistant</Label>
               </div>
               <RadioGroup.Item
                 class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"

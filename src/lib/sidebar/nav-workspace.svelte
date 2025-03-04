@@ -6,16 +6,16 @@
     import { useSidebar } from "$lib/components/ui/sidebar/index.js";
     import { auth } from "$lib/stores/auth.svelte";
     import {
-        Building,
         Check,
         ChevronDown,
         ChevronRight,
         DollarSignIcon,
-        Rows3,
-        X,
+        LandPlot,
+        Layers2,
+        SquarePlus,
+        SquareX
     } from "lucide-svelte";
     import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
-    import Plus from "lucide-svelte/icons/plus";
     import { toast } from "svelte-sonner";
     import { capitalizeWords } from "../../helper";
     import type { Workspace } from "../../routes/workspace/schema";
@@ -115,7 +115,7 @@
                             class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground border-[1px] border-bw500 rounded-[10px] px-4 py-6 bg-bw50 dark:bg-bw800 "
                         >
                             {#if activeWorkspacename() != ""}
-                                <Building />
+                                <LandPlot />
                                 <div
                                     class="grid flex-1 text-left leading-tight justify-between"
                                 >
@@ -194,7 +194,7 @@
                         {#each workspaces as workspace, index (workspace._id)}
                             <DropdownMenu.Item
                                 onSelect={() => selectWorkspace(workspace)}
-                                class={`gap-2 px-2 py-1`}
+                                class={`gap-2 px-2.5 py-1.5 mb-2`}
                             >
                                 <div
                                     class="grid flex-1 text-left leading-tight justify-between"
@@ -226,7 +226,7 @@
                                     selectWorkspace({ _id: "" } as any)}
                                 class="gap-2 p-2"
                             >
-                                <X />
+                                <SquareX />
                                 Unselect Workspace
                             </DropdownMenu.Item>
                         {/if}
@@ -234,7 +234,7 @@
                             onSelect={() => goto(base + "/workspace")}
                             class="gap-2 p-2"
                         >
-                            <Rows3 class="size-4" />
+                            <Layers2 class="size-4" />
                             All Workspaces
                         </DropdownMenu.Item>
                     {/if}
@@ -261,7 +261,7 @@
                             <Plus class="size-4" />
                         </div>
                         <div class=" font-medium">Create Workspace</div> -->
-                        <Plus class="size-4" />
+                        <SquarePlus class="size-4" />
                         <div class=" font-medium">New Workspace</div>
                     </DropdownMenu.Item>
                 </DropdownMenu.Content>

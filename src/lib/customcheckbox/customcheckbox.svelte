@@ -7,7 +7,6 @@
 		disabled = false,
 		handleClick = null,
 	} = $props();
-	console.log("class", classname);
 </script>
 
 <Checkbox

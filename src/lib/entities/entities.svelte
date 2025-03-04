@@ -488,8 +488,11 @@
 				<Table.Root>
 					{#if entities.length === 0}
 						<Table.Caption class="mb-2 text-bw300"
-							>No data found in this workspace.</Table.Caption
-						>
+							>No data found in this workspace.
+							{searchstring != ""
+								? " Try searching for something else."
+								: ""}
+						</Table.Caption>
 					{:else if caption != ""}
 						<Table.Caption>{caption}</Table.Caption>
 					{/if}
