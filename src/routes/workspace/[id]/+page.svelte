@@ -14,7 +14,13 @@
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
-  import { Check, Mail, SquareArrowDown, SquareArrowUp } from "lucide-svelte";
+  import {
+    Check,
+    Info,
+    Mail,
+    SquareArrowDown,
+    SquareArrowUp,
+  } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
@@ -39,8 +45,6 @@
   const billingname = $derived(() => {
     if (billingid == null || billingid == "") return "Create new";
     let entity = entities.find((e) => e._id == billingid);
-    console.log("billingid", billingid);
-    console.log("entities", entities);
     if (entity == null) return "???";
     return entity.name;
   });
@@ -229,10 +233,12 @@
     }
   }
 
-  const cardRoot = "w-[346px] h-[430px] dark:bg-bw850 grid grid-rows-4 w-full";
+  const cardRoot = "w-[346px] h-[430px] dark:bg-bw850 grid grid-rows-5 w-full";
   const cardHeader = "text-center";
   const cardTitle = "text-bw950 dark:text-bw100";
-  const cardDiv = "flex flex-col justify-between row-span-4 w-full";
+  const cardDiv = "flex flex-col justify-between row-span-4 p-6";
+  const iconClass = "m-1.5 h-4 w-4";
+
   async function getData() {
     try {
       entities = await datacomponent.GetData(
@@ -295,22 +301,30 @@
           <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
             <div class="grid grid-col-1 gap-2 w-full">
               <Form.Label class="font-medium">Workspace Name</Form.Label>
-              <div class="text-bw400">
-                Your are managing the workspace below
-              </div>
-              <div class="grid grid-cols-1 gap-4 lg:flex lg:space-x-5">
-                <CustomInput {...props} bind:value={$formData.name} width="" />
-                <HotkeyButton
-                  variant="success"
-                  size="base"
-                  disabled={loading}
-                  aria-label="Update Workspace"
-                  type="submit"
-                  data-shortcut="ctrl+s"
-                >
-                  <Check />
-                  Update Workspace</HotkeyButton
-                >
+              <div>
+                <div class="text-bw400">
+                  <!-- Select a billing account for this workspace -->
+                </div>
+                <div class="grid grid-cols-1 gap-2.5">
+                  <CustomInput
+                    {...props}
+                    bind:value={$formData.name}
+                    width=""
+                    placeholder="workspace name"
+                    height="h-7"
+                  />
+                  <HotkeyButton
+                    variant="success"
+                    disabled={loading}
+                    aria-label="Update Workspace"
+                    type="submit"
+                    data-shortcut="ctrl+s"
+                    class="w-fit"
+                  >
+                    <Check />
+                    Update Workspace</HotkeyButton
+                  >
+                </div>
               </div>
             </div>
 
@@ -333,18 +347,17 @@
                   <div class="text-bw400">
                     The current billing account for this workspace
                   </div>
-                  <Button
-                    class="md:max-w-xs"
-                    variant="outline"
-                    size="base"
+                  <HotkeyButton
+                    class="w-fit"
                     disabled={loading}
                     onclick={() =>
                       goto(
                         base + "/billingaccount/" + currentworkspace._billingid,
                       )}
                   >
+                    <Info />
                     {billingname()}
-                  </Button>
+                  </HotkeyButton>
                 {/if}
               {/if}
             </div>
@@ -355,18 +368,18 @@
                 <div class="text-bw400">
                   Show billing details for this workspace
                 </div>
-                <Button
-                  class="md:max-w-xs"
-                  variant="outline"
-                  size="base"
+                <HotkeyButton
+                  class="w-fit"
                   disabled={loading}
                   onclick={() =>
                     goto(
                       base + "/workspace/" + currentworkspace._id + "/billing",
                     )}
                 >
-                  Show billing usage for {currentworkspace.name}
-                </Button>
+                  <Info />
+
+                  Show Billing Usage For {currentworkspace.name}
+                </HotkeyButton>
               {/if}
             </div>
           </div>
@@ -386,19 +399,29 @@
       <div class={cardDiv}>
         <Card.Content>
           <div class="flex">
-            <Check class="mr-4 " />
-            5 members in your workspace.
-          </div>
-          <div class="flex">
-            <Check class="mr-4 " />
-            1 cloud agent (4 hour runtime).
-          </div>
-          <div class="flex">
-            <Check class="mr-4 " />
-            Support via our
-            <a href="https://discourse.openiap.io/" target="_blank"
-              >{` community forum`}</a
-            >.
+            <div>
+              <div>
+                <Check class={iconClass} />
+              </div>
+              <div>
+                <Check class={iconClass} />
+              </div>
+              <div>
+                <Check class={iconClass} />
+              </div>
+            </div>
+            <div>
+              <div>5 members in your workspace.</div>
+              <div>1 cloud agent (4 hour runtime).</div>
+              <div>
+                Support via our
+                <a
+                  href="https://discourse.openiap.io/"
+                  target="_blank"
+                  class="hover:underline">{` community forum`}</a
+                >.
+              </div>
+            </div>
           </div>
         </Card.Content>
         <Card.Footer class="flex justify-between">
@@ -427,23 +450,35 @@
       <div class={cardDiv}>
         <Card.Content>
           <div class="flex">
-            <Check class="mr-4 " />
-            25 members in your workspace
-          </div>
-          <div class="flex">
-            <Check class="mr-4 " />
-            Priced agents that run 24/7
-          </div>
-          <div class="flex">
-            <Check class="mr-4 " />
-            Support via our
-            <a href="https://discourse.openiap.io/" target="_blank"
-              >{` community forum`}</a
-            >.
-          </div>
-          <div class="flex">
-            <Check class="mr-7" />
-            Billing support (reach out via the e-mail used in your invoice)
+            <div>
+              <div>
+                <Check class={iconClass} />
+              </div>
+              <div>
+                <Check class={iconClass} />
+              </div>
+              <div>
+                <Check class={iconClass} />
+              </div>
+              <div>
+                <Check class={iconClass} />
+              </div>
+            </div>
+            <div>
+              <div>25 members in your workspace</div>
+              <div>Priced agents that run 24/7</div>
+              <div>
+                {"Support via our "}
+                <a
+                  class="hover:underline"
+                  href="https://discourse.openiap.io/"
+                  target="_blank">{` community forum`}</a
+                >.
+              </div>
+              <div>
+                Billing support (reach out via the e-mail used in your invoice)
+              </div>
+            </div>
           </div>
         </Card.Content>
         <Card.Footer class="flex justify-between">
@@ -478,24 +513,29 @@
       <div class={cardDiv}>
         <Card.Content>
           <div class="flex">
-            <Check class="mr-4 " />
-            Everything in the previous tiers
-          </div>
-          <div class="flex">
-            <Check class="mr-4 " />
-            Unlimited members
-          </div>
-          <div class="flex">
-            <Check class="mr-4 " />
-            Discount on agents that run 24/7
-          </div>
-          <div class="flex">
-            <Check class="mr-7" />
-            Billing support (reach out via the e-mail used in your invoice)
-          </div>
-          <div class="flex">
-            <Check class="mr-4 " />
-            Unlimited api requests
+            <div>
+              <div>
+                <Check class={iconClass} />
+              </div>
+              <div>
+                <Check class={iconClass} />
+              </div>
+              <div>
+                <Check class={iconClass} />
+              </div>
+              <div>
+                <Check class={iconClass} />
+              </div>
+            </div>
+            <div>
+              <div>Everything in the previous tiers</div>
+              <div>Unlimited members</div>
+              <div>Discount on agents that run 24/7</div>
+              <div>Unlimited api requests</div>
+              <div>
+                Billing support (reach out via the e-mail used in your invoice)
+              </div>
+            </div>
           </div>
         </Card.Content>
         <Card.Footer class="flex justify-between">

@@ -69,7 +69,6 @@
       let data = JSON.parse(JSON.stringify(purgeQueueData));
       data._created = new Date(data._created);
       data._modified = new Date(data._modified);
-      console.log("data", $state.snapshot(data));
       await auth.client.UpdateWorkitemQueue({
         workitemqueue: data,
         purge: true,

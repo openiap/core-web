@@ -110,7 +110,6 @@
         query,
         auth.access_token,
       );
-      console.log("_entities", _entities);
       if (filterby == "pods") {
         entities = _entities.filter((x: any) =>
           knownpods.some((y: any) => x._id === y.metadata.labels.agentid),
