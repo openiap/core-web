@@ -29,10 +29,10 @@ class entitiesdata {
 	settings: pageSettings = null as any;
 	hide_empty_on_sort = true;
 	errormessage = "";
-	pagesize = $state(12);
 
 	async Fetch(page: string, id: string | undefined, access_token: string): Promise<{ entities: any[], total_count: number }> {
 		let entities: any[] = [], total_count: number = 0;
+		console.log("Fetch pagesize", usersettings.pagesize)
 		try {
 			switch (page) {
 				case base + "/agent":
@@ -192,7 +192,8 @@ class entitiesdata {
 	async GetData(page: string, collectionname: string, query: any, access_token: string, workspacefilter: boolean = true) {
 		let orderby = this.getOrderBy(page, collectionname);
 		let usequery = this.createQuery(this.settings.searchstring, query);
-		let top = this.pagesize;
+		console.log("usersettings.pagesize", usersettings.pagesize);
+		let top = usersettings.pagesize;
 		let skip = this.settings.page_index * top;
 
 		if (auth.isConnected == false) {

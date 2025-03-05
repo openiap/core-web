@@ -2,9 +2,9 @@ import { browser } from "$app/environment";
 import { auth } from "./auth.svelte";
 export type sort = "asc" | "desc" | "";
 export type SettingsTableHeader = {
-	field: string;
-	order: sort;
-	orderindex: number;
+    field: string;
+    order: sort;
+    orderindex: number;
 }
 export type pageSettings = {
     page: string;
@@ -22,6 +22,7 @@ export type userSettings = {
     currentworkspace: string;
     pagesettings: pageSettings[];
     currentpage: string;
+    pagesize: number;
 }
 export class pagesettings implements pageSettings {
     page: string;
@@ -46,6 +47,8 @@ class _usersettings implements userSettings {
     currentworkspace: string = $state("");
     pagesettings: pageSettings[] = $state([]);
     currentpage: string = "";
+    pagesize: number = $state(12);
+    defaultpagesize: number = 12;
     constructor() {
         this._id = "";
         this._type = "usersettings";
@@ -53,6 +56,7 @@ class _usersettings implements userSettings {
         this.name = "Unknown";
         this.entities_collectionname = "entities";
         this.currentworkspace = "";
+        this.pagesize = this.defaultpagesize;
     }
     getpagesettings(page: string) {
         let settings = this.pagesettings.find(x => x.page == page);
@@ -84,7 +88,7 @@ class _usersettings implements userSettings {
         }
         this.userid = auth.profile.sub;
         this.name = "Settings for " + auth.profile.name;
-        if(auth.client != null && auth.client.connected) {
+        if (auth.client != null && auth.client.connected) {
             let settings = await auth.client.FindOne<userSettings>({ collectionname: "users", query: { userid: this.userid, "_type": "usersettings" }, jwt: access_token });
             if (settings != null) {
                 this.stateload(settings);
@@ -101,10 +105,11 @@ class _usersettings implements userSettings {
         this.entities_collectionname = "entities";
         this.currentworkspace = "";
         this.pagesettings = [];
+        this.pagesize = this.defaultpagesize;
         this.dopersist();
     }
     loadpage(settings: pageSettings) {
-        if(settings == null) return;
+        if (settings == null) return;
         let current = this.getpage();
         current.searchstring = settings.searchstring;
         current.selected_items = settings.selected_items;
@@ -122,7 +127,15 @@ class _usersettings implements userSettings {
         this.userid = settings.userid;
         this.name = settings.name;
         this.pagesettings = settings.pagesettings;
-        for(let i = 0; i < this.pagesettings.length; i++) {
+        this.pagesize;
+        // @ts-ignore
+        if (this.pagesize != null && this.pagesize != "") {
+            this.pagesize = settings.pagesize;
+        }
+        else {
+            this.pagesize = this.defaultpagesize;
+        }
+        for (let i = 0; i < this.pagesettings.length; i++) {
             const input = this.pagesettings[i];
             const defaultvalues = new pagesettings(input.page);
             const newpage = { ...defaultvalues, ...input };
@@ -149,6 +162,7 @@ class _usersettings implements userSettings {
         item.currentworkspace = this.currentworkspace;
         // @ts-ignore
         delete item.pagesettings;
+        item.pagesize = $state.snapshot(this.pagesize);
         item.pagesettings = [];
         for (let i = 0; i < this.pagesettings.length; i++) {
             let org = this.pagesettings[i];
@@ -160,26 +174,26 @@ class _usersettings implements userSettings {
                 headers: org.headers,
             };
             // @ts-ignore
-            if(page.searchstring == "") delete page.searchstring;
+            if (page.searchstring == "") delete page.searchstring;
             // @ts-ignore
-            if(page.selected_items == null || page.selected_items.length == 0) delete page.selected_items;
+            if (page.selected_items == null || page.selected_items.length == 0) delete page.selected_items;
             // @ts-ignore
-            if(page.page_index == 0) delete page.page_index;
+            if (page.page_index == 0) delete page.page_index;
             // @ts-ignore
-            if(page.headers == null || page.headers.length == 0) delete page.headers;
-            if(page.headers != null && page.headers.length > 0) {
+            if (page.headers == null || page.headers.length == 0) delete page.headers;
+            if (page.headers != null && page.headers.length > 0) {
                 let cleanheaders = [];
-                for(let i = 0; i < page.headers.length; i++) {
+                for (let i = 0; i < page.headers.length; i++) {
                     let head = page.headers[i];
                     // @ts-ignore
-                    if(head.order == "") delete head.order;
+                    if (head.order == "") delete head.order;
                     // @ts-ignore
-                    if(head.orderindex == 0) delete head.orderindex;
+                    if (head.orderindex == 0) delete head.orderindex;
                     cleanheaders.push(head);
                 }
                 page.headers = cleanheaders;
             }
-            if(Object.keys(page).length == 1) continue;
+            if (Object.keys(page).length == 1) continue;
 
             item.pagesettings.push(page);
         }

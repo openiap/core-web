@@ -38,7 +38,7 @@
         description: "",
       });
       usersettings.currentworkspace = $formData.workspaceid;
-      await usersettings.dopersist();
+      usersettings.persist();
       goto(base + `/workspace/${$formData.workspaceid}/member`);
     } catch (error: any) {
       toast.error("Error while accepting", {

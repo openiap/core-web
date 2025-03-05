@@ -17,7 +17,6 @@
 	import { CustomCheckbox } from "$lib/customcheckbox/index.js";
 	import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
 	import { auth } from "$lib/stores/auth.svelte.js";
-	import { sidemenu } from "$lib/stores/sidemenu.svelte.js";
 	import { usersettings } from "$lib/stores/usersettings.svelte.js";
 	import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
 	import {
@@ -31,6 +30,7 @@
 	import { toast } from "svelte-sonner";
 	import { data } from "./data.svelte.js";
 	import IconRenderer from "./IconRenderer.svelte";
+	import { CustomInput } from "$lib/custominput/index.js";
 
 	export async function reload() {
 		const id = $componentpage?.params?.id;
@@ -685,6 +685,29 @@
 				<SquareMousePointer />
 				Select Columns
 			</Hotkeybutton>
+			<CustomInput
+				width="w-20"
+				type="number"
+				aria-label="Select Columns"
+				variant="base"
+				size="base"
+				disabled={loading}
+				bind:value={usersettings.pagesize}
+			/>
+			Per page
+			<Hotkeybutton
+				aria-label="Update"
+				variant="base"
+				size="base"
+				disabled={loading}
+				onclick={() => {
+					usersettings.persist();
+					GetData();
+				}}
+			>
+				<Check />
+				Update
+			</Hotkeybutton>
 		</div>
 	</div>
 
@@ -717,16 +740,16 @@
 			{#if entities.length == total_count}
 				Showing {total_count}
 			{:else}
-				Showing {page_index * data.pagesize + 1}
+				Showing {page_index * usersettings.pagesize + 1}
 				{#if entities.length > 1}
-					to {page_index * data.pagesize + entities.length}
+					to {page_index * usersettings.pagesize + entities.length}
 				{/if}
 				of {total_count}
 			{/if}
 		</div>
 		<HotkeyButton
 			aria-label="Next"
-			title="Previous (Right Arrow Key)"
+			title="Next (Right Arrow Key)"
 			size="base"
 			variant="base"
 			data-shortcut="right"
@@ -736,8 +759,8 @@
 				data.persist();
 				GetData();
 			}}
-			disabled={entities.length < data.pagesize ||
-				page_index * data.pagesize >= total_count ||
+			disabled={entities.length < usersettings.pagesize ||
+				(page_index + 1) * usersettings.pagesize >= total_count ||
 				loading}
 		>
 			<div class="flex items-center space-x-2">

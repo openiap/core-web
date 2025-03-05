@@ -21,6 +21,9 @@
     let newid = $state("");
 
     async function addace(id: string) {
+        if(value._acl == null) {
+            value._acl = [];
+        }
         var item = await auth.client.FindOne<any>({
             collectionname: "users",
             query: { _id: id },
@@ -48,7 +51,7 @@
 
 <Accordion.Root
     type="single"
-    class={`mb-2 w-full ${open ? " border rounded-[10px] dark:border-bw600 dark:bg-bw850 dark:text-bw100" : ""}`}
+    class={`mb-4 w-full ${open ? " border rounded-[10px] dark:border-bw600 dark:bg-bw850 dark:text-bw100" : ""}`}
     value={open}
 >
     <Accordion.Item value="item-1" class="border-0 p-0 m-0">
@@ -92,6 +95,9 @@
                         size="base"
                         onclick={() => {
                             value._acl.splice(i, 1);
+                            if(value._acl.length == 0) {
+                                delete value._acl;
+                            }
                             value = { ...value };
                         }}
                     >
