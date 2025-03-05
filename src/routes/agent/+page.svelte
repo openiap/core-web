@@ -35,7 +35,6 @@
     Receipt,
     RefreshCcw,
     Rows2,
-    Rows4,
     Square,
     SquarePen,
     SquareStack,
@@ -334,11 +333,11 @@
           ><Filter />
           Filter</Popover.Trigger
         >
-        <Popover.Content class="w-fit bg-bw50 dark:bg-bw700 py-2 px-3">
+        <Popover.Content class="w-fit bg-bw50 dark:bg-bw700 py-2 px-1">
           <RadioGroup.Root value="All" class="flex flex-col">
-            <div class="flex items-center">
+            <div class="flex items-center py-1 px-2">
               <div class="flex items-center space-x-2 w-full">
-                <Rows2  class="h-4 w-4" />
+                <Rows2 class="h-4 w-4" />
                 <Label for="r1" class="cursor-pointer">All</Label>
               </div>
               <RadioGroup.Item
@@ -353,8 +352,7 @@
                 }}
               />
             </div>
-            <Separator />
-            <div class="flex items-center py-1">
+            <div class="flex items-center py-1 px-2">
               <div class="flex items-center space-x-2 w-full">
                 <VenetianMask class="h-4 w-4" />
                 <Label for="r2" class="cursor-pointer">Daemon</Label>
@@ -372,7 +370,7 @@
                 }}
               />
             </div>
-            <div class="flex items-center py-1">
+            <div class="flex items-center py-1 px-2">
               <div class="flex items-center space-x-2 w-full">
                 <SquareStack class="h-4 w-4" />
                 <Label for="r3" class="cursor-pointer">Pods</Label>
@@ -388,7 +386,7 @@
                 }}
               />
             </div>
-            <div class="flex items-center py-1">
+            <div class="flex items-center py-1 px-2">
               <div class="flex items-center space-x-2 w-full">
                 <Box class="h-4 w-4" />
                 <Label for="r4" class="cursor-pointer">Docker</Label>
@@ -405,7 +403,7 @@
                 }}
               />
             </div>
-            <div class="flex items-center py-1 space-x-20">
+            <div class="flex items-center py-1 px-2 space-x-20">
               <div class="flex items-center space-x-2 w-full">
                 <HandHelping class="h-4 w-4" />
                 <Label for="r5" class="cursor-pointer">Assistant</Label>
@@ -423,11 +421,12 @@
               />
             </div>
             <Separator />
-            <div class="flex items-center">
+            <div class="flex items-center px-2">
               <div class="flex items-center space-x-2 w-full">
                 <!-- <Label for="r1" class="cursor-pointer">Apply filter</Label> -->
                 <Check class="h-4 w-4" />
                 <HotkeyButton
+                  size="ghost"
                   onclick={async () => {
                     await GetData();
                     await getPods(false);

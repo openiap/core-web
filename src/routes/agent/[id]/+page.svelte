@@ -29,10 +29,12 @@
     Check,
     Gauge,
     Hourglass,
+    IdCard,
     Laptop,
     Play,
     RefreshCcw,
     Square,
+    SquareActivity,
     Tag,
     Trash2,
     User,
@@ -743,35 +745,35 @@
               class="my-4 text-[14px] border rounded-[10px] w-92 md:w-full overflow-hidden"
             >
               <div
-                class="grid grid-cols-7 bg-lighttableheader dark:bg-darktableheader rounded-tr-[10px] rounded-tl-[10px] border-b"
+                class="grid grid-cols-7 bg-lighttableheader dark:bg-darktableheader rounded-tr-[10px] rounded-tl-[10px] border-b overflow-auto"
               >
-                <div class="text-center p-2 col-span-2">
+                <div class="ms-4 text-center p-2 col-span-2">
                   <div class="flex items-center">
-                    <Tag class="h-3 w-3 mr-1" />
+                    <IdCard class="h-4 w-4 mr-1 dark:text-bw500" />
                     Name
                   </div>
                 </div>
                 <div class="text-center p-2 col-span-1">
                   <div class="flex items-center justify-center">
-                    <Gauge class="h-4 w-4 mr-1" />
+                    <Gauge class="h-4 w-4 mr-1 dark:text-bw500" />
                     Status
                   </div>
                 </div>
                 <div class="text-center p-2 col-span-1">
                   <div class="flex items-center justify-center">
-                    <Laptop class="h-4 w-4 mr-1" />
+                    <Laptop class="h-4 w-4 mr-1 dark:text-bw500" />
                     CPU
                   </div>
                 </div>
                 <div class="text-center p-2 col-span-1">
                   <div class="flex items-center justify-center">
-                    <Zap class="h-4 w-4 mr-1" />
+                    <SquareActivity class="h-4 w-4 mr-1 dark:text-bw500" />
                     Mem
                   </div>
                 </div>
                 <div class="text-center p-2 col-span-2">
                   <div class="flex items-center justify-center">
-                    <CalendarDays class="h-4 w-4 mr-1" />
+                    <CalendarDays class="h-4 w-4 mr-1 dark:text-bw500" />
                     Created
                   </div>
                 </div>
@@ -784,13 +786,13 @@
                 <div class="flex items-center justify-center p-4 col-span-1">
                   <Statuscard title={resourceMonitor.showstatus} />
                 </div>
-                <div class="text-center p-4 col-span-1">
+                <div class="text-center p-4 col-span-1 text-wrap">
                   {resourceMonitor?.metrics?.cpu +
                     "/" +
                     resourceMonitor?.spec?.containers[0]?.resources?.limits
                       ?.cpu}
                 </div>
-                <div class="text-center p-4 col-span-1">
+                <div class="text-center p-4 col-span-1 text-wrap">
                   {resourceMonitor?.metrics?.memory +
                     "/" +
                     resourceMonitor?.spec?.containers[0]?.resources?.limits
@@ -864,7 +866,9 @@
     {/if}
     <Tabs.Content value="2">
       <form method="POST" use:enhance class="text-sm">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+        >
           <Form.Field {form} name="name" class="w-full">
             <Form.Control>
               {#snippet children({ props })}
@@ -894,6 +898,16 @@
                       $formData.name = randomname();
                       $formData.slug = $formData.name;
                     }}><RefreshCcw /></HotkeyButton
+                  >
+                  <HotkeyButton
+                    class="ml-2"
+                    aria-label="Refresh"
+                    size="refresh"
+                    variant="refresh"
+                    disabled={loading}
+                    onclick={() =>
+                      window.open(auth.weburl($formData.slug), "_blank")}
+                    ><Webhook class="h1 w-1" size={1} /></HotkeyButton
                   >
                 </div>
                 <CustomInput
@@ -978,7 +992,7 @@
         </div>
 
         {#if $formData.image != null && $formData.image != ""}
-          <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4">
+          <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-4">
             <Form.Field
               {form}
               name="autostart"
@@ -1060,6 +1074,7 @@
                   <div class="flex flex-col items-start space-y-2">
                     <Form.Label class="mb-1">Timezone</Form.Label>
                     <Timezoneselector
+                      class="w-full"
                       disabled={loading}
                       {...props}
                       bind:value={$formData.timezone}
@@ -1072,7 +1087,7 @@
           </div>
         {/if}
 
-        <Form.Field {form} name="runas">
+        <Form.Field {form} name="runas" class="mb-4">
           <Form.Control>
             {#snippet children({ props })}
               <div class="flex flex-col items-start space-y-2">
@@ -1080,7 +1095,7 @@
                 <div class="md:flex md:items-center md:space-x-4 my-2">
                   <Entityselector
                     queryas={usersettings.currentworkspace}
-                    width="md:w-fit w-64"
+                    width="w-full md:w-fit w-64"
                     class="mb-2 md:mb-0"
                     disabled={loading}
                     {...props}
@@ -1103,18 +1118,6 @@
         </Form.Field>
 
         <div class="mb-4 space-y-2 md:space-x-4">
-          <HotkeyButton
-            class="w-full md:w-auto"
-            variant="success"
-            size="base"
-            disabled={loading}
-            aria-label="Update Agent"
-            type="submit"
-            data-shortcut="ctrl+s"
-          >
-            <Check />
-            Update Agent</HotkeyButton
-          >
           {#if $formData.image != null && $formData.image != ""}
             <HotkeyButton
               class="w-full md:mr-4 md:w-auto"
@@ -1129,7 +1132,7 @@
               <RefreshCcw />
               Refresh</HotkeyButton
             >
-            <HotkeyButton
+            <!-- <HotkeyButton
               class="w-full md:w-auto"
               aria-label="Open in Web"
               variant="base"
@@ -1141,19 +1144,38 @@
             >
               <Webhook />
               Open in Web</HotkeyButton
-            >
+            > -->
           {/if}
         </div>
+
+        <HotkeyButton
+          class="w-full md:w-auto"
+          variant="success"
+          size="base"
+          disabled={loading}
+          aria-label="Update Agent"
+          type="submit"
+          data-shortcut="ctrl+s"
+        >
+          <Check />
+          Update Agent</HotkeyButton
+        >
       </form>
 
       {#if $formData.image != null && $formData.image != "" && data.agentInstance != null}
-        <div class="italic text-gray-500 py-2">
+        <!-- <div class="italic text-gray-500 py-2">
           Agents using free plan will be shutdown after {data.agentInstance
             ?.defaultmetadata.runtime_hours} hours. Buy one or more products on the
           customer page, and then assign it to an Agent to allow it to run 24/7.
           You are limited to
           {data.agentInstance?.defaultmetadata.agentcount} free agents. Add more
           resources on the customer page to increase the limit.
+        </div> -->
+        <div class="italic text-gray-500 py-2">
+          You are limited to {data.agentInstance?.defaultmetadata.agentcount} free
+          agent, which will automatically shut down after {data.agentInstance
+            ?.defaultmetadata.runtime_hours} hours. To keep your agent running 24/7,
+          upgrade to a paid plan”
         </div>
       {/if}
     </Tabs.Content>

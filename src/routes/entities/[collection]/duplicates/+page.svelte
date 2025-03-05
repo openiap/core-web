@@ -11,10 +11,9 @@
   import { CustomSelect } from "$lib/customselect/index.js";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import Entities from "$lib/entities/entities.svelte";
-  import Search from "$lib/search/search.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
-  import { Clock, Folder, FolderSymlink, Plus } from "lucide-svelte";
+  import { Clock, Folder, FolderSymlink, Plus, Search } from "lucide-svelte";
 
   let loading = $state(false);
   let errormessage = $state("");
@@ -132,7 +131,7 @@
       </Tabs.List>
     </Tabs.Root>
 
-    <div class="block xl:hidden mb-2 xl:mb-0">
+    <div class="block xl:hidden mb-4 xl:mb-0">
       <CustomSelect
         class="h-7"
         width="w-full"
@@ -147,9 +146,12 @@
       />
     </div>
 
-    <div class="mb-2">
-      <div>Mongodb Query</div>
+    <div
+      class="flex flex-col lg:flex-row items-center justify-start lg:space-x-4 mb-2 lg:mb-4"
+    >
+      <div class="text-nowrap">Mongodb Query</div>
       <CustomInput
+        height="h-7"
         width="w-full"
         placeholder="Mongodb query"
         bind:value={query}
@@ -159,21 +161,29 @@
     <div
       class="flex flex-col lg:flex-row items-center justify-start lg:space-x-4 mb-2 lg:mb-4"
     >
-      <div class="text-start">Uniqueness</div>
+      <div class="text-start md:me-9">Uniqueness</div>
       <div class="w-full mb-2 lg:mb-0">
         <CustomInput
+          height="h-7"
           width="w-full"
           placeholder="Uniqueness"
           bind:value={uniqueness}
         />
       </div>
-      <div class="flex lg:flex-0 justify-start items-center lg:space-x-4">
+      <div class="flex justify-between w-full items-center space-x-4">
         <div class="flex items-center">
           <CustomCheckbox bind:checked={includeones} />
           <div class="text-nowrap">Include 1's</div>
         </div>
         <HotkeyButton
+          aria-label="Search"
+          title="Search (Enter Key)"
+          size="sm"
+          variant="base"
+          data-shortcut="enter"
+          disabled={loading}
           onclick={async () => {
+            loading = true;
             const uniquenessFields = uniqueness
               .split(",")
               .map((field) => field.trim());
@@ -198,10 +208,11 @@
               _entities[i].name = _entities[i]._id;
             }
             entities = _entities;
+            loading = false;
           }}
         >
-          <Search />
-          Update
+          <Search class="h-4 w-4"/>
+          Search
         </HotkeyButton>
       </div>
     </div>

@@ -60,7 +60,7 @@
                 break;
         }
         return (
-            `flex justify-center items-center text-center rounded rounded-full px-2 text-black h-5 ` +
+            `flex justify-center items-center text-center rounded rounded-full px-2 w-fit text-black h-5 ` +
             bgcolor
         );
     }
