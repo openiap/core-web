@@ -10,7 +10,7 @@
   import { CustomInput } from "$lib/custominput/index.js";
   import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
-  import { Check } from "lucide-svelte";
+  import { Check, Info, Ticket } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
@@ -57,23 +57,69 @@
   {$message}
 {/if}
 
-<div class="m-4">
-  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
-    <HotkeyButton
-      onclick={() => {
-        goto(base + "/billingaccount/" + data.id + "/billing");
-      }}
-    >
-      All billing usage
-    </HotkeyButton>
-    <HotkeyButton
-      onclick={() => {
-        goto(base + "/licensekey");
-      }}
-    >
-      Manage OpenCore Licenses
-    </HotkeyButton>
+<div class="mx-4 my-2">
+  <form method="POST" use:enhance>
+    <Form.Field {form} name="name" class="mb-10">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Edit Billing Account Name</Form.Label>
+          <div class="md:flex md:space-x-4">
+            <CustomInput
+              {...props}
+              bind:value={$formData.name}
+              class="mb-2 md:mb-0"
+            />
+            <HotkeyButton
+              variant="success"
+              size="base"
+              disabled={loading}
+              aria-label="Update Billing Account"
+              type="submit"
+              data-shortcut="ctrl+s"
+            >
+              <Check />
+              Update Billing Account</HotkeyButton
+            >
+          </div>
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+  </form>
 
+  <div class="mb-4 md:mb-10">
+    <div class="mb-2 bw-100">Billing Usage</div>
+    <div class="dark:text-bw500 mb-2">
+      View this billling account's usage accross all workspaces
+    </div>
+    <div>
+      <HotkeyButton
+        onclick={() => {
+          goto(base + "/billingaccount/" + data.id + "/billing");
+        }}
+      >
+        <Info />
+        All billing usage
+      </HotkeyButton>
+    </div>
+  </div>
+
+  <div class="mb-4 md:mb-10">
+    <div class="mb-2">Manage OpenCore Licenses</div>
+    <div class="dark:text-bw500 mb-2">Manage all of your OpenCore Licenses</div>
+    <div>
+      <HotkeyButton
+        onclick={() => {
+          goto(base + "/licensekey");
+        }}
+      >
+        <Ticket />
+        Manage OpenCore Licenses
+      </HotkeyButton>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
     {#if data.item?.stripeid != null && data.item?.stripeid != ""}
       <HotkeyButton
         onclick={async () => {
@@ -95,6 +141,7 @@
           }
         }}
       >
+        <Info />
         Open Billing Portal
       </HotkeyButton>
       <HotkeyButton
@@ -113,35 +160,11 @@
           }
         }}
       >
+        <Ticket />
         Sync with Stripe
       </HotkeyButton>
     {/if}
   </div>
-
-  <form method="POST" use:enhance>
-    <Form.Field {form} name="name">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Company Name</Form.Label>
-          <CustomInput {...props} bind:value={$formData.name} />
-        {/snippet}
-      </Form.Control>
-      <Form.Description>This is your company name.</Form.Description>
-      <Form.FieldErrors />
-    </Form.Field>
-
-    <HotkeyButton
-      variant="success"
-      size="base"
-      disabled={loading}
-      aria-label="Update Billing Account"
-      type="submit"
-      data-shortcut="ctrl+s"
-    >
-      <Check />
-      Update Billing Account</HotkeyButton
-    >
-  </form>
 
   <CustomSuperDebug {formData} />
 </div>
