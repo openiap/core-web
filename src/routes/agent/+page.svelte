@@ -31,12 +31,12 @@
     Filter,
     HandHelping,
     Play,
-    Plus,
     Receipt,
     RefreshCcw,
     Rows2,
     Square,
     SquarePen,
+    SquarePlus,
     SquareStack,
     Trash2,
     User,
@@ -460,7 +460,7 @@
         goto(base + `/${page}/new`);
       }}
     >
-      <Plus />
+      <SquarePlus />
       Create Agent</HotkeyButton
     >
     <HotkeyButton

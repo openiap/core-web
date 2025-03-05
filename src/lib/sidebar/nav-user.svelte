@@ -9,9 +9,6 @@
     import { auth } from "$lib/stores/auth.svelte";
     import { usersettings } from "$lib/stores/usersettings.svelte";
     import { Crown, LogOut, Trash2 } from "lucide-svelte";
-    import BadgeCheck from "lucide-svelte/icons/badge-check";
-    import Bell from "lucide-svelte/icons/bell";
-    import CreditCard from "lucide-svelte/icons/credit-card";
 
     let { user }: { user: { name: string; email: string; avatar: string } } =
         $props();
@@ -85,17 +82,24 @@
                         <CreditCard />
                         Billing
                     </DropdownMenu.Item> -->
-                    <DropdownMenu.Item onclick={reset} class="cursor-pointer">
-                        <Trash2 />
+                    <DropdownMenu.Item
+                        onclick={reset}
+                        class="cursor-pointer dark:text-bw100"
+                        aria-label="Clear Filters and Settings"
+                        title="Clear Filters and Settings"
+                    >
+                        <Trash2 class="text-bw500" />
                         Clear Filters and Settings
                     </DropdownMenu.Item>
                     {#if auth.config?.validlicense == false}
                         <DropdownMenu.Item
+                            aria-label="Premium Features"
+                            title="Premium Features"
                             onclick={() =>
                                 window.open("https://openiap.io", "_blank")}
-                            class="cursor-pointer"
+                            class="cursor-pointer dark:text-bw100"
                         >
-                            <Crown />
+                            <Crown class="text-bw500" />
                             Premium Features
                         </DropdownMenu.Item>
                     {/if}
@@ -104,13 +108,13 @@
                 <DropdownMenu.Item class="cursor-pointer" onclick={logout}>
                     <LogOut class="h-4 w-4  " />
                     <HotkeyButton
-                        class="p-0 m-0 focus-visible:ring-offset-0 focus-visible:ring-0 "
-                        aria-label="Signout"
+                        class="p-0 m-0 focus-visible:ring-offset-0 focus-visible:ring-0 dark:text-bw100"
+                        aria-label="Sign Out"
                         onclick={logout}
                         variant="ghostfull"
                         data-shortcut={"ctrl+q,meta+q"}
                     >
-                        <div>Signout</div>
+                        Sign Out
                     </HotkeyButton>
                 </DropdownMenu.Item>
             </DropdownMenu.Content>

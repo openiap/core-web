@@ -13,7 +13,7 @@
         LandPlot,
         Layers2,
         SquarePlus,
-        SquareX
+        SquareX,
     } from "lucide-svelte";
     import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
     import { toast } from "svelte-sonner";
@@ -128,7 +128,7 @@
                                         )}</span
                                     >
                                 </div>
-                                <ChevronsUpDown class="ml-auto" />
+                                <ChevronsUpDown class="ml-auto text-bw500" />
                             {:else}
                                 <div class="flex items-center">
                                     <span class="truncate font-semibold">
@@ -136,9 +136,9 @@
                                     </span>
                                 </div>
                                 {#if isMobile}
-                                    <ChevronDown class="ml-auto" />
+                                    <ChevronDown class="ml-auto text-bw500" />
                                 {:else}
-                                    <ChevronRight class="ml-auto" />
+                                    <ChevronRight class="ml-auto text-bw500" />
                                 {/if}
                             {/if}
                         </Sidebar.MenuButton>
@@ -151,7 +151,7 @@
                     side={sidebar.isMobile ? "bottom" : "right"}
                     sideOffset={4}
                 >
-                    <DropdownMenu.Label class="text-muted-foreground font-bold "
+                    <DropdownMenu.Label class="dark:text-bw100 font-bold mb-2 "
                         >Workspaces</DropdownMenu.Label
                     >
                     <!-- <Command.Root
@@ -197,9 +197,9 @@
                                 class={`gap-2 px-2.5 py-1.5 mb-2`}
                             >
                                 <div
-                                    class="grid flex-1 text-left leading-tight justify-between"
+                                    class="grid flex-1 text-left leading-tight justify-between cursor-pointer"
                                 >
-                                    <span class="truncate font-semibold">
+                                    <span class="truncate font-semibold dark:text-bw100">
                                         {capitalizeWords(workspace.name)}
                                     </span>
                                     <span class="truncate text-xs text-bw400"
@@ -224,17 +224,17 @@
                             <DropdownMenu.Item
                                 onSelect={() =>
                                     selectWorkspace({ _id: "" } as any)}
-                                class="gap-2 p-2"
+                                class="gap-2 p-2 cursor-pointer dark:text-bw100"
                             >
-                                <SquareX />
+                                <SquareX class="text-bw500"/>
                                 Unselect Workspace
                             </DropdownMenu.Item>
                         {/if}
                         <DropdownMenu.Item
                             onSelect={() => goto(base + "/workspace")}
-                            class="gap-2 p-2"
+                            class="gap-2 p-2 cursor-pointer dark:text-bw100"
                         >
-                            <Layers2 class="size-4" />
+                            <Layers2 class="size-4 text-bw500" />
                             All Workspaces
                         </DropdownMenu.Item>
                     {/if}
@@ -243,16 +243,16 @@
                         <DropdownMenu.Item
                             onSelect={() =>
                                 goto(base + "/workspace/" + currentworkspace)}
-                            class="gap-2 p-2 text-muted-foreground font-medium"
+                            class="gap-2 p-2 cursor-pointer text-muted-foreground font-medium dark:text-bw100"
                         >
-                            <DollarSignIcon class="size-4" />
+                            <DollarSignIcon class="size-4 text-bw500" />
                             Billing for {capitalizeWords(activeWorkspacename())}
                         </DropdownMenu.Item>
                     {/if}
                     <DropdownMenu.Separator class="mx-1" />
 
                     <DropdownMenu.Item
-                        class="gap-2 p-2 cursor-pointer"
+                        class="gap-2 p-2 cursor-pointer dark:text-bw100"
                         onclick={() => goto(base + "/workspace/new")}
                     >
                         <!-- <div
@@ -261,7 +261,7 @@
                             <Plus class="size-4" />
                         </div>
                         <div class=" font-medium">Create Workspace</div> -->
-                        <SquarePlus class="size-4" />
+                        <SquarePlus class="size-4 text-bw500" />
                         <div class=" font-medium">New Workspace</div>
                     </DropdownMenu.Item>
                 </DropdownMenu.Content>

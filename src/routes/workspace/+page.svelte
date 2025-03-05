@@ -14,7 +14,7 @@
   import { auth } from "$lib/stores/auth.svelte.js";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
-  import { Filter, Pencil, Plus, Trash2 } from "lucide-svelte";
+  import { Filter, Pencil, SquarePlus, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
@@ -117,7 +117,7 @@
       goto(base + `/${page}/new`);
     }}
   >
-    <Plus />
+    <SquarePlus />
     Create Workspace</HotkeyButton
   >
 </div>

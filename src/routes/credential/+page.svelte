@@ -13,7 +13,7 @@
   import { SearchInput } from "$lib/searchinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
-  import { Pencil, Plus, Trash2 } from "lucide-svelte";
+  import { Pencil, SquarePlus, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
@@ -75,7 +75,7 @@
       goto(base + `/${page}/new`);
     }}
   >
-    <Plus />
+    <SquarePlus />
     Create Credential</HotkeyButton
   >
 </div>
