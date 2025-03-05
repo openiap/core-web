@@ -34,6 +34,8 @@
     Plus,
     Receipt,
     RefreshCcw,
+    Rows2,
+    Rows4,
     Square,
     SquarePen,
     SquareStack,
@@ -321,7 +323,7 @@
   <div class="lg:flex lg:items-center lg:space-x-4 mb-2 lg:mb-0 w-full">
     <SearchInput
       bind:searchstring
-      class="w-full lg:max-w-[224px] mb-2 lg:mb-0"
+      class="w-full lg:max-w-[234px] mb-2 lg:mb-0"
     />
     <div>
       <Popover.Root open={filter}>
@@ -336,7 +338,7 @@
           <RadioGroup.Root value="All" class="flex flex-col">
             <div class="flex items-center">
               <div class="flex items-center space-x-2 w-full">
-                <Check class="h-4 w-4" />
+                <Rows2  class="h-4 w-4" />
                 <Label for="r1" class="cursor-pointer">All</Label>
               </div>
               <RadioGroup.Item
@@ -346,8 +348,8 @@
                 disabled={loading}
                 onclick={async () => {
                   filterby = "all";
-                  await GetData();
-                  await getPods(false);
+                  // await GetData();
+                  // await getPods(false);
                 }}
               />
             </div>
@@ -365,8 +367,8 @@
                 disabled={loading}
                 onclick={async () => {
                   filterby = "daemon";
-                  await GetData();
-                  await getPods(false);
+                  // await GetData();
+                  // await getPods(false);
                 }}
               />
             </div>
@@ -382,7 +384,7 @@
                 disabled={loading}
                 onclick={async () => {
                   filterby = "pods";
-                  await GetData();
+                  // await GetData();
                 }}
               />
             </div>
@@ -398,12 +400,12 @@
                 disabled={loading}
                 onclick={async () => {
                   filterby = "docker";
-                  await GetData();
-                  await getPods(false);
+                  // await GetData();
+                  // await getPods(false);
                 }}
               />
             </div>
-            <div class="flex items-center py-1 space-x-10">
+            <div class="flex items-center py-1 space-x-20">
               <div class="flex items-center space-x-2 w-full">
                 <HandHelping class="h-4 w-4" />
                 <Label for="r5" class="cursor-pointer">Assistant</Label>
@@ -415,10 +417,28 @@
                 disabled={loading}
                 onclick={async () => {
                   filterby = "assistant";
-                  await GetData();
-                  await getPods(false);
+                  // await GetData();
+                  // await getPods(false);
                 }}
               />
+            </div>
+            <Separator />
+            <div class="flex items-center">
+              <div class="flex items-center space-x-2 w-full">
+                <!-- <Label for="r1" class="cursor-pointer">Apply filter</Label> -->
+                <Check class="h-4 w-4" />
+                <HotkeyButton
+                  onclick={async () => {
+                    await GetData();
+                    await getPods(false);
+                  }}
+                  aria-label="Apply filter"
+                  class="m-0 p-0"
+                  variant="ghostfull"
+                >
+                  Apply filter
+                </HotkeyButton>
+              </div>
             </div>
           </RadioGroup.Root>
         </Popover.Content>
