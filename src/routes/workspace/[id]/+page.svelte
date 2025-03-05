@@ -233,10 +233,10 @@
     }
   }
 
-  const cardRoot = "w-[346px] h-[430px] dark:bg-bw850 grid grid-rows-5 w-full";
+  const cardRoot = "w-[346px] h-[430px] dark:bg-bw850 grid grid-rows-5 w-full p-6";
   const cardHeader = "text-center";
   const cardTitle = "text-bw950 dark:text-bw100";
-  const cardDiv = "flex flex-col justify-between row-span-4 p-6";
+  const cardDiv = "flex flex-col justify-between row-span-4";
   const iconClass = "m-1.5 h-4 w-4";
 
   async function getData() {
