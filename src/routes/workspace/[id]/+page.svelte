@@ -411,15 +411,15 @@
               </div>
             </div>
             <div>
-              <div>5 members in your workspace.</div>
-              <div>1 cloud agent (4 hour runtime).</div>
+              <div>5 members in your workspace</div>
+              <div>1 cloud agent (4 hour runtime)</div>
               <div>
                 Support via our
                 <a
                   href="https://discourse.openiap.io/"
                   target="_blank"
                   class="hover:underline">{` community forum`}</a
-                >.
+                >
               </div>
             </div>
           </div>
@@ -473,7 +473,7 @@
                   class="hover:underline"
                   href="https://discourse.openiap.io/"
                   target="_blank">{` community forum`}</a
-                >.
+                >
               </div>
               <div>
                 Billing support (reach out via the e-mail used in your invoice)
