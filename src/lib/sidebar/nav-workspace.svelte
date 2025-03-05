@@ -58,7 +58,6 @@
     }
     checkMobile();
     async function loadSearchResult() {
-        console.log("search", search);
         let query = { _type: "workspace" };
         if (search != null || search != "") {
             query = {
@@ -71,7 +70,6 @@
         //     return entities = [];
         // }
         try {
-            console.log("query", query);
             entities = await auth.client.Query({
                 collectionname: "users",
                 query,
@@ -80,7 +78,6 @@
                 // projection,
                 // queryas:usersettings.workspaceid,
             });
-            console.log("entities");
             // if (!entities) {
             //     entities = [];
             // }
