@@ -54,61 +54,63 @@
   validateForm({ update: true });
 </script>
 
-{#if message && $message != ""}
-  {$message}
-{/if}
+<div class="mx-4 my-1">
+  {#if message && $message != ""}
+    {$message}
+  {/if}
 
-<form method="POST" use:enhance>
-  <Acl bind:value={$formData} />
+  <form method="POST" use:enhance>
+    <Acl bind:value={$formData} />
 
-  <Form.Field {form} name="name" class="mb-7">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Name</Form.Label>
-        <CustomInput {...props} bind:value={$formData.name} />
-      {/snippet}
-    </Form.Control>
-    <Form.Description>This is the name.</Form.Description>
-    <Form.FieldErrors />
-  </Form.Field>
+    <Form.Field {form} name="name" class="mb-7">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Name</Form.Label>
+          <CustomInput {...props} bind:value={$formData.name} />
+        {/snippet}
+      </Form.Control>
+      <Form.Description>This is the name.</Form.Description>
+      <Form.FieldErrors />
+    </Form.Field>
 
-  <Form.Field {form} name="username" class="mb-7">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Username</Form.Label>
-        <CustomInput {...props} bind:value={$formData.username} />
-      {/snippet}
-    </Form.Control>
-    <Form.Description>This is your username.</Form.Description>
-    <Form.FieldErrors />
-  </Form.Field>
+    <Form.Field {form} name="username" class="mb-7">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Username</Form.Label>
+          <CustomInput {...props} bind:value={$formData.username} />
+        {/snippet}
+      </Form.Control>
+      <Form.Description>This is your username.</Form.Description>
+      <Form.FieldErrors />
+    </Form.Field>
 
-  <Form.Field {form} name="password" class="mb-7">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Password</Form.Label>
-        <CustomInput
-          {...props}
-          bind:value={$formData.password}
-          type="password"
-        />
-      {/snippet}
-    </Form.Control>
-    <Form.Description>This is your password.</Form.Description>
-    <Form.FieldErrors />
-  </Form.Field>
+    <Form.Field {form} name="password" class="mb-7">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Password</Form.Label>
+          <CustomInput
+            {...props}
+            bind:value={$formData.password}
+            type="password"
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.Description>This is your password.</Form.Description>
+      <Form.FieldErrors />
+    </Form.Field>
 
-  <HotkeyButton
-    variant="success"
-    size="base"
-    disabled={loading}
-    aria-label="Update Credential"
-    type="submit"
-    data-shortcut="ctrl+s"
-  >
-    <Check />
-    Update Credential</HotkeyButton
-  >
-</form>
+    <HotkeyButton
+      variant="success"
+      size="base"
+      disabled={loading}
+      aria-label="Update Credential"
+      type="submit"
+      data-shortcut="ctrl+s"
+    >
+      <Check />
+      Update Credential</HotkeyButton
+    >
+  </form>
 
-<CustomSuperDebug {formData} />
+  <CustomSuperDebug {formData} />
+</div>

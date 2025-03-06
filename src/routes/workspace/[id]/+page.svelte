@@ -233,7 +233,8 @@
     }
   }
 
-  const cardRoot = "w-[346px] h-[430px] dark:bg-bw850 grid grid-rows-5 w-full p-6";
+  const cardRoot =
+    "w-[346px] h-[430px] dark:bg-bw850 grid grid-rows-5 w-full p-6";
   const cardHeader = "text-center";
   const cardTitle = "text-bw950 dark:text-bw100";
   const cardDiv = "flex flex-col justify-between row-span-4";
@@ -289,292 +290,308 @@
   });
 </script>
 
-{#if message && $message != ""}
-  {$message}
-{/if}
+<div class="mx-4 my-3">
+  {#if message && $message != ""}
+    {$message}
+  {/if}
 
-<div class="mx-6 mt-4">
-  <form method="POST" use:enhance>
-    <Form.Field {form} name="name" class="mb-7">
-      <Form.Control>
-        {#snippet children({ props })}
-          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-            <div class="grid grid-col-1 gap-2 w-full">
-              <Form.Label class="font-medium">Workspace Name</Form.Label>
-              <div>
-                <div class="text-bw400">
-                  <!-- Select a billing account for this workspace -->
-                </div>
-                <div class="grid grid-cols-1 gap-2.5">
-                  <CustomInput
-                    {...props}
-                    bind:value={$formData.name}
-                    width=""
-                    placeholder="workspace name"
-                    height="h-7"
-                  />
-                  <HotkeyButton
-                    variant="success"
-                    disabled={loading}
-                    aria-label="Update Workspace"
-                    type="submit"
-                    data-shortcut="ctrl+s"
-                    class="w-fit"
-                  >
-                    <Check />
-                    Update Workspace</HotkeyButton
-                  >
+  <div>
+    <form method="POST" use:enhance>
+      <Form.Field {form} name="name" class="mb-7">
+        <Form.Control>
+          {#snippet children({ props })}
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+              <div class="grid grid-col-1 gap-2 w-full">
+                <Form.Label class="font-medium">Workspace Name</Form.Label>
+                <div>
+                  <div class="text-bw400">
+                    <!-- Select a billing account for this workspace -->
+                  </div>
+                  <div class="grid grid-cols-1 gap-2.5">
+                    <CustomInput
+                      {...props}
+                      bind:value={$formData.name}
+                      width=""
+                      placeholder="workspace name"
+                      height="h-7"
+                    />
+                    <HotkeyButton
+                      variant="success"
+                      disabled={loading}
+                      aria-label="Update Workspace"
+                      type="submit"
+                      data-shortcut="ctrl+s"
+                      class="w-fit"
+                    >
+                      <Check />
+                      Update Workspace</HotkeyButton
+                    >
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="grid grid-col-1 gap-2 w-full">
-              {#if entities.length > 0}
-                {#if resourcecount == 0}
-                  <Form.Label>Billing Account</Form.Label>
+              <div class="grid grid-col-1 gap-2 w-full">
+                {#if entities.length > 0}
+                  {#if resourcecount == 0}
+                    <Form.Label>Billing Account</Form.Label>
+                    <div class="text-bw400">
+                      Select a billing account for this workspace
+                    </div>
+                    <CustomSelect
+                      width="w-full"
+                      type="single"
+                      triggerContent={billingname}
+                      bind:value={billingid}
+                      selectitems={[
+                        { name: "Create new", _id: "" },
+                        ...entities,
+                      ]}
+                    />
+                  {:else}
+                    <Form.Label>Billing Account</Form.Label>
+                    <div class="text-bw400">
+                      The current billing account for this workspace
+                    </div>
+                    <HotkeyButton
+                      class="w-fit"
+                      disabled={loading}
+                      onclick={() =>
+                        goto(
+                          base +
+                            "/billingaccount/" +
+                            currentworkspace._billingid,
+                        )}
+                    >
+                      <Info />
+                      {billingname()}
+                    </HotkeyButton>
+                  {/if}
+                {/if}
+              </div>
+
+              <div class="grid grid-col-1 gap-2 w-full">
+                {#if currentbilling != null}
+                  <Form.Label>Workspace Billing</Form.Label>
                   <div class="text-bw400">
-                    Select a billing account for this workspace
-                  </div>
-                  <CustomSelect
-                    width="w-full"
-                    type="single"
-                    triggerContent={billingname}
-                    bind:value={billingid}
-                    selectitems={[{ name: "Create new", _id: "" }, ...entities]}
-                  />
-                {:else}
-                  <Form.Label>Billing Account</Form.Label>
-                  <div class="text-bw400">
-                    The current billing account for this workspace
+                    Show billing details for this workspace
                   </div>
                   <HotkeyButton
                     class="w-fit"
                     disabled={loading}
                     onclick={() =>
                       goto(
-                        base + "/billingaccount/" + currentworkspace._billingid,
+                        base +
+                          "/workspace/" +
+                          currentworkspace._id +
+                          "/billing",
                       )}
                   >
                     <Info />
-                    {billingname()}
+
+                    Show Billing Usage For {currentworkspace.name}
                   </HotkeyButton>
                 {/if}
-              {/if}
+              </div>
             </div>
+          {/snippet}
+        </Form.Control>
+        <Form.FieldErrors />
+      </Form.Field>
+    </form>
 
-            <div class="grid grid-col-1 gap-2 w-full">
-              {#if currentbilling != null}
-                <Form.Label>Workspace Billing</Form.Label>
-                <div class="text-bw400">
-                  Show billing details for this workspace
+    <div class="mb-4">Plans</div>
+    <div class="grid gap-8 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
+      <Card.Root class={cardRoot}>
+        <Card.Header class={cardHeader}>
+          <Card.Title class={cardTitle}>Free</Card.Title>
+          <Card.Description>Great for trying things out</Card.Description>
+        </Card.Header>
+        <div class={cardDiv}>
+          <Card.Content>
+            <div class="flex">
+              <div>
+                <div>
+                  <Check class={iconClass} />
                 </div>
-                <HotkeyButton
-                  class="w-fit"
-                  disabled={loading}
-                  onclick={() =>
-                    goto(
-                      base + "/workspace/" + currentworkspace._id + "/billing",
-                    )}
-                >
-                  <Info />
-
-                  Show Billing Usage For {currentworkspace.name}
-                </HotkeyButton>
-              {/if}
-            </div>
-          </div>
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
-  </form>
-
-  <div class="mb-4">Plans</div>
-  <div class="grid gap-8 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
-    <Card.Root class={cardRoot}>
-      <Card.Header class={cardHeader}>
-        <Card.Title class={cardTitle}>Free</Card.Title>
-        <Card.Description>Great for trying things out</Card.Description>
-      </Card.Header>
-      <div class={cardDiv}>
-        <Card.Content>
-          <div class="flex">
-            <div>
-              <div>
-                <Check class={iconClass} />
+                <div>
+                  <Check class={iconClass} />
+                </div>
+                <div>
+                  <Check class={iconClass} />
+                </div>
               </div>
               <div>
-                <Check class={iconClass} />
-              </div>
-              <div>
-                <Check class={iconClass} />
+                <div>5 members in your workspace</div>
+                <div>1 cloud agent (4 hour runtime)</div>
+                <div>
+                  Support via our
+                  <a
+                    href="https://discourse.openiap.io/"
+                    target="_blank"
+                    class="hover:underline">{` community forum`}</a
+                  >
+                </div>
               </div>
             </div>
-            <div>
-              <div>5 members in your workspace</div>
-              <div>1 cloud agent (4 hour runtime)</div>
+          </Card.Content>
+          <Card.Footer class="flex justify-between">
+            {#if currentworkspace == null || currentworkspace._resourceusageid == null || currentworkspace._resourceusageid == ""}
+              <HotkeyButton>
+                <Check class="p-0.5" />
+                Current Plan</HotkeyButton
+              >
+            {:else}
+              <HotkeyButton
+                disabled={loading}
+                onclick={removeplan}
+                variant="danger"
+              >
+                <SquareArrowDown /> Downgrade</HotkeyButton
+              >
+            {/if}
+          </Card.Footer>
+        </div>
+      </Card.Root>
+      <Card.Root class={cardRoot}>
+        <Card.Header class={cardHeader}>
+          <Card.Title class={cardTitle}>Basic</Card.Title>
+          <Card.Description>Starter package</Card.Description>
+        </Card.Header>
+        <div class={cardDiv}>
+          <Card.Content>
+            <div class="flex">
               <div>
-                Support via our
-                <a
-                  href="https://discourse.openiap.io/"
-                  target="_blank"
-                  class="hover:underline">{` community forum`}</a
-                >
+                <div>
+                  <Check class={iconClass} />
+                </div>
+                <div>
+                  <Check class={iconClass} />
+                </div>
+                <div>
+                  <Check class={iconClass} />
+                </div>
+                <div>
+                  <Check class={iconClass} />
+                </div>
+              </div>
+              <div>
+                <div>25 members in your workspace</div>
+                <div>Priced agents that run 24/7</div>
+                <div>
+                  {"Support via our "}
+                  <a
+                    class="hover:underline"
+                    href="https://discourse.openiap.io/"
+                    target="_blank">{` community forum`}</a
+                  >
+                </div>
+                <div>
+                  Billing support (reach out via the e-mail used in your
+                  invoice)
+                </div>
               </div>
             </div>
-          </div>
-        </Card.Content>
-        <Card.Footer class="flex justify-between">
-          {#if currentworkspace == null || currentworkspace._resourceusageid == null || currentworkspace._resourceusageid == ""}
-            <HotkeyButton>
-              <Check class="p-0.5" />
-              Current Plan</HotkeyButton
-            >
-          {:else}
+          </Card.Content>
+          <Card.Footer class="flex justify-between">
+            {#if currentworkspace == null || currentworkspace._resourceusageid == null || currentworkspace._resourceusageid == ""}
+              <HotkeyButton
+                disabled={loading}
+                onclick={addplan}
+                variant="success"
+              >
+                <SquareArrowUp />
+                Upgrade To Basic</HotkeyButton
+              >
+            {:else if currentworkspace._productname != "Basic tier"}
+              <HotkeyButton
+                disabled={loading}
+                onclick={addplan}
+                variant="danger"
+              >
+                <SquareArrowDown />
+                Downgrade</HotkeyButton
+              >
+            {:else}
+              <HotkeyButton
+                ><Check class="p-0.5" />
+                Current Plan</HotkeyButton
+              >
+            {/if}
+          </Card.Footer>
+        </div>
+      </Card.Root>
+      <Card.Root class={cardRoot}>
+        <Card.Header class={cardHeader}>
+          <Card.Title class={cardTitle}>Enterprise</Card.Title>
+          <Card.Description>Great for companies</Card.Description>
+        </Card.Header>
+        <div class={cardDiv}>
+          <Card.Content>
+            <div class="flex">
+              <div>
+                <div>
+                  <Check class={iconClass} />
+                </div>
+                <div>
+                  <Check class={iconClass} />
+                </div>
+                <div>
+                  <Check class={iconClass} />
+                </div>
+                <div>
+                  <Check class={iconClass} />
+                </div>
+              </div>
+              <div>
+                <div>Everything in the previous tiers</div>
+                <div>Unlimited members</div>
+                <div>Discount on agents that run 24/7</div>
+                <div>Unlimited api requests</div>
+                <div>
+                  Billing support (reach out via the e-mail used in your
+                  invoice)
+                </div>
+              </div>
+            </div>
+          </Card.Content>
+          <Card.Footer class="flex justify-between">
             <HotkeyButton
+              size="lg"
               disabled={loading}
-              onclick={removeplan}
-              variant="danger"
+              onclick={() =>
+                window.open(
+                  "https://calendar.app.google/aoU5qv1gX6ocHnAH8",
+                  "_blank",
+                  "noopener,noreferrer",
+                )}
             >
-              <SquareArrowDown /> Downgrade</HotkeyButton
-            >
-          {/if}
-        </Card.Footer>
-      </div>
-    </Card.Root>
-    <Card.Root class={cardRoot}>
-      <Card.Header class={cardHeader}>
-        <Card.Title class={cardTitle}>Basic</Card.Title>
-        <Card.Description>Starter package</Card.Description>
-      </Card.Header>
-      <div class={cardDiv}>
-        <Card.Content>
-          <div class="flex">
-            <div>
-              <div>
-                <Check class={iconClass} />
-              </div>
-              <div>
-                <Check class={iconClass} />
-              </div>
-              <div>
-                <Check class={iconClass} />
-              </div>
-              <div>
-                <Check class={iconClass} />
-              </div>
-            </div>
-            <div>
-              <div>25 members in your workspace</div>
-              <div>Priced agents that run 24/7</div>
-              <div>
-                {"Support via our "}
-                <a
-                  class="hover:underline"
-                  href="https://discourse.openiap.io/"
-                  target="_blank">{` community forum`}</a
-                >
-              </div>
-              <div>
-                Billing support (reach out via the e-mail used in your invoice)
-              </div>
-            </div>
-          </div>
-        </Card.Content>
-        <Card.Footer class="flex justify-between">
-          {#if currentworkspace == null || currentworkspace._resourceusageid == null || currentworkspace._resourceusageid == ""}
-            <HotkeyButton
-              disabled={loading}
-              onclick={addplan}
-              variant="success"
-            >
-              <SquareArrowUp />
-              Upgrade To Basic</HotkeyButton
-            >
-          {:else if currentworkspace._productname != "Basic tier"}
-            <HotkeyButton disabled={loading} onclick={addplan} variant="danger">
-              <SquareArrowDown />
-              Downgrade</HotkeyButton
-            >
-          {:else}
-            <HotkeyButton
-              ><Check class="p-0.5" />
-              Current Plan</HotkeyButton
-            >
-          {/if}
-        </Card.Footer>
-      </div>
-    </Card.Root>
-    <Card.Root class={cardRoot}>
-      <Card.Header class={cardHeader}>
-        <Card.Title class={cardTitle}>Enterprise</Card.Title>
-        <Card.Description>Great for companies</Card.Description>
-      </Card.Header>
-      <div class={cardDiv}>
-        <Card.Content>
-          <div class="flex">
-            <div>
-              <div>
-                <Check class={iconClass} />
-              </div>
-              <div>
-                <Check class={iconClass} />
-              </div>
-              <div>
-                <Check class={iconClass} />
-              </div>
-              <div>
-                <Check class={iconClass} />
-              </div>
-            </div>
-            <div>
-              <div>Everything in the previous tiers</div>
-              <div>Unlimited members</div>
-              <div>Discount on agents that run 24/7</div>
-              <div>Unlimited api requests</div>
-              <div>
-                Billing support (reach out via the e-mail used in your invoice)
-              </div>
-            </div>
-          </div>
-        </Card.Content>
-        <Card.Footer class="flex justify-between">
-          <HotkeyButton
-            size="lg"
-            disabled={loading}
-            onclick={() =>
-              window.open(
-                "https://calendar.app.google/aoU5qv1gX6ocHnAH8",
-                "_blank",
-                "noopener,noreferrer",
-              )}
+              <Mail />
+              Contact us
+            </HotkeyButton>
+          </Card.Footer>
+        </div>
+      </Card.Root>
+    </div>
+
+    <AlertDialog.Root open={nameprompt}>
+      <AlertDialog.Content>
+        <AlertDialog.Header>
+          <AlertDialog.Title>Create Billing Account</AlertDialog.Title>
+          <AlertDialog.Description>
+            Please type the name of your new billing account.
+            <Input bind:value={newbillingaccountname} />
+          </AlertDialog.Description>
+        </AlertDialog.Header>
+        <AlertDialog.Footer>
+          <HotkeyButton disabled={loading} onclick={() => (nameprompt = false)}
+            >Cancel</HotkeyButton
           >
-            <Mail />
-            Contact us
-          </HotkeyButton>
-        </Card.Footer>
-      </div>
-    </Card.Root>
+          <HotkeyButton disabled={loading} onclick={createbillingaccount}
+            >Continue</HotkeyButton
+          >
+        </AlertDialog.Footer>
+      </AlertDialog.Content>
+    </AlertDialog.Root>
+    <CustomSuperDebug {formData} />
   </div>
-
-  <AlertDialog.Root open={nameprompt}>
-    <AlertDialog.Content>
-      <AlertDialog.Header>
-        <AlertDialog.Title>Create Billing Account</AlertDialog.Title>
-        <AlertDialog.Description>
-          Please type the name of your new billing account.
-          <Input bind:value={newbillingaccountname} />
-        </AlertDialog.Description>
-      </AlertDialog.Header>
-      <AlertDialog.Footer>
-        <HotkeyButton disabled={loading} onclick={() => (nameprompt = false)}
-          >Cancel</HotkeyButton
-        >
-        <HotkeyButton disabled={loading} onclick={createbillingaccount}
-          >Continue</HotkeyButton
-        >
-      </AlertDialog.Footer>
-    </AlertDialog.Content>
-  </AlertDialog.Root>
-  <CustomSuperDebug {formData} />
 </div>

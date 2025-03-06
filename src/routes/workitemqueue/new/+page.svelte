@@ -106,236 +106,238 @@
   const { form: formData, enhance, message } = form;
 </script>
 
-{#if message && $message != ""}
-  {$message}
-{/if}
+<div class="mx-4 my-1">
+  {#if message && $message != ""}
+    {$message}
+  {/if}
 
-<form method="POST" use:enhance>
-  <Form.Field {form} name="name" class="mb-7">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Name</Form.Label>
-        <CustomInput
-          placeholder="Type name"
-          disabled={loading}
-          {...props}
-          bind:value={$formData.name}
-        />
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
+  <form method="POST" use:enhance>
+    <Form.Field {form} name="name" class="mb-7">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Name</Form.Label>
+          <CustomInput
+            placeholder="Type name"
+            disabled={loading}
+            {...props}
+            bind:value={$formData.name}
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
 
-  <Form.Field {form} name="projectid" class="mb-7">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Project</Form.Label>
-        <EntitySelector
-          collectionname="openrpa"
-          bind:value={$formData.projectid}
-          basefilter={{ _type: "project" }}
-          projection={{ name: 1 }}
-          class="w-64"
-          name="project"
-          noitem={true}
-        />
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
+    <Form.Field {form} name="projectid" class="mb-7">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Project</Form.Label>
+          <EntitySelector
+            collectionname="openrpa"
+            bind:value={$formData.projectid}
+            basefilter={{ _type: "project" }}
+            projection={{ name: 1 }}
+            class="w-64"
+            name="project"
+            noitem={true}
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
 
-  <Form.Field {form} name="maxretries" class="mb-7">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Max retries</Form.Label>
-        <CustomInput
-          placeholder="Type name"
-          disabled={loading}
-          {...props}
-          bind:value={$formData.maxretries}
-          type="number"
-        />
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
+    <Form.Field {form} name="maxretries" class="mb-7">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Max retries</Form.Label>
+          <CustomInput
+            placeholder="Type name"
+            disabled={loading}
+            {...props}
+            bind:value={$formData.maxretries}
+            type="number"
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
 
-  <Form.Field {form} name="retrydelay" class="mb-7">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Retry delay (Seconds)</Form.Label>
-        <CustomInput
-          placeholder="Type name"
-          disabled={loading}
-          {...props}
-          bind:value={$formData.retrydelay}
-          type="number"
-        />
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
+    <Form.Field {form} name="retrydelay" class="mb-7">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Retry delay (Seconds)</Form.Label>
+          <CustomInput
+            placeholder="Type name"
+            disabled={loading}
+            {...props}
+            bind:value={$formData.retrydelay}
+            type="number"
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
 
-  <Form.Field {form} name="initialdelay" class="mb-7">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Initial delay (Seconds)</Form.Label>
-        <CustomInput
-          placeholder="Type name"
-          disabled={loading}
-          {...props}
-          bind:value={$formData.initialdelay}
-          type="number"
-        />
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
+    <Form.Field {form} name="initialdelay" class="mb-7">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Initial delay (Seconds)</Form.Label>
+          <CustomInput
+            placeholder="Type name"
+            disabled={loading}
+            {...props}
+            bind:value={$formData.initialdelay}
+            type="number"
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
 
-  <Form.Field {form} name="workflowid" class="mb-7">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Workflow</Form.Label>
-        <EntitySelector
-          collectionname="openrpa"
-          bind:value={$formData.workflowid}
-          basefilter={{ _type: "workflow" }}
-          projection={{ name: 1, projectandname: 1 }}
-          class="w-64"
-          name="workflowid"
-          noitem={true}
-        />
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
+    <Form.Field {form} name="workflowid" class="mb-7">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Workflow</Form.Label>
+          <EntitySelector
+            collectionname="openrpa"
+            bind:value={$formData.workflowid}
+            basefilter={{ _type: "workflow" }}
+            projection={{ name: 1, projectandname: 1 }}
+            class="w-64"
+            name="workflowid"
+            noitem={true}
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
 
-  <Form.Field {form} name="robotqueue" class="mb-7">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Robot/role</Form.Label>
-        <EntitySelector
-          collectionname="users"
-          bind:value={$formData.robotqueue}
-          basefilter={{
-            $or: [{ _type: "user" }, { _type: "role", rparole: true }],
-          }}
-          projection={{ name: 1, _type: 1 }}
-          class="w-64"
-          name="robotqueue"
-          noitem={true}
-        />
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
+    <Form.Field {form} name="robotqueue" class="mb-7">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Robot/role</Form.Label>
+          <EntitySelector
+            collectionname="users"
+            bind:value={$formData.robotqueue}
+            basefilter={{
+              $or: [{ _type: "user" }, { _type: "role", rparole: true }],
+            }}
+            projection={{ name: 1, _type: 1 }}
+            class="w-64"
+            name="robotqueue"
+            noitem={true}
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
 
-  <div class="mb-7">
-    <div class="mb-2">AMQP Queue</div>
-    <EntitySelector
-      collectionname="mq"
-      bind:value={amqpqueuedata}
-      basefilter={{ _type: "queue" }}
-      projection={{ name: 1, _type: 1 }}
-      class="w-64"
-      name="amqpqueue"
-      noitem={true}
-      handleChangeFunction={() => {
-        // @ts-ignore
-        $formData.amqpqueue = amqpqueuedata.name;
-        agentdata = { slug: null };
-      }}
-      returnObject={true}
-    />
-  </div>
+    <div class="mb-7">
+      <div class="mb-2">AMQP Queue</div>
+      <EntitySelector
+        collectionname="mq"
+        bind:value={amqpqueuedata}
+        basefilter={{ _type: "queue" }}
+        projection={{ name: 1, _type: 1 }}
+        class="w-64"
+        name="amqpqueue"
+        noitem={true}
+        handleChangeFunction={() => {
+          // @ts-ignore
+          $formData.amqpqueue = amqpqueuedata.name;
+          agentdata = { slug: null };
+        }}
+        returnObject={true}
+      />
+    </div>
 
-  <div class="mb-7">
-    <div class="mb-2">Agent</div>
-    <EntitySelector
-      queryas={usersettings.currentworkspace}
-      collectionname="agents"
-      bind:value={agentdata}
-      basefilter={{ _type: "agent" }}
-      projection={{ slug: 1, name: 1, _type: 1 }}
-      class="w-64"
-      name="agent"
-      handleChangeFunction={() => {
-        // @ts-ignore
-        $formData.amqpqueue = agentdata.slug + "agent";
-        amqpqueuedata = { name: null };
-      }}
-      noitem={true}
-      returnObject={true}
-    />
-  </div>
+    <div class="mb-7">
+      <div class="mb-2">Agent</div>
+      <EntitySelector
+        queryas={usersettings.currentworkspace}
+        collectionname="agents"
+        bind:value={agentdata}
+        basefilter={{ _type: "agent" }}
+        projection={{ slug: 1, name: 1, _type: 1 }}
+        class="w-64"
+        name="agent"
+        handleChangeFunction={() => {
+          // @ts-ignore
+          $formData.amqpqueue = agentdata.slug + "agent";
+          amqpqueuedata = { name: null };
+        }}
+        noitem={true}
+        returnObject={true}
+      />
+    </div>
 
-  <Form.Field {form} name="packageid" class="mb-7">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Package</Form.Label>
-        <EntitySelector
-          queryas={usersettings.currentworkspace}
-          collectionname="agents"
-          bind:value={$formData.packageid}
-          basefilter={{ _type: "package" }}
-          projection={{ name: 1, _type: 1 }}
-          class="w-64"
-          name="package"
-          noitem={true}
-        />
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
+    <Form.Field {form} name="packageid" class="mb-7">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Package</Form.Label>
+          <EntitySelector
+            queryas={usersettings.currentworkspace}
+            collectionname="agents"
+            bind:value={$formData.packageid}
+            basefilter={{ _type: "package" }}
+            projection={{ name: 1, _type: 1 }}
+            class="w-64"
+            name="package"
+            noitem={true}
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
 
-  <HotkeyButton
-    class="mb-7"
-    variant="success"
-    size="base"
-    disabled={loading}
-    aria-label="Create Work Item Queue"
-    type="submit"
-    data-shortcut="ctrl+s"
-  >
-    <Check />
-    Create Work Item Queue</HotkeyButton
-  >
+    <HotkeyButton
+      class="mb-7"
+      variant="success"
+      size="base"
+      disabled={loading}
+      aria-label="Create Work Item Queue"
+      type="submit"
+      data-shortcut="ctrl+s"
+    >
+      <Check />
+      Create Work Item Queue</HotkeyButton
+    >
 
-  <Form.Field {form} name="success_wiqid" class="mb-7">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>on success, push to</Form.Label>
-        <EntitySelector
-          queryas={usersettings.currentworkspace}
-          collectionname="mq"
-          bind:value={$formData.success_wiqid}
-          basefilter={{ _type: "workitemqueue" }}
-          class="w-64"
-          name="workitem queue"
-          noitem={true}
-        />
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
+    <Form.Field {form} name="success_wiqid" class="mb-7">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>on success, push to</Form.Label>
+          <EntitySelector
+            queryas={usersettings.currentworkspace}
+            collectionname="mq"
+            bind:value={$formData.success_wiqid}
+            basefilter={{ _type: "workitemqueue" }}
+            class="w-64"
+            name="workitem queue"
+            noitem={true}
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
 
-  <Form.Field {form} name="failed_wiqid" class="mb-7">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>on failure, push to</Form.Label>
-        <EntitySelector
-          queryas={usersettings.currentworkspace}
-          collectionname="mq"
-          bind:value={$formData.failed_wiqid}
-          basefilter={{ _type: "workitemqueue" }}
-          class="w-64"
-          name="workitem queue"
-          noitem={true}
-        />
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-</form>
+    <Form.Field {form} name="failed_wiqid" class="mb-7">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>on failure, push to</Form.Label>
+          <EntitySelector
+            queryas={usersettings.currentworkspace}
+            collectionname="mq"
+            bind:value={$formData.failed_wiqid}
+            basefilter={{ _type: "workitemqueue" }}
+            class="w-64"
+            name="workitem queue"
+            noitem={true}
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+  </form>
 
-<CustomSuperDebug {formData} />
+  <CustomSuperDebug {formData} />
+</div>

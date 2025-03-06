@@ -115,127 +115,129 @@
   }
 </script>
 
-{#if message && $message != ""}
-  {$message}
-{/if}
+<div class="mx-4 my-1">
+  {#if message && $message != ""}
+    {$message}
+  {/if}
 
-<form method="POST" use:enhance>
-  <Form.Field {form} name="name" class="mb-7">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Name</Form.Label>
-        <CustomInput
-          disabled={loading}
-          {...props}
-          bind:value={$formData.name}
-        />
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-
-  <Form.Field {form} name="language" class="mb-7">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Language</Form.Label>
-        <CustomSelect
-          {loading}
-          {...props}
-          bind:value={$formData.language}
-          onValueChangeFunction={() => {}}
-          selectitems={selectItems}
-          triggerContent={() => triggerContent}
-          type="single"
-        />
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-
-  <Form.Field
-    {form}
-    name="chromium"
-    class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
-  >
-    <Form.Control>
-      {#snippet children({ props })}
-        <CustomCheckbox
-          disabled={loading}
-          {...props}
-          bind:checked={$formData.chromium}
-        />
-        <div class="space-y-1 leading-none">
-          <Form.Label>Require Chromium</Form.Label>
-        </div>
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-
-  <Form.Field
-    {form}
-    name="daemon"
-    class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
-  >
-    <Form.Control>
-      {#snippet children({ props })}
-        <CustomCheckbox
-          disabled={loading}
-          {...props}
-          bind:checked={$formData.daemon}
-        />
-        <div class="space-y-1 leading-none">
-          <Form.Label>Daemon</Form.Label>
-        </div>
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-
-  <div class="mb-7">
-    <div class="text-sm mb-2">Package file (Current)</div>
-    <HotkeyButton
-      disabled={loading || !$formData.fileid}
-      onclick={downloadFile}
-      aria-label="Download">Download</HotkeyButton
-    >
-  </div>
-
-  <Form.Field {form} name="fileid" class="mb-7">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Package file</Form.Label>
-        <div class="flex items-center space-x-5">
+  <form method="POST" use:enhance>
+    <Form.Field {form} name="name" class="mb-7">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Name</Form.Label>
           <CustomInput
-            size="md"
             disabled={loading}
-            type="file"
-            bind:value={fileData}
-            onchangefunction={uploadFile}
+            {...props}
+            bind:value={$formData.name}
           />
-          <HotkeyButton
-            disabled={loading || !fileData}
-            onclick={() => (fileData = null)}
-            aria-label="Clear"
-            variant="danger"
-            size="lg"
-          >
-            Clear
-          </HotkeyButton>
-        </div>
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
 
-  <HotkeyButton
-    type="submit"
-    data-shortcut="ctrl+s"
-    disabled={loading}
-    aria-label="Update Package"
-    variant="success"
-    size="base">Update Package</HotkeyButton
-  >
-</form>
+    <Form.Field {form} name="language" class="mb-7">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Language</Form.Label>
+          <CustomSelect
+            {loading}
+            {...props}
+            bind:value={$formData.language}
+            onValueChangeFunction={() => {}}
+            selectitems={selectItems}
+            triggerContent={() => triggerContent}
+            type="single"
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
 
-<CustomSuperDebug {formData} />
+    <Form.Field
+      {form}
+      name="chromium"
+      class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
+    >
+      <Form.Control>
+        {#snippet children({ props })}
+          <CustomCheckbox
+            disabled={loading}
+            {...props}
+            bind:checked={$formData.chromium}
+          />
+          <div class="space-y-1 leading-none">
+            <Form.Label>Require Chromium</Form.Label>
+          </div>
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+
+    <Form.Field
+      {form}
+      name="daemon"
+      class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
+    >
+      <Form.Control>
+        {#snippet children({ props })}
+          <CustomCheckbox
+            disabled={loading}
+            {...props}
+            bind:checked={$formData.daemon}
+          />
+          <div class="space-y-1 leading-none">
+            <Form.Label>Daemon</Form.Label>
+          </div>
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+
+    <div class="mb-7">
+      <div class="text-sm mb-2">Package file (Current)</div>
+      <HotkeyButton
+        disabled={loading || !$formData.fileid}
+        onclick={downloadFile}
+        aria-label="Download">Download</HotkeyButton
+      >
+    </div>
+
+    <Form.Field {form} name="fileid" class="mb-7">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Package file</Form.Label>
+          <div class="flex items-center space-x-5">
+            <CustomInput
+              size="md"
+              disabled={loading}
+              type="file"
+              bind:value={fileData}
+              onchangefunction={uploadFile}
+            />
+            <HotkeyButton
+              disabled={loading || !fileData}
+              onclick={() => (fileData = null)}
+              aria-label="Clear"
+              variant="danger"
+              size="lg"
+            >
+              Clear
+            </HotkeyButton>
+          </div>
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+
+    <HotkeyButton
+      type="submit"
+      data-shortcut="ctrl+s"
+      disabled={loading}
+      aria-label="Update Package"
+      variant="success"
+      size="base">Update Package</HotkeyButton
+    >
+  </form>
+
+  <CustomSuperDebug {formData} />
+</div>

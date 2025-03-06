@@ -78,7 +78,7 @@
   class="grid grid-cols-2 md:grid-cols-2 gap-2 md:gap-4 xl:grid-cols-8 xl:gap-4 mb-2 md:mb-4"
 >
   <div class="col-span-2">
-    <SearchInput bind:searchstring class="" />
+    <SearchInput bind:searchstring />
   </div>
   <div class="xl:col-span-2">
     <EntitySelector

@@ -208,34 +208,36 @@
     <link rel="stylesheet" href="{base}/formio.builder.min.css" />
 </svelte:head>
 
-<div>
-    {message}
-</div>
-<div>
-    <div class="flex items-center justify-start space-x-4 mb-4">
-        {#if data && data.item && data.item.name}
-            <CustomInput
-                class="max-w-sm"
-                type="text"
-                placeholder="Enter form name"
-                bind:value={data.item.name}
-            />
-        {/if}
-        <HotkeyButton
-            onclick={saveform}
-            variant="success"
-            size="base"
-            disabled={loading}
-            aria-label="Update form"
-            type="submit"
-            data-shortcut="ctrl+s"
-        >
-            <Check />
-            Update form</HotkeyButton
-        >
+<div class="mx-4 my-2.5">
+    <div>
+        {message}
     </div>
-    <div
-        class="bootstrap-scope formio-dialog-content dark:bg-bw1000"
-        bind:this={ref}
-    ></div>
+    <div>
+        <div class="flex items-center justify-start space-x-4 mb-4">
+            {#if data && data.item && data.item.name}
+                <CustomInput
+                    class="max-w-sm"
+                    type="text"
+                    placeholder="Enter form name"
+                    bind:value={data.item.name}
+                />
+            {/if}
+            <HotkeyButton
+                onclick={saveform}
+                variant="success"
+                size="base"
+                disabled={loading}
+                aria-label="Update form"
+                type="submit"
+                data-shortcut="ctrl+s"
+            >
+                <Check />
+                Update form</HotkeyButton
+            >
+        </div>
+        <div
+            class="bootstrap-scope formio-dialog-content dark:bg-bw1000"
+            bind:this={ref}
+        ></div>
+    </div>
 </div>

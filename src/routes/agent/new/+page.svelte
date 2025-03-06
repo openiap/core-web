@@ -322,7 +322,7 @@
   }
 </script>
 
-<div class="mx-6">
+<div class="mx-4 my-2.5">
   {#if message && $message != ""}
     {$message}
   {/if}

@@ -28,8 +28,9 @@
 					"rounded-[0px] hover:text-bw50 hover:bg-lightentities dark:hover:bg-darkentities",
 				entityselected:
 					"cursor-not-allowed rounded-[0px] text-bw50 bg-lightentitiesselected dark:bg-darkentitiesselected",
-				entitycreate:
-					"rounded-[0px] hover:text-bw50 hover:bg-bw600",
+				entitycreate: "rounded-[0px] hover:text-bw50 hover:bg-bw600",
+				tabselected: "bg-background text-foreground",
+				tab: "text-foreground",
 			},
 			size: {
 				base: "h-8 px-2.5 py-1.5 rounded-[10px]",

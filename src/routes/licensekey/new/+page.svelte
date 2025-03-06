@@ -54,61 +54,63 @@
   }
 </script>
 
-{#if message && $message != ""}
-  {$message}
-{/if}
-{#if $formData}
-  <form method="POST" use:enhance>
-    <Form.Field {form} name="name">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>License Domain</Form.Label>
-          <CustomInput {...props} bind:value={$formData.name} />
-        {/snippet}
-      </Form.Control>
-      <Form.Description
-        >This is the domain name ( fqdn ) of the OpenCore instance.</Form.Description
-      >
-      <Form.FieldErrors />
-    </Form.Field>
+<div class="mx-4 my-1">
+  {#if message && $message != ""}
+    {$message}
+  {/if}
+  {#if $formData}
+    <form method="POST" use:enhance>
+      <Form.Field {form} name="name" class="mb-6">
+        <Form.Control>
+          {#snippet children({ props })}
+            <Form.Label>License Domain</Form.Label>
+            <Form.Description
+              >This is the domain name ( fqdn ) of the OpenCore instance.</Form.Description
+            >
+            <CustomInput {...props} bind:value={$formData.name} />
+          {/snippet}
+        </Form.Control>
+        <Form.FieldErrors />
+      </Form.Field>
 
-    <Form.Field {form} name="_billingid">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Billing Account</Form.Label>
-          <EntitySelector
-            bind:value={$formData._billingid}
-            collectionname="users"
-            {loading}
-            basefilter={{ _type: "customer" }}
-          ></EntitySelector>
-        {/snippet}
-      </Form.Control>
-      <Form.Description
-        >License is linked to this Billing Account.</Form.Description
-      >
-      <Form.FieldErrors />
-    </Form.Field>
+      <Form.Field {form} name="_billingid" class="mb-6">
+        <Form.Control>
+          {#snippet children({ props })}
+            <Form.Label>Billing Account</Form.Label>
+            <Form.Description
+              >License is linked to this Billing Account.</Form.Description
+            >
+            <EntitySelector
+              bind:value={$formData._billingid}
+              collectionname="users"
+              {loading}
+              basefilter={{ _type: "customer" }}
+            ></EntitySelector>
+          {/snippet}
+        </Form.Control>
+        <Form.FieldErrors />
+      </Form.Field>
 
-    <div class="flex items-center space-x-5">
-      <HotkeyButton
-        variant="success"
-        size="base"
-        disabled={loading}
-        aria-label="Create Licence"
-        type="submit"
-        data-shortcut="ctrl+s"
-      >
-        <Check />
-        Create Licence</HotkeyButton
-      >
-      <HotkeyButton
-        size="lg"
-        aria-label="Cancel"
-        onclick={() => goto(base + `/licensekey`)}>Cancel</HotkeyButton
-      >
-    </div>
-  </form>
+      <div class="flex items-center space-x-5">
+        <HotkeyButton
+          variant="success"
+          size="base"
+          disabled={loading}
+          aria-label="Create Licence"
+          type="submit"
+          data-shortcut="ctrl+s"
+        >
+          <Check />
+          Create Licence</HotkeyButton
+        >
+        <HotkeyButton
+          size="lg"
+          aria-label="Cancel"
+          onclick={() => goto(base + `/licensekey`)}>Cancel</HotkeyButton
+        >
+      </div>
+    </form>
 
-  <CustomSuperDebug {formData} />
-{/if}
+    <CustomSuperDebug {formData} />
+  {/if}
+</div>

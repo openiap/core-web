@@ -63,211 +63,213 @@
   validateForm({ update: true });
 </script>
 
-{#if message && $message != ""}
-  {$message}
-{/if}
-
-<form method="POST" use:enhance>
-  <Acl bind:value={$formData} />
-
-  <Form.Field {form} name="name" class="mb-7">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Name</Form.Label>
-        <CustomInput
-          placeholder="Type name"
-          disabled={loading}
-          {...props}
-          bind:value={$formData.name}
-        />
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-
-  <Form.Field {form} name="username" class="mb-7">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Username</Form.Label>
-        <CustomInput
-          placeholder="Type username"
-          disabled={loading}
-          {...props}
-          bind:value={$formData.username}
-        />
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-
-  <Form.Field {form} name="newpassword" class="mb-7">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Password</Form.Label>
-        <CustomInput
-          type="password"
-          placeholder="Type new password"
-          disabled={loading}
-          {...props}
-          bind:value={$formData.newpassword}
-        />
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-
-  <Form.Field {form} name="email" class="mb-7">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Email</Form.Label>
-        <CustomInput
-          placeholder="Type email"
-          disabled={loading}
-          {...props}
-          bind:value={$formData.email}
-        />
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-
-  <Form.Field
-    {form}
-    name="disabled"
-    class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
-  >
-    <Form.Control>
-      {#snippet children({ props })}
-        <CustomCheckbox
-          disabled={loading}
-          {...props}
-          bind:checked={$formData.disabled}
-        />
-        <div class="space-y-1 leading-none">
-          <Form.Label>Disabled</Form.Label>
-        </div>
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-
-  <Form.Field
-    {form}
-    name="dblocked"
-    class="flex flex-row items-start space-x-3 space-y-0 mb-7"
-  >
-    <Form.Control>
-      {#snippet children({ props })}
-        <CustomCheckbox
-          disabled={loading}
-          {...props}
-          bind:checked={$formData.dblocked}
-        />
-        <div class="space-y-1 leading-none">
-          <Form.Label>DB locked</Form.Label>
-        </div>
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-
-  <Form.Field
-    {form}
-    name="validated"
-    class="flex flex-row items-start space-x-3 space-y-0 mb-7"
-  >
-    <Form.Control>
-      {#snippet children({ props })}
-        <CustomCheckbox
-          disabled={loading}
-          {...props}
-          bind:checked={$formData.validated}
-        />
-        <div class="space-y-1 leading-none">
-          <Form.Label>Validated</Form.Label>
-        </div>
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-
-  <Form.Field
-    {form}
-    name="emailvalidated"
-    class="flex flex-row items-start space-x-3 space-y-0 mb-7"
-  >
-    <Form.Control>
-      {#snippet children({ props })}
-        <CustomCheckbox
-          disabled={loading}
-          {...props}
-          bind:checked={$formData.emailvalidated}
-        />
-        <div class="space-y-1 leading-none">
-          <Form.Label>Email Validated</Form.Label>
-        </div>
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-
-  <Form.Field
-    {form}
-    name="formvalidated"
-    class="flex flex-row items-start space-x-3 space-y-0 mb-7"
-  >
-    <Form.Control>
-      {#snippet children({ props })}
-        <CustomCheckbox
-          disabled={loading}
-          {...props}
-          bind:checked={$formData.formvalidated}
-        />
-        <div class="space-y-1 leading-none">
-          <Form.Label>Form Validated</Form.Label>
-        </div>
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-
-  {#if $formData.federationids}
-    <div class="mb-4">
-      {#each $formData.federationids as item, index}
-        <div class="flex items-center justify-start">
-          {index + 1}.
-          {item.id}
-          {item.issuer}
-          <HotkeyButton
-            class="ml-2 dark:bg-darkbgred"
-            aria-label="Delete"
-            size="base"
-            disabled={loading}
-            variant="icon"
-            onclick={() => {
-              let arr = $formData.federationids;
-              if (arr) {
-                arr.splice(index, 1);
-              }
-              $formData.federationids = arr;
-            }}><Trash2 /></HotkeyButton
-          >
-        </div>
-      {/each}
-    </div>
+<div class="mx-4 my-1">
+  {#if message && $message != ""}
+    {$message}
   {/if}
 
-  <HotkeyButton
-    type="submit"
-    disabled={loading}
-    aria-label="Update User"
-    variant="success"
-    size="base"
-    data-shortcut="ctrl+s"
-  >
-    <Check />
-    Update User</HotkeyButton
-  >
-</form>
+  <form method="POST" use:enhance>
+    <Acl bind:value={$formData} />
 
-<CustomSuperDebug {formData} />
+    <Form.Field {form} name="name" class="mb-7">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Name</Form.Label>
+          <CustomInput
+            placeholder="Type name"
+            disabled={loading}
+            {...props}
+            bind:value={$formData.name}
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+
+    <Form.Field {form} name="username" class="mb-7">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Username</Form.Label>
+          <CustomInput
+            placeholder="Type username"
+            disabled={loading}
+            {...props}
+            bind:value={$formData.username}
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+
+    <Form.Field {form} name="newpassword" class="mb-7">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Password</Form.Label>
+          <CustomInput
+            type="password"
+            placeholder="Type new password"
+            disabled={loading}
+            {...props}
+            bind:value={$formData.newpassword}
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+
+    <Form.Field {form} name="email" class="mb-7">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Email</Form.Label>
+          <CustomInput
+            placeholder="Type email"
+            disabled={loading}
+            {...props}
+            bind:value={$formData.email}
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+
+    <Form.Field
+      {form}
+      name="disabled"
+      class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
+    >
+      <Form.Control>
+        {#snippet children({ props })}
+          <CustomCheckbox
+            disabled={loading}
+            {...props}
+            bind:checked={$formData.disabled}
+          />
+          <div class="space-y-1 leading-none">
+            <Form.Label>Disabled</Form.Label>
+          </div>
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+
+    <Form.Field
+      {form}
+      name="dblocked"
+      class="flex flex-row items-start space-x-3 space-y-0 mb-7"
+    >
+      <Form.Control>
+        {#snippet children({ props })}
+          <CustomCheckbox
+            disabled={loading}
+            {...props}
+            bind:checked={$formData.dblocked}
+          />
+          <div class="space-y-1 leading-none">
+            <Form.Label>DB locked</Form.Label>
+          </div>
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+
+    <Form.Field
+      {form}
+      name="validated"
+      class="flex flex-row items-start space-x-3 space-y-0 mb-7"
+    >
+      <Form.Control>
+        {#snippet children({ props })}
+          <CustomCheckbox
+            disabled={loading}
+            {...props}
+            bind:checked={$formData.validated}
+          />
+          <div class="space-y-1 leading-none">
+            <Form.Label>Validated</Form.Label>
+          </div>
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+
+    <Form.Field
+      {form}
+      name="emailvalidated"
+      class="flex flex-row items-start space-x-3 space-y-0 mb-7"
+    >
+      <Form.Control>
+        {#snippet children({ props })}
+          <CustomCheckbox
+            disabled={loading}
+            {...props}
+            bind:checked={$formData.emailvalidated}
+          />
+          <div class="space-y-1 leading-none">
+            <Form.Label>Email Validated</Form.Label>
+          </div>
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+
+    <Form.Field
+      {form}
+      name="formvalidated"
+      class="flex flex-row items-start space-x-3 space-y-0 mb-7"
+    >
+      <Form.Control>
+        {#snippet children({ props })}
+          <CustomCheckbox
+            disabled={loading}
+            {...props}
+            bind:checked={$formData.formvalidated}
+          />
+          <div class="space-y-1 leading-none">
+            <Form.Label>Form Validated</Form.Label>
+          </div>
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+
+    {#if $formData.federationids}
+      <div class="mb-4">
+        {#each $formData.federationids as item, index}
+          <div class="flex items-center justify-start">
+            {index + 1}.
+            {item.id}
+            {item.issuer}
+            <HotkeyButton
+              class="ml-2 dark:bg-darkbgred"
+              aria-label="Delete"
+              size="base"
+              disabled={loading}
+              variant="icon"
+              onclick={() => {
+                let arr = $formData.federationids;
+                if (arr) {
+                  arr.splice(index, 1);
+                }
+                $formData.federationids = arr;
+              }}><Trash2 /></HotkeyButton
+            >
+          </div>
+        {/each}
+      </div>
+    {/if}
+
+    <HotkeyButton
+      type="submit"
+      disabled={loading}
+      aria-label="Update User"
+      variant="success"
+      size="base"
+      data-shortcut="ctrl+s"
+    >
+      <Check />
+      Update User</HotkeyButton
+    >
+  </form>
+
+  <CustomSuperDebug {formData} />
+</div>

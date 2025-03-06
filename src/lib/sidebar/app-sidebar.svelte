@@ -6,10 +6,10 @@
 	import "driver.js/dist/driver.css";
 	import Mousetrap from "mousetrap";
 	import {
-	    agentTour,
-	    baseTour,
-	    driverObj,
-	    entitiesTour,
+		agentTour,
+		baseTour,
+		driverObj,
+		entitiesTour,
 	} from "./onboarding.js";
 
 	class SidebarCategory {
@@ -444,7 +444,7 @@
 	class="border-r border-transparent toursidebar"
 >
 	<div class="my-2.5 mx-3 h-full">
-		<Sidebar.Header class="ms-6">
+		<Sidebar.Header class="ms-6 mb-1">
 			<NavWorkspace
 				{workspaces}
 				{currentworkspace}

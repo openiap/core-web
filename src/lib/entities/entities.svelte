@@ -779,7 +779,7 @@
 		onOpenChange={onSelectColumnsOpenChange}
 	>
 		<Sheet.Content>
-			<Sheet.Header>
+			<Sheet.Header class="mb-10">
 				<div class="flex items-center space-x-1.5 dark:text-bw50">
 					<SquareMousePointer class="h-4 w-4" />
 					<div class="text-[16px] dark:text-bw50">Select columns</div>
@@ -787,15 +787,9 @@
 				<div class="dark:text-bw400 text-[14px] w-[256px]">
 					Choose which columns to display in the table.
 				</div>
-				<!-- <Sheet.Title>
-								Select columns</Sheet.Title
-							>
-							<Sheet.Description>
-								Choose which columns to display in the table.
-							</Sheet.Description> -->
 			</Sheet.Header>
-			<div class="grid gap-4 py-4">
-				<ScrollArea class="max-h-[84vh]">
+			<div class="grid gap-4">
+				<ScrollArea class="max-h-[80vh]">
 					{#each tableheaders as head}
 						<div
 							class="h-[36px] flex items-center rounded-[10px] border border-bw500 p-2.5 mb-1.5 mr-4"

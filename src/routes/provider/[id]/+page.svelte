@@ -148,297 +148,299 @@
   }
 </script>
 
-{#if message && $message != ""}
-  {$message}
-{/if}
+<div class="mx-4 my-1">
+  {#if message && $message != ""}
+    {$message}
+  {/if}
 
-<form method="POST" use:enhance>
-  <Acl bind:value={$formData} {loading} />
+  <form method="POST" use:enhance>
+    <Acl bind:value={$formData} {loading} />
 
-  <Form.Field {form} name="provider" class="mb-7">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>provider</Form.Label>
-        <CustomSelect
-          onValueChangeFunction={() => {}}
-          bind:value={$formData.provider}
-          type="single"
-          triggerContent={() => {
-            const provider = providersList.find(
-              (p) => p.value === $formData.provider,
-            );
-            return provider ? provider.name : $formData.provider;
-          }}
-          {loading}
-          selectitems={providersList}
-        />
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-
-  <Form.Field {form} name="name" class="mb-7">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Name</Form.Label>
-        <CustomInput
-          disabled={loading}
-          placeholder="Type name"
-          {...props}
-          bind:value={$formData.name}
-        />
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-
-  {#if $formData.provider !== "local"}
-    <Form.Field {form} name="id" class="mb-7">
+    <Form.Field {form} name="provider" class="mb-7">
       <Form.Control>
         {#snippet children({ props })}
-          <Form.Label>Id</Form.Label>
-          <CustomInput
-            disabled={loading}
-            placeholder="Type id"
-            {...props}
-            bind:value={$formData.id}
+          <Form.Label>provider</Form.Label>
+          <CustomSelect
+            onValueChangeFunction={() => {}}
+            bind:value={$formData.provider}
+            type="single"
+            triggerContent={() => {
+              const provider = providersList.find(
+                (p) => p.value === $formData.provider,
+              );
+              return provider ? provider.name : $formData.provider;
+            }}
+            {loading}
+            selectitems={providersList}
           />
         {/snippet}
       </Form.Control>
       <Form.FieldErrors />
     </Form.Field>
 
-    {#if $formData.provider === "saml" || $formData.provider === "oidc" || $formData.provider === ""}
-      <Form.Field {form} name="saml_federation_metadata" class="mb-7">
-        <Form.Control>
-          {#snippet children({ props })}
-            <Form.Label>Meta data url</Form.Label>
-            <CustomInput
-              disabled={loading}
-              placeholder="Type metadata"
-              {...props}
-              bind:value={$formData.saml_federation_metadata}
-            />
-          {/snippet}
-        </Form.Control>
-        <Form.FieldErrors />
-      </Form.Field>
-    {/if}
+    <Form.Field {form} name="name" class="mb-7">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Name</Form.Label>
+          <CustomInput
+            disabled={loading}
+            placeholder="Type name"
+            {...props}
+            bind:value={$formData.name}
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
 
-    {#if $formData.provider === "oidc"}
-      <Form.Field {form} name="introspection_endpoint" class="mb-7">
+    {#if $formData.provider !== "local"}
+      <Form.Field {form} name="id" class="mb-7">
         <Form.Control>
           {#snippet children({ props })}
-            <Form.Label>Introspection</Form.Label>
+            <Form.Label>Id</Form.Label>
             <CustomInput
               disabled={loading}
-              placeholder="Type introspection"
+              placeholder="Type id"
               {...props}
-              bind:value={$formData.introspection_endpoint}
+              bind:value={$formData.id}
             />
           {/snippet}
         </Form.Control>
         <Form.FieldErrors />
       </Form.Field>
 
-      {#if $formData.introspection_endpoint}
-        <Form.Field {form} name="introspection_client_id" class="mb-7">
+      {#if $formData.provider === "saml" || $formData.provider === "oidc" || $formData.provider === ""}
+        <Form.Field {form} name="saml_federation_metadata" class="mb-7">
           <Form.Control>
             {#snippet children({ props })}
-              <Form.Label>Introspection client id</Form.Label>
+              <Form.Label>Meta data url</Form.Label>
               <CustomInput
                 disabled={loading}
-                placeholder="Type introspection client id"
+                placeholder="Type metadata"
                 {...props}
-                bind:value={$formData.introspection_client_id}
-              />
-            {/snippet}
-          </Form.Control>
-          <Form.FieldErrors />
-        </Form.Field>
-        <Form.Field {form} name="introspection_client_secret" class="mb-7">
-          <Form.Control>
-            {#snippet children({ props })}
-              <Form.Label>Introspection client secret</Form.Label>
-              <CustomInput
-                disabled={loading}
-                placeholder="Type introspection client secret"
-                {...props}
-                bind:value={$formData.introspection_client_secret}
+                bind:value={$formData.saml_federation_metadata}
               />
             {/snippet}
           </Form.Control>
           <Form.FieldErrors />
         </Form.Field>
       {/if}
-    {/if}
 
-    {#if $formData.provider === "google" || $formData.provider === "oidc"}
-      <Form.Field {form} name="consumerKey" class="mb-7">
-        <Form.Control>
-          {#snippet children({ props })}
-            <Form.Label>Consumer key</Form.Label>
-            <CustomInput
-              disabled={loading}
-              placeholder="Type consumer key"
-              {...props}
-              bind:value={$formData.consumerKey}
-            />
-          {/snippet}
-        </Form.Control>
-        <Form.FieldErrors />
-      </Form.Field>
+      {#if $formData.provider === "oidc"}
+        <Form.Field {form} name="introspection_endpoint" class="mb-7">
+          <Form.Control>
+            {#snippet children({ props })}
+              <Form.Label>Introspection</Form.Label>
+              <CustomInput
+                disabled={loading}
+                placeholder="Type introspection"
+                {...props}
+                bind:value={$formData.introspection_endpoint}
+              />
+            {/snippet}
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
 
-      <Form.Field {form} name="consumerSecret" class="mb-7">
-        <Form.Control>
-          {#snippet children({ props })}
-            <Form.Label>Consumer secret</Form.Label>
-            <CustomInput
-              disabled={loading}
-              type="password"
-              placeholder="Type consumer secret"
-              {...props}
-              bind:value={$formData.consumerSecret}
-            />
-          {/snippet}
-        </Form.Control>
-        <Form.FieldErrors />
-      </Form.Field>
-    {/if}
-
-    {#if $formData.provider === "saml" || $formData.provider === ""}
-      <Form.Field {form} name="issuer" class="mb-7">
-        <Form.Control>
-          {#snippet children({ props })}
-            <Form.Label>issuer</Form.Label>
-            <CustomInput
-              disabled={loading}
-              placeholder="Type issuer"
-              {...props}
-              bind:value={$formData.issuer}
-            />
-          {/snippet}
-        </Form.Control>
-        <Form.FieldErrors />
-      </Form.Field>
-
-      <Form.Field {form} name="saml_signout_url" class="mb-7">
-        <Form.Control>
-          {#snippet children({ props })}
-            <Form.Label>embedsignout</Form.Label>
-            <CustomInput
-              disabled={loading}
-              placeholder="Type embedsignout"
-              {...props}
-              bind:value={$formData.saml_signout_url}
-            />
-          {/snippet}
-        </Form.Control>
-        <Form.FieldErrors />
-      </Form.Field>
-
-      <div class="col-sm-4">
-        <pre>{auth.baseurl}/{$formData.id}/FederationMetadata/2007-06/FederationMetadata.xml</pre>
-        <HotkeyButton
-          class="mb-7"
-          aria-label="Test"
-          disabled={loading}
-          variant="link"
-          size="base"
-          onclick={() => {
-            window.open(
-              `${auth.baseurl}/${$formData.id}/FederationMetadata/2007-06/FederationMetadata.xml`,
-              "_blank",
-            );
-          }}
-        >
-          Test</HotkeyButton
-        >
-      </div>
-    {/if}
-  {/if}
-
-  {#if $formData.forceddomains}
-    <div class="mb-4">Forced Domains</div>
-    {#each $formData.forceddomains as item, index}
-      <Form.Field {form} name="forceddomains">
-        <Form.Control>
-          {#snippet children({ props })}
-            {#if $formData.forceddomains}
-              <div class="flex items-center justify-start">
+        {#if $formData.introspection_endpoint}
+          <Form.Field {form} name="introspection_client_id" class="mb-7">
+            <Form.Control>
+              {#snippet children({ props })}
+                <Form.Label>Introspection client id</Form.Label>
                 <CustomInput
-                  placeholder="New forced domain"
-                  type="email"
                   disabled={loading}
+                  placeholder="Type introspection client id"
                   {...props}
-                  bind:value={$formData.forceddomains[index]}
+                  bind:value={$formData.introspection_client_id}
                 />
-                <HotkeyButton
-                  class="ml-2 dark:bg-darkbgred"
-                  aria-label="Delete"
-                  size="base"
+              {/snippet}
+            </Form.Control>
+            <Form.FieldErrors />
+          </Form.Field>
+          <Form.Field {form} name="introspection_client_secret" class="mb-7">
+            <Form.Control>
+              {#snippet children({ props })}
+                <Form.Label>Introspection client secret</Form.Label>
+                <CustomInput
                   disabled={loading}
-                  variant="icon"
-                  onclick={() => {
-                    let arr = $formData.forceddomains;
-                    if (arr) {
-                      arr.splice(index, 1);
-                    }
-                    $formData.forceddomains = arr;
-                  }}><Trash2 /></HotkeyButton
-                >
-              </div>
-            {/if}
-          {/snippet}
-        </Form.Control>
-        <Form.FieldErrors />
-      </Form.Field>
-    {/each}
-  {/if}
-  <div>
+                  placeholder="Type introspection client secret"
+                  {...props}
+                  bind:value={$formData.introspection_client_secret}
+                />
+              {/snippet}
+            </Form.Control>
+            <Form.FieldErrors />
+          </Form.Field>
+        {/if}
+      {/if}
+
+      {#if $formData.provider === "google" || $formData.provider === "oidc"}
+        <Form.Field {form} name="consumerKey" class="mb-7">
+          <Form.Control>
+            {#snippet children({ props })}
+              <Form.Label>Consumer key</Form.Label>
+              <CustomInput
+                disabled={loading}
+                placeholder="Type consumer key"
+                {...props}
+                bind:value={$formData.consumerKey}
+              />
+            {/snippet}
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
+
+        <Form.Field {form} name="consumerSecret" class="mb-7">
+          <Form.Control>
+            {#snippet children({ props })}
+              <Form.Label>Consumer secret</Form.Label>
+              <CustomInput
+                disabled={loading}
+                type="password"
+                placeholder="Type consumer secret"
+                {...props}
+                bind:value={$formData.consumerSecret}
+              />
+            {/snippet}
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
+      {/if}
+
+      {#if $formData.provider === "saml" || $formData.provider === ""}
+        <Form.Field {form} name="issuer" class="mb-7">
+          <Form.Control>
+            {#snippet children({ props })}
+              <Form.Label>issuer</Form.Label>
+              <CustomInput
+                disabled={loading}
+                placeholder="Type issuer"
+                {...props}
+                bind:value={$formData.issuer}
+              />
+            {/snippet}
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
+
+        <Form.Field {form} name="saml_signout_url" class="mb-7">
+          <Form.Control>
+            {#snippet children({ props })}
+              <Form.Label>embedsignout</Form.Label>
+              <CustomInput
+                disabled={loading}
+                placeholder="Type embedsignout"
+                {...props}
+                bind:value={$formData.saml_signout_url}
+              />
+            {/snippet}
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
+
+        <div class="col-sm-4">
+          <pre>{auth.baseurl}/{$formData.id}/FederationMetadata/2007-06/FederationMetadata.xml</pre>
+          <HotkeyButton
+            class="mb-7"
+            aria-label="Test"
+            disabled={loading}
+            variant="link"
+            size="base"
+            onclick={() => {
+              window.open(
+                `${auth.baseurl}/${$formData.id}/FederationMetadata/2007-06/FederationMetadata.xml`,
+                "_blank",
+              );
+            }}
+          >
+            Test</HotkeyButton
+          >
+        </div>
+      {/if}
+    {/if}
+
+    {#if $formData.forceddomains}
+      <div class="mb-4">Forced Domains</div>
+      {#each $formData.forceddomains as item, index}
+        <Form.Field {form} name="forceddomains">
+          <Form.Control>
+            {#snippet children({ props })}
+              {#if $formData.forceddomains}
+                <div class="flex items-center justify-start">
+                  <CustomInput
+                    placeholder="New forced domain"
+                    type="email"
+                    disabled={loading}
+                    {...props}
+                    bind:value={$formData.forceddomains[index]}
+                  />
+                  <HotkeyButton
+                    class="ml-2 dark:bg-darkbgred"
+                    aria-label="Delete"
+                    size="base"
+                    disabled={loading}
+                    variant="icon"
+                    onclick={() => {
+                      let arr = $formData.forceddomains;
+                      if (arr) {
+                        arr.splice(index, 1);
+                      }
+                      $formData.forceddomains = arr;
+                    }}><Trash2 /></HotkeyButton
+                  >
+                </div>
+              {/if}
+            {/snippet}
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
+      {/each}
+    {/if}
+    <div>
+      <HotkeyButton
+        class="mb-7"
+        aria-label="Add Domain"
+        disabled={loading}
+        variant="base"
+        size="base"
+        onclick={() => {
+          let arr = $formData.forceddomains || [];
+          $formData.forceddomains = [...arr, "New forced domain"];
+        }}
+      >
+        <UserRoundPlus />
+        Add Domain</HotkeyButton
+      >
+    </div>
+
+    <Form.Field {form} name="order" class="mb-7">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>order</Form.Label>
+          <CustomInput
+            disabled={loading}
+            type="number"
+            placeholder="Type order"
+            {...props}
+            bind:value={$formData.order}
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+
     <HotkeyButton
-      class="mb-7"
-      aria-label="Add Domain"
-      disabled={loading}
-      variant="base"
+      variant="success"
       size="base"
-      onclick={() => {
-        let arr = $formData.forceddomains || [];
-        $formData.forceddomains = [...arr, "New forced domain"];
-      }}
+      disabled={loading}
+      aria-label="Update Provider"
+      type="submit"
+      data-shortcut="ctrl+s"
     >
-      <UserRoundPlus />
-      Add Domain</HotkeyButton
+      <Check />
+      Update Provider</HotkeyButton
     >
-  </div>
+  </form>
 
-  <Form.Field {form} name="order" class="mb-7">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>order</Form.Label>
-        <CustomInput
-          disabled={loading}
-          type="number"
-          placeholder="Type order"
-          {...props}
-          bind:value={$formData.order}
-        />
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-
-  <HotkeyButton
-    variant="success"
-    size="base"
-    disabled={loading}
-    aria-label="Update Provider"
-    type="submit"
-    data-shortcut="ctrl+s"
-  >
-    <Check />
-    Update Provider</HotkeyButton
-  >
-</form>
-
-<CustomSuperDebug {formData} />
+  <CustomSuperDebug {formData} />
+</div>

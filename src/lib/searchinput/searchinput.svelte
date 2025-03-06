@@ -4,7 +4,7 @@
 
 	let {
 		searchstring = $bindable(""),
-		class: _class = "w-full lg:max-w-[288px]",
+		class: _class = "w-full lg:max-w-[284px]",
 	} = $props();
 </script>
 

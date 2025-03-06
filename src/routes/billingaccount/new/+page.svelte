@@ -11,7 +11,7 @@
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newCustomerSchema } from "../schema.js";
-  
+
   let loading = $state(false);
   const form = superForm(defaults(zod(newCustomerSchema)), {
     dataType: "json",
@@ -46,33 +46,35 @@
   const { form: formData, enhance, message } = form;
 </script>
 
-{#if message && $message != ""}
-  {$message}
-{/if}
+<div class="mx-4 my-1">
+  {#if message && $message != ""}
+    {$message}
+  {/if}
 
-<form method="POST" use:enhance>
-  <Form.Field {form} name="name">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Company Name</Form.Label>
-        <CustomInput {...props} bind:value={$formData.name} />
-      {/snippet}
-    </Form.Control>
-    <Form.Description>This is your company name.</Form.Description>
-    <Form.FieldErrors />
-  </Form.Field>
+  <form method="POST" use:enhance>
+    <Form.Field {form} name="name">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Company Name</Form.Label>
+          <CustomInput {...props} bind:value={$formData.name} />
+        {/snippet}
+      </Form.Control>
+      <Form.Description>This is your company name.</Form.Description>
+      <Form.FieldErrors />
+    </Form.Field>
 
-  <HotkeyButton
-    variant="success"
-    size="base"
-    disabled={loading}
-    aria-label="Create Billing Account"
-    type="submit"
-    data-shortcut="ctrl+s"
-  >
-    <Check />
-    Create Billing Account</HotkeyButton
-  >
-</form>
+    <HotkeyButton
+      variant="success"
+      size="base"
+      disabled={loading}
+      aria-label="Create Billing Account"
+      type="submit"
+      data-shortcut="ctrl+s"
+    >
+      <Check />
+      Create Billing Account</HotkeyButton
+    >
+  </form>
 
-<CustomSuperDebug {formData} />
+  <CustomSuperDebug {formData} />
+</div>

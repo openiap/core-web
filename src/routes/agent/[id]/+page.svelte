@@ -645,7 +645,7 @@
   }
 </script>
 
-<div class="mx-4">
+<div class="mx-4 my-2.5">
   <Tabs.Root value="2" class="w-full">
     <Tabs.List
       class="h-full grid grid-cols-1 md:block md:w-fit dark:bg-darkagenttab rounded-[15px] mb-6 p-1"

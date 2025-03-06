@@ -57,58 +57,60 @@
   validateForm({ update: true });
 </script>
 
-{#if message && $message != ""}
-  {$message}
-{/if}
+<div class="mx-4 my-1">
+  {#if message && $message != ""}
+    {$message}
+  {/if}
 
-<form method="POST" use:enhance>
-  <Acl bind:value={$formData} />
+  <form method="POST" use:enhance>
+    <Acl bind:value={$formData} />
 
-  <Form.Field {form} name="collection" class="mb-7">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Collection</Form.Label>
-        <CollectionSelector {...props} bind:value={$formData.collection} />
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
+    <Form.Field {form} name="collection" class="mb-7">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Collection</Form.Label>
+          <CollectionSelector {...props} bind:value={$formData.collection} />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
 
-  <Form.Field {form} name="name" class="mb-7">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Name</Form.Label>
-        <CustomInput
-          placeholder="name"
-          {...props}
-          bind:value={$formData.name}
-        />
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
+    <Form.Field {form} name="name" class="mb-7">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Name</Form.Label>
+          <CustomInput
+            placeholder="name"
+            {...props}
+            bind:value={$formData.name}
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
 
-  <Form.Field {form} name="aggregates" class="mb-7">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Aggregates</Form.Label>
-        <ObjectInput {...props} bind:value={$formData.aggregates} />
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
+    <Form.Field {form} name="aggregates" class="mb-7">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Aggregates</Form.Label>
+          <ObjectInput {...props} bind:value={$formData.aggregates} />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
 
-  <HotkeyButton
-    variant="success"
-    size="base"
-    disabled={loading}
-    aria-label="Update Form Resource"
-    type="submit"
-    data-shortcut="ctrl+s"
-  >
-    <Check />
-    Update Form Resource</HotkeyButton
-  >
-</form>
+    <HotkeyButton
+      variant="success"
+      size="base"
+      disabled={loading}
+      aria-label="Update Form Resource"
+      type="submit"
+      data-shortcut="ctrl+s"
+    >
+      <Check />
+      Update Form Resource</HotkeyButton
+    >
+  </form>
 
-<CustomSuperDebug {formData} />
+  <CustomSuperDebug {formData} />
+</div>

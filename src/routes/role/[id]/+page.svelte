@@ -82,153 +82,155 @@
   }
 </script>
 
-{#if message && $message != ""}
-  {$message}
-{/if}
-
-<form method="POST" use:enhance>
-  <Acl bind:value={$formData} {loading} />
-
-  <Form.Field {form} name="name" class="mb-7">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Name</Form.Label>
-        <CustomInput
-          placeholder="Type name"
-          {...props}
-          bind:value={$formData.name}
-        />
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-
-  <Form.Field
-    {form}
-    name="rparole"
-    class="flex flex-row items-start space-x-3 space-y-0 mb-7"
-  >
-    <Form.Control>
-      {#snippet children({ props })}
-        <div class="flex flex-col space-y-4">
-          <div class="flex items-center space-x-2">
-            <CustomSwitch
-              {loading}
-              bind:checked={$formData.rparole}
-              {...props}
-              aria-readonly
-            />
-            <Form.Label>RPA Role</Form.Label>
-            <div class="text-[14px]">{$formData.rparole ? "On" : "Off"}</div>
-          </div>
-        </div>
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-
-  <Form.Field
-    {form}
-    name="hidemembers"
-    class="flex flex-row items-start space-x-3 space-y-0 mb-7"
-  >
-    <Form.Control>
-      {#snippet children({ props })}
-        <div class="flex flex-col space-y-4">
-          <div class="flex items-center space-x-2">
-            <CustomSwitch
-              {loading}
-              bind:checked={$formData.hidemembers}
-              {...props}
-              aria-readonly
-            />
-            <Form.Label>Hide Members</Form.Label>
-            <div class="text-[14px]">
-              {$formData.hidemembers ? "On" : "Off"}
-            </div>
-          </div>
-        </div>
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-
-  {#if members.length > 0}
-    <div
-      class="text-[14px] w-[895px] mb-7 border rounded-[10px] dark:bg-bw850 dark:border-bw600 px-2.5 py-1"
-    >
-      <div class="mb-5 dark:text-bw400">
-        This user is a member of the following:
-      </div>
-      {#if members.length > 0}
-        {#each members as item, index}
-          <div
-            class="grid grid-cols-12 items-center border px-2.5 py-[5px] my-2.5 rounded-[10px] dark:border-bw600 dark:bg-bw1000"
-          >
-            <div class="dark:text-bw400 col-span-1">Member</div>
-            {#if item}
-              <div class="col-span-4">
-                {item.name}
-              </div>
-            {/if}
-            <div class="col-span-3">
-              <HotkeyButton
-                aria-label="Remove Member"
-                class="dark:bg-darkbgred"
-                disabled={loading}
-                variant="danger"
-                size="base"
-                onclick={() => {
-                  let arr = members;
-                  if (arr) {
-                    arr.splice(index, 1);
-                  }
-                  members = arr;
-                }}><Trash2 />Remove Member</HotkeyButton
-              >
-            </div>
-            <div class="col-span-4">
-              <span class="dark:text-bw400">Role id :</span>
-              <span>{item._id}</span>
-            </div>
-          </div>
-        {/each}
-      {:else}
-        <div class="dark:text-bw400">No members</div>
-      {/if}
-    </div>
+<div class="mx-4 my-1">
+  {#if message && $message != ""}
+    {$message}
   {/if}
 
-  <div class="flex space-x-2 mb-7">
-    <EntitySelector bind:value={newid} collectionname="users" {loading}
-    ></EntitySelector>
+  <form method="POST" use:enhance>
+    <Acl bind:value={$formData} {loading} />
+
+    <Form.Field {form} name="name" class="mb-7">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Name</Form.Label>
+          <CustomInput
+            placeholder="Type name"
+            {...props}
+            bind:value={$formData.name}
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+
+    <Form.Field
+      {form}
+      name="rparole"
+      class="flex flex-row items-start space-x-3 space-y-0 mb-7"
+    >
+      <Form.Control>
+        {#snippet children({ props })}
+          <div class="flex flex-col space-y-4">
+            <div class="flex items-center space-x-2">
+              <CustomSwitch
+                {loading}
+                bind:checked={$formData.rparole}
+                {...props}
+                aria-readonly
+              />
+              <Form.Label>RPA Role</Form.Label>
+              <div class="text-[14px]">{$formData.rparole ? "On" : "Off"}</div>
+            </div>
+          </div>
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+
+    <Form.Field
+      {form}
+      name="hidemembers"
+      class="flex flex-row items-start space-x-3 space-y-0 mb-7"
+    >
+      <Form.Control>
+        {#snippet children({ props })}
+          <div class="flex flex-col space-y-4">
+            <div class="flex items-center space-x-2">
+              <CustomSwitch
+                {loading}
+                bind:checked={$formData.hidemembers}
+                {...props}
+                aria-readonly
+              />
+              <Form.Label>Hide Members</Form.Label>
+              <div class="text-[14px]">
+                {$formData.hidemembers ? "On" : "Off"}
+              </div>
+            </div>
+          </div>
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+
+    {#if members.length > 0}
+      <div
+        class="text-[14px] w-[895px] mb-7 border rounded-[10px] dark:bg-bw850 dark:border-bw600 px-2.5 py-1"
+      >
+        <div class="mb-5 dark:text-bw400">
+          This user is a member of the following:
+        </div>
+        {#if members.length > 0}
+          {#each members as item, index}
+            <div
+              class="grid grid-cols-12 items-center border px-2.5 py-[5px] my-2.5 rounded-[10px] dark:border-bw600 dark:bg-bw1000"
+            >
+              <div class="dark:text-bw400 col-span-1">Member</div>
+              {#if item}
+                <div class="col-span-4">
+                  {item.name}
+                </div>
+              {/if}
+              <div class="col-span-3">
+                <HotkeyButton
+                  aria-label="Remove Member"
+                  class="dark:bg-darkbgred"
+                  disabled={loading}
+                  variant="danger"
+                  size="base"
+                  onclick={() => {
+                    let arr = members;
+                    if (arr) {
+                      arr.splice(index, 1);
+                    }
+                    members = arr;
+                  }}><Trash2 />Remove Member</HotkeyButton
+                >
+              </div>
+              <div class="col-span-4">
+                <span class="dark:text-bw400">Role id :</span>
+                <span>{item._id}</span>
+              </div>
+            </div>
+          {/each}
+        {:else}
+          <div class="dark:text-bw400">No members</div>
+        {/if}
+      </div>
+    {/if}
+
+    <div class="flex space-x-2 mb-7">
+      <EntitySelector bind:value={newid} collectionname="users" {loading}
+      ></EntitySelector>
+      <HotkeyButton
+        variant="success"
+        size="base"
+        disabled={loading || newid == ""}
+        onclick={async () => {
+          if (newid) {
+            await addace(newid);
+            newid = "";
+          }
+        }}
+      >
+        <Plus />
+        Add
+      </HotkeyButton>
+    </div>
+
     <HotkeyButton
       variant="success"
       size="base"
-      disabled={loading || newid == ""}
-      onclick={async () => {
-        if (newid) {
-          await addace(newid);
-          newid = "";
-        }
-      }}
+      disabled={loading}
+      aria-label="Update Role"
+      type="submit"
+      data-shortcut="ctrl+s"
     >
-      <Plus />
-      Add
-    </HotkeyButton>
-  </div>
+      <Check />
+      Update Role</HotkeyButton
+    >
+  </form>
 
-  <HotkeyButton
-    variant="success"
-    size="base"
-    disabled={loading}
-    aria-label="Update Role"
-    type="submit"
-    data-shortcut="ctrl+s"
-  >
-    <Check />
-    Update Role</HotkeyButton
-  >
-</form>
-
-<CustomSuperDebug {formData} />
+  <CustomSuperDebug {formData} />
+</div>

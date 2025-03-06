@@ -57,7 +57,7 @@
   {$message}
 {/if}
 
-<div class="mx-4 my-2">
+<div class="mx-4 my-1">
   <form method="POST" use:enhance>
     <Form.Field {form} name="name" class="mb-10">
       <Form.Control>

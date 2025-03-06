@@ -64,201 +64,209 @@
   {$message}
 {/if}
 
-<div class="flex items-center space-x-2 mb-4">
-  <HotkeyButton
-    onclick={() => (screen = "all")}
-    variant={screen === "all" ? "base" : "ghost"}
+<div class="mx-4 my-2.5">
+  <div
+    class="flex items-center space-x-2 mb-4 dark:bg-darkagenttab rounded-[15px] p-1 w-fit"
   >
-    All
-  </HotkeyButton>
-  <HotkeyButton
-    onclick={() => (screen = "set")}
-    variant={screen === "set" ? "base" : "ghost"}
-  >
-    Set
-  </HotkeyButton>
-  <HotkeyButton
-    onclick={() => (screen = "unset")}
-    variant={screen === "unset" ? "base" : "ghost"}
-  >
-    Unset
-  </HotkeyButton>
+    <HotkeyButton
+      onclick={() => (screen = "all")}
+      variant={screen === "all" ? "tabselected" : "tab"}
+    >
+      All
+    </HotkeyButton>
+    <HotkeyButton
+      onclick={() => (screen = "set")}
+      variant={screen === "set" ? "tabselected" : "tab"}
+    >
+      Set
+    </HotkeyButton>
+    <HotkeyButton
+      onclick={() => (screen = "unset")}
+      variant={screen === "unset" ? "tabselected" : "tab"}
+    >
+      Unset
+    </HotkeyButton>
+  </div>
+
+  <form method="POST" use:enhance>
+    {#each settings as setting}
+      {#if setting.type === "boolean"}
+        <div
+          class={`${screen !== "all" ? (screen === "unset" && $formData[setting.name] !== setting.default && "hidden") || (screen === "set" && $formData[setting.name] === setting.default && "hidden") : "block"}`}
+        >
+          <Form.Field
+            {form}
+            name={`${setting.name}`}
+            class="flex flex-row items-center space-x-3 space-y-1 {$formData[
+              setting.name
+            ] === setting.default && 'opacity-50'}"
+          >
+            <Form.Control>
+              {#snippet children({ props })}
+                <CustomCheckbox
+                  {...props}
+                  bind:checked={$formData[setting.name] as boolean}
+                />
+                <Form.Label
+                  >{setting.name}
+                  <span class="text-gray-500">(Default: {setting.default})</span
+                  >
+                  <HotkeyButton
+                    class="text-green-500 ${$formData[setting.name] ===
+                      setting.default && 'hidden disabled'}"
+                    variant="link"
+                    onclick={() => ($formData[setting.name] = setting.default)}
+                    >clear</HotkeyButton
+                  >
+                </Form.Label>
+              {/snippet}
+            </Form.Control>
+          </Form.Field>
+        </div>
+      {/if}
+      {#if setting.type === "number"}
+        <div
+          class={`${screen !== "all" ? (screen === "unset" && $formData[setting.name] !== setting.default && "hidden") || (screen === "set" && $formData[setting.name] === setting.default && "hidden") : "block"}`}
+        >
+          <Form.Field
+            {form}
+            name={`${setting.name}`}
+            class="my-2 {$formData[setting.name] === setting.default &&
+              'opacity-50'}"
+          >
+            <Form.Control>
+              {#snippet children({ props })}
+                <Form.Label
+                  >{setting.name}
+                  <span class="text-gray-500">(Default: {setting.default})</span
+                  >
+                  <HotkeyButton
+                    class="text-green-500 ${$formData[setting.name] ===
+                      setting.default && 'hidden disabled'}"
+                    variant="link"
+                    onclick={() => ($formData[setting.name] = setting.default)}
+                    >clear</HotkeyButton
+                  >
+                </Form.Label>
+                <div class="space-y-2">
+                  <CustomInput
+                    class="w-full"
+                    {...props}
+                    bind:value={$formData[setting.name]}
+                    type="number"
+                  />
+                </div>
+              {/snippet}
+            </Form.Control>
+          </Form.Field>
+        </div>
+      {/if}
+      {#if setting.type === "string"}
+        <div
+          class={`${screen !== "all" ? (screen === "unset" && $formData[setting.name] !== setting.default && "hidden") || (screen === "set" && $formData[setting.name] === setting.default && "hidden") : "block"}`}
+        >
+          <Form.Field
+            {form}
+            name={`${setting.name}`}
+            class="my-2 {$formData[setting.name] === setting.default &&
+              'opacity-50'}"
+          >
+            <Form.Control>
+              {#snippet children({ props })}
+                <Form.Label
+                  >{setting.name}
+                  <span class="text-gray-500"
+                    >(Default: {setting.default
+                      ? setting.default
+                      : "Empty"})</span
+                  >
+                  <HotkeyButton
+                    class="text-green-500 ${$formData[setting.name] ===
+                      setting.default && 'hidden disabled'}"
+                    variant="link"
+                    onclick={() => ($formData[setting.name] = setting.default)}
+                    >clear</HotkeyButton
+                  >
+                </Form.Label>
+                <div class="space-y-2">
+                  <CustomInput
+                    width="w-full"
+                    {...props}
+                    bind:value={$formData[setting.name]}
+                  />
+                </div>
+              {/snippet}
+            </Form.Control>
+          </Form.Field>
+        </div>
+      {/if}
+      {#if setting.type === "string[]"}
+        <div
+          class={`${screen !== "all" ? (screen === "unset" && $formData[setting.name] !== setting.default && "hidden") || (screen === "set" && $formData[setting.name] === setting.default && "hidden") : "block"}`}
+        >
+          <Form.Field
+            {form}
+            name={`${setting.name}`}
+            class="my-2 {JSON.stringify($formData[setting.name]) ===
+              JSON.stringify(setting.default) && 'opacity-50'}"
+          >
+            <Form.Control>
+              {#snippet children({ props })}
+                <Form.Label
+                  >{setting.name}
+                  <span class="text-gray-500">(Default: {setting.default})</span
+                  >
+                  <HotkeyButton
+                    class="text-green-500 ${$formData[setting.name] ===
+                      setting.default && 'hidden disabled'}"
+                    variant="link"
+                    onclick={() => ($formData[setting.name] = setting.default)}
+                    >clear</HotkeyButton
+                  >
+                </Form.Label>
+                <ObjectInput {...props} bind:value={$formData[setting.name]} />
+              {/snippet}
+            </Form.Control>
+          </Form.Field>
+        </div>
+      {/if}
+      {#if setting.type === "object[]"}
+        <div
+          class={`${screen !== "all" ? (screen === "unset" && $formData[setting.name] !== setting.default && "hidden") || (screen === "set" && $formData[setting.name] === setting.default && "hidden") : "block"}`}
+        >
+          <Form.Field
+            {form}
+            name={`${setting.name}`}
+            class="my-2 {JSON.stringify($formData[setting.name]) ===
+              JSON.stringify(setting.default) && 'opacity-50'}"
+          >
+            <Form.Control>
+              {#snippet children({ props })}
+                <Form.Label
+                  >{setting.name}
+                  <span class="text-gray-500">(Default: {setting.default})</span
+                  >
+                </Form.Label>
+                <ObjectInput {...props} bind:value={$formData[setting.name]} />
+              {/snippet}
+            </Form.Control>
+          </Form.Field>
+        </div>
+      {/if}
+    {/each}
+    <HotkeyButton
+      class="mt-4"
+      variant="success"
+      size="base"
+      disabled={loading}
+      aria-label="Update Configuration"
+      type="submit"
+      data-shortcut="ctrl+s"
+    >
+      <Check />
+      Update Configuration"</HotkeyButton
+    >
+  </form>
+
+  <CustomSuperDebug {formData} />
 </div>
-
-<form method="POST" use:enhance>
-  {#each settings as setting}
-    {#if setting.type === "boolean"}
-      <div
-        class={`${screen !== "all" ? (screen === "unset" && $formData[setting.name] !== setting.default && "hidden") || (screen === "set" && $formData[setting.name] === setting.default && "hidden") : "block"}`}
-      >
-        <Form.Field
-          {form}
-          name={`${setting.name}`}
-          class="flex flex-row items-center space-x-3 space-y-1 {$formData[
-            setting.name
-          ] === setting.default && 'opacity-50'}"
-        >
-          <Form.Control>
-            {#snippet children({ props })}
-              <CustomCheckbox
-                {...props}
-                bind:checked={$formData[setting.name] as boolean}
-              />
-              <Form.Label
-                >{setting.name}
-                <span class="text-gray-500">(Default: {setting.default})</span>
-                <HotkeyButton
-                  class="text-green-500 ${$formData[setting.name] ===
-                    setting.default && 'hidden disabled'}"
-                  variant="link"
-                  onclick={() => ($formData[setting.name] = setting.default)}
-                  >clear</HotkeyButton
-                >
-              </Form.Label>
-            {/snippet}
-          </Form.Control>
-        </Form.Field>
-      </div>
-    {/if}
-    {#if setting.type === "number"}
-      <div
-        class={`${screen !== "all" ? (screen === "unset" && $formData[setting.name] !== setting.default && "hidden") || (screen === "set" && $formData[setting.name] === setting.default && "hidden") : "block"}`}
-      >
-        <Form.Field
-          {form}
-          name={`${setting.name}`}
-          class="my-2 {$formData[setting.name] === setting.default &&
-            'opacity-50'}"
-        >
-          <Form.Control>
-            {#snippet children({ props })}
-              <Form.Label
-                >{setting.name}
-                <span class="text-gray-500">(Default: {setting.default})</span>
-                <HotkeyButton
-                  class="text-green-500 ${$formData[setting.name] ===
-                    setting.default && 'hidden disabled'}"
-                  variant="link"
-                  onclick={() => ($formData[setting.name] = setting.default)}
-                  >clear</HotkeyButton
-                >
-              </Form.Label>
-              <div class="space-y-2">
-                <CustomInput
-                  class="w-full"
-                  {...props}
-                  bind:value={$formData[setting.name]}
-                  type="number"
-                />
-              </div>
-            {/snippet}
-          </Form.Control>
-        </Form.Field>
-      </div>
-    {/if}
-    {#if setting.type === "string"}
-      <div
-        class={`${screen !== "all" ? (screen === "unset" && $formData[setting.name] !== setting.default && "hidden") || (screen === "set" && $formData[setting.name] === setting.default && "hidden") : "block"}`}
-      >
-        <Form.Field
-          {form}
-          name={`${setting.name}`}
-          class="my-2 {$formData[setting.name] === setting.default &&
-            'opacity-50'}"
-        >
-          <Form.Control>
-            {#snippet children({ props })}
-              <Form.Label
-                >{setting.name}
-                <span class="text-gray-500"
-                  >(Default: {setting.default
-                    ? setting.default
-                    : "Empty"})</span
-                >
-                <HotkeyButton
-                  class="text-green-500 ${$formData[setting.name] ===
-                    setting.default && 'hidden disabled'}"
-                  variant="link"
-                  onclick={() => ($formData[setting.name] = setting.default)}
-                  >clear</HotkeyButton
-                >
-              </Form.Label>
-              <div class="space-y-2">
-                <CustomInput
-                  width="w-full"
-                  {...props}
-                  bind:value={$formData[setting.name]}
-                />
-              </div>
-            {/snippet}
-          </Form.Control>
-        </Form.Field>
-      </div>
-    {/if}
-    {#if setting.type === "string[]"}
-      <div
-        class={`${screen !== "all" ? (screen === "unset" && $formData[setting.name] !== setting.default && "hidden") || (screen === "set" && $formData[setting.name] === setting.default && "hidden") : "block"}`}
-      >
-        <Form.Field
-          {form}
-          name={`${setting.name}`}
-          class="my-2 {JSON.stringify($formData[setting.name]) ===
-            JSON.stringify(setting.default) && 'opacity-50'}"
-        >
-          <Form.Control>
-            {#snippet children({ props })}
-              <Form.Label
-                >{setting.name}
-                <span class="text-gray-500">(Default: {setting.default})</span>
-                <HotkeyButton
-                  class="text-green-500 ${$formData[setting.name] ===
-                    setting.default && 'hidden disabled'}"
-                  variant="link"
-                  onclick={() => ($formData[setting.name] = setting.default)}
-                  >clear</HotkeyButton
-                >
-              </Form.Label>
-              <ObjectInput {...props} bind:value={$formData[setting.name]} />
-            {/snippet}
-          </Form.Control>
-        </Form.Field>
-      </div>
-    {/if}
-    {#if setting.type === "object[]"}
-      <div
-        class={`${screen !== "all" ? (screen === "unset" && $formData[setting.name] !== setting.default && "hidden") || (screen === "set" && $formData[setting.name] === setting.default && "hidden") : "block"}`}
-      >
-        <Form.Field
-          {form}
-          name={`${setting.name}`}
-          class="my-2 {JSON.stringify($formData[setting.name]) ===
-            JSON.stringify(setting.default) && 'opacity-50'}"
-        >
-          <Form.Control>
-            {#snippet children({ props })}
-              <Form.Label
-                >{setting.name}
-                <span class="text-gray-500">(Default: {setting.default})</span>
-              </Form.Label>
-              <ObjectInput {...props} bind:value={$formData[setting.name]} />
-            {/snippet}
-          </Form.Control>
-        </Form.Field>
-      </div>
-    {/if}
-  {/each}
-  <HotkeyButton
-    class="mt-4"
-    variant="success"
-    size="base"
-    disabled={loading}
-    aria-label="Update Configuration"
-    type="submit"
-    data-shortcut="ctrl+s"
-  >
-    <Check />
-    Update Configuration"</HotkeyButton
-  >
-</form>
-
-<CustomSuperDebug {formData} />

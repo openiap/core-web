@@ -1,6 +1,3 @@
-<script lang="ts" module>
-</script>
-
 <script lang="ts">
   import { goto, replaceState } from "$app/navigation";
   import { base } from "$app/paths";
