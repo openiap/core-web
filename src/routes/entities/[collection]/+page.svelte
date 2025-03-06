@@ -159,7 +159,7 @@
       </ScrollArea>
     </div>
   </div>
-  <div id="div2" class="xl:ms-2 page overflow-auto px-0 lg:px-2">
+  <div id="div2" class="xl:ms-2 page overflow-auto ps-0 lg:ps-2">
     <Tabs.Root value={"view"} class="mb-4">
       <Tabs.List
         class="md:block md:w-fit dark:bg-darkagenttab rounded-[15px] p-1"

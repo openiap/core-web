@@ -57,7 +57,7 @@
     <Accordion.Item value="item-1" class="border-0 p-0 m-0">
         <Hotkeybutton
             aria-label="Access Control List"
-            class={"mb-2 " +
+            class={
                 (open == "item-1"
                     ? "flex items-center justify-between space-x-2 w-full border-0"
                     : "max-w-52 dark:hover:bg-bw700 dark:hover:border-bw500")}
