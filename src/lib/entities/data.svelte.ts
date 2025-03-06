@@ -450,6 +450,21 @@ class entitiesdata {
 				return "Error type";
 			case "wiq":
 				return "Queue";
+			case "clientagent":
+				return "Client Agent";
+			case "clientversion":
+				return "Client Version";
+			case "remoteip":
+				return "Remote Ip";
+			case "impostorname":
+				return "Impostor Name";
+			case "dbusage":
+				return "Db Usage";
+			case "filename":
+				return "File Name";
+			case "metadata.name":
+				return "Name";
+
 			default:
 				if (header.name != null && header.name != "") {
 					return header.name;
