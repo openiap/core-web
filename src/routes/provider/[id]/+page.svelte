@@ -156,7 +156,7 @@
   <form method="POST" use:enhance>
     <Acl bind:value={$formData} {loading} />
 
-    <Form.Field {form} name="provider" class="mb-7">
+    <Form.Field {form} name="provider" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>provider</Form.Label>
@@ -178,7 +178,7 @@
       <Form.FieldErrors />
     </Form.Field>
 
-    <Form.Field {form} name="name" class="mb-7">
+    <Form.Field {form} name="name" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Name</Form.Label>
@@ -194,7 +194,7 @@
     </Form.Field>
 
     {#if $formData.provider !== "local"}
-      <Form.Field {form} name="id" class="mb-7">
+      <Form.Field {form} name="id" class="mb-10">
         <Form.Control>
           {#snippet children({ props })}
             <Form.Label>Id</Form.Label>
@@ -210,7 +210,7 @@
       </Form.Field>
 
       {#if $formData.provider === "saml" || $formData.provider === "oidc" || $formData.provider === ""}
-        <Form.Field {form} name="saml_federation_metadata" class="mb-7">
+        <Form.Field {form} name="saml_federation_metadata" class="mb-10">
           <Form.Control>
             {#snippet children({ props })}
               <Form.Label>Meta data url</Form.Label>
@@ -227,7 +227,7 @@
       {/if}
 
       {#if $formData.provider === "oidc"}
-        <Form.Field {form} name="introspection_endpoint" class="mb-7">
+        <Form.Field {form} name="introspection_endpoint" class="mb-10">
           <Form.Control>
             {#snippet children({ props })}
               <Form.Label>Introspection</Form.Label>
@@ -243,7 +243,7 @@
         </Form.Field>
 
         {#if $formData.introspection_endpoint}
-          <Form.Field {form} name="introspection_client_id" class="mb-7">
+          <Form.Field {form} name="introspection_client_id" class="mb-10">
             <Form.Control>
               {#snippet children({ props })}
                 <Form.Label>Introspection client id</Form.Label>
@@ -257,7 +257,7 @@
             </Form.Control>
             <Form.FieldErrors />
           </Form.Field>
-          <Form.Field {form} name="introspection_client_secret" class="mb-7">
+          <Form.Field {form} name="introspection_client_secret" class="mb-10">
             <Form.Control>
               {#snippet children({ props })}
                 <Form.Label>Introspection client secret</Form.Label>
@@ -275,7 +275,7 @@
       {/if}
 
       {#if $formData.provider === "google" || $formData.provider === "oidc"}
-        <Form.Field {form} name="consumerKey" class="mb-7">
+        <Form.Field {form} name="consumerKey" class="mb-10">
           <Form.Control>
             {#snippet children({ props })}
               <Form.Label>Consumer key</Form.Label>
@@ -290,7 +290,7 @@
           <Form.FieldErrors />
         </Form.Field>
 
-        <Form.Field {form} name="consumerSecret" class="mb-7">
+        <Form.Field {form} name="consumerSecret" class="mb-10">
           <Form.Control>
             {#snippet children({ props })}
               <Form.Label>Consumer secret</Form.Label>
@@ -308,7 +308,7 @@
       {/if}
 
       {#if $formData.provider === "saml" || $formData.provider === ""}
-        <Form.Field {form} name="issuer" class="mb-7">
+        <Form.Field {form} name="issuer" class="mb-10">
           <Form.Control>
             {#snippet children({ props })}
               <Form.Label>issuer</Form.Label>
@@ -323,7 +323,7 @@
           <Form.FieldErrors />
         </Form.Field>
 
-        <Form.Field {form} name="saml_signout_url" class="mb-7">
+        <Form.Field {form} name="saml_signout_url" class="mb-10">
           <Form.Control>
             {#snippet children({ props })}
               <Form.Label>embedsignout</Form.Label>
@@ -341,7 +341,7 @@
         <div class="col-sm-4">
           <pre>{auth.baseurl}/{$formData.id}/FederationMetadata/2007-06/FederationMetadata.xml</pre>
           <HotkeyButton
-            class="mb-7"
+            class="mb-10"
             aria-label="Test"
             disabled={loading}
             variant="link"
@@ -362,7 +362,7 @@
     {#if $formData.forceddomains}
       <div class="mb-4">Forced Domains</div>
       {#each $formData.forceddomains as item, index}
-        <Form.Field {form} name="forceddomains">
+        <Form.Field {form} name="forceddomains" class="mb-4">
           <Form.Control>
             {#snippet children({ props })}
               {#if $formData.forceddomains}
@@ -398,7 +398,7 @@
     {/if}
     <div>
       <HotkeyButton
-        class="mb-7"
+        class="mb-10"
         aria-label="Add Domain"
         disabled={loading}
         variant="base"
@@ -413,7 +413,7 @@
       >
     </div>
 
-    <Form.Field {form} name="order" class="mb-7">
+    <Form.Field {form} name="order" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>order</Form.Label>

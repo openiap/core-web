@@ -54,7 +54,7 @@
   {/if}
 
   <form method="POST" use:enhance>
-    <Form.Field {form} name="collection" class="mb-7">
+    <Form.Field {form} name="collection" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>collection</Form.Label>
@@ -64,7 +64,7 @@
       <Form.FieldErrors />
     </Form.Field>
 
-    <Form.Field {form} name="name" class="mb-7">
+    <Form.Field {form} name="name" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Name</Form.Label>
@@ -78,7 +78,7 @@
       <Form.FieldErrors />
     </Form.Field>
 
-    <Form.Field {form} name="aggregates" class="mb-7">
+    <Form.Field {form} name="aggregates" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Aggregates</Form.Label>

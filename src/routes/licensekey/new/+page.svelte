@@ -60,7 +60,7 @@
   {/if}
   {#if $formData}
     <form method="POST" use:enhance>
-      <Form.Field {form} name="name" class="mb-6">
+      <Form.Field {form} name="name" class="mb-10">
         <Form.Control>
           {#snippet children({ props })}
             <Form.Label>License Domain</Form.Label>
@@ -73,7 +73,7 @@
         <Form.FieldErrors />
       </Form.Field>
 
-      <Form.Field {form} name="_billingid" class="mb-6">
+      <Form.Field {form} name="_billingid" class="mb-10">
         <Form.Control>
           {#snippet children({ props })}
             <Form.Label>Billing Account</Form.Label>

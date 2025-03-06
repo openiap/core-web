@@ -213,7 +213,7 @@
         {message}
     </div>
     <div>
-        <div class="flex items-center justify-start space-x-4 mb-4">
+        <div class="flex items-center justify-start space-x-4 mb-10">
             {#if data && data.item && data.item.name}
                 <CustomInput
                     class="max-w-sm"

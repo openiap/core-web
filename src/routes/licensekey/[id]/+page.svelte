@@ -249,7 +249,7 @@
   {/if}
 
   <form method="POST" use:enhance>
-    <Form.Field {form} name="name" class="mb-6">
+    <Form.Field {form} name="name" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Name</Form.Label>
@@ -268,7 +268,7 @@
       <Form.FieldErrors />
     </Form.Field>
 
-    <Form.Field {form} name="_billingid" class="mb-6">
+    <Form.Field {form} name="_billingid" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Billing Account</Form.Label>
@@ -285,7 +285,7 @@
       <Form.FieldErrors />
     </Form.Field>
 
-    <Form.Field {form} name="_stripeprice" class="mb-6">
+    <Form.Field {form} name="_stripeprice" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>License</Form.Label>
@@ -305,7 +305,7 @@
       <Form.FieldErrors />
     </Form.Field>
 
-    <Form.Field {form} name="connections" class="mb-6">
+    <Form.Field {form} name="connections" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Connections</Form.Label>
@@ -356,7 +356,7 @@
       <Form.FieldErrors />
     </Form.Field>
 
-    <Form.Field {form} name="workspaces" class="mb-6">
+    <Form.Field {form} name="workspaces" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Workspaces</Form.Label>
@@ -405,7 +405,7 @@
       <Form.FieldErrors />
     </Form.Field>
 
-    <Form.Field {form} name="gitrepos" class="mb-6">
+    <Form.Field {form} name="gitrepos" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Git repositories</Form.Label>
@@ -455,7 +455,7 @@
     </Form.Field>
 
     {#if isAdmin}
-      <Form.Field {form} name="_stripeprice" class="mb-6">
+      <Form.Field {form} name="_stripeprice" class="mb-10">
         <Form.Control>
           {#snippet children({ props })}
             <Form.Label>License version</Form.Label>
@@ -477,9 +477,7 @@
       </Form.Field>
     {/if}
 
-    <div
-      class="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0 mt-6"
-    >
+    <div class="flex flex-col md:flex-row md:space-x-5 space-y-4 md:space-y-0">
       <HotkeyButton
         variant="success"
         size="base"

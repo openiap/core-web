@@ -317,7 +317,7 @@
   });
 </script>
 
-<div class="">
+<div class="mx-2.5 my-2.5">
 
   <div class="lg:flex lg:items-center lg:justify-between lg:mb-4 lg:space-x-4">
     <div class="lg:flex lg:items-center lg:space-x-4 mb-2 lg:mb-0 w-full">

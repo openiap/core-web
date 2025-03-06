@@ -6,7 +6,7 @@
 </script>
 
 {#if formData != null && showdebug == true}
-	<div class={"mt-4" + (width ? " " + width : "")}>
+	<div class={"mt-10" + (width ? " " + width : "")}>
 		<SuperDebug data={formData} theme="vscode" />
 	</div>
 {/if}

@@ -52,14 +52,14 @@
   {/if}
 
   <form method="POST" use:enhance>
-    <Form.Field {form} name="name">
+    <Form.Field {form} name="name" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
-          <Form.Label>Company Name</Form.Label>
+          <Form.Label>Name</Form.Label>
+          <Form.Description>This is your billing account name.</Form.Description>
           <CustomInput {...props} bind:value={$formData.name} />
         {/snippet}
       </Form.Control>
-      <Form.Description>This is your company name.</Form.Description>
       <Form.FieldErrors />
     </Form.Field>
 

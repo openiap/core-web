@@ -61,36 +61,40 @@
   const { form: formData, enhance, message } = form;
 </script>
 
-{#if errormessage && errormessage != ""}
-  {errormessage}
-{/if}
+<div class="mx-4 my-1">
+  {#if errormessage && errormessage != ""}
+    {errormessage}
+  {/if}
 
-{#if message && $message != ""}
-  {$message}
-{/if}
-<form method="POST" use:enhance>
-  <Form.Field {form} name="email">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Email</Form.Label>
-        <CustomInput {...props} bind:value={$formData.email} />
-      {/snippet}
-    </Form.Control>
-    <Form.Description>The user you want to invite</Form.Description>
-    <Form.FieldErrors />
-  </Form.Field>
+  {#if message && $message != ""}
+    {$message}
+  {/if}
+  <form method="POST" use:enhance>
+    <Form.Field {form} name="email" class="mb-10">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Email</Form.Label>
+          <Form.Description
+            >The email of the user you want to invite</Form.Description
+          >
+          <CustomInput {...props} bind:value={$formData.email} />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
 
-  <HotkeyButton
-    type="submit"
-    data-shortcut="ctrl+s"
-    disabled={loading}
-    aria-label="Create Invitation"
-    variant="success"
-    size="base"
-  >
-    <Check />
-    Create Invitation</HotkeyButton
-  >
-</form>
+    <HotkeyButton
+      type="submit"
+      data-shortcut="ctrl+s"
+      disabled={loading}
+      aria-label="Create Invitation"
+      variant="success"
+      size="base"
+    >
+      <Check />
+      Create Invitation</HotkeyButton
+    >
+  </form>
 
-<CustomSuperDebug {formData} />
+  <CustomSuperDebug {formData} />
+</div>

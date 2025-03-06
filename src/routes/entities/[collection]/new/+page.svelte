@@ -52,27 +52,28 @@
   validateForm({ update: true });
 </script>
 
-{#if errormessage && errormessage != ""}
-  {errormessage}
-{/if}
+<div class="mx-4 my-1">
+  {#if errormessage && errormessage != ""}
+    {errormessage}
+  {/if}
 
-<form method="POST" use:enhance>
-  <HotkeyButton
-    type="submit"
-    data-shortcut="ctrl+s"
-    class="mb-4"
-    disabled={loading}
-    aria-label="Create Item"
-    variant="success"
-    size="base"
-  >
-    <Check />
-    Create Item</HotkeyButton
-  >
+  <form method="POST" use:enhance>
+    <Acl bind:value={$formData} class="mb-10" />
 
-  <Acl bind:value={$formData} />
+    <ObjectInput classname="min-h-[64vh] mb-10" bind:value={$formData} />
 
-  <ObjectInput classname="min-h-[74vh]" bind:value={$formData} />
-</form>
+    <HotkeyButton
+      type="submit"
+      data-shortcut="ctrl+s"
+      disabled={loading}
+      aria-label="Create Item"
+      variant="success"
+      size="base"
+    >
+      <Check />
+      Create Item</HotkeyButton
+    >
+  </form>
 
-<CustomSuperDebug {formData} />
+  <CustomSuperDebug {formData} />
+</div>

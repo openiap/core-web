@@ -61,16 +61,16 @@
     {$message}
   {/if}
   <form method="POST" use:enhance>
-    <Form.Field {form} name="name">
+    <Form.Field {form} name="name" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Workspace Name</Form.Label>
+          <Form.Description
+            >This is the name of your new workspace.</Form.Description
+          >
           <CustomInput {...props} bind:value={$formData.name} />
         {/snippet}
       </Form.Control>
-      <Form.Description
-        >This is the name of your new workspace.</Form.Description
-      >
       <Form.FieldErrors />
     </Form.Field>
 

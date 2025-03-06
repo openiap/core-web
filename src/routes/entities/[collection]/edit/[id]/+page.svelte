@@ -57,13 +57,18 @@
   validateForm({ update: true });
 </script>
 
-{#if errormessage && errormessage != ""}
-  {errormessage}
-{/if}
+<div class="mx-4 my-1">
+  {#if errormessage && errormessage != ""}
+    {errormessage}
+  {/if}
 
-<form method="POST" use:enhance>
+  <form method="POST" use:enhance>
+    <Acl bind:value={$formData} />
+
+    <ObjectInput height="min-h-[64vh] mb-10" bind:value={$formData} />
+  </form>
+
   <HotkeyButton
-    class="mb-4"
     variant="success"
     size="base"
     disabled={loading}
@@ -75,11 +80,5 @@
     Update Item</HotkeyButton
   >
 
-  <div class="mb-3">
-    <Acl bind:value={$formData} />
-  </div>
-
-  <ObjectInput height="min-h-[70vh]" bind:value={$formData} />
-</form>
-
-<CustomSuperDebug {formData} />
+  <CustomSuperDebug {formData} />
+</div>

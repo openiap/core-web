@@ -121,7 +121,7 @@
   {/if}
 
   <form method="POST" use:enhance>
-    <Form.Field {form} name="name" class="mb-7">
+    <Form.Field {form} name="name" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Name</Form.Label>
@@ -135,7 +135,7 @@
       <Form.FieldErrors />
     </Form.Field>
 
-    <Form.Field {form} name="language" class="mb-7">
+    <Form.Field {form} name="language" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Language</Form.Label>
@@ -156,7 +156,7 @@
     <Form.Field
       {form}
       name="chromium"
-      class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
+      class="flex flex-row items-start space-x-3 space-y-0 mb-10 "
     >
       <Form.Control>
         {#snippet children({ props })}
@@ -176,7 +176,7 @@
     <Form.Field
       {form}
       name="daemon"
-      class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
+      class="flex flex-row items-start space-x-3 space-y-0 mb-10 "
     >
       <Form.Control>
         {#snippet children({ props })}
@@ -193,7 +193,7 @@
       <Form.FieldErrors />
     </Form.Field>
 
-    <div class="mb-7">
+    <div class="mb-10">
       <div class="text-sm mb-2">Package file (Current)</div>
       <HotkeyButton
         disabled={loading || !$formData.fileid}
@@ -202,7 +202,7 @@
       >
     </div>
 
-    <Form.Field {form} name="fileid" class="mb-7">
+    <Form.Field {form} name="fileid" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Package file</Form.Label>

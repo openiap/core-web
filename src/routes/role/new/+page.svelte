@@ -78,7 +78,7 @@
   {/if}
 
   <form method="POST" use:enhance>
-    <Form.Field {form} name="name" class="mb-7">
+    <Form.Field {form} name="name" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Name</Form.Label>
@@ -95,7 +95,7 @@
     <Form.Field
       {form}
       name="rparole"
-      class="flex flex-row items-start space-x-3 space-y-0 mb-7"
+      class="flex flex-row items-start space-x-3 space-y-0 mb-10"
     >
       <Form.Control>
         {#snippet children({ props })}
@@ -119,7 +119,7 @@
     <Form.Field
       {form}
       name="hidemembers"
-      class="flex flex-row items-start space-x-3 space-y-0  mb-7"
+      class="flex flex-row items-start space-x-3 space-y-0  mb-10"
     >
       <Form.Control>
         {#snippet children({ props })}
@@ -144,7 +144,7 @@
 
     {#if members.length > 0}
       <div
-        class="text-[14px] w-[895px] mb-7 border rounded-[10px] dark:bg-bw850 dark:border-bw600 px-2.5 py-1"
+        class="text-[14px] w-[895px] mb-10 border rounded-[10px] dark:bg-bw850 dark:border-bw600 px-2.5 py-1"
       >
         <div class="mb-5 dark:text-bw400">
           This user is a member of the following:
@@ -188,7 +188,7 @@
       </div>
     {/if}
 
-    <div class="flex space-x-2 mb-7">
+    <div class="flex space-x-2 mb-10">
       <EntitySelector bind:value={newid} collectionname="users" {loading}
       ></EntitySelector>
       <HotkeyButton

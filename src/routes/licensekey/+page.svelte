@@ -92,7 +92,7 @@
   bind:loading
 >
   {#snippet action(item: any)}
-    <div class="flex items-center justify-end space-x-2">
+    <div class="flex items-center justify-end space-x-5">
       <HotkeyButton
         aria-label="Edit"
         disabled={loading}

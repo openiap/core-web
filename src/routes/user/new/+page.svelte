@@ -54,7 +54,7 @@
   {/if}
 
   <form method="POST" use:enhance>
-    <Form.Field {form} name="name" class="mb-7">
+    <Form.Field {form} name="name" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Name</Form.Label>
@@ -69,7 +69,7 @@
       <Form.FieldErrors />
     </Form.Field>
 
-    <Form.Field {form} name="username" class="mb-7">
+    <Form.Field {form} name="username" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Username</Form.Label>
@@ -84,7 +84,7 @@
       <Form.FieldErrors />
     </Form.Field>
 
-    <Form.Field {form} name="password" class="mb-7">
+    <Form.Field {form} name="password" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Password</Form.Label>
@@ -100,7 +100,7 @@
       <Form.FieldErrors />
     </Form.Field>
 
-    <Form.Field {form} name="email" class="mb-7">
+    <Form.Field {form} name="email" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Email</Form.Label>
@@ -119,7 +119,7 @@
     <Form.Field
       {form}
       name="disabled"
-      class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
+      class="flex flex-row items-start space-x-3 space-y-0 mb-10 "
     >
       <Form.Control>
         {#snippet children({ props })}
@@ -139,7 +139,7 @@
     <Form.Field
       {form}
       name="dblocked"
-      class="flex flex-row items-start space-x-3 space-y-0 mb-7"
+      class="flex flex-row items-start space-x-3 space-y-0 mb-10"
     >
       <Form.Control>
         {#snippet children({ props })}
@@ -159,7 +159,7 @@
     <Form.Field
       {form}
       name="validated"
-      class="flex flex-row items-start space-x-3 space-y-0 mb-7"
+      class="flex flex-row items-start space-x-3 space-y-0 mb-10"
     >
       <Form.Control>
         {#snippet children({ props })}
@@ -179,7 +179,7 @@
     <Form.Field
       {form}
       name="emailvalidated"
-      class="flex flex-row items-start space-x-3 space-y-0 mb-7"
+      class="flex flex-row items-start space-x-3 space-y-0 mb-10"
     >
       <Form.Control>
         {#snippet children({ props })}
@@ -199,7 +199,7 @@
     <Form.Field
       {form}
       name="formvalidated"
-      class="flex flex-row items-start space-x-3 space-y-0 mb-7"
+      class="flex flex-row items-start space-x-3 space-y-0 mb-10"
     >
       <Form.Control>
         {#snippet children({ props })}

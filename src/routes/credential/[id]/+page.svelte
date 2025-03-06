@@ -62,32 +62,33 @@
   <form method="POST" use:enhance>
     <Acl bind:value={$formData} />
 
-    <Form.Field {form} name="name" class="mb-7">
+    <Form.Field {form} name="name" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Name</Form.Label>
+          <Form.Description>This is the name.</Form.Description>
           <CustomInput {...props} bind:value={$formData.name} />
         {/snippet}
       </Form.Control>
-      <Form.Description>This is the name.</Form.Description>
       <Form.FieldErrors />
     </Form.Field>
 
-    <Form.Field {form} name="username" class="mb-7">
+    <Form.Field {form} name="username" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Username</Form.Label>
+          <Form.Description>This is your username.</Form.Description>
           <CustomInput {...props} bind:value={$formData.username} />
         {/snippet}
       </Form.Control>
-      <Form.Description>This is your username.</Form.Description>
       <Form.FieldErrors />
     </Form.Field>
 
-    <Form.Field {form} name="password" class="mb-7">
+    <Form.Field {form} name="password" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Password</Form.Label>
+          <Form.Description>This is your password.</Form.Description>
           <CustomInput
             {...props}
             bind:value={$formData.password}
@@ -95,7 +96,6 @@
           />
         {/snippet}
       </Form.Control>
-      <Form.Description>This is your password.</Form.Description>
       <Form.FieldErrors />
     </Form.Field>
 

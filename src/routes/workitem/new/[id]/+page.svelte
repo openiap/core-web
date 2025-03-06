@@ -102,7 +102,7 @@
   {/if}
 
   <form method="POST" use:enhance>
-    <Form.Field {form} name="name" class="mb-7">
+    <Form.Field {form} name="name" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Name</Form.Label>
@@ -117,7 +117,7 @@
       <Form.FieldErrors />
     </Form.Field>
 
-    <Form.Field {form} name="wiqid" class="mb-7">
+    <Form.Field {form} name="wiqid" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <div class="flex flex-col items-start space-y-2">
@@ -135,7 +135,7 @@
       <Form.FieldErrors />
     </Form.Field>
 
-    <Form.Field {form} name="payload" class="mb-4">
+    <Form.Field {form} name="payload" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Payload</Form.Label>
@@ -149,7 +149,7 @@
       <Form.FieldErrors />
     </Form.Field>
 
-    <Form.Field {form} name="priority" class="mb-7">
+    <Form.Field {form} name="priority" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Priority</Form.Label>
@@ -165,7 +165,7 @@
       <Form.FieldErrors />
     </Form.Field>
 
-    <div class="mb-7">
+    <div class="mb-10">
       <div class="mb-2">Upload Files</div>
       <div class="flex justify-start space-x-5">
         <CustomInput
@@ -181,7 +181,7 @@
     </div>
 
     {#if files.length > 0}
-      <div class="mb-7">
+      <div class="mb-10">
         <div class="mb-2">New files:</div>
         {#each files as file, index}
           <div class="flex space-x-2 mb-2">
@@ -209,6 +209,7 @@
         {/each}
       </div>
     {/if}
+
     <HotkeyButton
       class="w-full md:w-auto"
       variant="success"

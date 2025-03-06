@@ -112,7 +112,7 @@
   {/if}
 
   <form method="POST" use:enhance>
-    <Form.Field {form} name="name" class="mb-7">
+    <Form.Field {form} name="name" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Name</Form.Label>
@@ -127,7 +127,7 @@
       <Form.FieldErrors />
     </Form.Field>
 
-    <Form.Field {form} name="projectid" class="mb-7">
+    <Form.Field {form} name="projectid" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Project</Form.Label>
@@ -145,7 +145,7 @@
       <Form.FieldErrors />
     </Form.Field>
 
-    <Form.Field {form} name="maxretries" class="mb-7">
+    <Form.Field {form} name="maxretries" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Max retries</Form.Label>
@@ -161,7 +161,7 @@
       <Form.FieldErrors />
     </Form.Field>
 
-    <Form.Field {form} name="retrydelay" class="mb-7">
+    <Form.Field {form} name="retrydelay" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Retry delay (Seconds)</Form.Label>
@@ -177,7 +177,7 @@
       <Form.FieldErrors />
     </Form.Field>
 
-    <Form.Field {form} name="initialdelay" class="mb-7">
+    <Form.Field {form} name="initialdelay" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Initial delay (Seconds)</Form.Label>
@@ -193,7 +193,7 @@
       <Form.FieldErrors />
     </Form.Field>
 
-    <Form.Field {form} name="workflowid" class="mb-7">
+    <Form.Field {form} name="workflowid" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Workflow</Form.Label>
@@ -211,7 +211,7 @@
       <Form.FieldErrors />
     </Form.Field>
 
-    <Form.Field {form} name="robotqueue" class="mb-7">
+    <Form.Field {form} name="robotqueue" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Robot/role</Form.Label>
@@ -231,7 +231,7 @@
       <Form.FieldErrors />
     </Form.Field>
 
-    <div class="mb-7">
+    <div class="mb-10">
       <div class="mb-2">AMQP Queue</div>
       <EntitySelector
         collectionname="mq"
@@ -250,7 +250,7 @@
       />
     </div>
 
-    <div class="mb-7">
+    <div class="mb-10">
       <div class="mb-2">Agent</div>
       <EntitySelector
         queryas={usersettings.currentworkspace}
@@ -270,7 +270,7 @@
       />
     </div>
 
-    <Form.Field {form} name="packageid" class="mb-7">
+    <Form.Field {form} name="packageid" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Package</Form.Label>
@@ -290,7 +290,7 @@
     </Form.Field>
 
     <HotkeyButton
-      class="mb-7"
+      class="mb-10"
       variant="success"
       size="base"
       disabled={loading}
@@ -302,7 +302,7 @@
       Create Work Item Queue</HotkeyButton
     >
 
-    <Form.Field {form} name="success_wiqid" class="mb-7">
+    <Form.Field {form} name="success_wiqid" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>on success, push to</Form.Label>
@@ -320,7 +320,7 @@
       <Form.FieldErrors />
     </Form.Field>
 
-    <Form.Field {form} name="failed_wiqid" class="mb-7">
+    <Form.Field {form} name="failed_wiqid" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>on failure, push to</Form.Label>

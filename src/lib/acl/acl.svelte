@@ -14,6 +14,7 @@
     import { toast } from "svelte-sonner";
 
     let {
+        class: className = "mb-10",
         value = $bindable(null),
         open = $bindable(null),
         loading = false,
@@ -21,7 +22,7 @@
     let newid = $state("");
 
     async function addace(id: string) {
-        if(value._acl == null) {
+        if (value._acl == null) {
             value._acl = [];
         }
         var item = await auth.client.FindOne<any>({
@@ -51,16 +52,17 @@
 
 <Accordion.Root
     type="single"
-    class={`mb-4 w-full ${open ? " border rounded-[10px] dark:border-bw600 dark:bg-bw850 dark:text-bw100" : ""}`}
+    class={`w-full ${open ? " border rounded-[10px] dark:border-bw600 dark:bg-bw850 dark:text-bw100" : ""}` +
+        " " +
+        className}
     value={open}
 >
     <Accordion.Item value="item-1" class="border-0 p-0 m-0">
         <Hotkeybutton
             aria-label="Access Control List"
-            class={
-                (open == "item-1"
-                    ? "flex items-center justify-between space-x-2 w-full border-0"
-                    : "max-w-52 dark:hover:bg-bw700 dark:hover:border-bw500")}
+            class={open == "item-1"
+                ? "flex items-center justify-between space-x-2 w-full border-0"
+                : "max-w-52 dark:hover:bg-bw700 dark:hover:border-bw500"}
             variant="base"
             size="base"
             onclick={() => {
@@ -95,7 +97,7 @@
                         size="base"
                         onclick={() => {
                             value._acl.splice(i, 1);
-                            if(value._acl.length == 0) {
+                            if (value._acl.length == 0) {
                                 delete value._acl;
                             }
                             value = { ...value };
@@ -106,9 +108,7 @@
                     >
                 </div>
             {/each}
-            <div
-                class={"flex space-x-4 " + (value?._acl?.length > 0 && " mt-5")}
-            >
+            <div class={"flex space-x-4 mt-4"}>
                 <EntitySelector
                     bind:value={newid}
                     collectionname="users"

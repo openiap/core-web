@@ -153,7 +153,7 @@
   {/if}
 
   <form method="POST" use:enhance>
-    <Form.Field {form} name="name" class="mb-4">
+    <Form.Field {form} name="name" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Name</Form.Label>
@@ -168,7 +168,7 @@
       <Form.FieldErrors />
     </Form.Field>
 
-    <Form.Field {form} name="queue" class="mb-4">
+    <Form.Field {form} name="queue" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Queue</Form.Label>
@@ -185,7 +185,7 @@
       <Form.FieldErrors />
     </Form.Field>
 
-    <Form.Field {form} name="payload" class="mb-4">
+    <Form.Field {form} name="payload" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Payload</Form.Label>
@@ -201,19 +201,19 @@
     </Form.Field>
 
     <div class="flex space-x-5">
-      <div class="mb-4">
+      <div class="mb-10">
         <div class="mb-2">State</div>
         <div class="text-bw400">
           {$formData.state}
         </div>
       </div>
-      <div class="mb-4">
+      <div class="mb-10">
         <div class="mb-2">Retries</div>
         <div class="text-bw400">
           {$formData.retries}
         </div>
       </div>
-      <div class="mb-4">
+      <div class="mb-10">
         <div class="mb-2">Priority</div>
         <div class="text-bw400">
           {$formData.priority}
@@ -268,7 +268,7 @@
       {/each}
     {/if}
 
-    <div class="mb-4">
+    <div class="mb-10">
       <div class="mb-2">Upload Files</div>
       <CustomInput
         placeholder="Type name"
@@ -326,7 +326,6 @@
     {/if}
 
     <HotkeyButton
-      class="mb-7"
       variant="success"
       size="base"
       disabled={loading}

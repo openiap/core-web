@@ -65,7 +65,7 @@
   <form method="POST" use:enhance>
     <Acl bind:value={$formData} />
 
-    <Form.Field {form} name="collection" class="mb-7">
+    <Form.Field {form} name="collection" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Collection</Form.Label>
@@ -75,7 +75,7 @@
       <Form.FieldErrors />
     </Form.Field>
 
-    <Form.Field {form} name="name" class="mb-7">
+    <Form.Field {form} name="name" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Name</Form.Label>
@@ -89,7 +89,7 @@
       <Form.FieldErrors />
     </Form.Field>
 
-    <Form.Field {form} name="aggregates" class="mb-7">
+    <Form.Field {form} name="aggregates" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Aggregates</Form.Label>

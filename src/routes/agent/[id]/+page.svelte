@@ -645,10 +645,10 @@
   }
 </script>
 
-<div class="mx-4 my-2.5">
+<div class="mx-2.5 my-2.5">
   <Tabs.Root value="2" class="w-full">
     <Tabs.List
-      class="h-full grid grid-cols-1 md:block md:w-fit dark:bg-darkagenttab rounded-[15px] mb-6 p-1"
+      class="h-full grid grid-cols-1 md:block md:w-fit dark:bg-darkagenttab rounded-[15px] mb-8 p-1 bg-red-500"
     >
       {#if $formData.docker == true}
         <Tabs.Trigger value="1" onclick={() => getPods()}>Pods</Tabs.Trigger>
@@ -867,7 +867,7 @@
     <Tabs.Content value="2">
       <form method="POST" use:enhance class="text-sm">
         <div
-          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-4 mb-0 md:mb-6"
         >
           <Form.Field {form} name="name" class="w-full">
             <Form.Control>
@@ -968,14 +968,14 @@
 
         {#if sizewarningtitle != ""}
           <div
-            class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-4 rounded relative"
+            class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-4 rounded relative mb-6"
           >
             <strong class="font-bold">{sizewarningtitle}</strong>
             <span class="block sm:inline">{sizewarning}</span>
           </div>
         {/if}
 
-        <div class="mb-6 mt-4 md:mb-4 md:mt-2">
+        <div class="mb-8">
           <Form.Field {form} name="environment" class="w-full">
             <Form.Control>
               {#snippet children({ props })}
@@ -992,7 +992,9 @@
         </div>
 
         {#if $formData.image != null && $formData.image != ""}
-          <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div
+            class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-4 mb-0 md:mb-2"
+          >
             <Form.Field
               {form}
               name="autostart"
@@ -1087,7 +1089,7 @@
           </div>
         {/if}
 
-        <Form.Field {form} name="runas" class="mb-4">
+        <Form.Field {form} name="runas" class="mb-8">
           <Form.Control>
             {#snippet children({ props })}
               <div class="flex flex-col items-start space-y-2">
@@ -1117,7 +1119,7 @@
           <Form.FieldErrors />
         </Form.Field>
 
-        <div class="mb-4 space-y-2 md:space-x-4">
+        <!-- <div class="mb-4 space-y-2 md:space-x-4">
           {#if $formData.image != null && $formData.image != ""}
             <HotkeyButton
               class="w-full md:mr-4 md:w-auto"
@@ -1132,21 +1134,8 @@
               <RefreshCcw />
               Refresh</HotkeyButton
             >
-            <!-- <HotkeyButton
-              class="w-full md:w-auto"
-              aria-label="Open in Web"
-              variant="base"
-              size="base"
-              disabled={$formData.webserver != true ||
-                instances.find((x: any) => x.showstatus === "running") ||
-                loading}
-              onclick={() => window.open(auth.weburl($formData.slug), "_blank")}
-            >
-              <Webhook />
-              Open in Web</HotkeyButton
-            > -->
           {/if}
-        </div>
+        </div> -->
 
         <HotkeyButton
           class="w-full md:w-auto"

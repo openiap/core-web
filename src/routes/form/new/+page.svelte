@@ -274,7 +274,7 @@
   </div>
   <div>
     <div
-      class="grid md:grid-cols-2 gap-2 xl:flex xl:items-center xl:justify-start xl:space-x-4 mb-4"
+      class="grid md:grid-cols-2 gap-2 xl:flex xl:items-center xl:justify-start xl:space-x-4 mb-10"
     >
       <CustomInput
         class="xl:max-w-sm"

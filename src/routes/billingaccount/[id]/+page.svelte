@@ -119,7 +119,9 @@
     </div>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
+  <div
+    class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-4 md:mb-10"
+  >
     {#if data.item?.stripeid != null && data.item?.stripeid != ""}
       <HotkeyButton
         onclick={async () => {
