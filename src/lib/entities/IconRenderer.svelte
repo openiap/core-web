@@ -32,7 +32,7 @@
         UsersRound,
     } from "lucide-svelte";
     export let title: string;
-    const iconClass = "h-4 w-4 me-1.5 text-bw500";
+    const iconClass = "h-4 w-4 me-1.5 text-bw600 dark:text-bw500";
 </script>
 
 {#if title == "Action"}
