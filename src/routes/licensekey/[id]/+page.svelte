@@ -248,10 +248,13 @@
 {/if}
 
 <form method="POST" use:enhance>
-  <Form.Field {form} name="name" class="mb-7">
+  <Form.Field {form} name="name" class="mb-4">
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Name</Form.Label>
+        <Form.Description
+          >This is the domain name (fqdn ) of the OpenCore instance</Form.Description
+        >
         <CustomInput
           disabled={loading}
           placeholder="Type name"
@@ -260,16 +263,17 @@
         />
       {/snippet}
     </Form.Control>
-    <Form.Description
-      >This is the domain name ( fqdn ) of the OpenCore instance.</Form.Description
-    >
+
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Field {form} name="_billingid">
+  <Form.Field {form} name="_billingid" class="mb-4">
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Billing Account</Form.Label>
+        <Form.Description
+          >License is the following tier:</Form.Description
+        >
         <EntitySelector
           bind:value={$formData._billingid}
           collectionname="users"
@@ -278,16 +282,17 @@
         ></EntitySelector>
       {/snippet}
     </Form.Control>
-    <Form.Description
-      >License is linked to this Billing Account.</Form.Description
-    >
+
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Field {form} name="_stripeprice">
+  <Form.Field {form} name="_stripeprice" class="mb-4">
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>License</Form.Label>
+        <Form.Description
+          >License is linked to this Billing Account:</Form.Description
+        >
         <CustomSelect
           {loading}
           {...props}
@@ -298,16 +303,15 @@
         />
       {/snippet}
     </Form.Control>
-    <Form.Description
-      >License is linked to this Billing Account.</Form.Description
-    >
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Field {form} name="connections">
+  <Form.Field {form} name="connections" class="mb-4">
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Connections</Form.Label>
+        <Form.Description>Max number of concurent connections.</Form.Description
+        >
         <div class="flex items-center w-full md:w-1/2 lg:w-1/3 space-x-2">
           <div class="w-full">
             <CustomInput
@@ -349,14 +353,14 @@
         </div>
       {/snippet}
     </Form.Control>
-    <Form.Description>Max number of concurent connections.</Form.Description>
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Field {form} name="workspaces">
+  <Form.Field {form} name="workspaces" class="mb-4">
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Workspaces</Form.Label>
+        <Form.Description>Max number of workspaces.</Form.Description>
         <div class="flex items-center w-full md:w-1/2 lg:w-1/3 space-x-2">
           <div class="w-full">
             <CustomInput
@@ -398,14 +402,14 @@
         </div>
       {/snippet}
     </Form.Control>
-    <Form.Description>Max number of workspaces.</Form.Description>
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Field {form} name="gitrepos">
+  <Form.Field {form} name="gitrepos" class="mb-4">
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Git repositories</Form.Label>
+        <Form.Description>Max number of git repositories.</Form.Description>
         <div class="flex items-center w-full md:w-1/2 lg:w-1/3 space-x-2">
           <div class="w-full">
             <CustomInput
@@ -447,15 +451,18 @@
         </div>
       {/snippet}
     </Form.Control>
-    <Form.Description>Max number of git repositories.</Form.Description>
     <Form.FieldErrors />
   </Form.Field>
 
   {#if isAdmin}
-    <Form.Field {form} name="_stripeprice">
+    <Form.Field {form} name="_stripeprice" class="mb-4">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>License version</Form.Label>
+          <Form.Description
+            >If your openflow is version 1.5.10 or below use version 2, for
+            newer versions select version 3</Form.Description
+          >
           <CustomSelect
             {loading}
             {...props}
@@ -466,15 +473,11 @@
           />
         {/snippet}
       </Form.Control>
-      <Form.Description
-        >If your openflow is version 1.5.10 or below use version 2, for newer
-        versions select version 3</Form.Description
-      >
       <Form.FieldErrors />
     </Form.Field>
   {/if}
 
-  <div class="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0">
+  <div class="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0 mt-6">
     <HotkeyButton
       variant="success"
       size="base"

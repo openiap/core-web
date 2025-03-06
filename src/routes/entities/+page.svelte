@@ -208,7 +208,7 @@
       <Searchinput bind:searchstring class="xl:w-[240px] mb-4 xl:mb-0" />
 
       <div
-        class="grid grid-cols-1 md:grid-cols-2 lg:flex gap-2 lg:gap-0 lg:space-x-4 mb-4 lg:mb-0"
+        class="grid grid-cols-1 md:grid-cols-2 lg:flex lg:space-x-5 mb-4 lg:mb-0"
       >
         <HotkeyButton
           size="sm"
