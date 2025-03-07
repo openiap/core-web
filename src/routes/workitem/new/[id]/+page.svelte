@@ -96,133 +96,127 @@
   }
 </script>
 
-<div class="mx-4 my-1">
-  {#if message && $message != ""}
-    {$message}
-  {/if}
+{#if message && $message != ""}
+  {$message}
+{/if}
 
-  <form method="POST" use:enhance>
-    <Form.Field {form} name="name" class="mb-10">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Name</Form.Label>
-          <CustomInput
-            placeholder="Type name"
-            disabled={loading}
-            {...props}
-            bind:value={$formData.name}
-          />
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
-
-    <Form.Field {form} name="wiqid" class="mb-10">
-      <Form.Control>
-        {#snippet children({ props })}
-          <div class="flex flex-col items-start space-y-2">
-            <Form.Label>Queue</Form.Label>
-            <EntitySelector
-              queryas={usersettings.currentworkspace}
-              collectionname="mq"
-              bind:value={$formData.wiqid}
-              basefilter={{ _type: "workitemqueue" }}
-              name="queue"
-            />
-          </div>
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
-
-    <Form.Field {form} name="payload" class="mb-10">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Payload</Form.Label>
-          <ObjectInput
-            bind:value={$formData.payload}
-            class="h-36"
-            name="queue"
-          />
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
-
-    <Form.Field {form} name="priority" class="mb-10">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Priority</Form.Label>
-          <CustomInput
-            placeholder="Type name"
-            disabled={loading}
-            {...props}
-            bind:value={$formData.priority}
-            type="number"
-          />
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
-
-    <div class="mb-10">
-      <div class="mb-2">Upload Files</div>
-      <div class="flex justify-start space-x-5">
+<form method="POST" use:enhance>
+  <Form.Field {form} name="name" class="mb-10">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Name</Form.Label>
         <CustomInput
           placeholder="Type name"
           disabled={loading}
-          type="file"
-          multiple={true}
-          onchangefunction={(e: any) => {
-            files = e.target.files;
-          }}
+          {...props}
+          bind:value={$formData.name}
         />
-      </div>
-    </div>
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field>
 
-    {#if files.length > 0}
-      <div class="mb-10">
-        <div class="mb-2">New files:</div>
-        {#each files as file, index}
-          <div class="flex space-x-2 mb-2">
-            <div>
-              {`${index + 1}. 
+  <Form.Field {form} name="wiqid" class="mb-10">
+    <Form.Control>
+      {#snippet children({ props })}
+        <div class="flex flex-col items-start space-y-2">
+          <Form.Label>Queue</Form.Label>
+          <EntitySelector
+            queryas={usersettings.currentworkspace}
+            collectionname="mq"
+            bind:value={$formData.wiqid}
+            basefilter={{ _type: "workitemqueue" }}
+            name="queue"
+          />
+        </div>
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field>
+
+  <Form.Field {form} name="payload" class="mb-10">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Payload</Form.Label>
+        <ObjectInput bind:value={$formData.payload} class="h-36" name="queue" />
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field>
+
+  <Form.Field {form} name="priority" class="mb-10">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Priority</Form.Label>
+        <CustomInput
+          placeholder="Type name"
+          disabled={loading}
+          {...props}
+          bind:value={$formData.priority}
+          type="number"
+        />
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field>
+
+  <div class="mb-10">
+    <div class="mb-2">Upload Files</div>
+    <div class="flex justify-start space-x-5">
+      <CustomInput
+        placeholder="Type name"
+        disabled={loading}
+        type="file"
+        multiple={true}
+        onchangefunction={(e: any) => {
+          files = e.target.files;
+        }}
+      />
+    </div>
+  </div>
+
+  {#if files.length > 0}
+    <div class="mb-10">
+      <div class="mb-2">New files:</div>
+      {#each files as file, index}
+        <div class="flex space-x-2 mb-2">
+          <div>
+            {`${index + 1}. 
               ${
                 // @ts-ignore
                 file.name
               }`}
-            </div>
-            <HotkeyButton
-              size="icon"
-              variant="danger"
-              disabled={loading}
-              onclick={() => {
-                let copyarray = [...files];
-                copyarray?.splice(index, 1);
-                files = copyarray;
-              }}
-              aria-label="Delete"
-            >
-              X
-            </HotkeyButton>
           </div>
-        {/each}
-      </div>
-    {/if}
+          <HotkeyButton
+            size="icon"
+            variant="danger"
+            disabled={loading}
+            onclick={() => {
+              let copyarray = [...files];
+              copyarray?.splice(index, 1);
+              files = copyarray;
+            }}
+            aria-label="Delete"
+          >
+            X
+          </HotkeyButton>
+        </div>
+      {/each}
+    </div>
+  {/if}
 
-    <HotkeyButton
-      class="w-full md:w-auto"
-      variant="success"
-      size="base"
-      disabled={loading}
-      aria-label="Create Work Item"
-      type="submit"
-      data-shortcut="ctrl+s"
-    >
-      <Check />
-      Create Work Item</HotkeyButton
-    >
-  </form>
+  <HotkeyButton
+    class="w-full md:w-auto"
+    variant="success"
+    size="base"
+    disabled={loading}
+    aria-label="Create Work Item"
+    type="submit"
+    data-shortcut="ctrl+s"
+  >
+    <Check />
+    Create Work Item</HotkeyButton
+  >
+</form>
 
-  <CustomSuperDebug {formData} />
-</div>
+<CustomSuperDebug {formData} />

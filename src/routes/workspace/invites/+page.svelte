@@ -73,40 +73,38 @@
   }
 </script>
 
-<div class="mx-4 my-1">
-  <div class="mb-4">
-    <SearchInput bind:searchstring />
-  </div>
-
-  <Entities
-    {collectionname}
-    {query}
-    bind:searchstring
-    {page}
-    multi_select={false}
-    {single_item_click}
-    total_count={data.total_count}
-    bind:selected_items
-    bind:entities
-    bind:this={ref}
-    bind:loading
-  >
-    {#snippet action(item: any)}
-      <HotkeyButton
-        aria-label="Delete"
-        disabled={loading}
-        onclick={() => {
-          deleteData = item;
-          showWarning = !showWarning;
-        }}
-        size="tableicon"
-        variant="danger"
-      >
-        <Trash2 />
-      </HotkeyButton>
-    {/snippet}</Entities
-  >
-
-  <Warningdialogue bind:showWarning type="delete" onaccept={handleAccept}
-  ></Warningdialogue>
+<div class="mb-4">
+  <SearchInput bind:searchstring />
 </div>
+
+<Entities
+  {collectionname}
+  {query}
+  bind:searchstring
+  {page}
+  multi_select={false}
+  {single_item_click}
+  total_count={data.total_count}
+  bind:selected_items
+  bind:entities
+  bind:this={ref}
+  bind:loading
+>
+  {#snippet action(item: any)}
+    <HotkeyButton
+      aria-label="Delete"
+      disabled={loading}
+      onclick={() => {
+        deleteData = item;
+        showWarning = !showWarning;
+      }}
+      size="tableicon"
+      variant="danger"
+    >
+      <Trash2 />
+    </HotkeyButton>
+  {/snippet}</Entities
+>
+
+<Warningdialogue bind:showWarning type="delete" onaccept={handleAccept}
+></Warningdialogue>

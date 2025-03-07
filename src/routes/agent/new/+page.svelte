@@ -322,232 +322,137 @@
   }
 </script>
 
-<div class="mx-4 my-2.5">
-  {#if message && $message != ""}
-    {$message}
-  {/if}
+{#if message && $message != ""}
+  {$message}
+{/if}
 
-  <form method="POST" use:enhance>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      <Form.Field {form} name="name" class="w-full">
-        <Form.Control>
-          {#snippet children({ props })}
-            <Form.Label>Name</Form.Label>
-            <CustomInput
-              width="w-full"
-              disabled={loading}
-              bind:value={$formData.name}
-            />
-          {/snippet}
-        </Form.Control>
-        <Form.FieldErrors />
-      </Form.Field>
-
-      <Form.Field {form} name="slug" class="w-full">
-        <Form.Control>
-          {#snippet children({ props })}
-            <div class="flex items-center">
-              <Form.Label>Slug</Form.Label>
-              <HotkeyButton
-                class="ml-2"
-                aria-label="Refresh"
-                size="refresh"
-                variant="refresh"
-                disabled={loading}
-                onclick={() => {
-                  $formData.name = randomname();
-                  $formData.slug = $formData.name;
-                }}><RefreshCcw /></HotkeyButton
-              >
-            </div>
-            <CustomInput
-              width="w-full"
-              disabled={loading}
-              {...props}
-              bind:value={$formData.slug}
-            />
-          {/snippet}
-        </Form.Control>
-        <Form.FieldErrors />
-      </Form.Field>
-
-      <Form.Field {form} name="image" class="w-full">
-        <Form.Control>
-          {#snippet children({ props })}
-            <Form.Label>Image</Form.Label>
-            <CustomSelect
-              width="w-full"
-              type="single"
-              {loading}
-              {...props}
-              bind:value={$formData.image}
-              onValueChangeFunction={ImageUpdated}
-              selectitems={images}
-              triggerContent={triggerContentImage}
-            />
-          {/snippet}
-        </Form.Control>
-        <Form.FieldErrors />
-      </Form.Field>
-
-      <Form.Field {form} name="_stripeprice" class="w-full">
-        <Form.Control>
-          {#snippet children({ props })}
-            <Form.Label>Plan</Form.Label>
-            <CustomSelect
-              width="w-full"
-              {loading}
-              {...props}
-              bind:value={$formData._stripeprice}
-              onValueChangeFunction={PlanUpdated}
-              selectitems={products}
-              triggerContent={triggerContentPlan}
-              type="single"
-            />
-          {/snippet}
-        </Form.Control>
-        <Form.FieldErrors />
-      </Form.Field>
-    </div>
-
-    {#if sizewarningtitle != ""}
-      <div
-        class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-4 rounded relative"
-      >
-        <strong class="font-bold">{sizewarningtitle}</strong>
-        <span class="block sm:inline">{sizewarning}</span>
-      </div>
-    {/if}
-
-    <div class="mb-6 mt-4 md:mb-4 md:mt-2">
-      <Form.Field {form} name="environment" class="min-h-52 w-full mb-4">
-        <Form.Control>
-          {#snippet children({ props })}
-            <Form.Label>Environment</Form.Label>
-            <ObjectInput
-              disabled={loading}
-              {...props}
-              bind:value={$formData.environment}
-            />
-          {/snippet}
-        </Form.Control>
-        <Form.FieldErrors />
-      </Form.Field>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4">
-      <Form.Field
-        {form}
-        name="autostart"
-        class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
-      >
-        <Form.Control>
-          {#snippet children({ props })}
-            <div class="flex flex-col space-y-2">
-              <Form.Label>Auto Start</Form.Label>
-              <Form.Description></Form.Description>
-              <div class="flex items-center space-x-4">
-                <Customswitch
-                  disabled={loading}
-                  bind:checked={$formData.autostart}
-                  {...props}
-                  aria-readonly
-                />
-                <span> {$formData.autostart ? "On" : "Off"} </span>
-              </div>
-            </div>
-          {/snippet}
-        </Form.Control>
-        <Form.FieldErrors />
-      </Form.Field>
-
-      <Form.Field
-        {form}
-        name="webserver"
-        class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
-      >
-        <Form.Control>
-          {#snippet children({ props })}
-            <div class="flex flex-col space-y-2">
-              <Form.Label>Web Server</Form.Label>
-              <Form.Description></Form.Description>
-              <div class="flex space-x-4">
-                <Customswitch
-                  disabled={loading}
-                  bind:checked={$formData.webserver}
-                  {...props}
-                />
-                <span> {$formData.webserver ? "On" : "Off"} </span>
-              </div>
-            </div>
-          {/snippet}
-        </Form.Control>
-        <Form.FieldErrors />
-      </Form.Field>
-
-      <Form.Field
-        {form}
-        name="sleep"
-        class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
-      >
-        <Form.Control>
-          {#snippet children({ props })}
-            <div class="flex flex-col space-y-2">
-              <Form.Label>Sleep</Form.Label>
-              <Form.Description></Form.Description>
-              <div class="flex space-x-4">
-                <Customswitch
-                  disabled={loading}
-                  bind:checked={$formData.sleep}
-                  {...props}
-                  aria-readonly
-                />
-                <span> {$formData.sleep ? "On" : "Off"} </span>
-              </div>
-            </div>
-          {/snippet}
-        </Form.Control>
-        <Form.FieldErrors />
-      </Form.Field>
-      <Form.Field {form} name="timezone" class="mb-4">
-        <Form.Control>
-          {#snippet children({ props })}
-            <div class="flex flex-col items-start space-y-2">
-              <Form.Label class="mb-1">Timezone</Form.Label>
-              <Timezoneselector
-                disabled={loading}
-                {...props}
-                bind:value={$formData.timezone}
-              />
-            </div>
-          {/snippet}
-        </Form.Control>
-        <Form.FieldErrors />
-      </Form.Field>
-    </div>
-
-    <Form.Field {form} name="runas" class="mb-6">
+<form method="POST" use:enhance>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <Form.Field {form} name="name" class="w-full">
       <Form.Control>
         {#snippet children({ props })}
-          <div class="flex flex-col items-start space-y-2">
-            <Form.Label class="me-6">Runas</Form.Label>
-            <div class="md:flex md:items-center md:space-x-4 my-2">
-              <Entityselector
-                width="md:w-fit w-64"
-                class="mb-2 md:mb-0"
+          <Form.Label>Name</Form.Label>
+          <CustomInput
+            width="w-full"
+            disabled={loading}
+            bind:value={$formData.name}
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+
+    <Form.Field {form} name="slug" class="w-full">
+      <Form.Control>
+        {#snippet children({ props })}
+          <div class="flex items-center">
+            <Form.Label>Slug</Form.Label>
+            <HotkeyButton
+              class="ml-2"
+              aria-label="Refresh"
+              size="refresh"
+              variant="refresh"
+              disabled={loading}
+              onclick={() => {
+                $formData.name = randomname();
+                $formData.slug = $formData.name;
+              }}><RefreshCcw /></HotkeyButton
+            >
+          </div>
+          <CustomInput
+            width="w-full"
+            disabled={loading}
+            {...props}
+            bind:value={$formData.slug}
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+
+    <Form.Field {form} name="image" class="w-full">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Image</Form.Label>
+          <CustomSelect
+            width="w-full"
+            type="single"
+            {loading}
+            {...props}
+            bind:value={$formData.image}
+            onValueChangeFunction={ImageUpdated}
+            selectitems={images}
+            triggerContent={triggerContentImage}
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+
+    <Form.Field {form} name="_stripeprice" class="w-full">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Plan</Form.Label>
+          <CustomSelect
+            width="w-full"
+            {loading}
+            {...props}
+            bind:value={$formData._stripeprice}
+            onValueChangeFunction={PlanUpdated}
+            selectitems={products}
+            triggerContent={triggerContentPlan}
+            type="single"
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+  </div>
+
+  {#if sizewarningtitle != ""}
+    <div
+      class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-4 rounded relative"
+    >
+      <strong class="font-bold">{sizewarningtitle}</strong>
+      <span class="block sm:inline">{sizewarning}</span>
+    </div>
+  {/if}
+
+  <div class="mb-6 mt-4 md:mb-4 md:mt-2">
+    <Form.Field {form} name="environment" class="min-h-52 w-full mb-4">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Environment</Form.Label>
+          <ObjectInput
+            disabled={loading}
+            {...props}
+            bind:value={$formData.environment}
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4">
+    <Form.Field
+      {form}
+      name="autostart"
+      class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
+    >
+      <Form.Control>
+        {#snippet children({ props })}
+          <div class="flex flex-col space-y-2">
+            <Form.Label>Auto Start</Form.Label>
+            <Form.Description></Form.Description>
+            <div class="flex items-center space-x-4">
+              <Customswitch
                 disabled={loading}
+                bind:checked={$formData.autostart}
                 {...props}
-                collectionname="users"
-                basefilter={{ _type: "user" }}
-                bind:value={$formData.runas}
+                aria-readonly
               />
-              <HotkeyButton
-                aria-label="User Details"
-                disabled={loading}
-                onclick={() => {
-                  goto(base + `/user/${$formData.runas}`);
-                }}><User />User Details</HotkeyButton
-              >
+              <span> {$formData.autostart ? "On" : "Off"} </span>
             </div>
           </div>
         {/snippet}
@@ -555,31 +460,124 @@
       <Form.FieldErrors />
     </Form.Field>
 
-    <HotkeyButton
-      class="w-full md:w-auto mb-4"
-      variant="success"
-      size="base"
-      disabled={loading}
-      aria-label="Create agent"
-      type="submit"
-      data-shortcut="ctrl+s"
+    <Form.Field
+      {form}
+      name="webserver"
+      class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
     >
-      <Check />
-      Create agent</HotkeyButton
-    >
-  </form>
+      <Form.Control>
+        {#snippet children({ props })}
+          <div class="flex flex-col space-y-2">
+            <Form.Label>Web Server</Form.Label>
+            <Form.Description></Form.Description>
+            <div class="flex space-x-4">
+              <Customswitch
+                disabled={loading}
+                bind:checked={$formData.webserver}
+                {...props}
+              />
+              <span> {$formData.webserver ? "On" : "Off"} </span>
+            </div>
+          </div>
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
 
-  <div class="italic text-gray-500 py-2">
-    <div>
-      Agents using free plan will be shutdown after {data.agentInstance
-        ?.defaultmetadata.runtime_hours} hours. Buy one or more products on the customer
-      page, and then assign it to an agent to allow it to run 24/7.
-    </div>
-    <div>
-      You are limited to {data.agentInstance?.defaultmetadata.agentcount} free agents.
-      Add more resources on the customer page to increase the limit.
-    </div>
+    <Form.Field
+      {form}
+      name="sleep"
+      class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
+    >
+      <Form.Control>
+        {#snippet children({ props })}
+          <div class="flex flex-col space-y-2">
+            <Form.Label>Sleep</Form.Label>
+            <Form.Description></Form.Description>
+            <div class="flex space-x-4">
+              <Customswitch
+                disabled={loading}
+                bind:checked={$formData.sleep}
+                {...props}
+                aria-readonly
+              />
+              <span> {$formData.sleep ? "On" : "Off"} </span>
+            </div>
+          </div>
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+    <Form.Field {form} name="timezone" class="mb-4">
+      <Form.Control>
+        {#snippet children({ props })}
+          <div class="flex flex-col items-start space-y-2">
+            <Form.Label class="mb-1">Timezone</Form.Label>
+            <Timezoneselector
+              disabled={loading}
+              {...props}
+              bind:value={$formData.timezone}
+            />
+          </div>
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
   </div>
 
-  <CustomSuperDebug {formData} />
+  <Form.Field {form} name="runas" class="mb-6">
+    <Form.Control>
+      {#snippet children({ props })}
+        <div class="flex flex-col items-start space-y-2">
+          <Form.Label class="me-6">Runas</Form.Label>
+          <div class="md:flex md:items-center md:space-x-4 my-2">
+            <Entityselector
+              width="md:w-fit w-64"
+              class="mb-2 md:mb-0"
+              disabled={loading}
+              {...props}
+              collectionname="users"
+              basefilter={{ _type: "user" }}
+              bind:value={$formData.runas}
+            />
+            <HotkeyButton
+              aria-label="User Details"
+              disabled={loading}
+              onclick={() => {
+                goto(base + `/user/${$formData.runas}`);
+              }}><User />User Details</HotkeyButton
+            >
+          </div>
+        </div>
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field>
+
+  <HotkeyButton
+    class="w-full md:w-auto mb-4"
+    variant="success"
+    size="base"
+    disabled={loading}
+    aria-label="Create agent"
+    type="submit"
+    data-shortcut="ctrl+s"
+  >
+    <Check />
+    Create agent</HotkeyButton
+  >
+</form>
+
+<div class="italic text-gray-500 py-2">
+  <div>
+    Agents using free plan will be shutdown after {data.agentInstance
+      ?.defaultmetadata.runtime_hours} hours. Buy one or more products on the customer
+    page, and then assign it to an agent to allow it to run 24/7.
+  </div>
+  <div>
+    You are limited to {data.agentInstance?.defaultmetadata.agentcount} free agents.
+    Add more resources on the customer page to increase the limit.
+  </div>
 </div>
+
+<CustomSuperDebug {formData} />

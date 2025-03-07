@@ -243,327 +243,324 @@
   const isAdmin = profileroles.includes("admins");
 </script>
 
-<div class="mx-4 my-1">
-  {#if message && $message != ""}
-    {$message}
-  {/if}
+{#if message && $message != ""}
+  {$message}
+{/if}
 
-  <form method="POST" use:enhance>
-    <Form.Field {form} name="name" class="mb-10">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Name</Form.Label>
-          <Form.Description
-            >This is the domain name (fqdn ) of the OpenCore instance</Form.Description
-          >
-          <CustomInput
+<form method="POST" use:enhance>
+  <Form.Field {form} name="name" class="mb-10">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Name</Form.Label>
+        <Form.Description
+          >This is the domain name (fqdn ) of the OpenCore instance</Form.Description
+        >
+        <CustomInput
+          disabled={loading}
+          placeholder="Type name"
+          {...props}
+          bind:value={$formData.name}
+        />
+      {/snippet}
+    </Form.Control>
+
+    <Form.FieldErrors />
+  </Form.Field>
+
+  <Form.Field {form} name="_billingid" class="mb-10">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Billing Account</Form.Label>
+        <Form.Description>License is the following tier:</Form.Description>
+        <EntitySelector
+          bind:value={$formData._billingid}
+          collectionname="users"
+          {loading}
+          basefilter={{ _type: "customer" }}
+        ></EntitySelector>
+      {/snippet}
+    </Form.Control>
+
+    <Form.FieldErrors />
+  </Form.Field>
+
+  <Form.Field {form} name="_stripeprice" class="mb-10">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>License</Form.Label>
+        <Form.Description
+          >License is linked to this Billing Account:</Form.Description
+        >
+        <CustomSelect
+          {loading}
+          {...props}
+          bind:value={$formData._stripeprice}
+          selectitems={products.filter((x: any) => x.valueadd == false)}
+          triggerContent={triggerContentPlan}
+          type="single"
+        />
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field>
+
+  <Form.Field {form} name="connections" class="mb-10">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Connections</Form.Label>
+        <Form.Description>Max number of concurent connections.</Form.Description
+        >
+        <div class="flex items-center w-full md:w-1/2 lg:w-1/3 space-x-2">
+          <div class="w-full">
+            <CustomInput
+              width="w-full"
+              disabled={true}
+              placeholder="Type name"
+              {...props}
+              bind:value={$formData.connections}
+            />
+          </div>
+          <HotkeyButton
+            size="base"
             disabled={loading}
-            placeholder="Type name"
-            {...props}
-            bind:value={$formData.name}
-          />
-        {/snippet}
-      </Form.Control>
+            onclick={() => {
+              valuepromptaction = "addconnection";
+              valueprompttitle = "Add connections";
+              valuepromptdescription =
+                "How many connections do you want to add?";
+              valuepromptvalue = 1;
+              valueprompt = true;
+            }}
+          >
+            <SquarePlus />
+          </HotkeyButton>
+          <HotkeyButton
+            size="base"
+            disabled={loading}
+            onclick={() => {
+              valuepromptaction = "removeconnection";
+              valueprompttitle = "Remove connections";
+              valuepromptdescription =
+                "How many connections do you want to remove?";
+              valuepromptvalue = 1;
+              valueprompt = true;
+            }}
+          >
+            <SquareMinus />
+          </HotkeyButton>
+        </div>
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field>
 
-      <Form.FieldErrors />
-    </Form.Field>
+  <Form.Field {form} name="workspaces" class="mb-10">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Workspaces</Form.Label>
+        <Form.Description>Max number of workspaces.</Form.Description>
+        <div class="flex items-center w-full md:w-1/2 lg:w-1/3 space-x-2">
+          <div class="w-full">
+            <CustomInput
+              width="w-full"
+              disabled={true}
+              placeholder="Type name"
+              {...props}
+              bind:value={$formData.workspaces}
+            />
+          </div>
+          <HotkeyButton
+            size="base"
+            disabled={loading}
+            onclick={() => {
+              valuepromptaction = "addworkspace";
+              valueprompttitle = "Add workspaces";
+              valuepromptdescription =
+                "How many workspaces do you want to add?";
+              valuepromptvalue = 1;
+              valueprompt = true;
+            }}
+          >
+            <SquarePlus />
+          </HotkeyButton>
+          <HotkeyButton
+            size="base"
+            disabled={loading}
+            onclick={() => {
+              valuepromptaction = "removeworkspace";
+              valueprompttitle = "Remove workspaces";
+              valuepromptdescription =
+                "How many workspaces do you want to remove?";
+              valuepromptvalue = 1;
+              valueprompt = true;
+            }}
+          >
+            <SquareMinus />
+          </HotkeyButton>
+        </div>
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field>
 
-    <Form.Field {form} name="_billingid" class="mb-10">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Billing Account</Form.Label>
-          <Form.Description>License is the following tier:</Form.Description>
-          <EntitySelector
-            bind:value={$formData._billingid}
-            collectionname="users"
-            {loading}
-            basefilter={{ _type: "customer" }}
-          ></EntitySelector>
-        {/snippet}
-      </Form.Control>
+  <Form.Field {form} name="gitrepos" class="mb-10">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Git repositories</Form.Label>
+        <Form.Description>Max number of git repositories.</Form.Description>
+        <div class="flex items-center w-full md:w-1/2 lg:w-1/3 space-x-2">
+          <div class="w-full">
+            <CustomInput
+              width="w-full"
+              disabled={true}
+              placeholder="Type name"
+              {...props}
+              bind:value={$formData.gitrepos}
+            />
+          </div>
+          <HotkeyButton
+            size="base"
+            disabled={loading}
+            onclick={() => {
+              valuepromptaction = "addgitrepo";
+              valueprompttitle = "Add git repositories";
+              valuepromptdescription =
+                "How many git repositories do you want to add?";
+              valuepromptvalue = 1;
+              valueprompt = true;
+            }}
+          >
+            <SquarePlus />
+          </HotkeyButton>
+          <HotkeyButton
+            size="base"
+            disabled={loading}
+            onclick={() => {
+              valuepromptaction = "removegitrepo";
+              valueprompttitle = "Remove git repositories";
+              valuepromptdescription =
+                "How many git repositories do you want to remove?";
+              valuepromptvalue = 1;
+              valueprompt = true;
+            }}
+          >
+            <SquareMinus />
+          </HotkeyButton>
+        </div>
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field>
 
-      <Form.FieldErrors />
-    </Form.Field>
-
+  {#if isAdmin}
     <Form.Field {form} name="_stripeprice" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
-          <Form.Label>License</Form.Label>
+          <Form.Label>License version</Form.Label>
           <Form.Description
-            >License is linked to this Billing Account:</Form.Description
+            >If your openflow is version 1.5.10 or below use version 2, for
+            newer versions select version 3</Form.Description
           >
           <CustomSelect
             {loading}
             {...props}
-            bind:value={$formData._stripeprice}
-            selectitems={products.filter((x: any) => x.valueadd == false)}
-            triggerContent={triggerContentPlan}
+            bind:value={$formData.licenseversion}
+            selectitems={LicenseVersions}
+            triggerContent={triggerContentVersion}
             type="single"
           />
         {/snippet}
       </Form.Control>
       <Form.FieldErrors />
     </Form.Field>
+  {/if}
 
-    <Form.Field {form} name="connections" class="mb-10">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Connections</Form.Label>
-          <Form.Description
-            >Max number of concurent connections.</Form.Description
-          >
-          <div class="flex items-center w-full md:w-1/2 lg:w-1/3 space-x-2">
-            <div class="w-full">
-              <CustomInput
-                width="w-full"
-                disabled={true}
-                placeholder="Type name"
-                {...props}
-                bind:value={$formData.connections}
-              />
-            </div>
-            <HotkeyButton
-              size="base"
-              disabled={loading}
-              onclick={() => {
-                valuepromptaction = "addconnection";
-                valueprompttitle = "Add connections";
-                valuepromptdescription =
-                  "How many connections do you want to add?";
-                valuepromptvalue = 1;
-                valueprompt = true;
-              }}
-            >
-              <SquarePlus />
-            </HotkeyButton>
-            <HotkeyButton
-              size="base"
-              disabled={loading}
-              onclick={() => {
-                valuepromptaction = "removeconnection";
-                valueprompttitle = "Remove connections";
-                valuepromptdescription =
-                  "How many connections do you want to remove?";
-                valuepromptvalue = 1;
-                valueprompt = true;
-              }}
-            >
-              <SquareMinus />
-            </HotkeyButton>
-          </div>
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
-
-    <Form.Field {form} name="workspaces" class="mb-10">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Workspaces</Form.Label>
-          <Form.Description>Max number of workspaces.</Form.Description>
-          <div class="flex items-center w-full md:w-1/2 lg:w-1/3 space-x-2">
-            <div class="w-full">
-              <CustomInput
-                width="w-full"
-                disabled={true}
-                placeholder="Type name"
-                {...props}
-                bind:value={$formData.workspaces}
-              />
-            </div>
-            <HotkeyButton
-              size="base"
-              disabled={loading}
-              onclick={() => {
-                valuepromptaction = "addworkspace";
-                valueprompttitle = "Add workspaces";
-                valuepromptdescription =
-                  "How many workspaces do you want to add?";
-                valuepromptvalue = 1;
-                valueprompt = true;
-              }}
-            >
-              <SquarePlus />
-            </HotkeyButton>
-            <HotkeyButton
-              size="base"
-              disabled={loading}
-              onclick={() => {
-                valuepromptaction = "removeworkspace";
-                valueprompttitle = "Remove workspaces";
-                valuepromptdescription =
-                  "How many workspaces do you want to remove?";
-                valuepromptvalue = 1;
-                valueprompt = true;
-              }}
-            >
-              <SquareMinus />
-            </HotkeyButton>
-          </div>
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
-
-    <Form.Field {form} name="gitrepos" class="mb-10">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Git repositories</Form.Label>
-          <Form.Description>Max number of git repositories.</Form.Description>
-          <div class="flex items-center w-full md:w-1/2 lg:w-1/3 space-x-2">
-            <div class="w-full">
-              <CustomInput
-                width="w-full"
-                disabled={true}
-                placeholder="Type name"
-                {...props}
-                bind:value={$formData.gitrepos}
-              />
-            </div>
-            <HotkeyButton
-              size="base"
-              disabled={loading}
-              onclick={() => {
-                valuepromptaction = "addgitrepo";
-                valueprompttitle = "Add git repositories";
-                valuepromptdescription =
-                  "How many git repositories do you want to add?";
-                valuepromptvalue = 1;
-                valueprompt = true;
-              }}
-            >
-              <SquarePlus />
-            </HotkeyButton>
-            <HotkeyButton
-              size="base"
-              disabled={loading}
-              onclick={() => {
-                valuepromptaction = "removegitrepo";
-                valueprompttitle = "Remove git repositories";
-                valuepromptdescription =
-                  "How many git repositories do you want to remove?";
-                valuepromptvalue = 1;
-                valueprompt = true;
-              }}
-            >
-              <SquareMinus />
-            </HotkeyButton>
-          </div>
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
-
-    {#if isAdmin}
-      <Form.Field {form} name="_stripeprice" class="mb-10">
-        <Form.Control>
-          {#snippet children({ props })}
-            <Form.Label>License version</Form.Label>
-            <Form.Description
-              >If your openflow is version 1.5.10 or below use version 2, for
-              newer versions select version 3</Form.Description
-            >
-            <CustomSelect
-              {loading}
-              {...props}
-              bind:value={$formData.licenseversion}
-              selectitems={LicenseVersions}
-              triggerContent={triggerContentVersion}
-              type="single"
-            />
-          {/snippet}
-        </Form.Control>
-        <Form.FieldErrors />
-      </Form.Field>
-    {/if}
-
-    <div class="flex flex-col md:flex-row md:space-x-5 space-y-4 md:space-y-0">
-      <HotkeyButton
-        variant="success"
-        size="base"
-        disabled={loading}
-        aria-label="Update Licence"
-        type="submit"
-        data-shortcut="ctrl+s"
-      >
-        <Check />
-        Update Licence</HotkeyButton
-      >
-      <HotkeyButton
-        variant="success"
-        size="base"
-        disabled={loading}
-        aria-label="Generate License Key"
-        onclick={async () => {
+  <div class="flex flex-col md:flex-row md:space-x-5 space-y-4 md:space-y-0">
+    <HotkeyButton
+      variant="success"
+      size="base"
+      disabled={loading}
+      aria-label="Update Licence"
+      type="submit"
+      data-shortcut="ctrl+s"
+    >
+      <Check />
+      Update Licence</HotkeyButton
+    >
+    <HotkeyButton
+      variant="success"
+      size="base"
+      disabled={loading}
+      aria-label="Generate License Key"
+      onclick={async () => {
+        try {
+          loading = true;
+          const payload: any = { domain: $formData.name };
+          licensekey = await auth.client.CustomCommand({
+            command: "issuelicense",
+            data: JSON.stringify(payload),
+            jwt: auth.access_token,
+          });
+          licensekey = licensekey.replace(/"/g, "");
           try {
-            loading = true;
-            const payload: any = { domain: $formData.name };
-            licensekey = await auth.client.CustomCommand({
-              command: "issuelicense",
-              data: JSON.stringify(payload),
-              jwt: auth.access_token,
-            });
-            licensekey = licensekey.replace(/"/g, "");
-            try {
-              console.log("licensekey: ", atob(licensekey));
-            } catch (error: any) {
-              console.log("licensekey: ", licensekey, error.message);
-            }
-            showlicenseprompt = true;
+            console.log("licensekey: ", atob(licensekey));
           } catch (error: any) {
-            toast.error("Error", {
-              description: error.message,
-            });
-          } finally {
-            loading = false;
+            console.log("licensekey: ", licensekey, error.message);
           }
-        }}
+          showlicenseprompt = true;
+        } catch (error: any) {
+          toast.error("Error", {
+            description: error.message,
+          });
+        } finally {
+          loading = false;
+        }
+      }}
+    >
+      <KeyRound />
+      Generate License Key</HotkeyButton
+    >
+  </div>
+</form>
+
+<CustomSuperDebug {formData} />
+
+<AlertDialog.Root bind:open={valueprompt}>
+  <AlertDialog.Content>
+    <AlertDialog.Header>
+      <AlertDialog.Title>{valueprompttitle}</AlertDialog.Title>
+      <AlertDialog.Description>
+        {valuepromptdescription}
+        <Input bind:value={valuepromptvalue} type="number" autofocus={true} />
+      </AlertDialog.Description>
+    </AlertDialog.Header>
+    <AlertDialog.Footer>
+      <HotkeyButton disabled={loading} onclick={() => (valueprompt = false)}
+        >Cancel</HotkeyButton
       >
-        <KeyRound />
-        Generate License Key</HotkeyButton
+      <HotkeyButton
+        disabled={loading}
+        onclick={() => {
+          valuepromptdoaction();
+          valueprompt = false;
+        }}>Continue</HotkeyButton
       >
-    </div>
-  </form>
+    </AlertDialog.Footer>
+  </AlertDialog.Content>
+</AlertDialog.Root>
 
-  <CustomSuperDebug {formData} />
-
-  <AlertDialog.Root bind:open={valueprompt}>
-    <AlertDialog.Content>
-      <AlertDialog.Header>
-        <AlertDialog.Title>{valueprompttitle}</AlertDialog.Title>
-        <AlertDialog.Description>
-          {valuepromptdescription}
-          <Input bind:value={valuepromptvalue} type="number" autofocus={true} />
-        </AlertDialog.Description>
-      </AlertDialog.Header>
-      <AlertDialog.Footer>
-        <HotkeyButton disabled={loading} onclick={() => (valueprompt = false)}
-          >Cancel</HotkeyButton
-        >
-        <HotkeyButton
-          disabled={loading}
-          onclick={() => {
-            valuepromptdoaction();
-            valueprompt = false;
-          }}>Continue</HotkeyButton
-        >
-      </AlertDialog.Footer>
-    </AlertDialog.Content>
-  </AlertDialog.Root>
-
-  <AlertDialog.Root bind:open={showlicenseprompt}>
-    <AlertDialog.Content>
-      <AlertDialog.Header>
-        <AlertDialog.Description>
-          <Textarea value={licensekey} class="h-[275px]" />
-        </AlertDialog.Description>
-      </AlertDialog.Header>
-      <AlertDialog.Footer>
-        <HotkeyButton
-          disabled={loading}
-          onclick={() => (showlicenseprompt = false)}>Close</HotkeyButton
-        >
-      </AlertDialog.Footer>
-    </AlertDialog.Content>
-  </AlertDialog.Root>
-</div>
+<AlertDialog.Root bind:open={showlicenseprompt}>
+  <AlertDialog.Content>
+    <AlertDialog.Header>
+      <AlertDialog.Description>
+        <Textarea value={licensekey} class="h-[275px]" />
+      </AlertDialog.Description>
+    </AlertDialog.Header>
+    <AlertDialog.Footer>
+      <HotkeyButton
+        disabled={loading}
+        onclick={() => (showlicenseprompt = false)}>Close</HotkeyButton
+      >
+    </AlertDialog.Footer>
+  </AlertDialog.Content>
+</AlertDialog.Root>

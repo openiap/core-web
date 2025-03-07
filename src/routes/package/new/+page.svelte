@@ -86,129 +86,125 @@
   }
 </script>
 
-<div class="mx-4 my-1">
-  {#if message && $message != ""}
-    {$message}
-  {/if}
+{#if message && $message != ""}
+  {$message}
+{/if}
 
-  <form method="POST" use:enhance>
-    <Form.Field {form} name="name" class="mb-10">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Name</Form.Label>
+<form method="POST" use:enhance>
+  <Form.Field {form} name="name" class="mb-10">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Name</Form.Label>
+        <CustomInput
+          disabled={loading}
+          {...props}
+          bind:value={$formData.name}
+        />
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field>
+
+  <Form.Field {form} name="language" class="mb-10">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Language</Form.Label>
+        <CustomSelect
+          {loading}
+          {...props}
+          bind:value={$formData.language}
+          onValueChangeFunction={() => {}}
+          selectitems={selectItems}
+          triggerContent={() => triggerContent}
+          type="single"
+        />
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field>
+
+  <Form.Field
+    {form}
+    name="chromium"
+    class="flex flex-row items-start space-x-3 space-y-0 mb-10 "
+  >
+    <Form.Control>
+      {#snippet children({ props })}
+        <CustomCheckbox
+          disabled={loading}
+          {...props}
+          bind:checked={$formData.chromium}
+        />
+        <div class="space-y-1 leading-none">
+          <Form.Label>Require Chromium</Form.Label>
+        </div>
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field>
+
+  <Form.Field
+    {form}
+    name="daemon"
+    class="flex flex-row items-start space-x-3 space-y-0 mb-10 "
+  >
+    <Form.Control>
+      {#snippet children({ props })}
+        <CustomCheckbox
+          disabled={loading}
+          {...props}
+          bind:checked={$formData.daemon}
+        />
+        <div class="space-y-1 leading-none">
+          <Form.Label>Daemon</Form.Label>
+        </div>
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field>
+
+  <Form.Field {form} name="fileid" class="mb-10">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Package file</Form.Label>
+        <div class="flex items-center space-x-5">
           <CustomInput
+            size="md"
             disabled={loading}
-            {...props}
-            bind:value={$formData.name}
+            type="file"
+            bind:value={fileData}
+            onchangefunction={uploadFile}
           />
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
+          <HotkeyButton
+            disabled={loading || !fileData}
+            onclick={() => (fileData = null)}
+            aria-label="Clear"
+            variant="danger"
+            size="lg"
+          >
+            Clear
+          </HotkeyButton>
+        </div>
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field>
 
-    <Form.Field {form} name="language" class="mb-10">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Language</Form.Label>
-          <CustomSelect
-            {loading}
-            {...props}
-            bind:value={$formData.language}
-            onValueChangeFunction={() => {}}
-            selectitems={selectItems}
-            triggerContent={() => triggerContent}
-            type="single"
-          />
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
+  <div class="mb-10">
+    git example <span> https://github.com/openiap/nodeworkitemagent.git </span>
+  </div>
 
-    <Form.Field
-      {form}
-      name="chromium"
-      class="flex flex-row items-start space-x-3 space-y-0 mb-10 "
-    >
-      <Form.Control>
-        {#snippet children({ props })}
-          <CustomCheckbox
-            disabled={loading}
-            {...props}
-            bind:checked={$formData.chromium}
-          />
-          <div class="space-y-1 leading-none">
-            <Form.Label>Require Chromium</Form.Label>
-          </div>
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
+  <HotkeyButton
+    type="submit"
+    disabled={loading}
+    aria-label="Create Package"
+    variant="success"
+    size="base"
+    data-shortcut="ctrl+s"
+  >
+    <Check />
+    Create Package</HotkeyButton
+  >
+</form>
 
-    <Form.Field
-      {form}
-      name="daemon"
-      class="flex flex-row items-start space-x-3 space-y-0 mb-10 "
-    >
-      <Form.Control>
-        {#snippet children({ props })}
-          <CustomCheckbox
-            disabled={loading}
-            {...props}
-            bind:checked={$formData.daemon}
-          />
-          <div class="space-y-1 leading-none">
-            <Form.Label>Daemon</Form.Label>
-          </div>
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
-
-    <Form.Field {form} name="fileid" class="mb-10">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Package file</Form.Label>
-          <div class="flex items-center space-x-5">
-            <CustomInput
-              size="md"
-              disabled={loading}
-              type="file"
-              bind:value={fileData}
-              onchangefunction={uploadFile}
-            />
-            <HotkeyButton
-              disabled={loading || !fileData}
-              onclick={() => (fileData = null)}
-              aria-label="Clear"
-              variant="danger"
-              size="lg"
-            >
-              Clear
-            </HotkeyButton>
-          </div>
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
-
-    <div class="mb-10">
-      git example <span>
-        https://github.com/openiap/nodeworkitemagent.git
-      </span>
-    </div>
-
-    <HotkeyButton
-      type="submit"
-      disabled={loading}
-      aria-label="Create Package"
-      variant="success"
-      size="base"
-      data-shortcut="ctrl+s"
-    >
-      <Check />
-      Create Package</HotkeyButton
-    >
-  </form>
-
-  <CustomSuperDebug {formData} />
-</div>
+<CustomSuperDebug {formData} />

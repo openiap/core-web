@@ -82,7 +82,6 @@
   }
 </script>
 
-<div class="mx-4 my-1">
   {#if message && $message != ""}
     {$message}
   {/if}
@@ -233,4 +232,3 @@
   </form>
 
   <CustomSuperDebug {formData} />
-</div>

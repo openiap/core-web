@@ -203,9 +203,9 @@
     </div>
 
     <div
-      class="flex flex-col xl:flex-row xl:items-center xl:justify-between xl:space-x-4 lg:mb-4"
+      class="flex flex-col xl:flex-row xl:items-center xl:justify-between lg:mb-4"
     >
-      <Searchinput bind:searchstring class="xl:w-[240px] mb-4 xl:mb-0" />
+      <Searchinput bind:searchstring class="w-full xl:max-w-[284px] mb-4 xl:mb-0" />
 
       <div
         class="grid grid-cols-1 md:grid-cols-2 lg:flex lg:space-x-5 mb-4 lg:mb-0"

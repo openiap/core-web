@@ -268,37 +268,35 @@
   <link rel="stylesheet" href="{base}/formio.builder.min.css" />
 </svelte:head>
 
-<div class="mx-4 my-2.5">
-  <div>
-    {message}
-  </div>
-  <div>
-    <div
-      class="grid md:grid-cols-2 gap-2 xl:flex xl:items-center xl:justify-start xl:space-x-4 mb-10"
+<div>
+  {message}
+</div>
+<div>
+  <div
+    class="md:flex md:items-center md:justify-start md:space-x-5 mb-10"
+  >
+    <CustomInput
+      class="mb-4 md:mb-0 xl:max-w-sm"
+      width="w-full"
+      type="text"
+      placeholder="Enter form name"
+      bind:value={data.name}
+    />
+    <HotkeyButton
+      variant="success"
+      size="base"
+      disabled={loading}
+      onclick={saveform}
+      aria-label="Create form"
+      type="submit"
+      data-shortcut="ctrl+s"
     >
-      <CustomInput
-        class="xl:max-w-sm"
-        width="w-full"
-        type="text"
-        placeholder="Enter form name"
-        bind:value={data.name}
-      />
-      <HotkeyButton
-        variant="success"
-        size="base"
-        disabled={loading}
-        onclick={saveform}
-        aria-label="Create form"
-        type="submit"
-        data-shortcut="ctrl+s"
-      >
-        <Check />
-        Create form</HotkeyButton
-      >
-    </div>
-    <div
-      class="bootstrap-scope formio-dialog-content dark:bg-bw1000"
-      bind:this={ref}
-    ></div>
+      <Check />
+      Create form</HotkeyButton
+    >
   </div>
+  <div
+    class="bootstrap-scope formio-dialog-content dark:bg-bw1000"
+    bind:this={ref}
+  ></div>
 </div>

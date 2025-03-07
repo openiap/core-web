@@ -46,61 +46,59 @@
   const { form: formData, enhance, message } = form;
 </script>
 
-<div class="mx-4 my-1">
-  {#if message && $message != ""}
-    {$message}
-  {/if}
+{#if message && $message != ""}
+  {$message}
+{/if}
 
-  <form method="POST" use:enhance>
-    <Form.Field {form} name="name" class="mb-10">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Name</Form.Label>
-          <Form.Description>This is the name.</Form.Description>
-          <CustomInput {...props} bind:value={$formData.name} />
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
+<form method="POST" use:enhance>
+  <Form.Field {form} name="name" class="mb-10">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Name</Form.Label>
+        <Form.Description>This is the name.</Form.Description>
+        <CustomInput {...props} bind:value={$formData.name} />
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field>
 
-    <Form.Field {form} name="username" class="mb-10">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Username</Form.Label>
-          <Form.Description>This is your username.</Form.Description>
-          <CustomInput {...props} bind:value={$formData.username} />
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
+  <Form.Field {form} name="username" class="mb-10">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Username</Form.Label>
+        <Form.Description>This is your username.</Form.Description>
+        <CustomInput {...props} bind:value={$formData.username} />
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field>
 
-    <Form.Field {form} name="password" class="mb-10">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Password</Form.Label>
-          <Form.Description>This is your password.</Form.Description>
-          <CustomInput
-            {...props}
-            bind:value={$formData.password}
-            type="password"
-          />
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
+  <Form.Field {form} name="password" class="mb-10">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Password</Form.Label>
+        <Form.Description>This is your password.</Form.Description>
+        <CustomInput
+          {...props}
+          bind:value={$formData.password}
+          type="password"
+        />
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field>
 
-    <HotkeyButton
-      variant="success"
-      size="base"
-      disabled={loading}
-      aria-label="Create Credential"
-      type="submit"
-      data-shortcut="ctrl+s"
-    >
-      <Check />
-      Create Credential</HotkeyButton
-    >
-  </form>
+  <HotkeyButton
+    variant="success"
+    size="base"
+    disabled={loading}
+    aria-label="Create Credential"
+    type="submit"
+    data-shortcut="ctrl+s"
+  >
+    <Check />
+    Create Credential</HotkeyButton
+  >
+</form>
 
-  <CustomSuperDebug {formData} />
-</div>
+<CustomSuperDebug {formData} />

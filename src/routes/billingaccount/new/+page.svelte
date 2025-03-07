@@ -46,35 +46,33 @@
   const { form: formData, enhance, message } = form;
 </script>
 
-<div class="mx-4 my-1">
-  {#if message && $message != ""}
-    {$message}
-  {/if}
+{#if message && $message != ""}
+  {$message}
+{/if}
 
-  <form method="POST" use:enhance>
-    <Form.Field {form} name="name" class="mb-10">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Name</Form.Label>
-          <Form.Description>This is your billing account name.</Form.Description>
-          <CustomInput {...props} bind:value={$formData.name} />
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
+<form method="POST" use:enhance>
+  <Form.Field {form} name="name" class="mb-10">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Name</Form.Label>
+        <Form.Description>This is your billing account name.</Form.Description>
+        <CustomInput {...props} bind:value={$formData.name} />
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field>
 
-    <HotkeyButton
-      variant="success"
-      size="base"
-      disabled={loading}
-      aria-label="Create Billing Account"
-      type="submit"
-      data-shortcut="ctrl+s"
-    >
-      <Check />
-      Create Billing Account</HotkeyButton
-    >
-  </form>
+  <HotkeyButton
+    variant="success"
+    size="base"
+    disabled={loading}
+    aria-label="Create Billing Account"
+    type="submit"
+    data-shortcut="ctrl+s"
+  >
+    <Check />
+    Create Billing Account</HotkeyButton
+  >
+</form>
 
-  <CustomSuperDebug {formData} />
-</div>
+<CustomSuperDebug {formData} />

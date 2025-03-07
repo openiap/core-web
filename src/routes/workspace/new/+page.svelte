@@ -52,47 +52,45 @@
   const { form: formData, enhance, message } = form;
 </script>
 
-<div class="mx-4 my-1">
-  {#if errormessage && errormessage != ""}
-    {errormessage}
-  {/if}
+{#if errormessage && errormessage != ""}
+  {errormessage}
+{/if}
 
-  {#if message && $message != ""}
-    {$message}
-  {/if}
-  <form method="POST" use:enhance>
-    <Form.Field {form} name="name" class="mb-10">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Workspace Name</Form.Label>
-          <Form.Description
-            >This is the name of your new workspace.</Form.Description
-          >
-          <CustomInput {...props} bind:value={$formData.name} />
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
+{#if message && $message != ""}
+  {$message}
+{/if}
+<form method="POST" use:enhance>
+  <Form.Field {form} name="name" class="mb-10">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Workspace Name</Form.Label>
+        <Form.Description
+          >This is the name of your new workspace.</Form.Description
+        >
+        <CustomInput {...props} bind:value={$formData.name} />
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field>
 
-    <div class="flex items-center space-x-5">
-      <HotkeyButton
-        variant="success"
-        size="base"
-        disabled={loading}
-        aria-label="Create Workspace"
-        type="submit"
-        data-shortcut="ctrl+s"
-      >
-        <Check />
-        Create Workspace</HotkeyButton
-      >
-      <HotkeyButton
-        size="lg"
-        aria-label="Cancel"
-        onclick={() => goto(base + `/workspace`)}>Cancel</HotkeyButton
-      >
-    </div>
-  </form>
+  <div class="flex items-center space-x-5">
+    <HotkeyButton
+      variant="success"
+      size="base"
+      disabled={loading}
+      aria-label="Create Workspace"
+      type="submit"
+      data-shortcut="ctrl+s"
+    >
+      <Check />
+      Create Workspace</HotkeyButton
+    >
+    <HotkeyButton
+      size="lg"
+      aria-label="Cancel"
+      onclick={() => goto(base + `/workspace`)}>Cancel</HotkeyButton
+    >
+  </div>
+</form>
 
-  <CustomSuperDebug {formData} />
-</div>
+<CustomSuperDebug {formData} />

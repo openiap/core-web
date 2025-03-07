@@ -147,7 +147,7 @@
     </div>
 
     <div
-      class="flex flex-col lg:flex-row items-center justify-start lg:space-x-4 mb-2 lg:mb-4"
+      class="flex flex-col lg:flex-row items-center justify-start lg:space-x-5 mb-2 lg:mb-4"
     >
       <div class="text-nowrap">Mongodb Query</div>
       <CustomInput
@@ -159,7 +159,7 @@
     </div>
 
     <div
-      class="flex flex-col lg:flex-row items-center justify-start lg:space-x-4 mb-2 lg:mb-4"
+      class="flex flex-col lg:flex-row items-center justify-start lg:space-x-5 mb-2 lg:mb-4"
     >
       <div class="text-start md:me-9">Uniqueness</div>
       <div class="w-full mb-2 lg:mb-0">
