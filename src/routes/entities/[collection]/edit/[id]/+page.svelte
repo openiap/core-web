@@ -57,7 +57,7 @@
   validateForm({ update: true });
 </script>
 
-<div class="mx-4 my-1">
+<div class="px-1">
   {#if errormessage && errormessage != ""}
     {errormessage}
   {/if}
@@ -66,19 +66,19 @@
     <Acl bind:value={$formData} />
 
     <ObjectInput height="min-h-[64vh] mb-10" bind:value={$formData} />
-  </form>
 
-  <HotkeyButton
-    variant="success"
-    size="base"
-    disabled={loading}
-    aria-label="Update Item"
-    type="submit"
-    data-shortcut="ctrl+s"
-  >
-    <Check />
-    Update Item</HotkeyButton
-  >
+    <HotkeyButton
+      variant="success"
+      size="base"
+      disabled={loading}
+      aria-label="Update Item"
+      type="submit"
+      data-shortcut="ctrl+s"
+    >
+      <Check />
+      Update Item</HotkeyButton
+    >
+  </form>
 
   <CustomSuperDebug {formData} />
 </div>

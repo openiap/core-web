@@ -143,7 +143,8 @@
 			<Sidebar.Inset class="overflow-hidden">
 				<Header />
 				<div
-					class="border border-gray-300 bg-white dark:border-bw500 dark:bg-bw800 rounded-xl mb-4 mx-4 h-full overflow-auto tourcontent px-[30px] py-[28px] page"
+					class={"border bg-bw50 border-bw500 dark:bg-bw800 rounded-xl mb-4 mx-4 h-full overflow-auto tourcontent page " +
+						` ${pagename().includes("entities") ? "px-[26px] py-7" : "px-[30px] py-7"}`}
 				>
 					{#if auth.isAuthenticated == true || auth.isAuthenticated == false}
 						{@render children()}

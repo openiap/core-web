@@ -130,7 +130,7 @@
             <ChevronDown class="ml-2 h-4 w-4" />
         {/if}
     </Popover.Trigger>
-    <Popover.Content class="w-72 md:w-80 lg:w-96">
+    <Popover.Content class="w-60 md:w-70">
         {#await loadSearchResult("")}{/await}
 
         <Command.Root shouldFilter={false}>
@@ -157,7 +157,7 @@
                             closeAndRefocusTrigger();
                         }}
                         value={item._id}
-                        class="text-sm cursor-pointer"
+                        class="text-sm cursor-pointer m-2 rounded-[10px]"
                     >
                         {rendername(item)}
                     </Command.Item>

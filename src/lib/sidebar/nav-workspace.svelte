@@ -112,11 +112,13 @@
                             class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground border-[1px] border-bw500 rounded-[10px] px-4 py-6 bg-bw50 dark:bg-bw800 "
                         >
                             {#if activeWorkspacename() != ""}
-                                <LandPlot />
+                                <LandPlot class="text-bw600 dark:text-bw500" />
                                 <div
                                     class="grid flex-1 text-left leading-tight justify-between"
                                 >
-                                    <span class="truncate font-semibold">
+                                    <span
+                                        class="truncate font-semibold dark:text-bw100"
+                                    >
                                         {capitalizeWords(activeWorkspacename())}
                                     </span>
                                     <span class="truncate text-xs text-bw400"
@@ -143,12 +145,13 @@
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content
                     loop={false}
-                    class="w-[--bits-dropdown-menu-anchor-width] min-w-56 rounded-lg shadow-light dark:shadow-dark bg-bw50 dark:bg-bw800"
+                    class="w-[--bits-dropdown-menu-anchor-width] min-w-56 rounded-lg shadow-light dark:shadow-dark bg-bw50 dark:bg-bw850"
                     align="start"
                     side={sidebar.isMobile ? "bottom" : "right"}
                     sideOffset={4}
                 >
-                    <DropdownMenu.Label class="dark:text-bw100 font-bold mb-2 "
+                    <DropdownMenu.Label
+                        class="dark:text-bw100 font-semibold"
                         >Workspaces</DropdownMenu.Label
                     >
                     <!-- <Command.Root
@@ -191,12 +194,14 @@
                         {#each workspaces as workspace, index (workspace._id)}
                             <DropdownMenu.Item
                                 onSelect={() => selectWorkspace(workspace)}
-                                class={`gap-2 px-2.5 py-1.5 mb-2`}
+                                class={`rounded-[10px] p-1.5 px-2.5`}
                             >
                                 <div
                                     class="grid flex-1 text-left leading-tight justify-between cursor-pointer"
                                 >
-                                    <span class="truncate font-semibold dark:text-bw100">
+                                    <span
+                                        class="truncate text-bw950 dark:text-bw100"
+                                    >
                                         {capitalizeWords(workspace.name)}
                                     </span>
                                     <span class="truncate text-xs text-bw400"
@@ -221,15 +226,15 @@
                             <DropdownMenu.Item
                                 onSelect={() =>
                                     selectWorkspace({ _id: "" } as any)}
-                                class="gap-2 p-2 cursor-pointer dark:text-bw100"
+                                class="rounded-[10px] p-1.5 px-2.5 cursor-pointer dark:text-bw100"
                             >
-                                <SquareX class="text-bw500"/>
+                                <SquareX class="text-bw500" />
                                 Unselect Workspace
                             </DropdownMenu.Item>
                         {/if}
                         <DropdownMenu.Item
                             onSelect={() => goto(base + "/workspace")}
-                            class="gap-2 p-2 cursor-pointer dark:text-bw100"
+                            class="rounded-[10px] p-1.5 px-2.5 cursor-pointer dark:text-bw100"
                         >
                             <Layers2 class="size-4 text-bw500" />
                             All Workspaces
@@ -240,7 +245,7 @@
                         <DropdownMenu.Item
                             onSelect={() =>
                                 goto(base + "/workspace/" + currentworkspace)}
-                            class="gap-2 p-2 cursor-pointer text-muted-foreground font-medium dark:text-bw100"
+                            class="rounded-[10px] p-1.5 px-2.5 cursor-pointer text-muted-foreground  dark:text-bw100"
                         >
                             <DollarSignIcon class="size-4 text-bw500" />
                             Billing for {capitalizeWords(activeWorkspacename())}
@@ -249,7 +254,7 @@
                     <DropdownMenu.Separator class="mx-1" />
 
                     <DropdownMenu.Item
-                        class="gap-2 p-2 cursor-pointer dark:text-bw100"
+                        class="rounded-[10px] p-1.5 px-2.5 cursor-pointer dark:text-bw100"
                         onclick={() => goto(base + "/workspace/new")}
                     >
                         <!-- <div
@@ -257,9 +262,9 @@
                         >
                             <Plus class="size-4" />
                         </div>
-                        <div class=" font-medium">Create Workspace</div> -->
+                        <div class=" ">Create Workspace</div> -->
                         <SquarePlus class="size-4 text-bw500" />
-                        <div class=" font-medium">New Workspace</div>
+                        <div class=" ">New Workspace</div>
                     </DropdownMenu.Item>
                 </DropdownMenu.Content>
             </DropdownMenu.Root>

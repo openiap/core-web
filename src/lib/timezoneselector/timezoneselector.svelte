@@ -3,7 +3,7 @@
   let {
     value = $bindable(),
     disabled,
-    class: classname = "w-64",
+    class: classname = "w-64 md:w-full",
     ...restProps
   } = $props();
 

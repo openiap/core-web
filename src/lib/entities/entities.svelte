@@ -653,7 +653,7 @@
 			{#if multi_select}
 				<HotkeyButton
 					aria-label={`Delete ${selected_items.length} Items`}
-					disabled={selected_items.length === 0}
+					disabled={loading || selected_items.length === 0}
 					onclick={() => (showWarning = true)}
 					data-shortcut="del"
 					size="base"
@@ -664,7 +664,7 @@
 				>
 				<Hotkeybutton
 					aria-label="Clear All Selections"
-					disabled={selected_items.length === 0}
+					disabled={loading || selected_items.length === 0}
 					variant="base"
 					size="base"
 					onclick={ClearSelected}
@@ -677,7 +677,7 @@
 				aria-label="Select Columns"
 				variant="base"
 				size="base"
-				disabled={tableheaders.length == 0}
+				disabled={loading || tableheaders.length == 0}
 				onclick={() => {
 					toggleSheet = true;
 				}}

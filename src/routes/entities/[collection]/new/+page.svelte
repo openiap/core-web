@@ -52,13 +52,13 @@
   validateForm({ update: true });
 </script>
 
-<div class="mx-4 my-1">
+<div class="px-1">
   {#if errormessage && errormessage != ""}
     {errormessage}
   {/if}
 
   <form method="POST" use:enhance>
-    <Acl bind:value={$formData} class="mb-10" />
+    <Acl bind:value={$formData} />
 
     <ObjectInput classname="min-h-[64vh] mb-10" bind:value={$formData} />
 

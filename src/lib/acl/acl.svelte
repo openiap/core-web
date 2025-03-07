@@ -83,7 +83,7 @@
                 <ChevronDown class="w-4 h-4" />
             {/if}
         </Hotkeybutton>
-        <Accordion.Content class="px-2.5 border-0">
+        <Accordion.Content class="px-2.5 border-0 py-1">
             {#each value._acl as ace, i}
                 <div
                     class="flex flex-col lg:flex-row items-center justify-between border dark:border-bw600 dark:bg-bw1000 p-0.75 rounded-lg my-1.5"

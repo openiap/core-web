@@ -865,7 +865,7 @@
   <Tabs.Content value="2">
     <form method="POST" use:enhance class="text-sm">
       <div
-        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-4 mb-0 md:mb-6"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-6"
       >
         <Form.Field {form} name="name" class="w-full">
           <Form.Control>
@@ -991,12 +991,12 @@
 
       {#if $formData.image != null && $formData.image != ""}
         <div
-          class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-4 mb-0 md:mb-2"
+          class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-4 mb-0 md:mb-8"
         >
           <Form.Field
             {form}
             name="autostart"
-            class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
+            class="flex flex-row items-start space-x-3 space-y-0 mb-8 md:mb-0"
           >
             <Form.Control>
               {#snippet children({ props })}
@@ -1021,7 +1021,7 @@
           <Form.Field
             {form}
             name="webserver"
-            class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
+            class="flex flex-row items-start space-x-3 space-y-0 mb-8 md:mb-0"
           >
             <Form.Control>
               {#snippet children({ props })}
@@ -1046,7 +1046,7 @@
           <Form.Field
             {form}
             name="sleep"
-            class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
+            class="flex flex-row items-start space-x-3 space-y-0 mb-8 md:mb-0"
           >
             <Form.Control>
               {#snippet children({ props })}
@@ -1068,13 +1068,12 @@
             <Form.FieldErrors />
           </Form.Field>
 
-          <Form.Field {form} name="timezone" class="mb-4">
+          <Form.Field {form} name="timezone" class="mb-8 md:mb-0">
             <Form.Control>
               {#snippet children({ props })}
                 <div class="flex flex-col items-start space-y-2">
                   <Form.Label class="mb-1">Timezone</Form.Label>
                   <Timezoneselector
-                    class="w-full"
                     disabled={loading}
                     {...props}
                     bind:value={$formData.timezone}
@@ -1095,8 +1094,8 @@
               <div class="md:flex md:items-center md:space-x-4 my-2">
                 <Entityselector
                   queryas={usersettings.currentworkspace}
-                  width="w-full md:w-fit w-64"
-                  class="mb-2 md:mb-0"
+                  width="md:w-fit w-64"
+                  class="mb-4 md:mb-0"
                   disabled={loading}
                   {...props}
                   collectionname="users"

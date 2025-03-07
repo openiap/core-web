@@ -326,8 +326,10 @@
   {$message}
 {/if}
 
-<form method="POST" use:enhance>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+<form method="POST" use:enhance class="text-sm">
+  <div
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-6"
+  >
     <Form.Field {form} name="name" class="w-full">
       <Form.Control>
         {#snippet children({ props })}
@@ -411,15 +413,15 @@
 
   {#if sizewarningtitle != ""}
     <div
-      class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-4 rounded relative"
+      class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-4 rounded relative mb-6"
     >
       <strong class="font-bold">{sizewarningtitle}</strong>
       <span class="block sm:inline">{sizewarning}</span>
     </div>
   {/if}
 
-  <div class="mb-6 mt-4 md:mb-4 md:mt-2">
-    <Form.Field {form} name="environment" class="min-h-52 w-full mb-4">
+  <div class="mb-8">
+    <Form.Field {form} name="environment" class="w-full">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Environment</Form.Label>
@@ -434,11 +436,11 @@
     </Form.Field>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4">
+  <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 mb-0 md:mb-8">
     <Form.Field
       {form}
       name="autostart"
-      class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
+      class="flex flex-row items-start space-x-3 space-y-0 mb-8 md:mb-0"
     >
       <Form.Control>
         {#snippet children({ props })}
@@ -463,7 +465,7 @@
     <Form.Field
       {form}
       name="webserver"
-      class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
+      class="flex flex-row items-start space-x-3 space-y-0 mb-8 md:mb-0"
     >
       <Form.Control>
         {#snippet children({ props })}
@@ -487,7 +489,7 @@
     <Form.Field
       {form}
       name="sleep"
-      class="flex flex-row items-start space-x-3 space-y-0 mb-7 "
+      class="flex flex-row items-start space-x-3 space-y-0 mb-8 md:mb-0"
     >
       <Form.Control>
         {#snippet children({ props })}
@@ -508,7 +510,7 @@
       </Form.Control>
       <Form.FieldErrors />
     </Form.Field>
-    <Form.Field {form} name="timezone" class="mb-4">
+    <Form.Field {form} name="timezone" class="mb-8 md:mb-0">
       <Form.Control>
         {#snippet children({ props })}
           <div class="flex flex-col items-start space-y-2">
@@ -525,7 +527,7 @@
     </Form.Field>
   </div>
 
-  <Form.Field {form} name="runas" class="mb-6">
+  <Form.Field {form} name="runas" class="mb-8">
     <Form.Control>
       {#snippet children({ props })}
         <div class="flex flex-col items-start space-y-2">
@@ -533,7 +535,7 @@
           <div class="md:flex md:items-center md:space-x-4 my-2">
             <Entityselector
               width="md:w-fit w-64"
-              class="mb-2 md:mb-0"
+              class="mb-4 md:mb-0"
               disabled={loading}
               {...props}
               collectionname="users"
