@@ -329,7 +329,7 @@
           ><Filter />
           Filter</Popover.Trigger
         >
-        <Popover.Content class="w-fit bg-bw50 dark:bg-bw700 py-2 px-1">
+        <Popover.Content class="w-fit bg-bw50 dark:bg-popover py-2 px-1">
           <RadioGroup.Root value="All" class="flex flex-col">
             <div class="flex items-center py-1 px-2">
               <div class="flex items-center space-x-2 w-full">

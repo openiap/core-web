@@ -26,11 +26,17 @@
 		MoveRight,
 		SquareMousePointer,
 		Trash2,
+		Table as TableIcon,
+		Rows3,
+		Rows4,
+		Columns3,
+		Columns4,
 	} from "lucide-svelte";
 	import { toast } from "svelte-sonner";
 	import { data } from "./data.svelte.js";
 	import IconRenderer from "./IconRenderer.svelte";
 	import { CustomInput } from "$lib/custominput/index.js";
+	import { CustomSwitch } from "$lib/customswitch/index.js";
 
 	export async function reload() {
 		const id = $componentpage?.params?.id;
@@ -674,7 +680,7 @@
 				>
 			{/if}
 			<Hotkeybutton
-				aria-label="Select Columns"
+				aria-label="Edit Table"
 				variant="base"
 				size="base"
 				disabled={loading || tableheaders.length == 0}
@@ -682,31 +688,8 @@
 					toggleSheet = true;
 				}}
 			>
-				<SquareMousePointer />
-				Select Columns
-			</Hotkeybutton>
-			<CustomInput
-				width="w-20"
-				type="number"
-				aria-label="Select Columns"
-				variant="base"
-				size="base"
-				disabled={loading}
-				bind:value={usersettings.pagesize}
-			/>
-			Per page
-			<Hotkeybutton
-				aria-label="Update"
-				variant="base"
-				size="base"
-				disabled={loading}
-				onclick={() => {
-					usersettings.persist();
-					GetData();
-				}}
-			>
-				<Check />
-				Update
+				<TableIcon />
+				Edit Table
 			</Hotkeybutton>
 		</div>
 	</div>
@@ -778,28 +761,70 @@
 		bind:open={toggleSheet}
 		onOpenChange={onSelectColumnsOpenChange}
 	>
-		<Sheet.Content>
+		<Sheet.Content class="bg-bw200 dark:bg-bw1000">
 			<Sheet.Header class="mb-10">
-				<div class="flex items-center space-x-1.5 dark:text-bw50">
-					<SquareMousePointer class="h-4 w-4" />
-					<div class="text-[16px] dark:text-bw50">Select columns</div>
+				<div class="mb-10">
+					<div class="flex items-center space-x-1.5 dark:text-bw50">
+						<Rows4 class="h-4 w-4" />
+						<div class="text-[16px] dark:text-bw50">
+							Select Rows
+						</div>
+					</div>
+					<div
+						class="dark:text-bw400 text-[14px] w-[256px] mb-[19px]"
+					>
+						Type how many rows you want to display in the table
+					</div>
+					<div class="flex items-center space-x-2 w-full">
+						<CustomInput
+							width="w-full"
+							type="number"
+							aria-label="Per page"
+							variant="base"
+							size="base"
+							disabled={loading}
+							bind:value={usersettings.pagesize}
+						/>
+						<Hotkeybutton
+							aria-label="Update"
+							variant="base"
+							size="base"
+							disabled={loading}
+							onclick={() => {
+								usersettings.persist();
+								GetData();
+								toggleSheet = false;
+							}}
+						>
+							<Check />
+							Update
+						</Hotkeybutton>
+					</div>
 				</div>
-				<div class="dark:text-bw400 text-[14px] w-[256px]">
-					Choose which columns to display in the table.
+				<div class="mb-10">
+					<div class="flex items-center space-x-1.5 dark:text-bw50">
+						<Columns4 class="h-4 w-4" />
+						<div class="text-[16px] dark:text-bw50">
+							Select columns
+						</div>
+					</div>
+					<div class="dark:text-bw400 text-[14px] w-[256px]">
+						Choose which columns to display in the table
+					</div>
 				</div>
 			</Sheet.Header>
-			<div class="grid gap-4">
-				<ScrollArea class="max-h-[80vh]">
+			<div class="grid">
+				<ScrollArea class="max-h-[62vh] pr-3">
 					{#each tableheaders as head}
 						<div
-							class="h-[36px] flex items-center rounded-[10px] border border-bw500 p-2.5 mb-1.5 mr-4"
+							class="h-[36px] flex items-center rounded-[10px] border border-bw500 p-2.5 mb-1.5 bg-bw100 dark:bg-bw1000"
 						>
 							<div class="flex-1 space-y-1">
 								<p class="text-muted-foreground text-sm">
 									{data.RenderHeaderName(head)}
 								</p>
 							</div>
-							<Switch
+							<CustomSwitch
 								bind:checked={head.show}
 								onclick={() => {}}
 							/>

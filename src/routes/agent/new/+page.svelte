@@ -12,7 +12,7 @@
   import { auth } from "$lib/stores/auth.svelte";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import Timezoneselector from "$lib/timezoneselector/timezoneselector.svelte";
-  import { Check, RefreshCcw, User } from "lucide-svelte";
+  import { Check, Info, RefreshCcw, User } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
@@ -291,31 +291,31 @@
     if ($formData.image == null) return;
     if ($formData.image.indexOf("openiap/nodechromiumagent") > -1) {
       if (product == null || ram < 0.25) {
-        sizewarningtitle = "Not enough ram";
+        sizewarningtitle = "Not enough ram.";
         if (
           auth.config?.stripe_api_key != null &&
           auth.config?.stripe_api_key != ""
         ) {
           sizewarning =
-            "This instance will not start, or will run extremly slow if not assigned a Payed plan with at least 256Mi ram or higher";
+            "This instance will not start, or will run extremly slow if not assigned a Payed plan with at least 256Mi ram or higher.";
         } else {
           sizewarning =
-            "This instance will not start, or will run extremly slow if not assigned a plan with at least 256Mi ram or higher";
+            "This instance will not start, or will run extremly slow if not assigned a plan with at least 256Mi ram or higher.";
         }
       }
     }
     if ($formData.image.indexOf("openiap/pychromiumagent") > -1) {
       if (product == null || ram < 0.25) {
-        sizewarningtitle = "Not enough ram";
+        sizewarningtitle = "Not enough ram.";
         if (
           auth.config?.stripe_api_key != null &&
           auth.config?.stripe_api_key != ""
         ) {
           sizewarning =
-            "This instance will not start, or will run extremly slow if not assigned a Payed plan with at least 256Mi ram or higher";
+            "This instance will not start, or will run extremly slow if not assigned a Payed plan with at least 256Mi ram or higher.";
         } else {
           sizewarning =
-            "This instance will not start, or will run extremly slow if not assigned a plan with at least 256Mi ram or higher";
+            "This instance will not start, or will run extremly slow if not assigned a plan with at least 256Mi ram or higher.";
         }
       }
     }
@@ -413,9 +413,10 @@
 
   {#if sizewarningtitle != ""}
     <div
-      class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-4 rounded relative mb-6"
+      class="flex items-center space-x-2 bg-bw200 text-bw950 dark:bg-bw600 dark:text-bw100 px-[10.5px] py-[15px] border rounded-[10px] mb-6"
     >
-      <strong class="font-bold">{sizewarningtitle}</strong>
+      <Info class="h-4 w-4" />
+      <span> {sizewarningtitle}</span>
       <span class="block sm:inline">{sizewarning}</span>
     </div>
   {/if}

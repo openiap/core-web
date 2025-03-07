@@ -109,7 +109,7 @@
                     {#snippet child({ props })}
                         <Sidebar.MenuButton
                             {...props}
-                            class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground border-[1px] border-bw500 rounded-[10px] px-4 py-6 bg-bw50 dark:bg-bw800 "
+                            class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground border-[1px] border-bw500 rounded-[10px] px-4 py-6 bg-bw50 hover:bg-bw100 dark:bg-bw850 dark:hover:bg-bw700 "
                         >
                             {#if activeWorkspacename() != ""}
                                 <LandPlot class="text-bw600 dark:text-bw500" />

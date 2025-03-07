@@ -142,7 +142,7 @@
                     await loadSearchResult(value);
                 }}
             />
-            <Command.List>
+            <Command.List class="py-[5px]">
                 <Command.Empty>No entity found.</Command.Empty>
                 {#each entities as item}
                     <Command.Item
@@ -157,7 +157,7 @@
                             closeAndRefocusTrigger();
                         }}
                         value={item._id}
-                        class="text-sm cursor-pointer m-2 rounded-[10px]"
+                        class="text-sm cursor-pointer mx-2 rounded-[10px]"
                     >
                         {rendername(item)}
                     </Command.Item>
