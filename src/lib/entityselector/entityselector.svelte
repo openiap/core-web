@@ -99,6 +99,13 @@
     function closeAndRefocusTrigger() {
         isOpen = false;
     }
+    function rendername(item: any) {
+        if (showType) {
+            return item._type ? `(${item._type}) ${item.name}` : item.name;
+        } else {
+            return item.name;
+        }
+    }
 </script>
 
 <Popover.Root bind:open={isOpen} {...restProps}>
@@ -139,6 +146,7 @@
                 <Command.Empty>No entity found.</Command.Empty>
                 {#each entities as item}
                     <Command.Item
+                        title={rendername(item)}
                         onSelect={() => {
                             if (returnObject) {
                                 value = item;
@@ -149,14 +157,9 @@
                             closeAndRefocusTrigger();
                         }}
                         value={item._id}
-                        class="text-sm"
+                        class="text-sm cursor-pointer"
                     >
-                        {#if showType}
-                            {item._type ? `(${item._type})` : ""}
-                            {item.name}
-                        {:else}
-                            {item.name}
-                        {/if}
+                        {rendername(item)}
                     </Command.Item>
                 {/each}
             </Command.List>

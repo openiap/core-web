@@ -90,20 +90,8 @@
   }
 </script>
 
-<div class="flex justify-between mb-4">
-  <div class="flex gap-2 w-full">
-    <SearchInput bind:searchstring />
-    <HotkeyButton
-      size="sm"
-      variant="base"
-      disabled={loading}
-      aria-label="Filter"
-      class="border-dashed dark:text-bw600"
-    >
-      <Filter />
-      Filter</HotkeyButton
-    >
-  </div>
+<div class="lg:flex space-y-4 lg:space-y-0 justify-between mb-4 lg:space-x-5">
+  <SearchInput bind:searchstring />
 
   <HotkeyButton
     title="Create Workspace (Insert Key)"

@@ -15,6 +15,7 @@
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import { Filter, Pencil, SquarePlus, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
+  import { responsiveTestClass } from "../../helper.js";
 
   let { data } = $props();
   let ref: any;
@@ -59,23 +60,8 @@
   }
 </script>
 
-<div class="flex justify-between mb-4">
-  <div class="flex gap-4 w-full">
-    <SearchInput bind:searchstring />
-    <HotkeyButton
-      size="sm"
-      variant="base"
-      disabled={loading}
-      aria-label="Filter"
-      class="border-dashed dark:text-bw600"
-      onclick={() => {
-        ref.reload();
-      }}
-    >
-      <Filter />
-      Filter</HotkeyButton
-    >
-  </div>
+<div class="sm:flex space-y-4 sm:space-y-0 justify-between mb-4 sm:space-x-5">
+  <SearchInput bind:searchstring />
 
   <HotkeyButton
     title="Create User (Insert Key)"

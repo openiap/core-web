@@ -42,9 +42,7 @@
   }
 </script>
 
-<div
-  class="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 mb-4 xl:flex xl:justify-between xl:items-center"
->
+<div class="lg:flex space-y-4 lg:space-y-0 justify-between mb-4 lg:space-x-5">
   <SearchInput bind:searchstring />
   <HotkeyButton
     title="Create Role (Insert Key)"

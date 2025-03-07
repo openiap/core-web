@@ -48,23 +48,8 @@
   }
 </script>
 
-<div
-  class="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 xl:flex xl:justify-between xl:items-center mb-4"
->
+<div class="lg:flex space-y-4 lg:space-y-0 justify-between mb-4 lg:space-x-5">
   <SearchInput bind:searchstring />
-  <!-- <div class="flex gap-4 w-full">
-    <HotkeyButton
-      size="sm"
-      variant="base"
-      disabled={loading}
-      aria-label="Filter"
-      class="border-dashed dark:text-bw600"
-    >
-      <Filter />
-      Filter</HotkeyButton
-    >
-  </div> -->
-
   <HotkeyButton
     title="Create Package (Insert Key)"
     data-shortcut="ins"

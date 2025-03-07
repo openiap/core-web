@@ -2,10 +2,8 @@
 	import { HotkeyInput } from "$lib/components/ui/hotkeyinput";
 	import { Search } from "lucide-svelte";
 
-	let {
-		searchstring = $bindable(""),
-		class: _class = "w-full lg:max-w-[284px]",
-	} = $props();
+	let { searchstring = $bindable(""), class: _class = "w-full sm:w-[284px]" } =
+		$props();
 </script>
 
 <div class={"flex flex-col gap-1.5" + " " + _class}>

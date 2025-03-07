@@ -74,15 +74,13 @@
   }
 </script>
 
-<div
-  class="grid grid-cols-2 md:grid-cols-2 gap-2 md:gap-4 xl:grid-cols-8 xl:gap-4 mb-2 md:mb-4"
->
-  <div class="col-span-2">
+<div class="lg:flex lg:justify-between mb-2 md:mb-4">
+  <div
+    class="flex flex-col w-full lg:flex-row lg:space-x-5 space-y-4 lg:space-y-0 mb-4 lg:mb-0"
+  >
     <SearchInput bind:searchstring />
-  </div>
-  <div class="xl:col-span-2">
     <EntitySelector
-      width=""
+      class="w-full xl:w-[284px]"
       height="h-7"
       collectionname="mq"
       bind:value={queue}
@@ -91,7 +89,7 @@
       name="Queue"
     />
   </div>
-  <div class="xl:col-start-10">
+  <div>
     <HotkeyButton
       title="Create Work Item (Insert Key)"
       data-shortcut="ins"
