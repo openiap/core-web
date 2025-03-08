@@ -112,15 +112,15 @@
     <div class="w-full px-1">
       <HotkeyButton
         variant="entitycreate"
-        title="Insert Collection"
+        title="Create Collection"
         class="w-full justify-start"
         size="entity"
-        aria-label="Insert Collection"
+        aria-label="Create Collection"
         disabled={loading}
         onclick={() => goto(base + `/entities/new`)}
       >
         <Plus />
-        Insert Collection</HotkeyButton
+        Create Collection</HotkeyButton
       >
     </div>
     <div class="h-full overflow-auto">
