@@ -343,8 +343,8 @@
                 disabled={loading}
                 onclick={async () => {
                   filterby = "all";
-                  // await GetData();
-                  // await getPods(false);
+                  await GetData();
+                  await getPods(false);
                 }}
               />
             </div>
@@ -361,8 +361,8 @@
                 disabled={loading}
                 onclick={async () => {
                   filterby = "daemon";
-                  // await GetData();
-                  // await getPods(false);
+                  await GetData();
+                  await getPods(false);
                 }}
               />
             </div>
@@ -378,7 +378,7 @@
                 disabled={loading}
                 onclick={async () => {
                   filterby = "pods";
-                  // await GetData();
+                  await GetData();
                 }}
               />
             </div>
@@ -394,8 +394,8 @@
                 disabled={loading}
                 onclick={async () => {
                   filterby = "docker";
-                  // await GetData();
-                  // await getPods(false);
+                  await GetData();
+                  await getPods(false);
                 }}
               />
             </div>
@@ -411,8 +411,8 @@
                 disabled={loading}
                 onclick={async () => {
                   filterby = "assistant";
-                  // await GetData();
-                  // await getPods(false);
+                  await GetData();
+                  await getPods(false);
                 }}
               />
             </div>
