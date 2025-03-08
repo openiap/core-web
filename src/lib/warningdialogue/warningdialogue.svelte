@@ -123,6 +123,9 @@
                             await onaccept();
                             confirmentity = "";
                         }
+                    } else {
+                        showWarning = false;
+                        await onaccept();
                     }
                 }}>{buttonaname}</HotkeyButton
             >
