@@ -81,7 +81,7 @@ const settings = [
 
     { "name": "oidc_cookie_key", "type": "string", "default": "" },
     { "name": "api_rate_limit", "type": "boolean", "default": true },
-    { "name": "api_rate_limit_points", "type": "number", "default": 20 },
+    { "name": "api_rate_limit_points", "type": "number", "default": 200 },
     { "name": "api_rate_limit_duration", "type": "number", "default": 1 },
     { "name": "socket_rate_limit", "type": "boolean", "default": true },
     { "name": "socket_rate_limit_points", "type": "number", "default": 30 },
