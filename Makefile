@@ -1,3 +1,5 @@
+.PHONY: build
+
 VERSION = 0.0.41.8
 HASH = $(shell git rev-parse --short HEAD)
 bump:
