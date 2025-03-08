@@ -4,7 +4,6 @@
   import { page as sveltepage } from "$app/state";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import ScrollArea from "$lib/components/ui/scroll-area/scroll-area.svelte";
-  import Separator from "$lib/components/ui/separator/separator.svelte";
   import * as Tabs from "$lib/components/ui/tabs/index.js";
   import { CustomCheckbox } from "$lib/customcheckbox/index.js";
   import { CustomInput } from "$lib/custominput/index.js";
@@ -13,7 +12,17 @@
   import Entities from "$lib/entities/entities.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
-  import { Clock, Folder, FolderSymlink, Plus, Search } from "lucide-svelte";
+  import { WarningDialogue } from "$lib/warningdialogue/index.js";
+  import {
+    Clock,
+    Folder,
+    FolderSymlink,
+    Plus,
+    Search,
+    Trash2,
+  } from "lucide-svelte";
+  import { toast } from "svelte-sonner";
+  import { capitalizeWords } from "../../../../helper.js";
 
   let loading = $state(false);
   let errormessage = $state("");
@@ -22,6 +31,8 @@
   let query = $state("");
   let includeones = $state(false);
   let collections = $state(data.collections);
+  let showWarningEntityDelete = $state(false);
+  let deleteEntityName = $state("");
 
   collectionname = data.collectionname;
   let ref: any;
@@ -52,6 +63,41 @@
       state: { searchstring: $state.snapshot(item.name) },
     });
   }
+  async function getCollections() {
+    try {
+      loading = true;
+      collections = await auth.client.ListCollections({
+        jwt: auth.access_token,
+      });
+      await ref.reload();
+    } catch (error: any) {
+      toast.error("Error while fetching collections", {
+        description: error,
+      });
+      return;
+    } finally {
+      loading = false;
+    }
+  }
+  async function handleEntityDelete() {
+    try {
+      await auth.client.DropCollection({
+        collectionname: deleteEntityName,
+        jwt: auth.access_token,
+      });
+      toast.success(`Deleted ${deleteEntityName} collection`);
+      selectcollection("entities");
+      getCollections();
+    } catch (error: any) {
+      toast.error("Error while deleting collection", {
+        description: error,
+      });
+      return;
+    }
+    showWarningEntityDelete = false;
+  }
+  let profileroles = auth.profile?.roles || [];
+  const isAdmin = profileroles.includes("admins");
 </script>
 
 {#if errormessage && errormessage != ""}
@@ -81,25 +127,48 @@
       <ScrollArea class="max-h-full w-[266px] overflow-auto">
         <div class="pt-0 py-4 px-1 flex flex-col">
           {#each collections as collection, index}
-            <Separator class="my-1 w-3/4 self-center" />
-            <HotkeyButton
-              aria-label={collection.name}
-              class="w-full justify-start"
-              size="entity"
-              variant={collectionvariant(collection.name)}
-              onclick={(e) => {
-                selectcollection(collection.name);
-              }}
-            >
-              {#if collection.name.endsWith(".files")}
-                <FolderSymlink class="size-4" />
-              {:else if collection.type == "timeseries"}
-                <Clock class="size-4" />
-              {:else}
-                <Folder class="size-4" />
+            <div class="flex items-center justify-between py-1">
+              <HotkeyButton
+                aria-label={collection.name}
+                class="w-full justify-start"
+                size="entity"
+                variant={collectionvariant(collection.name)}
+                onclick={(e) => {
+                  selectcollection(collection.name);
+                }}
+              >
+                <div class="flex items-center justify-between w-full">
+                  <div class="flex items-center space-x-2">
+                    <div>
+                      {#if collection.name.endsWith(".files")}
+                        <FolderSymlink class="size-4" />
+                      {:else if collection.type == "timeseries"}
+                        <Clock class="size-4" />
+                      {:else}
+                        <Folder class="size-4" />
+                      {/if}
+                    </div>
+                    <div>
+                      {collection.name}
+                    </div>
+                  </div>
+                </div>
+              </HotkeyButton>
+              {#if isAdmin}
+                <HotkeyButton
+                  aria-label={`Delete ${capitalizeWords(collection.name)}`}
+                  size="tableicon"
+                  variant="deleteentity"
+                  disabled={loading}
+                  onclick={() => {
+                    showWarningEntityDelete = true;
+                    deleteEntityName = collection.name;
+                  }}
+                >
+                  <Trash2 />
+                </HotkeyButton>
               {/if}
-              {collection.name}</HotkeyButton
-            >
+            </div>
           {/each}
         </div>
       </ScrollArea>
@@ -113,6 +182,7 @@
         <Tabs.Trigger
           value="view"
           onclick={() => {
+            loading = true;
             goto(base + `/entities/${collectionname}`);
           }}>View</Tabs.Trigger
         >
@@ -125,6 +195,7 @@
         <Tabs.Trigger
           value="undelete"
           onclick={() => {
+            loading = true;
             goto(base + `/entities/${collectionname}/deleted`);
           }}>Undelete</Tabs.Trigger
         >
@@ -211,7 +282,7 @@
             loading = false;
           }}
         >
-          <Search class="h-4 w-4"/>
+          <Search class="h-4 w-4" />
           Search
         </HotkeyButton>
       </div>
@@ -230,6 +301,13 @@
     ></Entities>
   </div>
 </div>
+
+<WarningDialogue
+  bind:showWarning={showWarningEntityDelete}
+  type="delete"
+  onaccept={handleEntityDelete}
+  entityname={deleteEntityName}
+></WarningDialogue>
 
 <style>
   .page {

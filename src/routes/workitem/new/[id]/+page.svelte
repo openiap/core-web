@@ -119,16 +119,14 @@
   <Form.Field {form} name="wiqid" class="mb-10">
     <Form.Control>
       {#snippet children({ props })}
-        <div class="flex flex-col items-start space-y-2">
-          <Form.Label>Queue</Form.Label>
-          <EntitySelector
-            queryas={usersettings.currentworkspace}
-            collectionname="mq"
-            bind:value={$formData.wiqid}
-            basefilter={{ _type: "workitemqueue" }}
-            name="queue"
-          />
-        </div>
+        <Form.Label>Queue</Form.Label>
+        <EntitySelector
+          queryas={usersettings.currentworkspace}
+          collectionname="mq"
+          bind:value={$formData.wiqid}
+          basefilter={{ _type: "workitemqueue" }}
+          name="queue"
+        />
       {/snippet}
     </Form.Control>
     <Form.FieldErrors />
@@ -161,7 +159,7 @@
   </Form.Field>
 
   <div class="mb-10">
-    <div class="mb-2">Upload Files</div>
+    <div class="mb-2 font-medium text-sm">Upload Files</div>
     <div class="flex justify-start space-x-5">
       <CustomInput
         placeholder="Type name"

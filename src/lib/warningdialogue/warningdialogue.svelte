@@ -1,6 +1,8 @@
 <script lang="ts">
     import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
     import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
+    import { CustomInput } from "$lib/custominput";
+    import { toast } from "svelte-sonner";
 
     let {
         showWarning = $bindable(false),
@@ -9,12 +11,14 @@
         oncancel = (item: any) => {},
         onaccept = (item: any) => {},
         disabled = false,
+        entityname = "",
         ...restProps
     } = $props();
 
     let title: string = $state("");
     let description: string = $state("");
     let buttonaname: string = $state("");
+    let confirmentity: string = $state("");
 
     switch (type) {
         case "delete":
@@ -46,6 +50,13 @@
             description = "This is toggle the state of the item.";
             buttonaname = "Toggle";
             break;
+        case "deleteentity":
+            title = `Are you sure you want to delete this collection?`;
+            description =
+                "Plase type in the name of the collection to confirm.";
+            buttonaname = "Delete";
+            break;
+
         case "default":
             title = "Are you sure?";
             description = "This action cannot be undone.";
@@ -69,6 +80,17 @@
             <AlertDialog.Description>
                 {description}
             </AlertDialog.Description>
+            {#if entityname != ""}
+                <div class="py-2">
+                    Collection name:
+                    {entityname}
+                </div>
+                <CustomInput
+                    bind:value={confirmentity}
+                    placeholder="Confirm collection name"
+                    width=""
+                />
+            {/if}
         </AlertDialog.Header>
         <AlertDialog.Footer>
             <HotkeyButton
@@ -85,8 +107,23 @@
                 variant="danger"
                 {disabled}
                 onclick={async () => {
-                    showWarning = false;
-                    await onaccept();
+                    if (entityname != "") {
+                        if (confirmentity === "") {
+                            return toast.error(
+                                "Please type in the name of the collection to confirm.",
+                            );
+                        }
+                        if (confirmentity != entityname) {
+                            return toast.error(
+                                "Incorrect collection name. Please try again.",
+                            );
+                        }
+                        if (confirmentity === entityname) {
+                            showWarning = false;
+                            await onaccept();
+                            confirmentity = "";
+                        }
+                    }
                 }}>{buttonaname}</HotkeyButton
             >
         </AlertDialog.Footer>

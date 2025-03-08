@@ -12,7 +12,7 @@
 		base: "ring-offset-background focus-visible:ring-ring inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 ",
 		variants: {
 			variant: {
-				base: "shadow-light dark:shadow-dark border border border-bw500 hover:border-bw400 bg-bw50 hover:bg-bw100 text-bw950 dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:hover:bg-bw700 dark:bg-bw850 dark:text-bw200",
+				base: "shadow-light dark:shadow-dark border border border-bw600 hover:border-bw400 bg-bw50 hover:bg-bw100 text-bw950 dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:hover:bg-bw700 dark:bg-bw850 dark:text-bw200",
 				danger: "shadow-light dark:shadow-dark border bg-lightbgred hover:bg-lighthoverred dark:border-bw600 dark:text-bw100 dark:hover:border-bw500 dark:bg-darkbgred dark:hover:bg-darkbghoverred",
 				ghost: "hover:bg-accent hover:text-accent-foreground",
 				link: "underline-offset-4 hover:underline",
@@ -31,6 +31,8 @@
 				entitycreate: "rounded-[0px] hover:text-bw50 hover:bg-bw600",
 				tabselected: "bg-background text-foreground",
 				tab: "text-foreground",
+				deleteentity:
+					"shadow-light dark:shadow-dark border border-bw300 hover:border-bw400 dark:border-bw700 dark:hover:border-bw400 bg-bw50 dark:bg-bw850 hover:bg-lightbgred dark:hover:bg-darkbghoverred text-bw950 dark:text-bw100",
 			},
 			size: {
 				base: "h-8 px-2.5 py-1.5 rounded-[10px]",

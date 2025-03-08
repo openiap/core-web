@@ -34,7 +34,7 @@ export const workspaceSchema = z.object({
 export type WorkspaceSchema = typeof workspaceSchema;
 
 export const newMemberSchema = z.object({
-  email: z.string().min(2).default("hello@world.com"),
+  email: z.string().min(2).default(""),
   role: z.enum(["member", "admin"]).default("member"),
   workspaceid: z.string().optional(),
 });

@@ -75,6 +75,7 @@
         {#snippet children({ props })}
           <Form.Label>Email</Form.Label>
           <Form.Description
+          class="text-bw500"
             >The email of the user you want to invite</Form.Description
           >
           <CustomInput {...props} bind:value={$formData.email} />

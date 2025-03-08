@@ -1,7 +1,6 @@
 <script lang="ts" module>
 	import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
 	import * as Sheet from "$lib/components/ui/sheet/index.js";
-	import { Switch } from "$lib/components/ui/switch/index.js";
 	import * as Table from "$lib/components/ui/table/index.js";
 	import { type sort } from "$lib/stores/usersettings.svelte";
 	import ArrowDown from "lucide-svelte/icons/arrow-down";
@@ -15,28 +14,25 @@
 	import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
 	import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
 	import { CustomCheckbox } from "$lib/customcheckbox/index.js";
+	import { CustomInput } from "$lib/custominput/index.js";
 	import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
+	import { CustomSwitch } from "$lib/customswitch/index.js";
 	import { auth } from "$lib/stores/auth.svelte.js";
 	import { usersettings } from "$lib/stores/usersettings.svelte.js";
 	import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
 	import {
 		Check,
 		CircleX,
+		Columns4,
 		MoveLeft,
 		MoveRight,
-		SquareMousePointer,
-		Trash2,
-		Table as TableIcon,
-		Rows3,
 		Rows4,
-		Columns3,
-		Columns4,
+		Table as TableIcon,
+		Trash2,
 	} from "lucide-svelte";
 	import { toast } from "svelte-sonner";
 	import { data } from "./data.svelte.js";
 	import IconRenderer from "./IconRenderer.svelte";
-	import { CustomInput } from "$lib/custominput/index.js";
-	import { CustomSwitch } from "$lib/customswitch/index.js";
 
 	export async function reload() {
 		const id = $componentpage?.params?.id;
@@ -483,9 +479,6 @@
 	}
 </script>
 
-<!-- <div
-	class={`flex flex-col justify-between ${usersettings.currentpage.includes("entities") ? "md:h-[91%] lg:h-[94%] xl:h-[96%]" : "md:h-[91%] lg:h-full xl:min-h-max"}`}
-> -->
 <div class="main">
 	<div class="mb-2">
 		<div class="text-red-500">{data.errormessage}</div>

@@ -3,7 +3,6 @@
   import { base } from "$app/paths";
   import type { Billing } from "$lib/billing.svelte.js";
   import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-  import Button from "$lib/components/ui/button/button.svelte";
   import * as Card from "$lib/components/ui/card/index.js";
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
@@ -304,16 +303,16 @@
               <div class="grid grid-col-1 gap-2 w-full">
                 <Form.Label class="font-medium">Workspace Name</Form.Label>
                 <div>
-                  <div class="text-bw400">
-                    <!-- Select a billing account for this workspace -->
+                  <div class="text-bw400 font-medium text-sm">
+                    Select a billing account for this workspace
                   </div>
-                  <div class="grid grid-cols-1 gap-2.5">
+                  <div class="grid grid-cols-1 gap-2.5 xl:gap-0 xl:flex xl:space-x-5 pt-2 item-center">
                     <CustomInput
                       {...props}
                       bind:value={$formData.name}
                       width=""
                       placeholder="workspace name"
-                      height="h-7"
+                      height="h-8"
                     />
                     <HotkeyButton
                       variant="success"
@@ -334,7 +333,7 @@
                 {#if entities.length > 0}
                   {#if resourcecount == 0}
                     <Form.Label>Billing Account</Form.Label>
-                    <div class="text-bw400">
+                    <div class="text-bw400 font-medium text-sm">
                       Select a billing account for this workspace
                     </div>
                     <CustomSelect
@@ -349,7 +348,7 @@
                     />
                   {:else}
                     <Form.Label>Billing Account</Form.Label>
-                    <div class="text-bw400">
+                    <div class="text-bw400 font-medium text-sm">
                       The current billing account for this workspace
                     </div>
                     <HotkeyButton
@@ -372,7 +371,7 @@
               <div class="grid grid-col-1 gap-2 w-full">
                 {#if currentbilling != null}
                   <Form.Label>Workspace Billing</Form.Label>
-                  <div class="text-bw400">
+                  <div class="text-bw400 font-medium text-sm">
                     Show billing details for this workspace
                   </div>
                   <HotkeyButton

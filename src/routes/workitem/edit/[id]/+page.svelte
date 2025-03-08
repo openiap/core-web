@@ -167,7 +167,7 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Field {form} name="queue" class="mb-10">
+  <Form.Field {form} name="wiqid" class="mb-10">
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Queue</Form.Label>
@@ -199,7 +199,7 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  <div class="flex space-x-5">
+  <div class="flex space-x-5 font-medium text-sm">
     <div class="mb-10">
       <div class="mb-2">State</div>
       <div class="text-bw400">
@@ -268,7 +268,7 @@
   {/if}
 
   <div class="mb-10">
-    <div class="mb-2">Upload Files</div>
+    <div class="mb-2 font-medium text-sm">Upload Files</div>
     <CustomInput
       placeholder="Type name"
       disabled={loading}

@@ -4,7 +4,6 @@
   import { page as sveltepage } from "$app/state";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
-  import { Separator } from "$lib/components/ui/separator/index.js";
   import * as Tabs from "$lib/components/ui/tabs/index.js";
   import { CustomSelect } from "$lib/customselect/index.js";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
@@ -31,7 +30,7 @@
   let loading = $state(false);
   datacomponent.parsesettings(data.settings);
   let showWarningEntityDelete = $state(false);
-  let newCollectionName = $state("");
+  let deleteEntityName = $state("");
 
   let collectionname = $state("");
   collectionname = data.collectionname;
@@ -93,12 +92,11 @@
   async function handleEntityDelete() {
     try {
       await auth.client.DropCollection({
-        collectionname: collectionname,
+        collectionname: deleteEntityName,
         jwt: auth.access_token,
       });
-      toast.success(`Deleted ${collectionname} collection`);
+      toast.success(`Deleted ${deleteEntityName} collection`);
       selectcollection("entities");
-      newCollectionName = "";
       getCollections();
     } catch (error: any) {
       toast.error("Error while deleting collection", {
@@ -135,25 +133,48 @@
       <ScrollArea class="max-h-full w-[266px] overflow-auto">
         <div class="pt-0 py-4 px-1 flex flex-col">
           {#each collections as collection, index}
-            <Separator class="my-1 w-3/4 self-center" />
-            <HotkeyButton
-              aria-label={collection.name}
-              class="w-full justify-start"
-              size="entity"
-              variant={collectionvariant(collection.name)}
-              onclick={(e) => {
-                selectcollection(collection.name);
-              }}
-            >
-              {#if collection.name.endsWith(".files")}
-                <FolderSymlink class="size-4" />
-              {:else if collection.type == "timeseries"}
-                <Clock class="size-4" />
-              {:else}
-                <Folder class="size-4" />
+            <div class="flex items-center justify-between py-1">
+              <HotkeyButton
+                aria-label={collection.name}
+                class="w-full justify-start"
+                size="entity"
+                variant={collectionvariant(collection.name)}
+                onclick={(e) => {
+                  selectcollection(collection.name);
+                }}
+              >
+                <div class="flex items-center justify-between w-full">
+                  <div class="flex items-center space-x-2">
+                    <div>
+                      {#if collection.name.endsWith(".files")}
+                        <FolderSymlink class="size-4" />
+                      {:else if collection.type == "timeseries"}
+                        <Clock class="size-4" />
+                      {:else}
+                        <Folder class="size-4" />
+                      {/if}
+                    </div>
+                    <div>
+                      {collection.name}
+                    </div>
+                  </div>
+                </div>
+              </HotkeyButton>
+              {#if isAdmin}
+                <HotkeyButton
+                  aria-label={`Delete ${capitalizeWords(collection.name)}`}
+                  size="tableicon"
+                  variant="deleteentity"
+                  disabled={loading}
+                  onclick={() => {
+                    showWarningEntityDelete = true;
+                    deleteEntityName = collection.name;
+                  }}
+                >
+                  <Trash2 />
+                </HotkeyButton>
               {/if}
-              {collection.name}</HotkeyButton
-            >
+            </div>
           {/each}
         </div>
       </ScrollArea>
@@ -162,7 +183,7 @@
   <div id="div2" class="page overflow-auto xl:ms-2 ps-2 pe-1">
     <Tabs.Root value={"view"} class="mb-4">
       <Tabs.List
-        class="md:block md:w-fit dark:bg-darkagenttab rounded-[15px] p-1"
+        class="md:block md:w-fit bg-bw200 dark:bg-darkagenttab rounded-[15px] p-1"
       >
         <Tabs.Trigger
           value="view"
@@ -173,12 +194,14 @@
         <Tabs.Trigger
           value="duplicates"
           onclick={() => {
+            loading = true;
             goto(base + `/entities/${collectionname}/duplicates`);
           }}>Show duplicates</Tabs.Trigger
         >
         <Tabs.Trigger
           value="undelete"
           onclick={() => {
+            loading = true;
             goto(base + `/entities/${collectionname}/deleted`);
           }}>Undelete</Tabs.Trigger
         >
@@ -220,20 +243,6 @@
           <RefreshCcw />
           Refresh</HotkeyButton
         >
-        {#if isAdmin}
-          <HotkeyButton
-            aria-label={`Delete ${capitalizeWords(collectionname)}`}
-            size="sm"
-            variant="danger"
-            disabled={loading}
-            onclick={async () => {
-              showWarningEntityDelete = true;
-            }}
-          >
-            <Trash2 />
-            Delete {capitalizeWords(collectionname)}</HotkeyButton
-          >
-        {/if}
         <HotkeyButton
           aria-label={`Add to ${capitalizeWords(collectionname)} (Insert Key)`}
           size="sm"
@@ -314,8 +323,9 @@
 
 <WarningDialogue
   bind:showWarning={showWarningEntityDelete}
-  type="delete"
+  type="deleteentity"
   onaccept={handleEntityDelete}
+  entityname={deleteEntityName}
 ></WarningDialogue>
 
 <style>

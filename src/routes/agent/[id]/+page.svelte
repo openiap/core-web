@@ -646,7 +646,7 @@
 
 <Tabs.Root value="2" class="w-full">
   <Tabs.List
-    class="h-fit grid grid-cols-1 md:block md:w-fit dark:bg-darkagenttab rounded-[15px] mb-8 p-1"
+    class="h-fit grid grid-cols-1 md:block md:w-fit bg-bw200 dark:bg-darkagenttab rounded-[15px] mb-8 p-1"
   >
     {#if $formData.docker == true}
       <Tabs.Trigger value="1" onclick={() => getPods()}>Pods</Tabs.Trigger>

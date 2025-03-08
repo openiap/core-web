@@ -46,7 +46,7 @@
               },
             });
           }
-          toast.success("Entity created");
+          toast.success("Collection created");
           goto(base + `/entities/${copyForm.collectionname}`);
         } catch (error: any) {
           toast.error("Error", {
@@ -73,7 +73,7 @@
   {/if}
 
   <form method="POST" use:enhance>
-    <Form.Field {form} name="collectionname" class="mb-7">
+    <Form.Field {form} name="collectionname" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Type</Form.Label>
@@ -98,7 +98,7 @@
       <Form.FieldErrors />
     </Form.Field>
 
-    <Form.Field {form} name="collectionname" class="mb-7">
+    <Form.Field {form} name="collectionname" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Collection Name</Form.Label>
@@ -112,7 +112,7 @@
       <Form.FieldErrors />
     </Form.Field>
 
-    <Form.Field {form} name="expireafterseconds" class="mb-7">
+    <Form.Field {form} name="expireafterseconds" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Expire after seconds</Form.Label>
@@ -127,7 +127,7 @@
     </Form.Field>
 
     {#if type === "timeseries"}
-      <Form.Field {form} name="timefield" class="mb-7">
+      <Form.Field {form} name="timefield" class="mb-10">
         <Form.Control>
           {#snippet children({ props })}
             <Form.Label>Time field</Form.Label>
@@ -136,7 +136,7 @@
         </Form.Control>
         <Form.FieldErrors />
       </Form.Field>
-      <Form.Field {form} name="granularity" class="mb-7">
+      <Form.Field {form} name="granularity" class="mb-10">
         <Form.Control>
           {#snippet children({ props })}
             <Form.Label>Granularity</Form.Label>
@@ -160,7 +160,7 @@
         </Form.Control>
         <Form.FieldErrors />
       </Form.Field>
-      <Form.Field {form} name="metadata" class="mb-7">
+      <Form.Field {form} name="metadata" class="mb-10">
         <Form.Control>
           {#snippet children({ props })}
             <Form.Label>Meta data</Form.Label>
@@ -172,16 +172,15 @@
     {/if}
 
     <HotkeyButton
-      class="mb-[1rem]"
       variant="success"
       size="base"
       disabled={loading}
-      aria-label="Create Entity"
+      aria-label="Create Collection"
       type="submit"
       data-shortcut="ctrl+s"
     >
       <Check />
-      Create Entity</HotkeyButton
+      Create Collection</HotkeyButton
     >
   </form>
 

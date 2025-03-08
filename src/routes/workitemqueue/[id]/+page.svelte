@@ -250,7 +250,7 @@
   </Form.Field>
 
   <div class="mb-10">
-    <div class="mb-2">AMQP Queue</div>
+    <div class="mb-2 font-medium text-sm">AMQP Queue</div>
     <EntitySelector
       collectionname="mq"
       bind:value={amqpqueuedata}
@@ -269,7 +269,7 @@
   </div>
 
   <div class="mb-10">
-    <div class="mb-2">Agent</div>
+    <div class="mb-2 font-medium text-sm">Agent</div>
     <EntitySelector
       queryas={usersettings.currentworkspace}
       collectionname="agents"
