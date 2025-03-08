@@ -49,7 +49,7 @@
 <div class="flex items-start justify-between h-full overflow-auto">
   <div
     id="div1"
-    class="h-full max-w-max flex-shrink-0 p-2.5 rounded-[10px] bg-bw100 dark:bg-bw900 pb-10 hidden xl:block"
+    class="h-full max-w-max flex-shrink-0 p-2 rounded-[10px] bg-bw100 dark:bg-bw900 pb-10 hidden xl:block"
   >
     <div class="w-full px-1">
       <HotkeyButton
@@ -93,7 +93,7 @@
       </ScrollArea>
     </div>
   </div>
-  <div id="div2" class="xl:ms-2 page overflow-auto ps-0 lg:ps-2">
+  <div id="div2" class="page overflow-auto xl:ms-2 ps-0 lg:ps-2 pe-1">
     <Tabs.Root value={"undelete"} class="mb-4">
       <Tabs.List
         class="md:block md:w-fit dark:bg-darkagenttab rounded-[15px] p-1"

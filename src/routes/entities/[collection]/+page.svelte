@@ -115,7 +115,7 @@
 <div class="flex items-start justify-between h-full overflow-auto">
   <div
     id="div1"
-    class="h-full max-w-max flex-shrink-0 p-2 ms-1 me-2 rounded-[10px] bg-bw100 dark:bg-bw900 pb-10 hidden xl:block"
+    class="h-full max-w-max flex-shrink-0 p-2 rounded-[10px] bg-bw100 dark:bg-bw900 pb-10 hidden xl:block"
   >
     <div class="w-full px-1">
       <HotkeyButton
@@ -159,7 +159,7 @@
       </ScrollArea>
     </div>
   </div>
-  <div id="div2" class="page overflow-auto ps-2 pe-1">
+  <div id="div2" class="page overflow-auto xl:ms-2 ps-2 pe-1">
     <Tabs.Root value={"view"} class="mb-4">
       <Tabs.List
         class="md:block md:w-fit dark:bg-darkagenttab rounded-[15px] p-1"
@@ -203,7 +203,10 @@
     <div
       class="flex flex-col xl:flex-row xl:items-center xl:justify-between lg:mb-4"
     >
-      <Searchinput bind:searchstring class="w-full xl:max-w-[284px] mb-4 xl:mb-0" />
+      <Searchinput
+        bind:searchstring
+        class="w-full xl:max-w-[284px] mb-4 xl:mb-0"
+      />
 
       <div
         class="grid grid-cols-1 md:grid-cols-2 lg:flex lg:space-x-5 mb-4 lg:mb-0 gap-4 lg:gap-0"

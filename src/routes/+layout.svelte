@@ -144,7 +144,7 @@
 				<Header />
 				<div
 					class={"border bg-bw50 border-bw500 dark:bg-bw800 rounded-xl mb-4 mx-4 h-full overflow-auto tourcontent page " +
-						` ${pagename().includes("entities") ? "px-[26px] py-7" : "px-[30px] py-7"}`}
+						` ${pagename().includes("entities") ? "px-4 py-5" : "px-[30px] py-7"}`}
 				>
 					{#if auth.isAuthenticated == true || auth.isAuthenticated == false}
 						{@render children()}
