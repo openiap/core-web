@@ -242,20 +242,6 @@
           <RefreshCcw />
           Refresh</HotkeyButton
         >
-        {#if isAdmin}
-          <HotkeyButton
-            aria-label={`Delete ${capitalizeWords(collectionname)}`}
-            size="sm"
-            variant="danger"
-            disabled={loading}
-            onclick={async () => {
-              showDropCollectionWarning = true;
-            }}
-          >
-            <Trash2 />
-            Delete {capitalizeWords(collectionname)}</HotkeyButton
-          >
-        {/if}
         <HotkeyButton
           aria-label={`Add to ${capitalizeWords(collectionname)} (Insert Key)`}
           size="sm"
