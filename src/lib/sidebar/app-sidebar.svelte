@@ -478,7 +478,7 @@
 													)
 														? "border-[1px] border-bw600 rounded-[10px] dark:border-transparent " +
 															item.classname
-														: "text-bw600 dark:text-bw400 border-[1px] border-transparent rounded-[10px] hover:bg-bw100 hover:border-[1px] hover:border-bw500 hover:bg-bw100 dark:hover:border-bw500 dark:hover:bg-bw850 dark:hover:text-bw400 " +
+														: "text-bw600 dark:text-bw400 border-[1px] border-transparent rounded-[10px] hover:bg-bw100 hover:border-[1px] hover:border-bw500 dark:hover:border-bw500 dark:hover:bg-bw850 dark:hover:text-bw400 " +
 															item.classname}
 												>
 													{#snippet child({ props })}
