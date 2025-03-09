@@ -82,7 +82,7 @@
       await ref.reload();
     } catch (error: any) {
       toast.error("Error while fetching collections", {
-        description: error,
+        description: error.message,
       });
       return;
     } finally {
@@ -100,7 +100,7 @@
       getCollections();
     } catch (error: any) {
       toast.error("Error while deleting collection", {
-        description: error,
+        description: error.message,
       });
       return;
     }
