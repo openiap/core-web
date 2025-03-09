@@ -34,6 +34,24 @@ class entitiesdata {
 		let entities: any[] = [], total_count: number = 0;
 		try {
 			switch (page) {
+				case base:
+				case base + "/":
+					if(auth.profile == null) {
+						entities = [];
+						total_count = 0;
+						break;
+					}
+					const ors: any[] = [];
+					ors.push({ targetid: auth.profile.sub });
+					// let profileroles = auth.profile?.roles || [];
+					// profileroles.forEach(role => {
+					// 	ors.push({ targetid: role._id });
+					// });
+					let taskquery = { $or: ors, $and: [{ state: { $ne: "completed" } }, { state: { $ne: "failed" } }] };
+
+					entities = await this.GetData(page, "workflow_instances", taskquery, access_token, false);
+					total_count = await this.GetCount(page, "workflow_instances", taskquery, access_token, false);
+					break;
 				case base + "/agent":
 					if (usersettings.currentworkspace != null && usersettings.currentworkspace != "") {
 						entities = await this.GetData(page, "agents", { _type: "agent", _workspaceid: usersettings.currentworkspace }, access_token);
@@ -162,7 +180,6 @@ class entitiesdata {
 					entities = JSON.parse(await auth.client.CustomCommand({ id: id, command: "getworkspaceresources", jwt: access_token }));
 					total_count = entities.length
 					break;
-
 				case base + "/workspace/invites":
 					const userid = auth.profile.sub;
 					const email = auth.profile.email;

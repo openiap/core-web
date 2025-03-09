@@ -106,6 +106,7 @@
                 tabindex={1}
                 variant="danger"
                 {disabled}
+                data-shortcut="enter"
                 onclick={async () => {
                     if (entityname != "") {
                         if (confirmentity === "") {
