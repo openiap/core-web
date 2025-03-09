@@ -31,8 +31,8 @@
   let query = $state("");
   let includeones = $state(false);
   let collections = $state(data.collections);
-  let showWarningEntityDelete = $state(false);
-  let deleteEntityName = $state("");
+  let showDropCollectionWarning = $state(false);
+  let dropCollectionName = $state("");
 
   collectionname = data.collectionname;
   let ref: any;
@@ -79,13 +79,13 @@
       loading = false;
     }
   }
-  async function handleEntityDelete() {
+  async function handleDropCollection() {
     try {
       await auth.client.DropCollection({
-        collectionname: deleteEntityName,
+        collectionname: dropCollectionName,
         jwt: auth.access_token,
       });
-      toast.success(`Deleted ${deleteEntityName} collection`);
+      toast.success(`Deleted ${dropCollectionName} collection`);
       selectcollection("entities");
       getCollections();
     } catch (error: any) {
@@ -94,7 +94,7 @@
       });
       return;
     }
-    showWarningEntityDelete = false;
+    showDropCollectionWarning = false;
   }
   let profileroles = auth.profile?.roles || [];
   const isAdmin = profileroles.includes("admins");
@@ -161,8 +161,8 @@
                   variant="deleteentity"
                   disabled={loading}
                   onclick={() => {
-                    showWarningEntityDelete = true;
-                    deleteEntityName = collection.name;
+                    showDropCollectionWarning = true;
+                    dropCollectionName = collection.name;
                   }}
                 >
                   <Trash2 />
@@ -303,10 +303,10 @@
 </div>
 
 <WarningDialogue
-  bind:showWarning={showWarningEntityDelete}
+  bind:showWarning={showDropCollectionWarning}
   type="delete"
-  onaccept={handleEntityDelete}
-  entityname={deleteEntityName}
+  onaccept={handleDropCollection}
+  entityname={dropCollectionName}
 ></WarningDialogue>
 
 <style>

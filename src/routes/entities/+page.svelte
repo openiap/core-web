@@ -30,8 +30,8 @@
   let ref: any;
   let loading = $state(false);
   datacomponent.parsesettings(data.settings);
-  let showWarningEntityDelete = $state(false);
-  let deleteEntityName = $state("");
+  let showDropCollectionWarning = $state(false);
+  let dropCollectionName = $state("");
 
   let collectionname = $state("");
   collectionname = data.collectionname;
@@ -90,13 +90,13 @@
       loading = false;
     }
   }
-  async function handleEntityDelete() {
+  async function handleDropCollection() {
     try {
       await auth.client.DropCollection({
-        collectionname: deleteEntityName,
+        collectionname: dropCollectionName,
         jwt: auth.access_token,
       });
-      toast.success(`Deleted ${deleteEntityName} collection`);
+      toast.success(`Deleted ${dropCollectionName} collection`);
       selectcollection("entities");
       getCollections();
     } catch (error: any) {
@@ -105,7 +105,7 @@
       });
       return;
     }
-    showWarningEntityDelete = false;
+    showDropCollectionWarning = false;
   }
   let profileroles = auth.profile?.roles || [];
   const isAdmin = profileroles.includes("admins");
@@ -166,8 +166,8 @@
                   size="tableicon"
                   variant="deleteentity"
                   onclick={() => {
-                    showWarningEntityDelete = true;
-                    deleteEntityName = collection.name;
+                    showDropCollectionWarning = true;
+                    dropCollectionName = collection.name;
                   }}
                 >
                   <Trash2 />
@@ -249,7 +249,7 @@
             variant="danger"
             disabled={loading}
             onclick={async () => {
-              showWarningEntityDelete = true;
+              showDropCollectionWarning = true;
             }}
           >
             <Trash2 />
@@ -335,10 +335,10 @@
 >
 
 <WarningDialogue
-  bind:showWarning={showWarningEntityDelete}
+  bind:showWarning={showDropCollectionWarning}
   type="delete"
-  entityname={deleteEntityName}
-  onaccept={handleEntityDelete}
+  entityname={dropCollectionName}
+  onaccept={handleDropCollection}
 ></WarningDialogue>
 
 <style>
