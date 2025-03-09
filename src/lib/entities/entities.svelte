@@ -673,7 +673,7 @@
 				>
 			{/if}
 			<Hotkeybutton
-				aria-label="Edit Table"
+				aria-label="Customise Table"
 				variant="base"
 				size="base"
 				disabled={loading || tableheaders.length == 0}
@@ -682,7 +682,7 @@
 				}}
 			>
 				<TableIcon />
-				Edit Table
+				Customise Table
 			</Hotkeybutton>
 		</div>
 	</div>
