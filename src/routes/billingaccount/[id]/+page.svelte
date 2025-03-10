@@ -6,7 +6,14 @@
   import { CustomInput } from "$lib/custominput/index.js";
   import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
-  import { Check, CloudDownload, Info, Ticket } from "lucide-svelte";
+  import {
+    BadgeDollarSign,
+    Check,
+    CloudDownload,
+    Info,
+    Link,
+    Ticket,
+  } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
@@ -121,7 +128,7 @@
   <div class="mb-10">
     <div>Stripe Options</div>
     <div class="dark:text-bw500 mb-2">
-      Manage all of your OpenCore billing on strip
+      Manage your OpenCore billing on Strip
     </div>
     <div class="flex flex-col md:flex-row md:space-x-5">
       <HotkeyButton
@@ -144,8 +151,8 @@
           }
         }}
       >
-        <Info />
-        Open Billing Portal
+        <BadgeDollarSign />
+        Open Stripe Billing Portal
       </HotkeyButton>
       <HotkeyButton
         onclick={async () => {
@@ -163,7 +170,7 @@
           }
         }}
       >
-        <CloudDownload />
+        <Link />
         Sync with Stripe
       </HotkeyButton>
     </div>
