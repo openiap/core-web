@@ -139,6 +139,7 @@
               </HotkeyButton>
               {#if isAdmin}
                 <HotkeyButton
+                  class="mx-1"
                   aria-label={`Delete ${capitalizeWords(collection.name)}`}
                   size="tableicon"
                   variant="deleteentity"
@@ -206,6 +207,8 @@
     </div>
 
     <Entities
+      multi_select={false}
+      show_delete={false}
       {collectionname}
       page={page()}
       total_count={data.total_count}

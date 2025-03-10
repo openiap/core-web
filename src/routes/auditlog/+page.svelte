@@ -30,6 +30,8 @@
 </div>
 
 <Entities
+  show_delete={false}
+  multi_select={false}
   {collectionname}
   {query}
   bind:searchstring

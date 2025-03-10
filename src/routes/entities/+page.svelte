@@ -48,6 +48,9 @@
   let selected_items = $state([]);
   let collections: any[] = $state(data.collections);
   let entities = $state(data.entities);
+  let show_delete = $state(false);
+  let multi_select = $state(false);
+
   async function deleteitem(item: any) {
     const deletecount = await auth.client.DeleteOne({
       id: item._id,
@@ -107,6 +110,22 @@
     }
     showDropCollectionWarning = false;
   }
+  function setTableDelete(notshow: boolean) {
+    if (notshow) {
+      show_delete = false;
+      multi_select = false;
+    } else {
+      show_delete = true;
+      multi_select = true;
+    }
+  }
+  function checkInitialTableDelete() {
+    let index = collections.findIndex((x) => x.name == collectionname);
+    if (index > 0) {
+      setTableDelete(collections[index].type == "timeseries");
+    }
+  }
+  checkInitialTableDelete();
   let profileroles = auth.profile?.roles || [];
   const isAdmin = profileroles.includes("admins");
 </script>
@@ -129,7 +148,7 @@
         Create Collection</HotkeyButton
       >
     </div>
-    <div class="h-full overflow-auto">
+    <div class="h-full overflow-auto bg-red-500">
       <ScrollArea class="max-h-full w-[266px] overflow-auto">
         <div class="pt-0 py-4 px-1 flex flex-col">
           {#each collections as collection, index}
@@ -140,7 +159,9 @@
                 size="entity"
                 variant={collectionvariant(collection.name)}
                 onclick={(e) => {
+                  console.log("test");
                   selectcollection(collection.name);
+                  setTableDelete(collection.type == "timeseries");
                 }}
               >
                 <div class="flex items-center justify-between w-full">
@@ -162,6 +183,7 @@
               </HotkeyButton>
               {#if isAdmin}
                 <HotkeyButton
+                  class="mx-1"
                   aria-label={`Delete ${capitalizeWords(collection.name)}`}
                   size="tableicon"
                   variant="deleteentity"
@@ -258,6 +280,8 @@
     </div>
 
     <Entities
+      bind:multi_select
+      bind:show_delete
       {collectionname}
       {query}
       page={page()}
@@ -301,6 +325,7 @@
     let index = collections.findIndex((x) => x.name == collectionname);
     if (index > 0) {
       selectcollection(collections[index - 1].name);
+      setTableDelete(collections[index - 1].type == "timeseries");
     }
   }}
   hidden={true}
@@ -312,6 +337,7 @@
     let index = collections.findIndex((x) => x.name == collectionname);
     if (index < collections.length - 1) {
       selectcollection(collections[index + 1].name);
+      setTableDelete(collections[index + 1].type == "timeseries");
     }
   }}
   hidden={true}

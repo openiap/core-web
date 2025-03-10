@@ -88,7 +88,8 @@
 			}
 		},
 		single_item_click = (item: any) => {},
-		multi_select = true,
+		multi_select = $bindable(true),
+		show_delete = $bindable(true),
 		...rest
 	} = $props();
 
@@ -649,7 +650,7 @@
 		<div
 			class="grid grid-cols-1 gap-4 lg:gap-0 md:grid-cols-2 md:space-y-0 lg:flex mt-4 lg:space-x-5 items-center mb-2"
 		>
-			{#if multi_select}
+			{#if multi_select && show_delete == true}
 				<HotkeyButton
 					aria-label={`Delete ${selected_items.length} Items`}
 					disabled={loading || selected_items.length === 0}

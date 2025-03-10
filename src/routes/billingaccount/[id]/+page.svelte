@@ -6,7 +6,7 @@
   import { CustomInput } from "$lib/custominput/index.js";
   import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
-  import { Check, Info, Ticket } from "lucide-svelte";
+  import { Check, CloudDownload, Info, Ticket } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
@@ -82,85 +82,92 @@
   </Form.Field>
 </form>
 {#if data.resource != null}
-<div class="mb-10">
-  <div class=" bw-100">Billing Usage</div>
-  <div class="dark:text-bw500 mb-2">
-    View this billling account's usage accross all workspaces
+  <div class="mb-10">
+    <div class=" bw-100">Billing Usage</div>
+    <div class="dark:text-bw500 mb-2">
+      View this billling account's usage accross all workspaces
+    </div>
+    <div>
+      <HotkeyButton
+        onclick={() => {
+          goto(base + "/billingaccount/" + data.id + "/billing");
+        }}
+      >
+        <Info />
+        All billing usage
+      </HotkeyButton>
+    </div>
   </div>
-  <div>
-    <HotkeyButton
-      onclick={() => {
-        goto(base + "/billingaccount/" + data.id + "/billing");
-      }}
-    >
-      <Info />
-      All billing usage
-    </HotkeyButton>
-  </div>
-</div>
 {/if}
-{#if auth.config.domain.indexOf("openiap.io") > -1 && auth.config.domain != "localhost.openiap.io" }
-<div class="mb-10">
-  <div>Manage OpenCore Licenses</div>
-  <div class="dark:text-bw500 mb-2">Manage all of your OpenCore Licenses</div>
-  <div>
-    <HotkeyButton
-      onclick={() => {
-        goto(base + "/licensekey");
-      }}
-    >
-      <Ticket />
-      Manage OpenCore Licenses
-    </HotkeyButton>
+{#if auth.config.domain.indexOf("openiap.io") > -1 && auth.config.domain != "localhost.openiap.io"}
+  <div class="mb-10">
+    <div>Manage OpenCore Licenses</div>
+    <div class="dark:text-bw500 mb-2">Manage all of your OpenCore Licenses</div>
+    <div>
+      <HotkeyButton
+        onclick={() => {
+          goto(base + "/licensekey");
+        }}
+      >
+        <Ticket />
+        Manage OpenCore Licenses
+      </HotkeyButton>
+    </div>
   </div>
-</div>
 {/if}
 
-<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-10">
-  {#if data.item?.stripeid != null && data.item?.stripeid != ""}
-    <HotkeyButton
-      onclick={async () => {
-        try {
-          const link = await auth.client.CustomCommand({
-            command: "getbillingportallink",
-            id: data.id,
-            jwt: auth.access_token,
-          });
-          if (link != null && link != "") {
-            document.location.href = link.split('"').join("");
-          } else {
-            toast.error("Error opening billing portal");
+<!-- {#if data.item?.stripeid != null && data.item?.stripeid != ""} -->
+{#if true}
+  <div class="mb-10">
+    <div>Stripe Options</div>
+    <div class="dark:text-bw500 mb-2">
+      Manage all of your OpenCore billing on strip
+    </div>
+    <div class="flex flex-col md:flex-row md:space-x-5">
+      <HotkeyButton
+        onclick={async () => {
+          try {
+            const link = await auth.client.CustomCommand({
+              command: "getbillingportallink",
+              id: data.id,
+              jwt: auth.access_token,
+            });
+            if (link != null && link != "") {
+              document.location.href = link.split('"').join("");
+            } else {
+              toast.error("Error opening billing portal");
+            }
+          } catch (error: any) {
+            toast.error("Error opening billing portal", {
+              description: error.message,
+            });
           }
-        } catch (error: any) {
-          toast.error("Error opening billing portal", {
-            description: error.message,
-          });
-        }
-      }}
-    >
-      <Info />
-      Open Billing Portal
-    </HotkeyButton>
-    <HotkeyButton
-      onclick={async () => {
-        try {
-          const link = await auth.client.CustomCommand({
-            command: "syncbillingaccount",
-            id: data.id,
-            jwt: auth.access_token,
-          });
-          toast.success("Billing account synced");
-        } catch (error: any) {
-          toast.error("Error opening billing portal", {
-            description: error.message,
-          });
-        }
-      }}
-    >
-      <Ticket />
-      Sync with Stripe
-    </HotkeyButton>
-  {/if}
-</div>
+        }}
+      >
+        <Info />
+        Open Billing Portal
+      </HotkeyButton>
+      <HotkeyButton
+        onclick={async () => {
+          try {
+            const link = await auth.client.CustomCommand({
+              command: "syncbillingaccount",
+              id: data.id,
+              jwt: auth.access_token,
+            });
+            toast.success("Billing account synced");
+          } catch (error: any) {
+            toast.error("Error opening billing portal", {
+              description: error.message,
+            });
+          }
+        }}
+      >
+        <CloudDownload />
+        Sync with Stripe
+      </HotkeyButton>
+    </div>
+  </div>
+{/if}
 
 <CustomSuperDebug {formData} />

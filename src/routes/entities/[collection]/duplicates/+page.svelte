@@ -33,6 +33,8 @@
   let collections = $state(data.collections);
   let showDropCollectionWarning = $state(false);
   let dropCollectionName = $state("");
+  let show_delete = $state(false);
+  let multi_select = $state(false);
 
   collectionname = data.collectionname;
   let ref: any;
@@ -96,6 +98,22 @@
     }
     showDropCollectionWarning = false;
   }
+  function setTableDelete(notshow: boolean) {
+    if (notshow) {
+      show_delete = false;
+      multi_select = false;
+    } else {
+      show_delete = true;
+      multi_select = true;
+    }
+  }
+  function checkInitialTableDelete() {
+    let index = collections.findIndex((x) => x.name == collectionname);
+    if (index > 0) {
+      setTableDelete(collections[index].type == "timeseries");
+    }
+  }
+  checkInitialTableDelete();
   let profileroles = auth.profile?.roles || [];
   const isAdmin = profileroles.includes("admins");
 </script>
@@ -135,6 +153,7 @@
                 variant={collectionvariant(collection.name)}
                 onclick={(e) => {
                   selectcollection(collection.name);
+                  setTableDelete(collection.type == "timeseries");
                 }}
               >
                 <div class="flex items-center justify-between w-full">
@@ -156,10 +175,10 @@
               </HotkeyButton>
               {#if isAdmin}
                 <HotkeyButton
+                  class="mx-1"
                   aria-label={`Delete ${capitalizeWords(collection.name)}`}
                   size="tableicon"
                   variant="deleteentity"
-                  disabled={loading}
                   onclick={() => {
                     showDropCollectionWarning = true;
                     dropCollectionName = collection.name;
@@ -289,6 +308,8 @@
     </div>
 
     <Entities
+      bind:multi_select
+      bind:show_delete
       {collectionname}
       page={page()}
       total_count={data.total_count}
@@ -301,6 +322,33 @@
     ></Entities>
   </div>
 </div>
+
+<HotkeyButton
+  data-shortcut="up"
+  onclick={() => {
+    let index = collections.findIndex((x) => x.name == collectionname);
+    if (index > 0) {
+      selectcollection(collections[index - 1].name);
+      setTableDelete(collections[index - 1].type == "timeseries");
+    }
+  }}
+  hidden={true}
+  class="hidden">Previous</HotkeyButton
+>
+<HotkeyButton
+  data-shortcut="down"
+  onclick={() => {
+    let index = collections.findIndex((x) => x.name == collectionname);
+    if (index < collections.length - 1) {
+      selectcollection(collections[index + 1].name);
+      setTableDelete(collections[index + 1].type == "timeseries");
+    }
+  }}
+  hidden={true}
+  class="hidden"
+>
+  Next</HotkeyButton
+>
 
 <WarningDialogue
   bind:showWarning={showDropCollectionWarning}
