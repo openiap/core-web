@@ -15,15 +15,15 @@
     $effect(() => {
         errormessage = "";
         const testjson = JSON.stringify(value, null, 2);
-        if (testjson !== json) {
+        if (testjson != json) {
             // External changes detected
             json = testjson;
             intermediateJson = json;
-        } else if (intermediateJson !== json) {
+        } else if (intermediateJson != json) {
             // Internal changes detected
             try {
                 value = JSON.parse(intermediateJson);
-                json = testjson; // Sync `json` after successful parse
+                json = intermediateJson; // Sync `json` after successful parse
                 errormessage = "";
             } catch (error: any) {
                 errormessage = error.message;

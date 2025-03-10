@@ -56,7 +56,7 @@
   });
   const { form: formData, enhance, message } = form;
   $formData.wiqid = data.id === "new" ? "" : data.id || "";
-
+  $formData.payload = {}
   function uploadFiles() {
     return new Promise<void>((resolve, reject) => {
       if (files.length > 0) {
@@ -136,7 +136,9 @@
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Payload</Form.Label>
-        <ObjectInput bind:value={$formData.payload} class="h-36" name="queue" />
+        <ObjectInput bind:value={$formData.payload} class="h-36" 
+        {...props}
+        />
       {/snippet}
     </Form.Control>
     <Form.FieldErrors />
