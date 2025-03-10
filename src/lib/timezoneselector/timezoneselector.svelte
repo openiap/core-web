@@ -301,7 +301,7 @@
 
 <Select.Root {disabled} {...restProps} type="single" name="timezone" bind:value>
   <Select.Trigger
-    class={"bg-bw50 h-8 py-2 rounded-[10px] border dark:border-bw600 dark:placeholder-bw500 dark:text-bw400 dark:bg-bw800 focus:outline-none " +
+    class={"bg-bw50 h-8 py-2 rounded-[10px] border border-bw600 dark:border-bw600 dark:placeholder-bw500 dark:text-bw400 dark:bg-bw800 focus:outline-none " +
       classname}
   >
     {triggerContent}

@@ -31,7 +31,7 @@
 	onValueChange={onValueChangeFunction}
 >
 	<Select.Trigger
-		class={"shadow-soft dark:shadow-dark bg-bw50 py-2 rounded-[10px] border dark:border-bw600 dark:placeholder-bw500 dark:text-bw400 dark:bg-bw800 focus:outline-none " +
+		class={"shadow-soft dark:shadow-dark bg-bw50 py-2 rounded-[10px] border border-bw600 dark:border-bw600 dark:placeholder-bw500 dark:text-bw400 dark:bg-bw800 focus:outline-none " +
 			" " +
 			_width +
 			" " +
