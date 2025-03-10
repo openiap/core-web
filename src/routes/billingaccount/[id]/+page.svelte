@@ -1,7 +1,3 @@
-<script lang="ts" module>
-  export let collectionname = "users";
-</script>
-
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
@@ -85,7 +81,7 @@
     <Form.FieldErrors />
   </Form.Field>
 </form>
-
+{#if data.resource != null}
 <div class="mb-10">
   <div class=" bw-100">Billing Usage</div>
   <div class="dark:text-bw500 mb-2">
@@ -102,7 +98,8 @@
     </HotkeyButton>
   </div>
 </div>
-
+{/if}
+{#if auth.config.domain.indexOf("openiap.io") > -1 && auth.config.domain != "localhost.openiap.io" }
 <div class="mb-10">
   <div>Manage OpenCore Licenses</div>
   <div class="dark:text-bw500 mb-2">Manage all of your OpenCore Licenses</div>
@@ -117,6 +114,7 @@
     </HotkeyButton>
   </div>
 </div>
+{/if}
 
 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-10">
   {#if data.item?.stripeid != null && data.item?.stripeid != ""}
