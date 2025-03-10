@@ -472,11 +472,11 @@ class entitiesdata {
 			case "clientversion":
 				return "Client Version";
 			case "remoteip":
-				return "Remote Ip";
+				return "Remote IP";
 			case "impostorname":
 				return "Impostor Name";
 			case "dbusage":
-				return "Db Usage";
+				return "DB Usage";
 			case "filename":
 				return "File Name";
 			case "metadata.name":
