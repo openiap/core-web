@@ -81,6 +81,8 @@ const config: Config = {
 				darkbgorange: "#5C4D3B",
 				darktextorange: "#F4E3CE",
 				darkborderorange: "#B09777",
+
+				buttonlink: "#91A4DA",
 				// lightbgorange: "#F4E3CE",
 				// lighttextorange: "#F4E3CE",
 				// lightborderorange: "#F4E3CE",

@@ -67,7 +67,6 @@
 		isActive(url: string) {
 			if (url === this.url) return true;
 			if (this.url == base + "/workspace") {
-				console.log("url", url);
 				return false;
 			}
 			if ((url + "/").startsWith(this.url + "/")) return true;
