@@ -1,4 +1,4 @@
-import { web_client_id, web_domain, web_protocol, version, hash } from '$env/static/private';
+import { web_client_id, web_domain, web_protocol, version, hash, posthog_token } from '$env/static/private';
 import { auth } from '$lib/stores/auth.svelte';
 import type { Handle, ServerInit } from '@sveltejs/kit';
 
@@ -8,6 +8,7 @@ export const init: ServerInit = async () => {
     if (protocol == null || protocol == "") protocol = web_protocol;
     let domain = process.env.web_domain;
     if (domain == null || domain == "") domain = web_domain;
+    
     const baseurl = protocol + '://' + domain;
     let wsurl = baseurl.replace("https://", "wss://").replace("http://", "ws://") + "/ws/v2";
     if(process.env.web_wsapiurl != null && process.env.web_wsapiurl != "") {
@@ -38,6 +39,9 @@ export const handle: Handle = async ({ event, resolve }) => {
     if (protocol == null || protocol == "") protocol = web_protocol;
     let domain = process.env.web_domain;
     if (domain == null || domain == "") domain = web_domain;
+    let posthogtoken = process.env.posthog_token;
+    if (posthogtoken == null || posthogtoken == "") posthogtoken = posthog_token;
+    if (posthogtoken == null) posthogtoken = "";
     let client_id = process.env.web_client_id;
     if (client_id == null || client_id == "") client_id = web_client_id;
     const { url, cookies } = event;
@@ -58,6 +62,8 @@ export const handle: Handle = async ({ event, resolve }) => {
     event.locals.protocol = protocol;
     // @ts-ignore
     event.locals.domain = domain;
+    // @ts-ignore
+    event.locals.posthog_token = posthogtoken;
     // @ts-ignore
     event.locals.client_id = client_id;
     // @ts-ignore

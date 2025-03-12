@@ -503,9 +503,9 @@
           });
           licensekey = licensekey.replace(/"/g, "");
           try {
-            console.log("licensekey: ", atob(licensekey));
+            console.debug("licensekey: ", atob(licensekey));
           } catch (error: any) {
-            console.log("licensekey: ", licensekey, error.message);
+            console.debug("licensekey: ", licensekey, error.message);
           }
           showlicenseprompt = true;
         } catch (error: any) {

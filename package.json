@@ -31,6 +31,7 @@
 		"mode-watcher": "^0.5.0",
 		"mousetrap": "^1.6.5",
 		"oidc-client": "^1.11.5",
+		"posthog-js": "^1.230.2",
 		"svelte": "^5.0.0",
 		"svelte-check": "^4.0.0",
 		"svelte-sonner": "^0.3.28",

@@ -159,7 +159,6 @@
                 size="entity"
                 variant={collectionvariant(collection.name)}
                 onclick={(e) => {
-                  console.log("test");
                   selectcollection(collection.name);
                   setTableDelete(collection.type == "timeseries");
                 }}
