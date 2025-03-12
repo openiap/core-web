@@ -62,7 +62,7 @@
       logo: cSvg,
       buttons: {
         example: "https://github.com/skadefro/ctest",
-        package: { title: "headers", link: "" },
+        package: { title: "conan", link: "https://conan.io/center/recipes/openiap" },
       },
     },
     {
@@ -206,10 +206,15 @@
         <div>
           <HotkeyButton
             onclick={() =>
+              // window.open(
+              //   "vscode:extension/openiap.openiap-assistant",
+              //   "_blank",
+              // )}
               window.open(
-                "vscode:extension/openiap.openiap-assistant",
-                "_blank",
+                "https://marketplace.visualstudio.com/items?itemName=openiap.openiap-assistant",
+                "_blank"
               )}
+
           >
             <img src={vscodeSvg} alt="VS Code" class="h-4 w-4" />
             Download VSC extension
