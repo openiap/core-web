@@ -17,11 +17,110 @@
 	import Header from "./Header.svelte";
 	import type { Workspace } from "./workspace/schema.js";
 	import posthog from "posthog-js";
+	import { OTLPLogExporter } from "@opentelemetry/exporter-logs-otlp-proto";
+	import { Resource } from "@opentelemetry/resources";
+	import {
+		LoggerProvider,
+		BatchLogRecordProcessor,
+	} from "@opentelemetry/sdk-logs";
+	import * as logsAPI from "@opentelemetry/api-logs";
 
 	let { children, data } = $props();
 	datacomponent.parsesettings(data.settings);
 	const { wsurl, protocol, domain, client_id, profile, origin } = data;
 	let { access_token } = data;
+
+    if (auth.config.otel_log_url != null && auth.config.otel_log_url !== "") {
+        let url = auth.config.otel_log_url;
+        url = url.replace("https://otel.", "https://otelhttp.");
+        url = url.replace("http://otel.", "http://otelhttp.");
+
+        const logExporter = new OTLPLogExporter({ url });
+        const resource = new Resource({
+            ["service.name"]: "core-web",
+            ["ofid"]: auth.config.ofid,
+        });
+
+        const loggerProvider = new LoggerProvider({ resource });
+        loggerProvider.addLogRecordProcessor(new BatchLogRecordProcessor(logExporter));
+        const logger = loggerProvider.getLogger("default", auth.config?.version);
+
+        // Store original console functions to avoid recursion
+        const originalConsole = {
+            log: console.log,
+            debug: console.debug,
+            warn: console.warn,
+            error: console.error
+        };
+
+		function getCallerInfo(): { filename: string; line: number } {
+			try {
+				const stack = new Error().stack;
+				if (!stack) return { filename: "unknown", line: 0 };
+
+				const lines = stack.split("\n").map(line => line.trim());
+
+				for (const line of lines) {
+					// Skip internal logging functions
+					if (line.includes("getCallerInfo") || line.includes("logWithStackPreserved")) {
+						continue;
+					}
+
+					// Match browser stack traces (URLs)
+					let match = line.match(/(?:\bat\b|\()?([^():\s]+):(\d+):(\d+)\)?$/);
+					if (match) {
+						const fullPath = match[1];  // Full URL or File Path
+						const lineNumber = parseInt(match[2], 10);
+
+						// Extract just the filename from the full path (strip directories)
+						const filename = fullPath.split('/').pop() || "unknown";
+
+						return { filename, line: lineNumber };
+					}
+				}
+			} catch (e) {
+				return { filename: "unknown", line: 0 };
+			}
+
+			return { filename: "unknown", line: 0 };
+		}
+
+
+		function logWithStackPreserved(
+			originalConsoleFn: (...args: unknown[]) => void, 
+			severityNumber: number, 
+			severityText: string, 
+			...args: unknown[]
+		): void {
+			// Log to the original console
+			originalConsoleFn.apply(console, args);
+
+			// Convert arguments to a single string message
+			const message = args.map(arg => (typeof arg === "object" ? JSON.stringify(arg) : String(arg))).join(" ");
+
+			// Get the correct caller info
+			const callerInfo = getCallerInfo();
+
+			// Emit logs to OTEL
+			logger.emit({
+				severityNumber,
+				severityText,
+				body: `${message.trim()}`,
+				attributes: {
+					filename: callerInfo.filename,
+					line: callerInfo.line
+				}
+			});
+		}
+
+
+        // Override console methods while preserving both behaviors
+        console.log = (...args: unknown[]) => logWithStackPreserved(originalConsole.log, logsAPI.SeverityNumber.INFO, "INFO", ...args);
+        console.debug = (...args: unknown[]) => logWithStackPreserved(originalConsole.debug, logsAPI.SeverityNumber.DEBUG, "DEBUG", ...args);
+        console.warn = (...args: unknown[]) => logWithStackPreserved(originalConsole.warn, logsAPI.SeverityNumber.WARN, "WARN", ...args);
+        console.error = (...args: unknown[]) => logWithStackPreserved(originalConsole.error, logsAPI.SeverityNumber.ERROR, "ERROR", ...args);
+    }
+
 	if (auth.config != null) {
 		console.log(
 			"core-web version",
@@ -121,7 +220,7 @@
 	if (browser && data.posthog_token != "") {
 		posthog.init(data.posthog_token, {
 			api_host: "https://eu.i.posthog.com",
-			person_profiles: 'identified_only',
+			person_profiles: "identified_only",
 		});
 	}
 </script>

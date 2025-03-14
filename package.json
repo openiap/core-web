@@ -17,6 +17,7 @@
     "devDependencies": {
         "@fontsource/fira-mono": "^5.1.0",
         "@openiap/jsapi": "github:openiap/jsapi#esm",
+        "@opentelemetry/exporter-logs-otlp-proto": "0.57.1",
         "@sveltejs/adapter-node": "^5.2.9",
         "@sveltejs/kit": "^2.15.1",
         "@sveltejs/vite-plugin-svelte": "^4.0.0",

@@ -48,7 +48,7 @@
 		collectionname = "entities",
 		selected_items = $bindable([]),
 		loading = $bindable(false),
-		total_count,
+		total_count = 99999,
 		caption = "",
 		delete_selected = async (ids: string[]) => {
 			try {
@@ -154,6 +154,7 @@
 		// 	query,
 		// 	auth.access_token,
 		// );
+		GetData();
 	}
 	if (browser && total_count == 99999) {
 		GetCount();

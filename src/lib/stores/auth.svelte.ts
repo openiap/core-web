@@ -44,6 +44,9 @@ class Config {
     llmchat_queue: string = "";
     enable_analytics: boolean = false;
     enable_gitserver: boolean = false;
+    otel_trace_url: string = "";
+    otel_metric_url: string = "";
+    otel_log_url: string = "";
     loginproviders: any[] = [];
 }
 class authState {
