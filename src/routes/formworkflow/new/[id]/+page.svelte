@@ -20,7 +20,7 @@
               goto(base + "/formworkflow/" + payload._id);
           }
       });
-      console.log("Registered temp queue as", queuename, "now, send empty message to", data.item.queue);
+      console.debug("Registered temp queue as", queuename, "now, send empty message to", data.item.queue);
       await auth.client.QueueMessage({queuename: data.item.queue, data: {}, replyto: queuename, jwt: auth.access_token});
   }
   init();

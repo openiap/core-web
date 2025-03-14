@@ -190,7 +190,7 @@ class entitiesdata {
 					total_count = await this.GetCount(page, "users", query, access_token, false);
 					break;
 				default:
-					console.log("Unknown page", page, id);
+					console.debug("Unknown page", page, id);
 					break;
 			}
 		} catch (error: any) {
@@ -237,9 +237,9 @@ class entitiesdata {
 			jwt: access_token,
 		});
 		if (Object.keys(query).length <= 3) {
-			console.log("collectionname", collectionname, "page:", this.settings.page, "idx:", this.settings.page_index, "res:", entities.length, "skip:", skip, "query:", query, "token:", access_token?.substring(0, 10));
+			console.debug("collectionname", collectionname, "page:", this.settings.page, "idx:", this.settings.page_index, "res:", entities.length, "skip:", skip, "query:", query, "token:", access_token?.substring(0, 10));
 		} else {
-			console.log("collectionname", collectionname, "page:", this.settings.page, "idx:", this.settings.page_index, "res:", entities.length, "skip:", skip, "token:", access_token?.substring(0, 10));
+			console.debug("collectionname", collectionname, "page:", this.settings.page, "idx:", this.settings.page_index, "res:", entities.length, "skip:", skip, "token:", access_token?.substring(0, 10));
 		}
 		return entities;
 	}
@@ -555,16 +555,16 @@ class entitiesdata {
 				return ["name", "cvr", "virksomhedsformkort", "sidstOpdateret", "stiftelsesDato", "ophoersDato", "cvrstatus"];
 			default:
 				if (page.indexOf("/history/") > -1) {
-					console.log("Unknown history page", page);
+					console.debug("Unknown history page", page);
 					return ["_id", "name", "_createdby", "_modified", "_deleted", "_version"];
 				} else if (page.endsWith("/deleted")) {
-					console.log("Unknown deleted page", page);
+					console.debug("Unknown deleted page", page);
 					return ["_id", "name", "_type", "_deleted", "_deletedby", "_created", "_version"];
 				}
 				else if (page.endsWith("/duplicates")) {
 					return ["_id", "name", "count"];
 				}
-				console.log("Unknown page", page);
+				console.debug("Unknown page", page);
 				return ["_id", "name", "_type", "_createdby", "_created"];
 		}
 	}

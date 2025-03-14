@@ -16,6 +16,7 @@
 	import "../app.css";
 	import Header from "./Header.svelte";
 	import type { Workspace } from "./workspace/schema.js";
+	import posthog from "posthog-js";
 
 	let { children, data } = $props();
 	datacomponent.parsesettings(data.settings);
@@ -116,6 +117,12 @@
 				}
 			});
 		}
+	}
+	if (browser && data.posthog_token != "") {
+		posthog.init(data.posthog_token, {
+			api_host: "https://eu.i.posthog.com",
+			person_profiles: 'identified_only',
+		});
 	}
 </script>
 

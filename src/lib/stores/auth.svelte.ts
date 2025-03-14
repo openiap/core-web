@@ -7,6 +7,7 @@ import { SvelteStorage } from "./SvelteStorage.svelte";
 const { UserManager, WebStorageStateStore } = pkg;
 // @ts-ignore
 import ws from 'ws';
+import posthog from "posthog-js";
 class Config {
     webversion: string = "";
     webcommit: string = "";
@@ -161,7 +162,17 @@ class authState {
         if (result != null) {
             auth.profile = result.profile;
             access_token = result.access_token;
-            if (browser) auth.access_token = result.access_token;
+            if (browser) {
+                auth.access_token = result.access_token;
+                try {
+                    posthog.identify(auth.profile.sub, {
+                        name: auth.profile.name,
+                        email: auth.profile.email,
+                    });
+                } catch (error:any) {
+                    console.error(error.message);
+                }
+            }
             auth.isAuthenticated = true;
         } else {
             auth.profile = {} as any;

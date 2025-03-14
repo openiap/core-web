@@ -148,7 +148,7 @@
         Create Collection</HotkeyButton
       >
     </div>
-    <div class="h-full overflow-auto bg-red-500">
+    <div class="h-full overflow-auto">
       <ScrollArea class="max-h-full w-[266px] overflow-auto">
         <div class="pt-0 py-4 px-1 flex flex-col">
           {#each collections as collection, index}
@@ -159,7 +159,6 @@
                 size="entity"
                 variant={collectionvariant(collection.name)}
                 onclick={(e) => {
-                  console.log("test");
                   selectcollection(collection.name);
                   setTableDelete(collection.type == "timeseries");
                 }}
