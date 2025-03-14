@@ -1,3 +1,4 @@
+import { base } from "$app/paths";
 import { data } from "$lib/entities/data.svelte.js";
 import { auth } from "$lib/stores/auth.svelte.js";
 import { usersettings } from "$lib/stores/usersettings.svelte.js";
@@ -10,7 +11,7 @@ export const load: PageLoad = async ({ parent }) => {
     if (collectionname == null || collectionname == "") {
         collectionname = "entities";
     }
-    let page = "entities-" + collectionname;
+    let page = base + "/entities/" + collectionname;
     data.loadsettings(page);
     try {
         const collections = await auth.client.ListCollections({ jwt: access_token });

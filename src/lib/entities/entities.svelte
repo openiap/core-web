@@ -303,6 +303,7 @@
 				total_count = 99999;
 				selected_items = data.settings.selected_items;
 				page_index = data.settings.page_index;
+				tableheaders = []
 				GetData();
 			}
 			data.settings.selected_items = selected_items;

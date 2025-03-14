@@ -12,7 +12,8 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 	const { origin } = url;
 	let workspaces: Workspace[] = [];
 	let total_count = 99999;
-	const page = url.pathname;
+	let page = url.pathname;
+	
 	const webcommit = auth.config?.webcommit;
 	const webversion = auth.config?.webversion;
 	if(auth.client?.connected == false || auth.client?.connected == null) {
@@ -20,7 +21,14 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 	}
 	try {
 		await usersettings.dbload(access_token);
-		const shortpage = (route.id != null && route.id.indexOf("/") > -1 ? route.id.split("/")[1] : "");
+		if(page == base + "/entities") {
+			let collectionname = usersettings.entities_collectionname;
+			if (collectionname == null || collectionname == "") {
+				usersettings.entities_collectionname = "entities";
+				collectionname = "entities";
+			}
+			page = base + "/entities/" + collectionname;
+		}
 		workspaces = await auth.client.Query<Workspace>({ collectionname: "users", query: { _type: "workspace" }, jwt: access_token, top: 5 });
 		if(usersettings.currentworkspace != null && usersettings.currentworkspace != "") {
 			let exists = workspaces.find(x=> x._id == usersettings.currentworkspace);
@@ -40,6 +48,9 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 		const id = params.id;
 		datacomponent.loadsettings(page);
 		usersettings.entities_collectionname = (params.collection != null ? params.collection : usersettings.entities_collectionname);
+		if(usersettings.entities_collectionname == null || usersettings.entities_collectionname == "") {
+			usersettings.entities_collectionname = "entities";
+		}
 		const { entities: entitiesdata, total_count: totalcount } = await datacomponent.Fetch(page, id, access_token);
 		entities = entitiesdata;
 		total_count = totalcount;
