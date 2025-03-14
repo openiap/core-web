@@ -46,7 +46,7 @@
         "zod": "^3.23.8"
     },
     "dependencies": {
-        "mousetrap": "^1.6.5"
+        "mousetrap": "1.6.5"
     },
     "openiap": {
         "language": "nodejs",
