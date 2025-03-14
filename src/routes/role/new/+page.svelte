@@ -50,10 +50,18 @@
           loading = false;
         }
       } else {
+        let errors = Object.keys(form.errors).map((key) => key + " is " + (form.errors as any)[key]);
+        if(errors.length > 0) {
+          toast.error("Error", {
+            description: errors.join(", "),
+          });
+        } else {
+          toast.error("Error", {
+            description: "Form is invalid",
+          });
+        }
+        cancel();
         loading = false;
-        toast.error("Error", {
-          description: "Form is invalid",
-        });
       }
     },
   });

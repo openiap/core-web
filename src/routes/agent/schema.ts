@@ -24,7 +24,7 @@ export const editFormSchema = z.object({
   _id: z.string().min(2),
   name: z.string().min(2),
   slug: z.string().min(2),
-  image: z.string().optional(),
+  image: z.string().min(2),
   environment: z.any(),
   autostart: z.boolean().default(false),
   webserver: z.boolean().default(false),
