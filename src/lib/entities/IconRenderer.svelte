@@ -16,6 +16,7 @@
         Globe,
         IdCard,
         Image,
+        Languages,
         Laptop,
         LayoutList,
         Mail,
@@ -117,6 +118,8 @@
     <IdCard class={iconClass} />
 {:else if title == "metadata._createdby"}
     <Contact class={iconClass} />
+{:else if title == "language"}
+    <Languages class={iconClass} />
 {:else}
     <!-- <MessageSquare class={iconClass} /> -->
 {/if}
