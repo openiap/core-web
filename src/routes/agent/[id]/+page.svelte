@@ -33,6 +33,7 @@
     Info,
     Laptop,
     Play,
+    Podcast,
     RefreshCcw,
     Square,
     SquareActivity,
@@ -68,6 +69,7 @@
   let showWarningAgentDelete = $state(false);
   let deleteData: any = $state({});
   let instancelog: any = $state(null);
+  let openAccordion: Array<string> = $state([""]);
 
   function parsePods(instances: any[]) {
     for (let i = 0; i < instances.length; i++) {
@@ -440,6 +442,10 @@
   }
 
   function addpackage() {
+    if (packageData == null)
+      return toast.error("Error while adding package", {
+        description: "No package selected",
+      });
     let copyData = {
       name: packageData.name,
       packageid: packageData._id,
@@ -465,6 +471,9 @@
       $formData.schedules = [...($formData.schedules || []), copyData];
     }
     packageData = null;
+    toast.success("Package added successfully", {
+      description: `Package ${copyData.name} added`,
+    });
   }
   async function handleAccept() {
     try {
@@ -529,6 +538,7 @@
 
             case "listprocesses":
               processes = payload.processes;
+              openAccordion = processes.length > 0 ? [processes[0]?.id] : [""];
               processes.forEach((element) => {
                 if (firstListProcess) {
                   auth.client.QueueMessage(
@@ -597,19 +607,37 @@
     );
   }
   async function runpackage() {
-    await auth.client.QueueMessage(
-      {
-        data: {
-          command: "runpackage",
-          id: packageId,
-          stream: true,
-          queuename: queuename,
+    if (instances.length == 0)
+      return toast.error("Error while running", {
+        description: "No instances available",
+      });
+    if (packageId == "")
+      return toast.error("Error while running", {
+        description: "No package selected",
+      });
+    try {
+      await auth.client.QueueMessage(
+        {
+          data: {
+            command: "runpackage",
+            id: packageId,
+            stream: true,
+            queuename: queuename,
+          },
+          queuename: agent.slug + "agent",
+          jwt: auth.access_token,
         },
-        queuename: agent.slug + "agent",
-        jwt: auth.access_token,
-      },
-      false,
-    );
+        false,
+      );
+      toast.success("Successfully Started Package", {
+        description: `Package id ${packageId} started`,
+      });
+    } catch (error: any) {
+      toast.error("Error while running", {
+        description: error.message,
+      });
+    }
+    packageId = "";
   }
 
   async function killpackage(id: string) {
@@ -1289,7 +1317,7 @@
 
           <HotkeyButton onclick={addpackage}>
             <Box />
-            Add package</HotkeyButton
+            Add Package</HotkeyButton
           >
         </div>
       </div>
@@ -1441,13 +1469,17 @@
       />
       <HotkeyButton onclick={runpackage}>
         <Play />
-        Run package</HotkeyButton
+        Run Package</HotkeyButton
       >
     </div>
 
     {#if processes.length > 0}
       <ul>
-        <Accordion.Root type="multiple" class="w-full sm:max-w-[70%]">
+        <Accordion.Root
+          type="multiple"
+          class="w-full sm:max-w-[70%]"
+          value={openAccordion}
+        >
           {#each processes as process}
             <Accordion.Item value={process.id}>
               <Accordion.Trigger

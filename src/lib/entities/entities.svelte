@@ -756,7 +756,7 @@
 	</div>
 
 	<div
-		class="flex text-center justify-between items-center dark:text-bw300 gap-4 overflow-auto"
+		class="flex text-center justify-between items-center dark:text-bw300 gap-4 md:gap-0 overflow-auto"
 	>
 		<HotkeyButton
 			aria-label="Previous"

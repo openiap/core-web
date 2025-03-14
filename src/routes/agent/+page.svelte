@@ -317,7 +317,7 @@
   });
 </script>
 
-<div class={"xl:flex xl:items-center xl:justify-between xl:mb-4 xl:space-x-4"}>
+<div class={"xl:flex xl:items-center xl:justify-between mb-2 xl:mb-4 xl:space-x-4"}>
   <div class="xl:flex xl:items-center xl:space-x-4 mb-2 xl:mb-0 w-full">
     <SearchInput bind:searchstring class="w-full xl:w-[284px] mb-2 xl:mb-0" />
     <div class="w-fit">
