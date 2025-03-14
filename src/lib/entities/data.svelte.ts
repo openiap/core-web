@@ -36,7 +36,7 @@ class entitiesdata {
 			switch (page) {
 				case base:
 				case base + "/":
-					if(auth.profile == null) {
+					if (auth.profile == null) {
 						entities = [];
 						total_count = 0;
 						break;
@@ -563,6 +563,9 @@ class entitiesdata {
 				}
 				else if (page.endsWith("/duplicates")) {
 					return ["_id", "name", "count"];
+				}
+				else if (page.includes("/workitem")) {
+					return ["name", "state", "errortype", "retries", "priority", "wiq", "lastrun", "_created"];
 				}
 				console.debug("Unknown page", page);
 				return ["_id", "name", "_type", "_createdby", "_created"];
