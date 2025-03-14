@@ -127,6 +127,8 @@
 			data.webversion,
 			"git commit",
 			data.webcommit,
+			"opencore version",
+			auth.config.version,
 		);
 	} else if (browser) {
 		console.log("core-web not initialized, is opencore down?");

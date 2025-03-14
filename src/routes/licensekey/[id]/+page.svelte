@@ -312,6 +312,7 @@
     <Form.FieldErrors />
   </Form.Field>
 
+  {#if data.item._stripeprice != null && data.item._stripeprice != ""}
   <Form.Field {form} name="connections" class="mb-10">
     <Form.Control>
       {#snippet children({ props })}
@@ -459,6 +460,7 @@
     </Form.Control>
     <Form.FieldErrors />
   </Form.Field>
+  {/if}
 
   {#if isAdmin}
     <Form.Field {form} name="_stripeprice" class="mb-10">
