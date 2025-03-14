@@ -481,7 +481,24 @@ class entitiesdata {
 				return "File Name";
 			case "metadata.name":
 				return "Name";
-
+			case "readcount":
+				return "Read Count";
+			case "nodered_id":
+				return "NodeRED ID";
+			case "projectandname":
+				return "Project and Name";
+			case "docsExamined":
+				return "Docs Examined";
+			case "nreturned":
+				return "N Returned";
+			case "planSummary":
+				return "Plan Summary";
+			case "ts":
+				return "TS";
+			case "ns":
+				return "NS";
+			case "op":
+				return "OP";
 			default:
 				if (header.name != null && header.name != "") {
 					return header.name;
@@ -541,8 +558,8 @@ class entitiesdata {
 					"to",
 					"read",
 					"readcount",
-					"_updated",
 					"_created",
+					"_modified",
 				];
 			case "/hdrobot":
 				return ["name", "_created", "_modified"];
@@ -573,10 +590,10 @@ class entitiesdata {
 			case "/entities/cvr":
 				return ["name", "cvr", "virksomhedsformkort", "sidstOpdateret", "stiftelsesDato", "ophoersDato", "cvrstatus"];
 			default:
-				if(_page.startsWith("/workitem/")) {
+				if (_page.startsWith("/workitem/")) {
 					return ["name", "state", "errortype", "retries", "priority", "wiq", "lastrun", "_created"];
-				} else if(_page.startsWith("/entities/")) {
-					if(_page.endsWith(".files")) {
+				} else if (_page.startsWith("/entities/")) {
+					if (_page.endsWith(".files")) {
 						return ["_id", "metadata.name", "metadata._createdby", "metadata._created"];
 					}
 				} else if (page.indexOf("/history/") > -1) {

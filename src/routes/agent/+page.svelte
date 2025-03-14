@@ -318,7 +318,7 @@
 </script>
 
 <div class={"xl:flex xl:items-center xl:justify-between mb-2 xl:mb-4 xl:space-x-4"}>
-  <div class="xl:flex xl:items-center xl:space-x-4 mb-2 xl:mb-0 w-full">
+  <div class="xl:flex xl:items-center xl:space-x-5 mb-2 xl:mb-0 w-full">
     <SearchInput bind:searchstring class="w-full xl:w-[284px] mb-2 xl:mb-0" />
     <div class="w-fit">
       <Popover.Root open={filter}>
@@ -441,7 +441,7 @@
     </div>
   </div>
   <div
-    class="md:flex overflow-auto md:overflow-visible md:items-center xl:justify-end gap-4 md:gap-0 md:space-x-4 mb-2 xl:mb-0"
+    class="md:flex overflow-auto md:overflow-visible md:items-center xl:justify-end gap-4 md:gap-0 md:space-x-5 mb-2 xl:mb-0"
   >
     <HotkeyButton
       title="Create Agent (Insert Key)"
