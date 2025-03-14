@@ -85,8 +85,8 @@
 			}
 		},
 		single_item_click = (item: any) => {},
-		multi_select = $bindable(true),
-		show_delete = $bindable(true),
+		multi_select,
+		show_delete,
 		...rest
 	} = $props();
 

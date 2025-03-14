@@ -280,8 +280,8 @@
     </div>
 
     <Entities
-      bind:multi_select
-      bind:show_delete
+      {multi_select}
+      {show_delete}
       {collectionname}
       {query}
       page={page()}
