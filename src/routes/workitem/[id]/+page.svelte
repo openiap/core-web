@@ -130,11 +130,10 @@
     </div>
 
     <HotkeyButton
-      class="border-dashed dark:text-bw600"
       size="sm"
       variant="base"
       disabled={loading}
-      aria-label="Filter"
+      aria-label="clear"
       onclick={() => goto(base + `/workitem`)}
     >
       <X />
