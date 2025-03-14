@@ -41,6 +41,7 @@
                 bgcolor = green;
                 break;
             case "successful":
+            case "completed":
                 bgcolor = green;
                 break;
             case "failed":

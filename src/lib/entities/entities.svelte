@@ -1,23 +1,18 @@
-<script lang="ts" module>
-	import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
-	import * as Sheet from "$lib/components/ui/sheet/index.js";
-	import * as Table from "$lib/components/ui/table/index.js";
-	import { type sort } from "$lib/stores/usersettings.svelte";
-	import ArrowDown from "lucide-svelte/icons/arrow-down";
-	import ArrowUp from "lucide-svelte/icons/arrow-up";
-	import { TableHeader, type TTableHeader } from "./data.svelte.js";
-</script>
-
 <script lang="ts">
 	import { browser } from "$app/environment";
 	import { page as componentpage } from "$app/stores";
 	import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
 	import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
+	import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
+	import * as Sheet from "$lib/components/ui/sheet/index.js";
+	import * as Table from "$lib/components/ui/table/index.js";
 	import { CustomCheckbox } from "$lib/customcheckbox/index.js";
 	import { CustomInput } from "$lib/custominput/index.js";
 	import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
 	import { CustomSwitch } from "$lib/customswitch/index.js";
+	import { StatusCard } from "$lib/statuscard/index.js";
 	import { auth } from "$lib/stores/auth.svelte.js";
+	import { type sort } from "$lib/stores/usersettings.svelte";
 	import { usersettings } from "$lib/stores/usersettings.svelte.js";
 	import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
 	import {
@@ -30,8 +25,10 @@
 		Table as TableIcon,
 		Trash2,
 	} from "lucide-svelte";
+	import ArrowDown from "lucide-svelte/icons/arrow-down";
+	import ArrowUp from "lucide-svelte/icons/arrow-up";
 	import { toast } from "svelte-sonner";
-	import { data } from "./data.svelte.js";
+	import { data, TableHeader, type TTableHeader } from "./data.svelte.js";
 	import IconRenderer from "./IconRenderer.svelte";
 
 	export async function reload() {
@@ -303,7 +300,7 @@
 				total_count = 99999;
 				selected_items = data.settings.selected_items;
 				page_index = data.settings.page_index;
-				tableheaders = []
+				tableheaders = [];
 				GetData();
 			}
 			data.settings.selected_items = selected_items;
@@ -479,6 +476,34 @@
 	function onSelectColumnsOpenChange(open: boolean) {
 		data.SaveHeaders(tableheaders);
 	}
+
+	function _timeSince(timeStamp: Date) {
+		const now: Date = new Date(),
+			secondsPast: number = (now.getTime() - timeStamp.getTime()) / 1000;
+		if (secondsPast < 60) {
+			return parseInt(secondsPast.toString()) + "s";
+		}
+		if (secondsPast < 3600) {
+			return parseInt((secondsPast / 60).toString()) + "m";
+		}
+		if (secondsPast <= 86400) {
+			return parseInt((secondsPast / 3600).toString()) + "h" + " " + parseInt(
+				(secondsPast % 3600 / 60).toString(),
+			) + "m";
+		}
+		if (secondsPast > 86400) {
+			let day = timeStamp.getDate();
+			// @ts-ignore
+			let month = timeStamp?.toDateString().match(/ [a-zA-Z]*/)[0].replace(" ", "");
+			let year =
+				timeStamp.getFullYear() == now.getFullYear()
+					? ""
+					: " " + timeStamp.getFullYear();
+			let hour = timeStamp.getHours();
+			let minute = timeStamp.getMinutes();
+			return day + " " + month + year + " " + hour + ":" + minute;
+		}
+	}
 </script>
 
 <div class="main">
@@ -605,6 +630,47 @@
 													item,
 													head.field,
 												)}
+											</Table.Cell>
+										{:else if head.field == "members"}
+											<Table.Cell class={head.cellclass}>
+												{item.members?.length}
+											</Table.Cell>
+										{:else if head.field == "_created" || head.field == "_modified" || head.field == "metadata._created" || head.field == "metadata._modified" || head.field == "dt" || head.field == "ts"}
+											<Table.Cell class={head.cellclass}>
+												{#if RenderItemData(item,head.field) != null}
+													{_timeSince(new Date(RenderItemData(item,head.field)
+													))}
+												{:else}
+													""
+												{/if}
+											</Table.Cell>
+										{:else if head.field == "state"}
+											<Table.Cell class={head.cellclass}>
+												{#if item != null && item.state != null && item.state != ""}
+													<StatusCard
+														bind:title={
+															item.state as string
+														}
+													/>
+												{:else}
+													<StatusCard
+														title="Unknown"
+													/>
+												{/if}
+											</Table.Cell>
+										{:else if head.field == "errortype"}
+											<Table.Cell class={head.cellclass}>
+												{#if item != null && item.errortype != null && item.errortype != ""}
+													<StatusCard
+														bind:title={
+															item.errortype as string
+														}
+													/>
+												{:else}
+													<StatusCard
+														title="No error"
+													/>
+												{/if}
 											</Table.Cell>
 										{:else if rest[head.field] != null}
 											<Table.Cell class={head.cellclass}

@@ -492,12 +492,33 @@ class entitiesdata {
 	defaultcolumnnames(page: string) {
 		let _page = page.replace(base, "");
 		switch (_page) {
+			case "/auditlog":
+				return ["_id", "name", "_type", "impostorname", "clientagent", "clientversion", "remoteip", "_created"];
+			case "/agent":
+				return ["name", "image", "os", "_productname", "_createdby", "status"];
+			case "/entities/agents":
+				return ["name", "image", "os", "_productname", "_createdby"];
 			case "/user":
 				return ["_id", "name", "username", "email", "lastseen", "_created"];
 			case "/role":
 				return ["_id", "name", "members", "_created"];
+			case "/entities/users":
+				return ["_id", "name", "username", "email", "lastseen", "members", "_created"];
 			case "/workitem":
+			case "/entities/workitems":
 				return ["name", "state", "errortype", "retries", "priority", "wiq", "lastrun", "_created"];
+			case "/entities/dbusage":
+				return ["username", "collection", "size", "timestamp"];
+			case "/entities/nodered":
+				return ["_id", "name", "nodered_id", "_type", "_createdby", "_created"];
+			case "/entities/workflow_instances":
+				return ["_id", "name", "state", "_type", "_createdby", "_created"];
+			case "/entities/openrpa":
+				return ["_id", "name", "projectandname", "_type", "_createdby", "_created"];
+			case "/entities/openrpa_instances":
+				return ["_id", "RelativeFilename", "state", "_type", "_createdby", "_created"];
+			case "/entities/system.profile":
+				return ["op", "ns", "docsExamined", "nreturned", "millis", "planSummary", "ts"];
 			case "/resource":
 				return ["name", "_created", "_modified"];
 			case "/provider":
@@ -513,12 +534,14 @@ class entitiesdata {
 					"_created",
 				];
 			case "/mailhistory":
+			case "/entities/mailhist":
 				return [
 					"_id",
 					"name",
-					"username",
-					"email",
-					"lastseen",
+					"to",
+					"read",
+					"readcount",
+					"_updated",
 					"_created",
 				];
 			case "/hdrobot":
@@ -533,10 +556,6 @@ class entitiesdata {
 				return ["name", "username", "_created", "_modified"];
 			case "/client":
 				return ["id", "name", "clientagent", "clientversion", "_created", "remoteip"];
-			case "/auditlog":
-				return ["_id", "name", "_type", "impostorname", "clientagent", "clientversion", "remoteip", "_created"];
-			case "/agent":
-				return ["name", "image", "os", "_productname", "_createdby", "status"];
 			case "/package":
 				return ["name", "language", "_createdby", "_created"];
 			case "/workspace":
@@ -554,7 +573,13 @@ class entitiesdata {
 			case "/entities/cvr":
 				return ["name", "cvr", "virksomhedsformkort", "sidstOpdateret", "stiftelsesDato", "ophoersDato", "cvrstatus"];
 			default:
-				if (page.indexOf("/history/") > -1) {
+				if(_page.startsWith("/workitem/")) {
+					return ["name", "state", "errortype", "retries", "priority", "wiq", "lastrun", "_created"];
+				} else if(_page.startsWith("/entities/")) {
+					if(_page.endsWith(".files")) {
+						return ["_id", "metadata.name", "metadata._createdby", "metadata._created"];
+					}
+				} else if (page.indexOf("/history/") > -1) {
 					console.debug("Unknown history page", page);
 					return ["_id", "name", "_createdby", "_modified", "_deleted", "_version"];
 				} else if (page.endsWith("/deleted")) {
@@ -565,7 +590,7 @@ class entitiesdata {
 					return ["_id", "name", "count"];
 				}
 				console.debug("Unknown page", page);
-				return ["_id", "name", "_type", "_createdby", "_created"];
+				return ["_id", "name", "_type", "_createdby", "_created", "_modified"];
 		}
 	}
 }
