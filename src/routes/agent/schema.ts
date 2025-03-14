@@ -42,6 +42,6 @@ export const editFormSchema = z.object({
     terminateIfRunning: z.boolean(),
     cron: z.string().optional(),
     env: z.object({}).optional(),
-  })),
+  })).default([]),
 }).passthrough();
 export type EditFormSchema = typeof editFormSchema;
