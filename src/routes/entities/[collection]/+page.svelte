@@ -67,6 +67,7 @@
     return name == collectionname ? "entityselected" : "entitydefault";
   }
   function selectcollection(name: string) {
+    datacomponent.persist();
     collectionname = name;
     sveltepage.url.pathname = base + `/entities/${collectionname}`;
     replaceState(sveltepage.url, sveltepage.state);
