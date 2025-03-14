@@ -1,9 +1,3 @@
-<script lang="ts" module>
-  export let page = "agent";
-  export let collectionname = "agents";
-  export let query = { _type: "agent" };
-</script>
-
 <script lang="ts">
   import { browser } from "$app/environment";
   import { goto } from "$app/navigation";
@@ -105,8 +99,8 @@
         delete query._workspaceid;
       }
       const _entities = await datacomponent.GetData(
-        page,
-        collectionname,
+        "agent",
+        "agents",
         query,
         auth.access_token,
       );
@@ -174,7 +168,7 @@
   }
   function single_item_click(item: any) {
     loading = true;
-    goto(base + `/${page}/${item._id}`);
+    goto(base + `/agent/${item._id}`);
   }
   function getStatus(model: any) {
     var instances = knownpods.filter(
@@ -453,7 +447,7 @@
       disabled={loading}
       onclick={() => {
         loading = true;
-        goto(base + `/${page}/new`);
+        goto(base + `/agent/new`);
       }}
     >
       <SquarePlus />
@@ -489,10 +483,8 @@
 </div>
 
 <Entities
-  {collectionname}
-  {query}
+  collectionname="agents"
   bind:searchstring
-  {page}
   delete_selected={deleteitems}
   {single_item_click}
   total_count={data.total_count}
@@ -580,7 +572,7 @@
         size="tableicon"
         variant="icon"
         disabled={loading}
-        onclick={() => goto(base + `/${page}/${item._id}`)}
+        onclick={() => goto(base + `/agent/${item._id}`)}
       >
         <Wrench />
       </HotkeyButton>

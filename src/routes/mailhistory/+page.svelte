@@ -1,9 +1,3 @@
-<script lang="ts" module>
-  export let page = "mailhistory";
-  export let collectionname = "mailhist";
-  export let query = {};
-</script>
-
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
@@ -22,7 +16,7 @@
   let entities = $state(data.entities);
 
   function single_item_click(item: any) {
-    goto(base + `/${page}/${item._id}`);
+    goto(base + `/mailhistory/${item._id}`);
   }
 </script>
 
@@ -30,11 +24,8 @@
   <SearchInput bind:searchstring />
 </div>
 <Entities
-  {collectionname}
-  {query}
   bind:searchstring
   multi_select={false}
-  {page}
   {single_item_click}
   total_count={data.total_count}
   bind:selected_items

@@ -1,9 +1,3 @@
-<script lang="ts" module>
-  export let page = "rpaworkflow";
-  export let collectionname = "openrpa";
-  export let query = { _type: "workflow" };
-</script>
-
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
@@ -29,10 +23,7 @@
   <Searchinput bind:searchstring />
 </div>
 <Entities
-  {collectionname}
-  {query}
   bind:searchstring
-  {page}
   {single_item_click}
   multi_select={false}
   total_count={data.total_count}

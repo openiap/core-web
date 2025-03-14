@@ -1,9 +1,3 @@
-<script lang="ts" module>
-  export let page = "workspace";
-  export let collectionname = "users";
-  export let query = { _type: "workspace" };
-</script>
-
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
@@ -77,7 +71,7 @@
     }
   }
   function single_item_click(item: any) {
-    goto(base + `/${page}/${item._id}`);
+    goto(base + `/workspace/${item._id}`);
   }
   async function handleAccept() {
     try {
@@ -102,7 +96,7 @@
     aria-label="Create Workspace"
     onclick={() => {
       loading = true;
-      goto(base + `/${page}/new`);
+      goto(base + `/workspace/new`);
     }}
   >
     <SquarePlus />
@@ -111,10 +105,7 @@
 </div>
 
 <Entities
-  {collectionname}
-  {query}
   bind:searchstring
-  {page}
   delete_selected={deleteitems}
   {single_item_click}
   total_count={data.total_count}
@@ -127,7 +118,7 @@
     <HotkeyButton
       aria-label="Edit"
       disabled={loading}
-      onclick={() => goto(base + `/${page}/${item._id}`)}
+      onclick={() => goto(base + `/workspace/${item._id}`)}
       size="tableicon"
       variant="icon"
     >

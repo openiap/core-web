@@ -1,9 +1,3 @@
-<script lang="ts" module>
-  export let page = "hdrobot";
-  export let collectionname = "openrpa";
-  export let query = { _type: "unattendedclient" };
-</script>
-
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
@@ -32,7 +26,7 @@
   async function deleteitem(item: any) {
     const deletecount = await auth.client.DeleteOne({
       id: item._id,
-      collectionname,
+      collectionname: "openrpa",
       jwt: auth.access_token,
     });
     if (deletecount == 1) {
@@ -63,14 +57,14 @@
   async function handleToggle() {
     try {
       let item = await auth.client.FindOne<any>({
-        collectionname,
+        collectionname: "openrpa",
         query: { _id: toggleData._id },
         jwt: auth.access_token,
       });
       item.enabled = !item.enabled;
       await auth.client.UpdateOne({
         item: item,
-        collectionname,
+        collectionname: "openrpa",
         jwt: auth.access_token,
       });
       toast.success("Updated successfully", {
@@ -98,10 +92,7 @@
   <SearchInput bind:searchstring />
 </div>
 <Entities
-  {collectionname}
-  {query}
   bind:searchstring
-  {page}
   {single_item_click}
   total_count={data.total_count}
   bind:selected_items

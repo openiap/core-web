@@ -308,8 +308,8 @@
     </div>
 
     <Entities
-      bind:multi_select
-      bind:show_delete
+      {multi_select}
+      {show_delete}
       {collectionname}
       page={page()}
       total_count={data.total_count}

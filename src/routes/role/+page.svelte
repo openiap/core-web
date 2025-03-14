@@ -1,9 +1,3 @@
-<script lang="ts" module>
-  export let page = "role";
-  export let collectionname = "users";
-  export let query = { _type: "role" };
-</script>
-
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
@@ -25,7 +19,7 @@
   async function deleteitem(item: any) {
     const deletecount = await auth.client.DeleteOne({
       id: item._id,
-      collectionname,
+      collectionname: "users",
       jwt: auth.access_token,
     });
     if (deletecount == 1) {
@@ -38,7 +32,7 @@
     }
   }
   function single_item_click(item: any) {
-    goto(base + `/${page}/${item._id}`);
+    goto(base + `/role/${item._id}`);
   }
 </script>
 
@@ -53,7 +47,7 @@
     aria-label="Create Role"
     onclick={() => {
       loading = true;
-      goto(base + `/${page}/new/`);
+      goto(base + `/role/new/`);
     }}
   >
     <SquarePlus />
@@ -62,10 +56,7 @@
 </div>
 
 <Entities
-  {collectionname}
-  {query}
   bind:searchstring
-  {page}
   {single_item_click}
   total_count={data.total_count}
   bind:selected_items

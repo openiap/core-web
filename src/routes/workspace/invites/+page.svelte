@@ -1,12 +1,3 @@
-<script lang="ts" module>
-  export let page = "invites";
-  export let collectionname = "users";
-  export let basequery = {
-    _type: "member",
-    // status: { $in: ["pending", "rejected"] },
-  };
-</script>
-
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
@@ -26,6 +17,10 @@
 
   const userid = auth.profile.sub;
   const email = auth.profile.email;
+  let basequery = {
+    _type: "member",
+    // status: { $in: ["pending", "rejected"] },
+  };
   let query: any = {
     ...basequery,
     ...{ $or: [{ userid: userid }, { email: email }] },
@@ -78,10 +73,8 @@
 </div>
 
 <Entities
-  {collectionname}
   {query}
   bind:searchstring
-  {page}
   multi_select={false}
   {single_item_click}
   total_count={data.total_count}

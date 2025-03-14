@@ -43,7 +43,6 @@
 	}
 	let {
 		page = "entities",
-		query = {},
 		entities = $bindable([]),
 		searchstring = $bindable(""),
 		collectionname = "entities",
@@ -85,8 +84,8 @@
 			}
 		},
 		single_item_click = (item: any) => {},
-		multi_select,
-		show_delete,
+		multi_select = true,
+		show_delete = true,
 		...rest
 	} = $props();
 
@@ -148,13 +147,13 @@
 		}
 	}
 	async function GetCount() {
-		const page = $componentpage?.url?.pathname;
-		total_count = await data.GetCount(
-			page,
-			collectionname,
-			query,
-			auth.access_token,
-		);
+		// const page = $componentpage?.url?.pathname;
+		// total_count = await data.GetCount(
+		// 	page,
+		// 	collectionname,
+		// 	query,
+		// 	auth.access_token,
+		// );
 	}
 	if (browser && total_count == 99999) {
 		GetCount();

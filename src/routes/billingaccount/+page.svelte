@@ -114,9 +114,7 @@
 
 <Entities
   {collectionname}
-  {query}
   bind:searchstring
-  {page}
   {single_item_click}
   total_count={data.total_count}
   delete_selected={deleteitems}

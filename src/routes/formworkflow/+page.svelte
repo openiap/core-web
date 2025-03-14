@@ -1,9 +1,3 @@
-<script lang="ts" module>
-  export let page = "formworkflow";
-  export let collectionname = "workflow";
-  export let query = { _type: "workflow", web: true };
-</script>
-
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
@@ -29,7 +23,7 @@
   async function deleteitem(item: any) {
     const deletecount = await auth.client.DeleteOne({
       id: item._id,
-      collectionname,
+      collectionname: "workflow",
       jwt: auth.access_token,
     });
     if (deletecount == 1) {
@@ -63,10 +57,7 @@
   <SearchInput bind:searchstring />
 </div>
 <Entities
-  {collectionname}
-  {query}
   bind:searchstring
-  {page}
   {single_item_click}
   total_count={data.total_count}
   bind:selected_items

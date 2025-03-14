@@ -1,6 +1,3 @@
-<script lang="ts" module>
-</script>
-
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
@@ -33,7 +30,6 @@
   } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
-  let collectionname = "workitems";
   let query = $state({});
 
   let { data } = $props();
@@ -52,7 +48,7 @@
   async function deleteitem(item: any) {
     const deletecount = await auth.client.DeleteOne({
       id: item._id,
-      collectionname,
+      collectionname: "workitems",
       jwt: auth.access_token,
     });
     if (deletecount == 1) {
@@ -78,7 +74,7 @@
       }
       entities = await datacomponent.GetData(
         data.page,
-        collectionname,
+        "workitems",
         query,
         auth.access_token,
       );
@@ -264,10 +260,7 @@
 </div>
 
 <Entities
-  {collectionname}
-  {query}
   bind:searchstring
-  page={data.page}
   {single_item_click}
   total_count={data.total_count}
   bind:selected_items

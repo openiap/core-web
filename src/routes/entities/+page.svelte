@@ -283,7 +283,6 @@
       {multi_select}
       {show_delete}
       {collectionname}
-      {query}
       page={page()}
       total_count={data.total_count}
       bind:searchstring

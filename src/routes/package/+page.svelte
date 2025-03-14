@@ -1,9 +1,3 @@
-<script lang="ts" module>
-  export let page = "package";
-  export let collectionname = "agents";
-  export let query = { _type: "package" };
-</script>
-
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
@@ -27,7 +21,7 @@
   let deleteData: any = $state({});
 
   function single_item_click(item: any) {
-    goto(base + `/${page}/${item._id}`);
+    goto(base + `/package/${item._id}`);
   }
   async function handleAccept() {
     try {
@@ -59,7 +53,7 @@
     aria-label="Create Package"
     onclick={() => {
       loading = true;
-      goto(base + `/${page}/new`);
+      goto(base + `/package/new`);
     }}
   >
     <SquarePlus />
@@ -68,10 +62,7 @@
 </div>
 
 <Entities
-  {collectionname}
-  {query}
   bind:searchstring
-  {page}
   {single_item_click}
   total_count={data.total_count}
   bind:selected_items
