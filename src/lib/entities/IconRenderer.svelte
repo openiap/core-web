@@ -16,6 +16,7 @@
         Globe,
         IdCard,
         Image,
+        Languages,
         Laptop,
         LayoutList,
         Mail,
@@ -105,17 +106,20 @@
     <FileBadge class={iconClass} />
 {:else if title == "metadata.name"}
     <IdCard class={iconClass} />
-
 {:else if title == "length"}
     <Ruler class={iconClass} />
 {:else if title == "collection"}
-    <LayoutList  class={iconClass} />
+    <LayoutList class={iconClass} />
 {:else if title == "dbusage"}
     <TrendingUp class={iconClass} />
 {:else if title == "filename"}
     <FileBadge class={iconClass} />
 {:else if title == "metadata.name"}
     <IdCard class={iconClass} />
+{:else if title == "metadata._createdby"}
+    <Contact class={iconClass} />
+{:else if title == "language"}
+    <Languages class={iconClass} />
 {:else}
     <!-- <MessageSquare class={iconClass} /> -->
 {/if}
