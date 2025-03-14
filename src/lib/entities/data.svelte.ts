@@ -564,9 +564,6 @@ class entitiesdata {
 				else if (page.endsWith("/duplicates")) {
 					return ["_id", "name", "count"];
 				}
-				else if (page.includes("/workitem")) {
-					return ["name", "state", "errortype", "retries", "priority", "wiq", "lastrun", "_created"];
-				}
 				console.debug("Unknown page", page);
 				return ["_id", "name", "_type", "_createdby", "_created"];
 		}
