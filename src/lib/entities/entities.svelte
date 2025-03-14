@@ -836,7 +836,7 @@
 					>
 						Type how many rows you want to display in the table
 					</div>
-					<div class="flex items-center space-x-2 w-full">
+					<div class="flex items-center space-x-5 w-full">
 						<CustomInput
 							width="w-full"
 							type="number"
