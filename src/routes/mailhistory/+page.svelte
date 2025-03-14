@@ -55,7 +55,7 @@
     <HotkeyButton
       aria-label="Edit"
       disabled={loading}
-      onclick={() => goto(base + `/user/${item._createdbyid}`)}
+      onclick={() => goto(base + `/user/${item.userid}`)}
       size="tableicon"
       variant="icon"
     >
