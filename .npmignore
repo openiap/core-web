@@ -1,0 +1,8 @@
+.svelte-kit
+.vscode
+nginx
+node_modules
+public
+src
+static
+.env
