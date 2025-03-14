@@ -1,9 +1,3 @@
-<script lang="ts" module>
-  export let page = "auditlog";
-  export let collectionname = "audit";
-  export let query = {};
-</script>
-
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
@@ -21,7 +15,6 @@
   let entities = $state(data.entities);
 
   function single_item_click(item: any) {
-    goto(base + `/${page}/${item._id}`);
   }
 </script>
 
@@ -32,10 +25,9 @@
 <Entities
   show_delete={false}
   multi_select={false}
-  {collectionname}
-  {query}
+  collectionname="audit"
+  query={{}}
   bind:searchstring
-  {page}
   {single_item_click}
   total_count={data.total_count}
   bind:entities
@@ -55,14 +47,5 @@
       size="tableicon"
       variant="icon"><MapPinHouse /></HotkeyButton
     >
-    <HotkeyButton
-      aria-label="Edit"
-      disabled={loading}
-      onclick={() => single_item_click(item)}
-      size="tableicon"
-      variant="icon"
-    >
-      <Pencil />
-    </HotkeyButton>
   {/snippet}
 </Entities>
