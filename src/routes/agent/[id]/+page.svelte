@@ -247,6 +247,7 @@
         }
       } else {
         loading = false;
+        console.log(form.errors);
         toast.error("Error", {
           description: "Form is invalid",
         });
@@ -338,38 +339,38 @@
     } else {
       $formData.webserver = false;
     }
-    if ($formData.image.indexOf("openiap/nodeagent") > -1) {
+    if ($formData.image != null && $formData.image.indexOf("openiap/nodeagent") > -1) {
       $formData.environment = {};
     }
-    if ($formData.image.indexOf("openiap/noderedagent") > -1) {
+    if ($formData.image != null && $formData.image.indexOf("openiap/noderedagent") > -1) {
       $formData.environment = {
         nodered_id: $formData.slug,
         admin_role: "users",
         api_role: "",
       };
     }
-    if ($formData.image.indexOf("openiap/nodechromiumagent") > -1) {
+    if ($formData.image != null && $formData.image.indexOf("openiap/nodechromiumagent") > -1) {
       $formData.environment = {};
       PlanUpdated();
     }
-    if ($formData.image.indexOf("openiap/dotnetagent") > -1) {
+    if ($formData.image != null && $formData.image.indexOf("openiap/dotnetagent") > -1) {
       $formData.environment = {};
     }
-    if ($formData.image.indexOf("openiap/pyagent") > -1) {
+    if ($formData.image != null && $formData.image.indexOf("openiap/pyagent") > -1) {
       $formData.environment = {};
     }
-    if ($formData.image.indexOf("openiap/pychromiumagent") > -1) {
+    if ($formData.image != null && $formData.image.indexOf("openiap/pychromiumagent") > -1) {
       $formData.environment = {};
       PlanUpdated();
     }
-    if ($formData.image.indexOf("openiap/grafana") > -1) {
+    if ($formData.image != null && $formData.image.indexOf("openiap/grafana") > -1) {
       $formData.environment = {
         GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH:
           "contains(roles[*], 'users') && 'Admin'",
       };
       PlanUpdated();
     }
-    if ($formData.image.indexOf("elsaworkflow") > -1) {
+    if ($formData.image != null && $formData.image.indexOf("elsaworkflow") > -1) {
       var url =
         window.location.protocol +
         "//" +
