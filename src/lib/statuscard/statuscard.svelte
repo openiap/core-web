@@ -13,49 +13,29 @@
 
     function renderClass() {
         switch (title.toLowerCase()) {
-            case "running":
-                bgcolor = green;
-                break;
             case "stopped":
-                bgcolor = red;
-                break;
             case "stopped crashloopbackoff":
+            case "application":
+            case "business":
+            case "failed":
                 bgcolor = red;
-                break;
-            case "unknown":
-                bgcolor = purple;
-                break;
-            case "missing":
-                bgcolor = purple;
                 break;
             case "online":
                 bgcolor = yellow;
                 break;
             case "deleting":
-                bgcolor = orange;
-                break;
             case "pending":
+            case "new":
                 bgcolor = orange;
                 break;
             case "No error":
-                bgcolor = green;
-                break;
+            case "running":
             case "successful":
             case "completed":
                 bgcolor = green;
                 break;
-            case "failed":
-                bgcolor = red;
-                break;
-            case "new":
-                bgcolor = orange;
-                break;
-            case "application":
-                bgcolor = red;
-                break;
-            case "business":
-                bgcolor = red;
-                break;
+            case "unknown":
+            case "missing":
             default:
                 bgcolor = purple;
                 break;
