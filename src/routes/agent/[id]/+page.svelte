@@ -645,23 +645,23 @@
 </script>
 
 <Tabs.Root value="2" class="w-full">
-  <Tabs.List
-    class="h-fit grid grid-cols-1 md:block md:w-fit bg-bw200 dark:bg-darkagenttab rounded-[15px] mb-8 p-1"
-  >
-    {#if $formData.docker == true}
-      <Tabs.Trigger value="1" onclick={() => getPods()}>Pods</Tabs.Trigger>
-    {/if}
-    <Tabs.Trigger value="2">Settings</Tabs.Trigger>
-    <Tabs.Trigger value="3">Scheduling</Tabs.Trigger>
-    <Tabs.Trigger
-      value="4"
-      onclick={() => {
-        if (browser) init();
-      }}>Running Packages</Tabs.Trigger
+  <div class="flex flex-col lg:flex-row items-center mb-8">
+    <Tabs.List
+      class="h-fit grid grid-cols-1 md:block w-full md:w-fit bg-bw200 dark:bg-darkagenttab rounded-[15px] p-1 mb-2 lg:mb-0"
     >
-  </Tabs.List>
-  {#if $formData.docker == true}
-    <Tabs.Content value="1">
+      {#if $formData.docker == true}
+        <Tabs.Trigger value="1" onclick={() => getPods()}>Pods</Tabs.Trigger>
+      {/if}
+      <Tabs.Trigger value="2">Settings</Tabs.Trigger>
+      <Tabs.Trigger value="3">Scheduling</Tabs.Trigger>
+      <Tabs.Trigger
+        value="4"
+        onclick={() => {
+          if (browser) init();
+        }}>Running Packages</Tabs.Trigger
+      >
+    </Tabs.List>
+    <span class="flex item-center mx-0 lg:mx-5">
       <HotkeyButton
         aria-label="Start"
         size="tableicon"
@@ -737,6 +737,103 @@
       >
         <RefreshCcw />
       </HotkeyButton>
+      <HotkeyButton
+        aria-label="Open in browser"
+        size="tableicon"
+        variant="icon"
+        disabled={loading}
+        onclick={() => window.open(auth.weburl($formData.slug), "_blank")}
+        ><Webhook class="h1 w-1" size={1} /></HotkeyButton
+      >
+    </span>
+  </div>
+  <!-- <div class="flex">
+    <HotkeyButton
+      aria-label="Start"
+      size="tableicon"
+      variant="icon"
+      disabled={loading}
+      onclick={async () => {
+        try {
+          loading = true;
+          await auth.client.CustomCommand({
+            command: "startagent",
+            id: $formData._id,
+            name: $formData.slug,
+            jwt: auth.access_token,
+          });
+          toast.success("Started successfully", {
+            description: "",
+          });
+          await getPods(true);
+        } catch (error: any) {
+          toast.error("Error while starting", {
+            description: error.message,
+          });
+        } finally {
+          loading = false;
+        }
+      }}
+    >
+      <Play />
+    </HotkeyButton>
+    <HotkeyButton
+      aria-label="Stop"
+      size="tableicon"
+      variant="icon"
+      disabled={loading}
+      onclick={async () => {
+        try {
+          loading = true;
+          await auth.client.CustomCommand({
+            command: "stopagent",
+            id: $formData._id,
+            name: $formData.slug,
+            jwt: auth.access_token,
+          });
+          toast.success("Stopped successfully", {
+            description: "",
+          });
+          await getPods(true);
+        } catch (error: any) {
+          toast.error("Error while stopping", {
+            description: error.message,
+          });
+        } finally {
+          loading = false;
+        }
+      }}
+    >
+      <Square />
+    </HotkeyButton>
+    <HotkeyButton
+      aria-label="Refresh"
+      size="tableicon"
+      variant="icon"
+      disabled={loading}
+      onclick={async () => {
+        try {
+          await getPods(true);
+        } catch (error: any) {
+          toast.error("Error while refreshing", {
+            description: error.message,
+          });
+        }
+      }}
+    >
+      <RefreshCcw />
+    </HotkeyButton>
+    <HotkeyButton
+      aria-label="Open in browser"
+      size="tableicon"
+      variant="icon"
+      disabled={loading}
+      onclick={() => window.open(auth.weburl($formData.slug), "_blank")}
+      ><Webhook class="h1 w-1" size={1} /></HotkeyButton
+    >
+  </div> -->
+  {#if $formData.docker == true}
+    <Tabs.Content value="1">
       {#each instances as resourceMonitor}
         {#if resourceMonitor != null}
           <div
@@ -895,16 +992,6 @@
                     $formData.name = randomname();
                     $formData.slug = $formData.name;
                   }}><RefreshCcw /></HotkeyButton
-                >
-                <HotkeyButton
-                  class="ml-2"
-                  aria-label="Refresh"
-                  size="refresh"
-                  variant="refresh"
-                  disabled={loading}
-                  onclick={() =>
-                    window.open(auth.weburl($formData.slug), "_blank")}
-                  ><Webhook class="h1 w-1" size={1} /></HotkeyButton
                 >
               </div>
               <CustomInput
