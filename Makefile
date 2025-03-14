@@ -9,6 +9,8 @@ bump:
 	@sed -i 's/hash=.*/hash=$(HASH)/' .env
 	
 build:
+	@sed -i 's/version=.*/version=$(VERSION)/' .env
+	@sed -i 's/hash=.*/hash=$(HASH)/' .env
 	@npm run build
 initdocker:
 	@docker buildx create --name openiap --use
