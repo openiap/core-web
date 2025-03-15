@@ -368,7 +368,7 @@
 		}
 		let profileroles = auth.profile?.roles || [];
 		const isAdmin = profileroles.includes("admins");
-		const isWorkspaceAdmin = profileroles.find((x: any) =>
+		const isWorkspaceAdmin = profileroles == null ? false : profileroles.find((x: any) =>
 			x.endsWith("admins"),
 		);
 		resources.hidden = !isAdmin;
