@@ -30,96 +30,100 @@
 	const { wsurl, protocol, domain, client_id, profile, origin } = data;
 	let { access_token } = data;
 
-    if (auth.config.otel_log_url != null && auth.config.otel_log_url !== "") {
-        let url = auth.config.otel_log_url;
-        url = url.replace("https://otel.", "https://otelhttp.");
-        url = url.replace("http://otel.", "http://otelhttp.");
+	const { isAuthenticated, isConnected } = auth;
 
-        const logExporter = new OTLPLogExporter({ url });
-        const resource = new Resource({
-            ["service.name"]: "core-web",
-            ["ofid"]: auth.config.ofid,
-        });
+	if (auth.config.otel_log_url) {
+		let url = auth.config.otel_log_url
+			.replace("https://otel.", "https://otelhttp.")
+			.replace("http://otel.", "http://otelhttp.");
 
-        const loggerProvider = new LoggerProvider({ resource });
-        loggerProvider.addLogRecordProcessor(new BatchLogRecordProcessor(logExporter));
-        const logger = loggerProvider.getLogger("default", auth.config?.version);
+		const logExporter = new OTLPLogExporter({ url });
+		const resource = new Resource({
+			["service.name"]: "core-web",
+			["ofid"]: auth.config.ofid,
+		});
+		const loggerProvider = new LoggerProvider({ resource });
+		loggerProvider.addLogRecordProcessor(new BatchLogRecordProcessor(logExporter));
+		const logger = loggerProvider.getLogger("default", auth.config.version);
 
-        // Store original console functions to avoid recursion
-        const originalConsole = {
-            log: console.log,
-            debug: console.debug,
-            warn: console.warn,
-            error: console.error
-        };
+		const originalConsole = {
+			log: console.log,
+			debug: console.debug,
+			warn: console.warn,
+			error: console.error
+		};
 
+		/**
+		 * Get caller info (filename + line) by inspecting the stack.
+		 * This is simplified for Node. 
+		 */
 		function getCallerInfo(): { filename: string; line: number } {
 			try {
-				const stack = new Error().stack;
-				if (!stack) return { filename: "unknown", line: 0 };
+			const error = new Error();
+			// Remove the first stack line ("Error") and this function's own frame
+			const lines = error.stack?.split("\n").slice(2) ?? [];
 
-				const lines = stack.split("\n").map(line => line.trim());
-
-				for (const line of lines) {
-					// Skip internal logging functions
-					if (line.includes("getCallerInfo") || line.includes("logWithStackPreserved")) {
-						continue;
-					}
-
-					// Match browser stack traces (URLs)
-					let match = line.match(/(?:\bat\b|\()?([^():\s]+):(\d+):(\d+)\)?$/);
-					if (match) {
-						const fullPath = match[1];  // Full URL or File Path
-						const lineNumber = parseInt(match[2], 10);
-
-						// Extract just the filename from the full path (strip directories)
-						const filename = fullPath.split('/').pop() || "unknown";
-
-						return { filename, line: lineNumber };
-					}
+			for (const line of lines) {
+				// Attempt to match "(filename.js:123:45)" or "at /path/filename.js:123:45"
+				const match = line.match(/\((.*):(\d+):\d+\)/) || line.match(/at (.*):(\d+):\d+/);
+				if (match) {
+				return {
+					filename: match[1]?.split("/").pop() ?? "unknown",
+					line: parseInt(match[2], 10)
+				};
 				}
-			} catch (e) {
-				return { filename: "unknown", line: 0 };
 			}
-
+			} catch {
+			// Fall through
+			}
 			return { filename: "unknown", line: 0 };
 		}
 
-
+		/**
+		 * A helper to capture the stack, call the original console method, 
+		 * then emit the log to OpenTelemetry.
+		 */
 		function logWithStackPreserved(
-			originalConsoleFn: (...args: unknown[]) => void, 
-			severityNumber: number, 
-			severityText: string, 
+			originalConsoleFn: (...args: unknown[]) => void,
+			severityNumber: number,
+			severityText: string,
 			...args: unknown[]
 		): void {
-			// Log to the original console
+			const callerInfo = getCallerInfo();
 			originalConsoleFn.apply(console, args);
 
-			// Convert arguments to a single string message
-			const message = args.map(arg => (typeof arg === "object" ? JSON.stringify(arg) : String(arg))).join(" ");
+			// Convert log arguments into a single message
+			const message = args
+			.map(arg => (typeof arg === "object" ? JSON.stringify(arg) : String(arg)))
+			.join(" ");
 
-			// Get the correct caller info
-			const callerInfo = getCallerInfo();
-
-			// Emit logs to OTEL
+			// Emit to OpenTelemetry
 			logger.emit({
-				severityNumber,
-				severityText,
-				body: `${message.trim()}`,
-				attributes: {
-					filename: callerInfo.filename,
-					line: callerInfo.line
-				}
+			severityNumber,
+			severityText,
+			body: message.trim(),
+			attributes: {
+				filename: callerInfo.filename,
+				line: callerInfo.line,
+				full_stack: new Error().stack // optional full stack
+			}
 			});
 		}
 
+		// Override console methods
+		console.log = (...args: unknown[]) =>
+			logWithStackPreserved(originalConsole.log, logsAPI.SeverityNumber.INFO, "INFO", ...args);
 
-        // Override console methods while preserving both behaviors
-        console.log = (...args: unknown[]) => logWithStackPreserved(originalConsole.log, logsAPI.SeverityNumber.INFO, "INFO", ...args);
-        console.debug = (...args: unknown[]) => logWithStackPreserved(originalConsole.debug, logsAPI.SeverityNumber.DEBUG, "DEBUG", ...args);
-        console.warn = (...args: unknown[]) => logWithStackPreserved(originalConsole.warn, logsAPI.SeverityNumber.WARN, "WARN", ...args);
-        console.error = (...args: unknown[]) => logWithStackPreserved(originalConsole.error, logsAPI.SeverityNumber.ERROR, "ERROR", ...args);
-    }
+		console.debug = (...args: unknown[]) =>
+			logWithStackPreserved(originalConsole.debug, logsAPI.SeverityNumber.DEBUG, "DEBUG", ...args);
+
+		console.warn = (...args: unknown[]) =>
+			logWithStackPreserved(originalConsole.warn, logsAPI.SeverityNumber.WARN, "WARN", ...args);
+
+		console.error = (...args: unknown[]) =>
+			logWithStackPreserved(originalConsole.error, logsAPI.SeverityNumber.ERROR, "ERROR", ...args);
+	}
+
 
 	if (auth.config != null) {
 		console.log(
@@ -188,6 +192,7 @@
 		}
 		// goto(base + "/workspace/" + workspaceid);
 	}
+
 	$effect(() => {
 		if (usersettings.currentworkspace != currentworkspace) {
 			update_currentworkspace(usersettings.currentworkspace);
@@ -212,6 +217,7 @@
 					await usersettings.dbload(access_token);
 					currentworkspace = usersettings.currentworkspace;
 					await loadWorkspaces();
+					auth.isAuthenticated = true;
 					const redirect = window.localStorage.getItem("redirect");
 					window.localStorage.removeItem("redirect");
 					goto(redirect || "/");
@@ -225,6 +231,35 @@
 			person_profiles: "identified_only",
 		});
 	}
+	const validated = $derived(() => {
+		if (auth.profile != null && Object.keys(auth.profile).length > 0) {
+			return auth.profile.verified;
+		}
+		return auth.isConnected;
+	});
+	function validatedCheck() {
+		// console.log("** isAuthenticated", isAuthenticated);
+		// console.log("** isConnected", isConnected);
+		// console.log("browser", browser);
+		// console.log("profile", profile);
+		// console.log("auth.profile", auth.profile);
+		// console.log("profile.email",auth.profile?.email);
+		// console.log("profile.email_verified",auth.profile?.email_verified);
+		// console.log("profile.verified",auth.profile?.verified);
+		if(browser && auth.profile != null && auth.profile.verified == false) {
+			if($page.url.pathname != base + "/validate") {
+				// window.location.href = base + "/validate";
+				goto(base + "/validate");
+			}
+		}
+	}
+	validatedCheck();
+	$effect(() => {
+		if(auth.isAuthenticated == true) {
+			validatedCheck();
+		}		
+	});
+
 </script>
 
 <svelte:head>
@@ -236,18 +271,20 @@
 </svelte:head>
 
 <ModeWatcher />
-{#if $page.url.pathname != base + "/login" && $page.url.pathname != base + "/loginscreen"}
+{#if $page.url.pathname != base + "/login"}
 	<div
 		class={`flex flex-col w-full h-screen dark:text-bw100 font-custom max-w-full`}
 	>
 		<HotkeyDialogue />
 		<Sidebar.Provider open={sidemenu.status}>
+			{#if validated() == true}
 			<AppSidebar
 				{workspaces}
 				{currentworkspace}
 				{profile}
 				{update_currentworkspace}
 			/>
+			{/if}
 			<Sidebar.Inset class="overflow-hidden">
 				<Header />
 				<div

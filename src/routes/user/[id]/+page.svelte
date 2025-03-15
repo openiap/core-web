@@ -1,7 +1,3 @@
-<script lang="ts" module>
-  export let collectionname = "users";
-</script>
-
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
@@ -36,7 +32,7 @@
             delete form.data.newpassword;
           }
           await auth.client.UpdateOne({
-            collectionname,
+            collectionname: "users",
             item: { ...form.data },
             jwt: auth.access_token,
           });

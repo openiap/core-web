@@ -135,7 +135,6 @@
   ];
   const cardRoot = "text-sm bg-bw200 dark:bg-bw900 rounded-[10px] p-5";
 </script>
-
 {#if !data.entities || data.entities.length == 0}
   <div class="mb-5 font-bold text-lg">Need help?</div>
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-10">

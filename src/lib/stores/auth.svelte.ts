@@ -193,19 +193,34 @@ class authState {
         }
         if (this.client == null) {
             try {
-                this.client = new openiap(wsurl, access_token);
+                this.client = new openiap(wsurl, "");
                 if(wsurl.indexOf("demo.openiap.io") > -1 || wsurl.indexOf("dev.openiap.io") > -1 || wsurl.indexOf("home.openiap.io") > -1) {
                     this.client.maxreconnectms = 1000; // as a dev, i have no patience
                 } else {
                     this.client.maxreconnectms = 5000; // default is 30 seconds, but we want to reconnect faster
                 }
-                const user = await this.client.connect(true);
-                this.isConnected = true;
-                this.connectWaitingPromisses.forEach((resolve: any) => {
-                    resolve();
-                });
+                this.client.onConnected = async () => {
+                    this.isConnected = true;
+                    this.connectWaitingPromisses.forEach((resolve: any) => {
+                        resolve();
+                    });
+                    try {
+                        const res = await this.client.Signin({jwt: access_token});
+                        console.log("Signed in", res);
+                        this.isAuthenticated = true;
+                    } catch (error:any) {
+                        console.error("Failed to signin", error.message);
+                        this.isAuthenticated = false;                        
+                    }
+                }
+                await this.client.connect(true);
+                // const user = await this.client.connect(true);
+                // this.isConnected = true;
+                // this.connectWaitingPromisses.forEach((resolve: any) => {
+                //     resolve();
+                // });
             } catch (error: any) {
-                if (error.message.indexOf("due to missing jwt, and respond with error")) {
+                if (error.message.indexOf("due to missing jwt, and respond with error") > -1) {
                     // remove all cookies
                     if (browser) {
                         document.cookie.split(";").forEach(function (cookie) {
@@ -215,9 +230,14 @@ class authState {
                             document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=;"; // Handle cookies without paths
                         });
                     }
+                    console.error("Failed to connect to server", error.message);
+                    this.isConnected = false;
+                    this.isAuthenticated = false;
+                } else {
+                    console.error("Failed to connect to server", error.message);
+                    this.isConnected = false;
+                    this.isAuthenticated = false;
                 }
-                console.error("Failed to connect to server", error);
-                this.isConnected = false;
             }
         } else {
             await new Promise((resolve) => {

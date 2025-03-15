@@ -1,7 +1,3 @@
-<script lang="ts" module>
-  export let collectionname = "mailhist";
-</script>
-
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";

@@ -1,7 +1,3 @@
-<script lang="ts" module>
-  export let collectionname = "agents";
-</script>
-
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
@@ -30,7 +26,7 @@
         loading = true;
         try {
           await auth.client.UpdateOne({
-            collectionname,
+            collectionname: "agents",
             item: { ...form.data },
             jwt: auth.access_token,
           });

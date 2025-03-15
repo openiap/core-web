@@ -1,12 +1,11 @@
 import { data } from "$lib/entities/data.svelte.js";
 import { auth } from "$lib/stores/auth.svelte.js";
 import type { PageServerLoad } from "./$types.js";
-import { collectionname } from "./+page.svelte";
 export const load: PageServerLoad = async ({ parent, params }) => {
   try {
     const { access_token } = await parent();
     let id = params.id;
-    let item = await auth.client.FindOne<any>({ collectionname, query: { _id: id, _type: "agent" }, jwt: access_token });
+    let item = await auth.client.FindOne<any>({ collectionname: "agents", query: { _id: id, _type: "agent" }, jwt: access_token });
     let agentInstance = await auth.client.FindOne<any>({ collectionname: "config", query: { name: "Agent Instance", _type: "resource" }, jwt: access_token });
 
     if (item._stripeprice == null && item.stripeprice != null && item.stripeprice != "") {

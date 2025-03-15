@@ -1,6 +1,5 @@
 import { auth } from "$lib/stores/auth.svelte.js";
 import type { PageLoad } from "./$types.js";
-import { collectionname } from "./+page.svelte";
 
 export const load: PageLoad = async ({ parent, params }) => {
   const { access_token } = await parent();

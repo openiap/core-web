@@ -92,6 +92,12 @@
 		usersettings.reset();
 		goto(base + `/`);
 	}
+	const validated = $derived(() => {
+		if (auth.profile != null && Object.keys(auth.profile).length > 0) {
+			return auth.profile.verified;
+		}
+		return auth.isConnected;
+	});
 </script>
 
 <header
@@ -99,6 +105,7 @@
 >
 	<div class="flex items-center">
 		<!-- <Sidebar.Trigger class="-ml-1" /> -->
+		{#if validated() == true}
 		<HotkeyButton
 			variant="ghost"
 			size="icon"
@@ -121,6 +128,7 @@
 				<ArrowRightToLine class="block dark:text-bw500" />
 			{/if}
 		</HotkeyButton>
+		{/if}
 
 		<Breadcrumb.Root>
 			<Breadcrumb.List>
@@ -173,7 +181,7 @@
 				<span class="sr-only">Toggle theme</span>
 			</HotkeyButton>
 
-			{#if auth.isAuthenticated == true}
+			{#if auth.profile != null && Object.keys(auth.profile).length > 0}
 				<NavUser
 					user={{
 						name: auth.profile.name as string,
