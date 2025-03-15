@@ -24,7 +24,7 @@ class Config {
     version: string = "";
     stripe_api_key: string = "";
     getting_started_url: string = "";
-    validate_user_form: boolean = false;
+    validate_user_form: string = "";
     validate_emails: boolean = false;
     forgot_pass_emails: boolean = false;
     supports_watch: boolean = false;
@@ -87,11 +87,11 @@ class authState {
             try {
                 await this.client.connect(true);
                 this.client.onDisconnected = async () => {
-                    console.log("**** serverinit.onDisconnected");
+                    console.debug("**** serverinit.onDisconnected");
                     this.isConnected = false;
                 }
                 this.client.onConnected = async () => {
-                    console.log("**** serverinit.onConnected");
+                    console.debug("**** serverinit.onConnected");
                     this.isConnected = true;
                 }
                 this.isConnected = true;
@@ -205,12 +205,20 @@ class authState {
                         resolve();
                     });
                     try {
-                        const res = await this.client.Signin({jwt: access_token});
-                        console.log("Signed in", res);
-                        this.isAuthenticated = true;
+                        if(access_token != null && access_token != "") {
+                            const res = await this.client.Signin({jwt: access_token});
+                            this.isAuthenticated = true;
+                        }
                     } catch (error:any) {
                         console.error("Failed to signin", error.message);
                         this.isAuthenticated = false;                        
+                    }
+                    if(this.profile != null && this.profile.sub != null) {
+                        const profile = await this.client.FindOne<any>({ collectionname: "users", query: { _id: this.profile.sub }, jwt: access_token });
+                        if(profile != null) {
+                            profile.sub = profile._id;
+                            this.profile = profile;
+                        }
                     }
                 }
                 await this.client.connect(true);

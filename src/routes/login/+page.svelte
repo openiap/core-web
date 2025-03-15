@@ -27,14 +27,15 @@
             <div class="grid gap-2">
               <div class="flex items-center">
                 <Label for="password">Password</Label>
-                <a href="##" class="ml-auto inline-block text-sm underline">
+                <!-- <a href="##" class="ml-auto inline-block text-sm underline">
                   Forgot your password?
-                </a>
+                </a> -->
               </div>
               <Input id="password" name="password" type="password" required autocomplete="current-password" />
             </div>
             <Button variant="outline" type="submit" class="w-full">Login</Button>
             {#if auth.config?.loginproviders != null}
+              <hr class="my-4" />
               {#each auth.config?.loginproviders.filter((x:any) => x.provider != "local") as lp }
                 <Button variant="outline" class="w-full" onclick={() => goto('/' + lp.id)}>{lp.name}</Button>
               {/each}

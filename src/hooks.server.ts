@@ -24,8 +24,7 @@ export const init: ServerInit = async () => {
         console.log("Init core-web version", version, "git commit", hash);
         initialized = true;
     } catch (error:any) {
-        console.log("**** serverinit error", error.message);
-        // console.log("**** serverinit error", error);
+        console.debug("**** serverinit error", error.message);
     }
 }
 export const handle: Handle = async ({ event, resolve }) => {

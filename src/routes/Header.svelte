@@ -20,6 +20,11 @@
 	import { toggleMode } from "mode-watcher";
 	import { capitalizeFirstLetter } from "../helper";
 	import type { Workspace } from "./workspace/schema";
+
+	let { 
+		workspaces = [],
+	 } = $props();
+
 	
 	let pathname = $state(
 		$state.snapshot(
@@ -94,7 +99,14 @@
 	}
 	const validated = $derived(() => {
 		if (auth.profile != null && Object.keys(auth.profile).length > 0) {
-			return auth.profile.verified;
+			if(auth.config.validate_user_form != null && auth.config.validate_user_form  != "") {
+				if(workspaces.length == 0) {
+					return false;
+				}
+				return auth.profile.validated;
+			} else {
+				return true;
+			}			
 		}
 		return auth.isConnected;
 	});

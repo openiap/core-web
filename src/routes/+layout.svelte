@@ -32,7 +32,7 @@
 
 	const { isAuthenticated, isConnected } = auth;
 
-	if (auth.config.otel_log_url) {
+	if (browser && auth.config.otel_log_url) {
 		let url = auth.config.otel_log_url
 			.replace("https://otel.", "https://otelhttp.")
 			.replace("http://otel.", "http://otelhttp.");
@@ -97,16 +97,21 @@
 			.map(arg => (typeof arg === "object" ? JSON.stringify(arg) : String(arg)))
 			.join(" ");
 
+			let attributes:any = {
+				filename: callerInfo.filename,
+				line: callerInfo.line,
+				// full_stack: new Error().stack
+			};
+			if(auth.profile != null && Object.keys(auth.profile).length > 0) {
+				attributes.userid = $state.snapshot(auth.profile.sub);
+				attributes.email = $state.snapshot(auth.profile.email);
+			}
 			// Emit to OpenTelemetry
 			logger.emit({
 			severityNumber,
 			severityText,
 			body: message.trim(),
-			attributes: {
-				filename: callerInfo.filename,
-				line: callerInfo.line,
-				full_stack: new Error().stack // optional full stack
-			}
+			attributes: attributes
 			});
 		}
 
@@ -233,22 +238,20 @@
 	}
 	const validated = $derived(() => {
 		if (auth.profile != null && Object.keys(auth.profile).length > 0) {
-			return auth.profile.verified;
+			if(auth.config.validate_user_form != null && auth.config.validate_user_form  != "") {
+				if(workspaces.length == 0) {
+					return false;
+				}
+				return auth.profile.validated;
+			} else {
+				return true;
+			}			
 		}
 		return auth.isConnected;
 	});
 	function validatedCheck() {
-		// console.log("** isAuthenticated", isAuthenticated);
-		// console.log("** isConnected", isConnected);
-		// console.log("browser", browser);
-		// console.log("profile", profile);
-		// console.log("auth.profile", auth.profile);
-		// console.log("profile.email",auth.profile?.email);
-		// console.log("profile.email_verified",auth.profile?.email_verified);
-		// console.log("profile.verified",auth.profile?.verified);
-		if(browser && auth.profile != null && auth.profile.verified == false) {
+		if(browser && validated() == false) {
 			if($page.url.pathname != base + "/validate") {
-				// window.location.href = base + "/validate";
 				goto(base + "/validate");
 			}
 		}
@@ -286,7 +289,7 @@
 			/>
 			{/if}
 			<Sidebar.Inset class="overflow-hidden">
-				<Header />
+				<Header {workspaces} />
 				<div
 					class={"border bg-bw50 border-bw500 dark:bg-bw800 rounded-xl mb-4 mx-4 h-full overflow-auto tourcontent page " +
 						` ${pagename().includes("entities") ? "px-4 py-5" : "px-[30px] py-7"}`}

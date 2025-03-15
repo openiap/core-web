@@ -22,7 +22,6 @@
 
   let name = $derived(() => auth.profile?.name || "World");
   const { data } = $props();
-  console.log("$mode", $mode);
   // Helper function to map state to valid badge variant
   function getBadgeVariant(
     state: string,
