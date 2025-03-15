@@ -157,16 +157,8 @@
                 data: JSON.stringify(submission.data),
                 jwt: auth.access_token,
               });
-              const profile = await auth.client.FindOne<any>({
-                collectionname: "users",
-                query: { _id: auth.profile.sub },
-                jwt: auth.access_token,
-              });
-              if (profile != null) {
-                auth.profile = profile;
-                console.log("** Signin.profile", profile);
-                getstep();
-              }
+              await auth.reloadUser();
+              getstep();
             } else {
               toast.error("Error submitting form", {
                 description: "No data submitted",
@@ -273,16 +265,8 @@
                   toast.success("Email validated", {
                     description: "Email has been validated",
                   });
-                  const profile = await auth.client.FindOne<any>({
-                    collectionname: "users",
-                    query: { _id: auth.profile.sub },
-                    jwt: auth.access_token,
-                  });
-                  if (profile != null) {
-                    auth.profile = profile;
-                    console.log("** Signin.profile", profile);
-                    getstep();
-                  }
+                  await auth.reloadUser();
+                  getstep();
                 } catch (error: any) {
                   console.error(error);
                   toast.error("Error validating email", {
@@ -306,16 +290,8 @@
                   toast.success("Email sent", {
                     description: "Email has been sent",
                   });
-                  const profile = await auth.client.FindOne<any>({
-                    collectionname: "users",
-                    query: { _id: auth.profile.sub },
-                    jwt: auth.access_token,
-                  });
-                  if (profile != null) {
-                    auth.profile = profile;
-                    console.log("** Signin.profile", profile);
-                    getstep();
-                  }
+                  await auth.reloadUser();
+                  getstep();
                 } catch (error: any) {
                   console.error(error);
                   toast.error("Error sending email", {
@@ -381,21 +357,12 @@
                   query: { _type: "workspace" },
                   jwt: auth.access_token,
                 });
-                const profile = await auth.client.FindOne<any>({
-                  collectionname: "users",
-                  query: { _id: auth.profile.sub },
-                  jwt: auth.access_token,
-                });
                 if(data.workspace != null) {
                   usersettings.currentworkspace = data.workspace._id;
                   usersettings.persist();
                 }
-
-                if (profile != null) {
-                  auth.profile = profile;
-                  console.log("** Signin.profile", profile);
-                  getstep();
-                }
+                await auth.reloadUser();
+                getstep();
               } catch (error: any) {
                 console.error(error);
                 toast.error("Error creating workspace", {

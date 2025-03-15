@@ -187,6 +187,24 @@ class authState {
         return access_token;
     }
     connectWaitingPromisses: any[] = [];
+    async reloadUser() {
+        if (this.client != null && this.client.connected) {
+            return;
+        }
+        if(this.profile != null && this.profile.sub != null) {
+            const profile = await this.client.FindOne<any>({ collectionname: "users", query: { _id: this.profile.sub }, jwt: this.access_token });
+            if(profile != null) {
+                let _profile = $state.snapshot(auth.profile);
+                if(_profile != null) {
+                    _profile = {..._profile, ...profile};
+                    this.profile = _profile;
+                } else {
+                    profile.sub = profile._id;
+                    this.profile = profile;
+                }
+            }
+        }
+    }
     async connect(wsurl: string, access_token: string) {
         if (this.client != null && this.client.connected) {
             return;
@@ -213,19 +231,7 @@ class authState {
                         console.error("Failed to signin", error.message);
                         this.isAuthenticated = false;                        
                     }
-                    if(this.profile != null && this.profile.sub != null) {
-                        const profile = await this.client.FindOne<any>({ collectionname: "users", query: { _id: this.profile.sub }, jwt: access_token });
-                        if(profile != null) {
-                            let _profile = $state.snapshot(auth.profile);
-                            if(_profile != null) {
-                                _profile = {..._profile, ...profile};
-                                this.profile = _profile;
-                            } else {
-                                profile.sub = profile._id;
-                                this.profile = profile;
-                            }
-                        }
-                    }
+                    this.reloadUser();
                 }
                 await this.client.connect(true);
                 // const user = await this.client.connect(true);
