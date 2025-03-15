@@ -216,8 +216,14 @@ class authState {
                     if(this.profile != null && this.profile.sub != null) {
                         const profile = await this.client.FindOne<any>({ collectionname: "users", query: { _id: this.profile.sub }, jwt: access_token });
                         if(profile != null) {
-                            profile.sub = profile._id;
-                            this.profile = profile;
+                            let _profile = $state.snapshot(auth.profile);
+                            if(_profile != null) {
+                                _profile = {..._profile, ...profile};
+                                this.profile = _profile;
+                            } else {
+                                profile.sub = profile._id;
+                                this.profile = profile;
+                            }
                         }
                     }
                 }
