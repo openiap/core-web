@@ -30,9 +30,7 @@
 	const { wsurl, protocol, domain, client_id, profile, origin } = data;
 	let { access_token } = data;
 
-	const { isAuthenticated, isConnected } = auth;
-
-	if (browser && auth.config.otel_log_url) {
+	if (browser && auth.config != null && auth.config.otel_log_url) {
 		let url = auth.config.otel_log_url
 			.replace("https://otel.", "https://otelhttp.")
 			.replace("http://otel.", "http://otelhttp.");
@@ -239,9 +237,9 @@
 	const validated = $derived(() => {
 		if (auth.profile != null && Object.keys(auth.profile).length > 0) {
 			if(auth.config.validate_user_form != null && auth.config.validate_user_form  != "") {
-				if(workspaces.length == 0) {
-					return false;
-				}
+				// if(workspaces.length == 0) {
+				// 	return false;
+				// }
 				return auth.profile.validated;
 			} else {
 				return true;
@@ -274,20 +272,18 @@
 </svelte:head>
 
 <ModeWatcher />
-{#if $page.url.pathname != base + "/login"}
+{#if $page.url.pathname != base + "/login" && $page.url.pathname != base + "/validate"}
 	<div
 		class={`flex flex-col w-full h-screen dark:text-bw100 font-custom max-w-full`}
 	>
 		<HotkeyDialogue />
 		<Sidebar.Provider open={sidemenu.status}>
-			{#if validated() == true}
 			<AppSidebar
 				{workspaces}
 				{currentworkspace}
 				{profile}
 				{update_currentworkspace}
 			/>
-			{/if}
 			<Sidebar.Inset class="overflow-hidden">
 				<Header {workspaces} />
 				<div

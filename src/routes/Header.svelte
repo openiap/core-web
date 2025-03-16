@@ -100,9 +100,9 @@
 	const validated = $derived(() => {
 		if (auth.profile != null && Object.keys(auth.profile).length > 0) {
 			if(auth.config.validate_user_form != null && auth.config.validate_user_form  != "") {
-				if(workspaces.length == 0) {
-					return false;
-				}
+				// if(workspaces.length == 0) {
+				// 	return false;
+				// }
 				return auth.profile.validated;
 			} else {
 				return true;
@@ -116,7 +116,6 @@
 	class="flex h-16 shrink-0 items-center justify-between px-4 rounded mx-2"
 >
 	<div class="flex items-center">
-		<!-- <Sidebar.Trigger class="-ml-1" /> -->
 		{#if validated() == true}
 		<HotkeyButton
 			variant="ghost"

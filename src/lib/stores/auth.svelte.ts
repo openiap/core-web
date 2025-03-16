@@ -8,6 +8,7 @@ const { UserManager, WebStorageStateStore } = pkg;
 // @ts-ignore
 import ws from 'ws';
 import posthog from "posthog-js";
+import { ChevronsLeftRightEllipsisIcon, Cookie } from "lucide-svelte";
 class Config {
     webversion: string = "";
     webcommit: string = "";
@@ -44,6 +45,7 @@ class Config {
     llmchat_queue: string = "";
     enable_analytics: boolean = false;
     enable_gitserver: boolean = false;
+    enable_guest: boolean = false;
     otel_trace_url: string = "";
     otel_metric_url: string = "";
     otel_log_url: string = "";
@@ -86,6 +88,9 @@ class authState {
             this.client.maxreconnectms = 1000;
             try {
                 await this.client.connect(true);
+                if(this.config.enable_guest) {
+                    this.client.Signin({username: "guest", password: "guest"});
+                }
                 this.client.onDisconnected = async () => {
                     console.debug("**** serverinit.onDisconnected");
                     this.isConnected = false;
@@ -107,6 +112,7 @@ class authState {
         return await this.loadUser();
     }
     async clientinit(wsurl: string, protocol: string, domain: string, client_id: string, origin: string, access_token: string, profile: any, fetch: any, cookies: any) {
+        console.debug("clientinit", access_token.substring(0, 10), profile);
         if (this.config == null) await this.getConfig(wsurl, fetch);
         this.baseurl = protocol + '://' + domain;
         this.createuserManager(client_id, origin, cookies);
@@ -131,6 +137,14 @@ class authState {
     }
     async login() {
         if (this.userManager == null) throw new Error("UserManager not initialized");
+        if (browser) {
+            document.cookie.split(";").forEach(function (cookie) {
+                let eqPos = cookie.indexOf("=");
+                let name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+                document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=;"; // Handle cookies without paths
+            });
+        }
         await this.userManager.signinRedirect();
     }
     async logout() {
@@ -140,8 +154,11 @@ class authState {
     async signinRedirectCallback() {
         try {
             const user = await auth.userManager.signinRedirectCallback();
+            this.profile = user.profile;
             return true;
         } catch (error) {
+            console.error("Failed to signinRedirectCallback", error);
+            return false;
         }
         return true;
     }
@@ -184,6 +201,7 @@ class authState {
         if (!browser) {
             global.WebSocket = ws;
         }
+        console.debug("loadUser", access_token.substring(0, 10));
         return access_token;
     }
     connectWaitingPromisses: any[] = [];
@@ -191,21 +209,12 @@ class authState {
         if (this.client == null || !this.client.connected) {
             return;
         }
-        if(this.profile != null && this.profile.sub != null) {
+        if(this.profile != null && this.profile.sub != null && this.profile.sub != "") {
             const profile = await this.client.FindOne<any>({ collectionname: "users", query: { _id: this.profile.sub }, jwt: this.access_token });
             if(profile != null) {
                 this.profile.formvalidated = profile.formvalidated;
                 this.profile.emailvalidated = profile.emailvalidated;
                 this.profile.validated = profile.validated;
-                // let _profile = $state.snapshot(auth.profile);
-                // if(_profile != null) {
-                //     _profile = {..._profile, ...profile};
-                //     console.log("reloadUser", _profile);
-                //     this.profile = _profile;
-                // } else {
-                //     profile.sub = profile._id;
-                //     this.profile = profile;
-                // }
             }
         }
     }
@@ -230,6 +239,11 @@ class authState {
                         if(access_token != null && access_token != "") {
                             const res = await this.client.Signin({jwt: access_token});
                             this.isAuthenticated = true;
+                        } else {
+                            if(this.config.enable_guest) {
+                                this.client.Signin({username: "guest", password: "guest"});
+                            }
+                            this.isAuthenticated = false;
                         }
                         await this.reloadUser();
                     } catch (error:any) {
