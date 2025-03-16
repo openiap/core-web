@@ -12,7 +12,7 @@
   import { toast } from "svelte-sonner";
   import { base } from "$app/paths";
   import { Header } from "$lib/components/ui/dialog/index.js";
-    import { goto } from "$app/navigation";
+  import { goto } from "$app/navigation";
   const { data } = $props();
   let _mode = $state.snapshot($mode);
   let step = $state("");
@@ -22,96 +22,98 @@
   let emailcode = $state("");
   let ref = $state(null) as any;
   function updateStyle() {
-    const refList1 =
-      "input, select, textarea, div.card, div.dropdown, li.list-group-item, li.list-group-header, div.choices__inner, div.input-group-text, input.form-control, list-group-item";
-    const sidebarRef1 = ref.querySelectorAll(refList1);
-    if (sidebarRef1.length) {
-      if ($mode === "dark") {
-        sidebarRef1.forEach((el: any) => {
-          el.classList.add("darkTheme");
-          el.classList.remove("lightTheme");
-          el.classList.remove("bg-light");
-        });
-      } else if ($mode === "light") {
-        sidebarRef1.forEach((el: any) => {
-          el.classList.add("lightTheme");
-          el.classList.remove("darkTheme");
+    try {
+      const refList1 =
+        "input, select, textarea, div.card, div.dropdown, li.list-group-item, li.list-group-header, div.choices__inner, div.input-group-text, input.form-control, list-group-item";
+      const sidebarRef1 = ref.querySelectorAll(refList1);
+      if (sidebarRef1.length) {
+        if ($mode === "dark") {
+          sidebarRef1.forEach((el: any) => {
+            el.classList.add("darkTheme");
+            el.classList.remove("lightTheme");
+            el.classList.remove("bg-light");
+          });
+        } else if ($mode === "light") {
+          sidebarRef1.forEach((el: any) => {
+            el.classList.add("lightTheme");
+            el.classList.remove("darkTheme");
+          });
+        }
+      }
+
+      const refList2 =
+        "button, [ref='button'], [ref='datagrid-dataMap-addRow'], [ref='editgrid-editGrid-addRow']";
+      const sidebarRef2 = ref.querySelectorAll(refList2);
+      if (sidebarRef2.length) {
+        if ($mode === "dark") {
+          sidebarRef2.forEach((el: any) => {
+            el.classList.add("darkThemeButton");
+            el.classList.remove("lightThemeButton");
+          });
+        } else if ($mode === "light") {
+          sidebarRef2.forEach((el: any) => {
+            el.classList.add("lightThemeButton");
+            el.classList.remove("darkThemeButton");
+          });
+        }
+      }
+      // const refList6 = "[ref='datagrid-dataGrid-removeRow']";
+      // const sidebarRef6 = ref.querySelectorAll(refList6);
+      // if (sidebarRef6.length) {
+      //     if ($mode === "dark") {
+      //         sidebarRef6.forEach((el: any) => {
+      //             el.classList.add("lightDeleteButton");
+      //             el.classList.remove("lightThemeButton");
+      //         });
+      //     } else if ($mode === "light") {
+      //         sidebarRef6.forEach((el: any) => {
+      //             el.classList.add("lightDeleteButton");
+      //             el.classList.remove("darkThemeButton");
+      //         });
+      //     }
+      // }
+
+      const refList3 = "[ref='sidebar-anchor']";
+      const sidebarRef3 = ref.querySelectorAll(refList3);
+      if (sidebarRef3.length) {
+        if ($mode === "dark") {
+          sidebarRef3.forEach((el: any) => {
+            el.classList.add("darkThemeSidebarButton");
+            el.classList.remove("lightThemeSidebarButton");
+          });
+        } else if ($mode === "light") {
+          sidebarRef3.forEach((el: any) => {
+            el.classList.add("lightThemeSidebarButton");
+            el.classList.remove("darkThemeSidebarButton");
+          });
+        }
+      }
+
+      const refList4 = "[ref='form-builder-panel']";
+      const sidebarRef4 = ref.querySelectorAll(refList4);
+      if (sidebarRef4.length) {
+        sidebarRef4.forEach((el: any) => {
+          el.classList.add("themeMargin");
         });
       }
-    }
 
-    const refList2 =
-      "button, [ref='button'], [ref='datagrid-dataMap-addRow'], [ref='editgrid-editGrid-addRow']";
-    const sidebarRef2 = ref.querySelectorAll(refList2);
-    if (sidebarRef2.length) {
-      if ($mode === "dark") {
-        sidebarRef2.forEach((el: any) => {
-          el.classList.add("darkThemeButton");
-          el.classList.remove("lightThemeButton");
-        });
-      } else if ($mode === "light") {
-        sidebarRef2.forEach((el: any) => {
-          el.classList.add("lightThemeButton");
-          el.classList.remove("darkThemeButton");
-        });
+      const refList5 = "table";
+      const sidebarRef5 = ref.querySelectorAll(refList5);
+      if (sidebarRef5.length) {
+        if ($mode === "dark") {
+          sidebarRef5.forEach((el: any) => {
+            el.classList.add("darkTheme");
+            el.classList.remove("lightTheme");
+            el.classList.remove("bg-light");
+          });
+        } else if ($mode === "light") {
+          sidebarRef5.forEach((el: any) => {
+            el.classList.add("lightTheme");
+            el.classList.remove("darkTheme");
+          });
+        }
       }
-    }
-    // const refList6 = "[ref='datagrid-dataGrid-removeRow']";
-    // const sidebarRef6 = ref.querySelectorAll(refList6);
-    // if (sidebarRef6.length) {
-    //     if ($mode === "dark") {
-    //         sidebarRef6.forEach((el: any) => {
-    //             el.classList.add("lightDeleteButton");
-    //             el.classList.remove("lightThemeButton");
-    //         });
-    //     } else if ($mode === "light") {
-    //         sidebarRef6.forEach((el: any) => {
-    //             el.classList.add("lightDeleteButton");
-    //             el.classList.remove("darkThemeButton");
-    //         });
-    //     }
-    // }
-
-    const refList3 = "[ref='sidebar-anchor']";
-    const sidebarRef3 = ref.querySelectorAll(refList3);
-    if (sidebarRef3.length) {
-      if ($mode === "dark") {
-        sidebarRef3.forEach((el: any) => {
-          el.classList.add("darkThemeSidebarButton");
-          el.classList.remove("lightThemeSidebarButton");
-        });
-      } else if ($mode === "light") {
-        sidebarRef3.forEach((el: any) => {
-          el.classList.add("lightThemeSidebarButton");
-          el.classList.remove("darkThemeSidebarButton");
-        });
-      }
-    }
-
-    const refList4 = "[ref='form-builder-panel']";
-    const sidebarRef4 = ref.querySelectorAll(refList4);
-    if (sidebarRef4.length) {
-      sidebarRef4.forEach((el: any) => {
-        el.classList.add("themeMargin");
-      });
-    }
-
-    const refList5 = "table";
-    const sidebarRef5 = ref.querySelectorAll(refList5);
-    if (sidebarRef5.length) {
-      if ($mode === "dark") {
-        sidebarRef5.forEach((el: any) => {
-          el.classList.add("darkTheme");
-          el.classList.remove("lightTheme");
-          el.classList.remove("bg-light");
-        });
-      } else if ($mode === "light") {
-        sidebarRef5.forEach((el: any) => {
-          el.classList.add("lightTheme");
-          el.classList.remove("darkTheme");
-        });
-      }
-    }
+    } catch (error) {}
   }
   async function createfrom() {
     try {
@@ -156,8 +158,7 @@
                 data: JSON.stringify(submission.data),
                 jwt: auth.access_token,
               });
-              await auth.reloadUser();
-              getstep();
+              await getstep();
             } else {
               toast.error("Error submitting form", {
                 description: "No data submitted",
@@ -189,28 +190,38 @@
     }
   }
 
-  function getstep() {
-    step = "form";
-    console.log("getstep", $state.snapshot(auth.profile));
-    if (auth.profile.formvalidated == false) {
-      console.log("step form");
-      step = "form";
-    } else if (auth.profile.validated == false && auth.profile.formvalidated == true) {
-      console.log("step email");
-      step = "email";
-    } else if (data.workspace == null) {
-      console.log("step workspace");
-      step = "workspace";
-    } else {
-      console.log("step done");
-      step = "done";
-      goto(base + "/");
+  async function getstep() {
+    try {
+      await auth.reloadUser();
+      console.log("getstep", $state.snapshot(auth.profile));
+      if (auth.profile.formvalidated != true) {
+        console.log("step form");
+        step = "form";
+      } else if (
+        auth.profile.validated == false &&
+        auth.profile.formvalidated == true
+      ) {
+        console.log("step email");
+        step = "email";
+      } else if (data.workspace == null) {
+        console.log("step workspace");
+        step = "workspace";
+      } else {
+        console.log("step done");
+        step = "done";
+        goto(base + "/");
+      }
+    } catch (error:any) {
+      console.error(error);
+      toast.error("Error getting step", {
+        description: error.message,
+      });
     }
   }
   getstep();
   if (
     browser &&
-    auth.profile.formvalidated == false &&
+    auth.profile.formvalidated != true &&
     auth.config.validate_user_form != null &&
     auth.config.validate_user_form != ""
   ) {
@@ -238,7 +249,10 @@
 </div>
 <div>
   {#if step == "form"}
-  <div class="bootstrap-scope formio-dialog-content p-2" bind:this={ref}></div>
+    <div
+      class="bootstrap-scope formio-dialog-content p-2"
+      bind:this={ref}
+    ></div>
   {/if}
   {#if step == "email"}
     <div class="font-bold mb-4">Validate User</div>
@@ -268,8 +282,7 @@
                   toast.success("Email validated", {
                     description: "Email has been validated",
                   });
-                  await auth.reloadUser();
-                  getstep();
+                  await getstep();
                 } catch (error: any) {
                   console.error(error);
                   toast.error("Error validating email", {
@@ -293,8 +306,7 @@
                   toast.success("Email sent", {
                     description: "Email has been sent",
                   });
-                  await auth.reloadUser();
-                  getstep();
+                  await getstep();
                 } catch (error: any) {
                   console.error(error);
                   toast.error("Error sending email", {
@@ -307,7 +319,10 @@
               aria-label="Resend Code"
               >Resend Code
             </HotkeyButton>
-            <HotkeyButton variant="base" size="base" aria-label="Update Email"
+            <HotkeyButton
+              variant="base"
+              size="base"
+              aria-label="Update Email"
               onclick={() => {
                 step = "form";
               }}
@@ -328,80 +343,82 @@
     </div>
   {/if}
   {#if step == "workspace"}
-  <div class="font-bold mb-4">Validate User</div>
-  <div>
-    <Card.Card class="mb-4">
-      <Card.Header>Create your first workspace</Card.Header>
-      <Card.Content>
-        <div class="grid gap-2">
-          <Label for="workspace">Workspace Name</Label>
-          <Input
-            type="text"
-            bind:value={data.workspace}
-            placeholder="Workspace name"
-            required
-            autocomplete="off"
-          />
-        </div>
-        <div class="">
-          <HotkeyButton
-            onclick={async () => {
-              try {
-                await auth.client.CustomCommand({
-                  command: "ensureworkspace",
-                  data: JSON.stringify({ name: $state.snapshot(data.workspace) }),
-                  jwt: auth.access_token,
-                });
-                toast.success("Workspace created", {
-                  description: "Workspace has been created",
-                });
-                data.workspace = await auth.client.FindOne<any>({
-                  collectionname: "users",
-                  query: { _type: "workspace" },
-                  jwt: auth.access_token,
-                });
-                if(data.workspace != null) {
-                  usersettings.currentworkspace = data.workspace._id;
-                  usersettings.persist();
+    <div class="font-bold mb-4">Validate User</div>
+    <div>
+      <Card.Card class="mb-4">
+        <Card.Header>Create your first workspace</Card.Header>
+        <Card.Content>
+          <div class="grid gap-2">
+            <Label for="workspace">Workspace Name</Label>
+            <Input
+              type="text"
+              bind:value={data.workspace}
+              placeholder="Workspace name"
+              required
+              autocomplete="off"
+            />
+          </div>
+          <div class="">
+            <HotkeyButton
+              onclick={async () => {
+                try {
+                  await auth.client.CustomCommand({
+                    command: "ensureworkspace",
+                    data: JSON.stringify({
+                      name: $state.snapshot(data.workspace),
+                    }),
+                    jwt: auth.access_token,
+                  });
+                  toast.success("Workspace created", {
+                    description: "Workspace has been created",
+                  });
+                  data.workspace = await auth.client.FindOne<any>({
+                    collectionname: "users",
+                    query: { _type: "workspace" },
+                    jwt: auth.access_token,
+                  });
+                  if (data.workspace != null) {
+                    usersettings.currentworkspace = data.workspace._id;
+                    usersettings.persist();
+                  }
+                  await getstep();
+                } catch (error: any) {
+                  console.error(error);
+                  toast.error("Error creating workspace", {
+                    description: error.message,
+                  });
                 }
-                await auth.reloadUser();
-                getstep();
-              } catch (error: any) {
-                console.error(error);
-                toast.error("Error creating workspace", {
-                  description: error.message,
-                });
-              }
-            }}
-            variant="success"
-            size="base"
-            aria-label="Create workspace"
-            data-shortcut="enter"
-            >Create Workspace
-          </HotkeyButton>
-        </div>
-        <div>
-          <small>
-            Please enter a name for your first workspace. 
-            This couold be your company name, a project you are working on, a department, or any other name that makes sense to you.
-            You can create additional workspaces later.
-          </small>
-        </div>
-      </Card.Content>
-    </Card.Card>
-  </div>
+              }}
+              variant="success"
+              size="base"
+              aria-label="Create workspace"
+              data-shortcut="enter"
+              >Create Workspace
+            </HotkeyButton>
+          </div>
+          <div>
+            <small>
+              Please enter a name for your first workspace. This couold be your
+              company name, a project you are working on, a department, or any
+              other name that makes sense to you. You can create additional
+              workspaces later.
+            </small>
+          </div>
+        </Card.Content>
+      </Card.Card>
+    </div>
   {/if}
   {#if step == "done"}
-  <div class="font-bold mb-4">Validate User</div>
-  <div>
-    <Card.Card class="mb-4">
-      <Card.Header>Validation Complete</Card.Header>
-      <Card.Content>
-        <div class="grid gap-2">
-          <div class="font-bold">User has been validated</div>
-        </div>
-      </Card.Content>
-    </Card.Card>
-  </div>
+    <div class="font-bold mb-4">Validate User</div>
+    <div>
+      <Card.Card class="mb-4">
+        <Card.Header>Validation Complete</Card.Header>
+        <Card.Content>
+          <div class="grid gap-2">
+            <div class="font-bold">User has been validated</div>
+          </div>
+        </Card.Content>
+      </Card.Card>
+    </div>
   {/if}
 </div>
