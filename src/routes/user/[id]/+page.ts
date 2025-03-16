@@ -4,7 +4,7 @@ import type { PageLoad } from "./$types.js";
 export const load: PageLoad = async ({ parent, params }) => {
   const { access_token } = await parent();
   try {
-    let item = await auth.client.FindOne<any>({ collectionname, query: { _id: params.id, _type: "user" }, jwt: access_token });
+    let item = await auth.client.FindOne<any>({ collectionname: "users", query: { _id: params.id, _type: "user" }, jwt: access_token });
     return { item };
   } catch (error) {
     return { item: null };
