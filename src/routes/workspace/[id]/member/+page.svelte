@@ -15,7 +15,7 @@
     import { auth } from "$lib/stores/auth.svelte.js";
     import { usersettings } from "$lib/stores/usersettings.svelte.js";
     import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
-    import { Trash2 } from "lucide-svelte";
+    import { SquarePlus, Trash2 } from "lucide-svelte";
     import { toast } from "svelte-sonner";
 
   let { data } = $props();
@@ -105,8 +105,29 @@
   }
 </script>
 
-<div class="mb-4">
+<div class="mb-4 md:flex md:items-center md:justify-between">
   <SearchInput bind:searchstring />
+
+  <div
+  class="md:flex overflow-auto md:overflow-visible md:items-center xl:justify-end gap-4 md:gap-0 md:space-x-5 mb-2 xl:mb-0"
+>
+    <HotkeyButton
+      title="Invite Member"
+      data-shortcut="ins"
+      class="touraddmember mb-2 md:mb-0"
+      size="sm"
+      variant="base"
+      aria-label="Invite Member"
+      disabled={loading}
+      onclick={() => {
+        loading = true;
+        goto(base + `/workspace/${data.id}/invite`);
+      }}
+    >
+      <SquarePlus />
+      Invite Member</HotkeyButton
+    >
+  </div>  
 </div>
 
 <Entities

@@ -87,7 +87,7 @@
           class="text-bw500"
             >The email of the user you want to invite</Form.Description
           >
-          <CustomInput {...props} bind:value={$formData.email} />
+          <CustomInput {...props} bind:value={$formData.email} autofocus />
         {/snippet}
       </Form.Control>
       <Form.FieldErrors />

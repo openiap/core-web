@@ -19,7 +19,7 @@ export class Workspace {
   }
 }
 export const newWorkspaceSchema = z.object({
-  name: z.string().min(2).default("Lemonify"),
+  name: z.string().min(2).default(""),
   _billingid: z.string().optional()
 });
 export type NewWorkspaceSchema = typeof newWorkspaceSchema;
