@@ -8,7 +8,6 @@ export const load: PageLoad = async ({ parent, params }) => {
   try {
     if(auth.config.validate_user_form != null && auth.config.validate_user_form != "") {
       let item = await auth.client.FindOne<any>({ collectionname: "forms", query: { _id: auth.config.validate_user_form }, jwt: access_token });
-      console.log("validate_user_form", item);
       if(item != null) {
         form = item;
       }

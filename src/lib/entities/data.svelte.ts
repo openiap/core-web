@@ -602,13 +602,13 @@ class entitiesdata {
 			case "/agent":
 				return ["name", "image", "os", "_productname", "_createdby", "status"];
 			case "/entities/agents":
-				return ["name", "image", "os", "_productname", "_createdby"];
+				return ["name", "image", "os", "_productname", "_type", "_createdby"];
 			case "/user":
 				return ["_id", "name", "username", "email", "lastseen", "_created"];
 			case "/role":
 				return ["_id", "name", "members", "_created"];
 			case "/entities/users":
-				return ["_id", "name", "username", "email", "lastseen", "members", "_created"];
+				return ["_id", "name", "username", "email", "lastseen", "members", "_type", "_created"];
 			case "/workitem":
 			case "/entities/workitems":
 				return ["name", "state", "errortype", "retries", "priority", "wiq", "lastrun", "_created"];
