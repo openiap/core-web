@@ -112,7 +112,6 @@ class authState {
         return await this.loadUser();
     }
     async clientinit(wsurl: string, protocol: string, domain: string, client_id: string, origin: string, access_token: string, profile: any, fetch: any, cookies: any) {
-        console.debug("clientinit", access_token.substring(0, 10), profile);
         if (this.config == null) await this.getConfig(wsurl, fetch);
         this.baseurl = protocol + '://' + domain;
         this.createuserManager(client_id, origin, cookies);

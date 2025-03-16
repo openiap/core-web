@@ -17,7 +17,10 @@
   let loading = $state(false);
 
   const { data } = $props();
-  data.item = editFormSchema.parse(data.item);
+
+  if(data.item != null) {
+    data.item = editFormSchema.parse(data.item);
+  }
 
   const form = superForm(defaults(zod(editFormSchema)), {
     dataType: "json",
@@ -76,6 +79,7 @@
   {$message}
 {/if}
 
+{#if $formData != null}
 <form method="POST" use:enhance>
   <Acl bind:value={$formData} />
 
@@ -278,5 +282,8 @@
     Update User</HotkeyButton
   >
 </form>
+{:else}
+  <div>User not found or access denied</div>
+{/if}
 
 <CustomSuperDebug {formData} />

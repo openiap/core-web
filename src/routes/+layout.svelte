@@ -248,7 +248,7 @@
 		return auth.isConnected;
 	});
 	function validatedCheck() {
-		if(browser && validated() == false) {
+		if(browser && validated() == false && auth.isAuthenticated == true) {
 			if($page.url.pathname != base + "/validate") {
 				goto(base + "/validate");
 			}
@@ -256,9 +256,8 @@
 	}
 	validatedCheck();
 	$effect(() => {
-		if(auth.isAuthenticated == true) {
-			validatedCheck();
-		}		
+		auth.isAuthenticated;
+		validatedCheck();
 	});
 
 </script>

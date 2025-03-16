@@ -99,7 +99,7 @@
 	}
 	const validated = $derived(() => {
 		if (auth.profile != null && Object.keys(auth.profile).length > 0) {
-			if(auth.config.validate_user_form != null && auth.config.validate_user_form  != "") {
+			if(auth.config?.validate_user_form != null && auth.config?.validate_user_form  != "") {
 				// if(workspaces.length == 0) {
 				// 	return false;
 				// }
