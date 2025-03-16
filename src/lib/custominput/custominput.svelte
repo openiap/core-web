@@ -9,7 +9,7 @@
 		value = $bindable(null),
 		type = "text",
 		disabled = false,
-		placeholder = "Type here",
+		placeholder = "",
 		onchangefunction = null,
 		multiple = false,
 		...props
