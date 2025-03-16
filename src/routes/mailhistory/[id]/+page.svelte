@@ -8,6 +8,7 @@
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../schema.js";
+    import { toast } from "svelte-sonner";
 
   const { data } = $props();
   const form = superForm(defaults(zod(editFormSchema)), {
@@ -16,7 +17,13 @@
     SPA: true,
   });
   const { form: formData, message } = form;
-  formData.set(data.item);
+  try {
+    formData.set(data.item);
+  } catch (error: any) {
+    toast.error("Error while enhancing", {
+      description: error.message,
+    });
+  }
 </script>
 
 {#if message && $message != ""}

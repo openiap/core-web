@@ -123,9 +123,14 @@
   ];
 
   const { form: formData, enhance, message, validateForm } = form;
-  formData.set(data.item);
-  validateForm({ update: true });
-
+  try {
+    formData.set(data.item);
+    validateForm({ update: true });
+  } catch (error: any) {
+    toast.error("Error while enhancing", {
+      description: error.message,
+    });
+  }
   // Adding missing keys
   if ($formData.provider === undefined) {
     $formData.provider = "saml";

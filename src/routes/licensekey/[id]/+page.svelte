@@ -137,10 +137,15 @@
       }
     },
   });
-
   const { form: formData, enhance, message, validateForm } = form;
-  formData.set(data.item);
-  validateForm({ update: true });
+  try {
+    formData.set(data.item);
+    validateForm({ update: true });
+  } catch (error: any) {
+    toast.error("Error while enhancing", {
+      description: error.message,
+    });
+  }
 
   async function valuepromptdoaction() {
     if (valuepromptvalue <= 0) {
@@ -197,8 +202,14 @@
           query: { _id: data.item._id },
           jwt: auth.access_token,
         });
-        formData.set(data.item);
-        validateForm({ update: true });
+        try {
+          formData.set(data.item);
+          validateForm({ update: true });
+        } catch (error: any) {
+          toast.error("Error while enhancing", {
+            description: error.message,
+          });
+        }
       } else {
         let existing = await auth.client.FindOne<ResourceUsage>({
           collectionname: "config",
@@ -236,8 +247,14 @@
           query: { _id: data.item._id },
           jwt: auth.access_token,
         });
-        formData.set(data.item);
-        validateForm({ update: true });
+        try {
+          formData.set(data.item);
+          validateForm({ update: true });
+        } catch (error: any) {
+          toast.error("Error while enhancing", {
+            description: error.message,
+          });
+        }
       }
     } catch (error: any) {
       toast.error("Error", {

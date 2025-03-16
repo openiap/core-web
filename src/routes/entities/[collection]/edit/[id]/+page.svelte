@@ -61,10 +61,15 @@
       }
     },
   });
-
   const { form: formData, enhance, message, validateForm } = form;
-  formData.set(data.data.form.data);
-  validateForm({ update: true });
+  try {
+    formData.set(data.data.form.data);
+    validateForm({ update: true });
+  } catch (error: any) {
+    toast.error("Error while enhancing", {
+      description: error.message,
+    });
+  }
 </script>
 
 <div class="px-1">
