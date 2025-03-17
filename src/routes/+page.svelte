@@ -8,17 +8,16 @@
   import cSvg from "$lib/images/svgs/C_Programming_Language.svg";
   import dotnetSvg from "$lib/images/svgs/dotnet.svg";
   import javaSvg from "$lib/images/svgs/java.svg";
+  import javalightSvg from "$lib/images/svgs/java_lightmode.svg";
   import jsSvg from "$lib/images/svgs/js.svg";
   import openiapSvg from "$lib/images/svgs/openiap.svg";
   import phpSvg from "$lib/images/svgs/php.svg";
   import pythonSvg from "$lib/images/svgs/python.svg";
   import rustSvg from "$lib/images/svgs/rust.svg";
-  import vscodeSvg from "$lib/images/svgs/vscode.svg";
-  import javalightSvg from "$lib/images/svgs/java_lightmode.svg";
   import rustlightSvg from "$lib/images/svgs/rust_lightmode.svg";
+  import vscodeSvg from "$lib/images/svgs/vscode.svg";
   import browerSvg from "$lib/images/svgs/web.svg";
   import { auth } from "$lib/stores/auth.svelte";
-  import { mode } from "mode-watcher";
 
   let name = $derived(() => auth.profile?.name || "World");
   const { data } = $props();
@@ -26,6 +25,7 @@
   function getBadgeVariant(
     state: string,
   ): "default" | "secondary" | "destructive" | "outline" | undefined {
+    if (state == null) return "default";
     switch (state.toLowerCase()) {
       case "pending":
         return "secondary";
