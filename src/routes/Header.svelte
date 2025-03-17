@@ -194,11 +194,6 @@
 
 			{#if auth.profile != null && Object.keys(auth.profile).length > 0}
 				<NavUser
-					user={{
-						name: auth.profile.name as string,
-						email: auth.profile.email as string,
-						avatar: "",
-					}}
 				/>
 			{:else}
 				<HotkeyButton

@@ -10,19 +10,21 @@
     import { usersettings } from "$lib/stores/usersettings.svelte";
     import { Crown, LogOut, Trash2 } from "lucide-svelte";
 
-    let { user }: { user: { name: string; email: string; avatar: string } } =
-        $props();
     const sidebar = useSidebar();
+    let avatar = $state("");
     async function logout() {
         await auth.logout();
     }
-    if (!user?.avatar) {
-        const name = user.name;
-        const names = name?.split(" ");
-        if (names != null && names?.length > 1) {
-            user.avatar = (names[0][0] + names[1][0]).toUpperCase();
-        } else {
-            user.avatar = name?.substring(0, 2).toUpperCase() || "U";
+    if (auth.profile != null) {
+        // svelte-ignore state_referenced_locally
+        if(avatar ==  ""){
+            const name = auth.profile?.name;
+            const names = name?.split(" ");
+            if (names != null && names?.length > 1) {
+                avatar = (names[0][0] + names[1][0]).toUpperCase();
+            } else {
+                avatar = name?.substring(0, 2).toUpperCase() || "U";
+            }
         }
     }
     function reset() {
@@ -41,7 +43,7 @@
                     <div
                         class="flex items-center justify-center text-sm h-full w-full bg-bw200 hover:bg-bw300 dark:text-bw300 dark:bg-bw700 dark:hover:bg-bw700"
                     >
-                        {user.avatar}
+                        {avatar}
                     </div>
                     <!-- <Avatar.Fallback class="rounded-xl text-sm"
                     ></Avatar.Fallback> -->
@@ -59,16 +61,16 @@
                     >
                         <Avatar.Root class="h-8 w-8 rounded-lg">
                             <Avatar.Fallback class="rounded-lg"
-                                >{user.avatar}</Avatar.Fallback
+                                >{avatar}</Avatar.Fallback
                             >
                         </Avatar.Root>
                         <div
                             class="grid flex-1 text-left text-sm leading-tight"
                         >
                             <span class="truncate font-semibold"
-                                >{user.name}</span
+                                >{auth.profile?.name}</span
                             >
-                            <span class="truncate text-xs">{user.email}</span>
+                            <span class="truncate text-xs">{auth.profile.email}</span>
                         </div>
                     </div>
                 </DropdownMenu.Label>
