@@ -2,9 +2,13 @@
 	import * as Dialog from "$lib/components/ui/dialog/index.js";
 	import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
 	import Separator from "$lib/components/ui/separator/separator.svelte";
+    import { text } from "@sveltejs/kit";
 	import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp } from "lucide-svelte";
 
 	let open = $state(false);
+
+	let rootClass = "grid grid-cols-4"
+	let textClass = "text-[#22477D] dark:text-yellow-300"
 </script>
 
 <Dialog.Root bind:open>
@@ -19,110 +23,110 @@
 			<Separator />
 			<Dialog.Description class="w-full">
 				<div class="grid grid-cols-2 overflow-auto p-2">
-					<div class="grid grid-cols-4">
+					<div class={rootClass}>
 						<div class="justify-self-end col-span-1">
-							<span class="text-yellow-300">g</span>
+							<span class={textClass}>g</span>
 							<span>+</span>
-							<span class="text-yellow-300">e</span>
+							<span class={textClass}>e</span>
 						</div>
 
 						<span class="col-span-3"> : Goto entities </span>
 					</div>
-					<div class="grid grid-cols-4">
+					<div class={rootClass}>
 						<div class="justify-self-end col-span-1">
-							<span class="text-yellow-300">g</span>
+							<span class={textClass}>g</span>
 							<span>+</span>
-							<span class="text-yellow-300">h</span>
+							<span class={textClass}>h</span>
 						</div>
 
 						<span class="col-span-3"> : Goto home page </span>
 					</div>
-					<div class="grid grid-cols-4">
+					<div class={rootClass}>
 						<div class="justify-self-end col-span-1">
-							<span class="text-yellow-300">g</span>
+							<span class={textClass}>g</span>
 							<span>+</span>
-							<span class="text-yellow-300">a</span>
+							<span class={textClass}>a</span>
 						</div>
 
 						<span class="col-span-3"> : Goto agents page </span>
 					</div>
-					<div class="grid grid-cols-4">
+					<div class={rootClass}>
 						<div class="justify-self-end col-span-1">
-							<span class="text-yellow-300">g</span>
+							<span class={textClass}>g</span>
 							<span>+</span>
-							<span class="text-yellow-300">w</span>
+							<span class={textClass}>w</span>
 						</div>
 
 						<span class="col-span-3"> : Goto workitems page </span>
 					</div>
-					<div class="grid grid-cols-4">
+					<div class={rootClass}>
 						<div class="justify-self-end col-span-1">
-							<span class="text-yellow-300">g</span>
+							<span class={textClass}>g</span>
 							<span>+</span>
-							<span class="text-yellow-300">i</span>
+							<span class={textClass}>i</span>
 						</div>
 
 						<span class="col-span-3">
 							: Goto Git Repositories
 						</span>
 					</div>
-					<div class="grid grid-cols-4">
+					<div class={rootClass}>
 						<div class="justify-self-end col-span-1">
-							<span class="text-yellow-300">g</span>
+							<span class={textClass}>g</span>
 							<span>+</span>
-							<span class="text-yellow-300">u</span>
+							<span class={textClass}>u</span>
 						</div>
 
 						<span class="col-span-3"> : Goto users page </span>
 					</div>
-					<div class="grid grid-cols-4">
+					<div class={rootClass}>
 						<div class="justify-self-end col-span-1">
-							<span class="text-yellow-300">g</span>
+							<span class={textClass}>g</span>
 							<span>+</span>
-							<span class="text-yellow-300">r</span>
+							<span class={textClass}>r</span>
 						</div>
 
 						<span class="col-span-3"> : Goto roles page </span>
 					</div>
-					<div class="grid grid-cols-4">
+					<div class={rootClass}>
 						<div class="justify-self-end col-span-1">
-							<span class="text-yellow-300">g</span>
+							<span class={textClass}>g</span>
 							<span>+</span>
-							<span class="text-yellow-300">f</span>
+							<span class={textClass}>f</span>
 						</div>
 
 						<span class="col-span-3"> : Goto grafana page </span>
 					</div>
-					<div class="grid grid-cols-4">
+					<div class={rootClass}>
 						<div class="justify-self-end col-span-1">
-							<span class="text-yellow-300">g</span>
+							<span class={textClass}>g</span>
 							<span>+</span>
-							<span class="text-yellow-300">l</span>
+							<span class={textClass}>l</span>
 						</div>
 
 						<span class="col-span-3"> : Goto licence page </span>
 					</div>
-					<div class="grid grid-cols-4">
+					<div class={rootClass}>
 						<div class="justify-self-end col-span-1">
-							<span class="text-yellow-300">g</span>
+							<span class={textClass}>g</span>
 							<span>+</span>
-							<span class="text-yellow-300">b</span>
+							<span class={textClass}>b</span>
 						</div>
 
 						<span class="col-span-3">
 							: Goto billing accounts
 						</span>
 					</div>
-					<div class="grid grid-cols-4">
+					<div class={rootClass}>
 						<div class="justify-self-end col-span-1">
-							<span class="text-yellow-300">g</span>
+							<span class={textClass}>g</span>
 							<span>+</span>
-							<span class="text-yellow-300">t</span>
+							<span class={textClass}>t</span>
 						</div>
 
 						<span class="col-span-3"> : Open page tour </span>
 					</div>
-					<!-- <div class="grid grid-cols-4">
+					<!-- <div class={rootClass}>
 						<div class="justify-self-end col-span-1">
 							<div class="text-yellow-300 flex">
 								<ArrowUp class="h-4 w-4" />
@@ -132,7 +136,7 @@
 
 						<span class="col-span-3"> : Change collection </span>
 					</div>
-					<div class="grid grid-cols-4">
+					<div class={rootClass}>
 						<div class="justify-self-end col-span-1">
 							<div class="text-yellow-300 flex">
 								<ArrowLeft class="h-4 w-4" />
@@ -142,9 +146,9 @@
 
 						<span class="col-span-3"> : Change page </span>
 					</div> -->
-					<div class="grid grid-cols-4">
+					<div class={rootClass}>
 						<div class="justify-self-end col-span-1">
-							<div class="text-yellow-300 flex">
+							<div class={"flex "+ textClass}>
 								<ArrowLeft class="h-4 w-4" />
 								<ArrowUp class="h-4 w-4" />
 								<ArrowRight class="h-4 w-4" />
@@ -154,36 +158,36 @@
 
 						<span class="col-span-3"> : Navigate entities </span>
 					</div>
-					<div class="grid grid-cols-4">
+					<div class={rootClass}>
 						<div class="justify-self-end col-span-1">
-							<span class="text-yellow-300">Ctrl</span>
+							<span class={textClass}>Ctrl</span>
 							<span>+</span>
-							<span class="text-yellow-300">d</span>
+							<span class={textClass}>d</span>
 						</div>
 
 						<span class="col-span-3"> : Open Debug pane </span>
 					</div>
-					<div class="grid grid-cols-4">
+					<div class={rootClass}>
 						<div class="justify-self-end col-span-1">
-							<span class="text-yellow-300">Ctrl</span>
+							<span class={textClass}>Ctrl</span>
 							<span>+</span>
-							<span class="text-yellow-300">f</span>
+							<span class={textClass}>f</span>
 						</div>
 
 						<span class="col-span-3"> : Focus local search </span>
 					</div>
-					<div class="grid grid-cols-4">
+					<div class={rootClass}>
 						<div class="justify-self-end col-span-1">
-							<span class="text-yellow-300">Ctrl</span>
+							<span class={textClass}>Ctrl</span>
 							<span>+</span>
-							<span class="text-yellow-300">s</span>
+							<span class={textClass}>s</span>
 						</div>
 
 						<span class="col-span-3"> : Save form </span>
 					</div>
-					<div class="grid grid-cols-4">
+					<div class={rootClass}>
 						<div class="justify-self-end col-span-1">
-							<span class="text-yellow-300">Ins Key</span>
+							<span class={textClass}>Ins Key</span>
 						</div>
 
 						<span class="col-span-3"> : Create Data </span>
