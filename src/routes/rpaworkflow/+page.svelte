@@ -16,7 +16,7 @@
   let selected_items = $state([]);
   let entities = $state(data.entities);
   function single_item_click(item: any) {
-    goto(base + `/entities/hdrobots/${item._id}`);
+    goto(base + `/rpaworkflow/${item._id}`)
   }
 </script>
 
@@ -39,7 +39,7 @@
       <HotkeyButton
         aria-label="Run Workflow"
         disabled={loading}
-        onclick={() => goto(base + `/rpaworkflow/${item._id}`)}
+        onclick={() => single_item_click(item)}
         size="tableicon"
         variant="icon"
       >

@@ -19,9 +19,7 @@ export const load: PageLoad = async ({ parent, params }) => {
   } = { _id: "", name: "", Parameters: [{ name: "", type: "", value: "" }] };
   try {
     if (params.id == null || params.id == "") { goto(base + `/rpaworkflow`); return { item }; }
-
     item = await auth.client.FindOne<any>({ collectionname: "openrpa", query: { _id: params.id, _type: "workflow" }, jwt: access_token });
-
     if (item == null) { goto(base + `/rpaworkflow`); return { item }; }
     if(item.Parameters == null) item.Parameters = [];
     item.Parameters.forEach((p) => {p.value = "";});
