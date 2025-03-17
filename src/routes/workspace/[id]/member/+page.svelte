@@ -1,6 +1,5 @@
 <script lang="ts" module>
   export let page = "member";
-  export let collectionname = "users";
 </script>
 
 <script lang="ts">
@@ -131,7 +130,7 @@
 </div>
 
 <Entities
-  {collectionname}
+  collectionname={data.collectionname}
   query={query()}
   bind:searchstring
   {page}

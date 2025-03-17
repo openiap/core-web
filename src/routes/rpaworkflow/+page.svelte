@@ -23,6 +23,7 @@
   <Searchinput bind:searchstring />
 </div>
 <Entities
+  collectionname={data.collectionname}
   bind:searchstring
   {single_item_click}
   multi_select={false}

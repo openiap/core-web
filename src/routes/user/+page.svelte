@@ -77,6 +77,7 @@
   bind:searchstring
   {single_item_click}
   total_count={data.total_count}
+  collectionname={data.collectionname}
   bind:selected_items
   bind:entities
   bind:this={ref}

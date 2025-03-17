@@ -23,9 +23,9 @@
 </div>
 
 <Entities
+  collectionname={data.collectionname}
   show_delete={false}
   multi_select={false}
-  collectionname="audit"
   query={{}}
   bind:searchstring
   {single_item_click}

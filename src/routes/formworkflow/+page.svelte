@@ -57,6 +57,7 @@
   <SearchInput bind:searchstring />
 </div>
 <Entities
+  collectionname={data.collectionname}
   bind:searchstring
   {single_item_click}
   total_count={data.total_count}

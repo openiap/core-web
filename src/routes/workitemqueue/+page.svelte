@@ -13,7 +13,6 @@
   import { Eraser, Pencil, SquarePlus, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
-  let collectionname = "mq";
   let query = { _type: "workitemqueue" };
 
   let { data } = $props();
@@ -31,7 +30,7 @@
   async function deleteitem(item: any) {
     const deletecount = await auth.client.DeleteOne({
       id: item._id,
-      collectionname,
+      collectionname: data.collectionname,
       jwt: auth.access_token,
     });
     if (deletecount == 1) {
@@ -106,7 +105,7 @@
 </div>
 
 <Entities
-  {collectionname}
+  collectionname={data.collectionname}
   {query}
   bind:searchstring
   page={data.page}

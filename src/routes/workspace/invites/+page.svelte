@@ -73,6 +73,7 @@
 </div>
 
 <Entities
+  collectionname={data.collectionname}
   {query}
   bind:searchstring
   multi_select={false}

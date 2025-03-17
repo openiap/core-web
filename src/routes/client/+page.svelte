@@ -30,6 +30,7 @@
 </div>
 
 <Entities
+  collectionname={data.collectionname}
   bind:searchstring
   {page}
   {single_item_click}

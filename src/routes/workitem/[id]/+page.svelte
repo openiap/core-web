@@ -32,8 +32,6 @@
   } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
-  let collectionname = "workitems";
-
   let { data } = $props();
   let loading = $state(false);
   let query = $state({ wiqid: data.id });
@@ -50,7 +48,7 @@
   async function deleteitem(item: any) {
     const deletecount = await auth.client.DeleteOne({
       id: item._id,
-      collectionname,
+      collectionname: data.collectionname,
       jwt: auth.access_token,
     });
     if (deletecount == 1) {
@@ -76,7 +74,7 @@
       }
       entities = await datacomponent.GetData(
         data.page,
-        collectionname,
+        data.collectionname,
         query,
         auth.access_token,
       );
@@ -276,7 +274,7 @@
 </div>
 
 <Entities
-  {collectionname}
+  collectionname={data.collectionname}
   {query}
   bind:searchstring
   page={data.page}

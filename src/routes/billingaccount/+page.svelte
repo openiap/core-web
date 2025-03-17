@@ -19,7 +19,6 @@
   let showWarning = $state(false);
   let deleteData: any = $state({});
   let page = "billingaccount";
-  let collectionname = "users";
   let query = { _type: "customer" };
   let loading = $state(false);
 
@@ -113,7 +112,7 @@
 </div>
 
 <Entities
-  {collectionname}
+  collectionname={data.collectionname}
   bind:searchstring
   {single_item_click}
   total_count={data.total_count}

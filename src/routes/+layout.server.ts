@@ -17,7 +17,7 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 	const webcommit = auth.config?.webcommit;
 	const webversion = auth.config?.webversion;
 	if(auth.client?.connected == false || auth.client?.connected == null) {
-		return { protocol, domain, posthog_token, client_id, page, profile, access_token, wsurl, origin, entities: [], workspaces: [], item: null, id: "", settings: {}, total_count, webcommit, webversion };
+		return { protocol, domain, posthog_token, client_id, page, profile, access_token, wsurl, origin, collectionname: "entities", entities: [], workspaces: [], item: null, id: "", settings: {}, total_count, webcommit, webversion };
 	}
 	try {
 		await usersettings.dbload(access_token);
@@ -51,13 +51,13 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 		if(usersettings.entities_collectionname == null || usersettings.entities_collectionname == "") {
 			usersettings.entities_collectionname = "entities";
 		}
-		const { entities: entitiesdata, total_count: totalcount } = await datacomponent.Fetch(page, id, access_token);
+		const { entities: entitiesdata, total_count: totalcount, collectionname } = await datacomponent.Fetch(page, id, access_token);
 		entities = entitiesdata;
 		total_count = totalcount;
 		let settings = datacomponent.getpagesettingsreactless();
-		return { protocol, domain, posthog_token, client_id, page, profile, access_token, wsurl, origin, entities, workspaces, id, settings, total_count, webcommit, webversion };
+		return { protocol, domain, posthog_token, client_id, page, profile, access_token, wsurl, origin, collectionname, entities, workspaces, id, settings, total_count, webcommit, webversion };
 	} catch (error) {
 		console.error(error);
-		return { protocol, domain, posthog_token, client_id, page, profile, access_token, wsurl, origin, entities: [], workspaces: [], item: null, id: "", settings: {}, total_count, webcommit, webversion };
+		return { protocol, domain, posthog_token, client_id, page, profile, access_token, wsurl, origin, collectionname: "entities", entities: [], workspaces: [], item: null, id: "", settings: {}, total_count, webcommit, webversion };
 	}
 };

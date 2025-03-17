@@ -105,6 +105,7 @@
 </div>
 
 <Entities
+  collectionname={data.collectionname}
   bind:searchstring
   delete_selected={deleteitems}
   {single_item_click}
