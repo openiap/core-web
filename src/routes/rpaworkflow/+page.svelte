@@ -2,10 +2,11 @@
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import Button from "$lib/components/ui/button/button.svelte";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
   import Searchinput from "$lib/searchinput/searchinput.svelte";
-  import { Pencil } from "lucide-svelte";
+  import { Pencil, Play } from "lucide-svelte";
 
   let { data } = $props();
   let ref: any;
@@ -35,15 +36,15 @@
 >
   {#snippet action(item: any)}
     <div class="flex items-center justify-end space-x-2">
-      <Button
-        aria-label="Edit"
+      <HotkeyButton
+        aria-label="Run Workflow"
         disabled={loading}
-        onclick={() => single_item_click(item)}
-        size="icon"
-        variant="secondary"
+        onclick={() => goto(base + `/rpaworkflow/${item._id}`)}
+        size="tableicon"
+        variant="icon"
       >
-        <Pencil />
-      </Button>
+        <Play />
+      </HotkeyButton>
     </div>
   {/snippet}
 </Entities>
