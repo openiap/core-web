@@ -111,7 +111,7 @@
 <Popover.Root bind:open={isOpen} {...restProps}>
     <Popover.Trigger
         disabled={loading}
-        class={"dark:bg-bw1000 flex items-center justify-between border border-bw600 rounded-[10px] px-3 py-1 dark:border-bw600 dark:text-bw500  dark:hover:bg-bw700 dark:hover:border-bw500 text-sm shadow-light dark:shadow-dark " +
+        class={"dark:bg-bw1000 flex items-center justify-between border border-bw600 rounded-[10px] px-3 py-1 dark:border-bw600 placeholder:text-bw500 dark:placeholder:text-bw500 text-bw950 dark:text-bw100 dark:hover:bg-bw700 dark:hover:border-bw500 text-sm shadow-light dark:shadow-dark " +
             " " +
             height +
             " " +
