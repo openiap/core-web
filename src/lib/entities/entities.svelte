@@ -54,7 +54,6 @@
 			try {
 				loading = true;
 				for (let id of ids) {
-					console.log("Deleting", id);
 					const deletecount = await auth.client.DeleteOne({
 						id: id,
 						collectionname,
