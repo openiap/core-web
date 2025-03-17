@@ -68,7 +68,10 @@
       logolight: cSvg,
       buttons: {
         example: "https://github.com/skadefro/ctest",
-        package: { title: "conan", link: "https://conan.io/center/recipes/openiap" },
+        package: {
+          title: "conan",
+          link: "https://conan.io/center/recipes/openiap",
+        },
       },
     },
     {
@@ -134,6 +137,7 @@
   ];
   const cardRoot = "text-sm bg-bw200 dark:bg-bw900 rounded-[10px] p-5";
 </script>
+
 {#if !data.entities || data.entities.length == 0}
   <div class="mb-5 font-bold text-lg">Need help?</div>
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-10">
@@ -188,13 +192,14 @@
       {#each clientlibraries as item}
         <div class="flex flex-col items-start space-y-2">
           <div class="flex shrink-0 items-center space-x-2">
-            {#if $mode != null || undefined}
+            <img src={item?.logo} alt={item?.title + " logo"} class="h-6 w-6" />
+            <!-- {#if $mode != null || undefined}
               <img
                 src={$mode == "light" ? item?.logolight : item?.logo}
                 alt={item?.title + " logo"}
                 class="h-6 w-6"
               />
-            {/if}
+            {/if} -->
             <div>{item?.title}</div>
           </div>
           <div class="flex flex-col space-y-4">
@@ -241,9 +246,8 @@
               // )}
               window.open(
                 "https://marketplace.visualstudio.com/items?itemName=openiap.openiap-assistant",
-                "_blank"
+                "_blank",
               )}
-
           >
             <img src={vscodeSvg} alt="VS Code" class="h-4 w-4" />
             Download VSC extension
