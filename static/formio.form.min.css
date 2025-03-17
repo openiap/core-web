@@ -2275,6 +2275,11 @@ span[role=link] {
     border: 1px solid #575B62 !important;
     border-radius: 10px !important;
 }
+.darkTheme:disabled {
+    cursor: not-allowed;
+    color: #86888E !important;
+    border: 1px solid #3F4248 !important;
+}
 
 .darkThemeButton {
     background-color: #304E46 !important;
@@ -2283,7 +2288,6 @@ span[role=link] {
     /* border: 1px solid #56846D !important; */
     border-radius: 10px !important;
 }
-
 .darkThemeButton:hover {
     background-color: #426A5F !important;
     color: #EEEFF1 !important;
@@ -2291,10 +2295,20 @@ span[role=link] {
     /* border: 1px solid #56846D !important; */
     border-radius: 10px !important;
 }
+.darkThemeButton:disabled {
+    color: #86888E !important;
+    border: 1px solid #3F4248 !important;
+    cursor: not-allowed;
+}
 
 .darkThemeSidebarButton {
     background-color: #27292E !important;
     color: #EEEFF1 !important;
+}
+.darkThemeSidebarButton:disabled {
+    color: #86888E !important;
+    border: 1px solid #3F4248 !important;
+    cursor: not-allowed;
 }
 
 .lightTheme {
@@ -2302,6 +2316,11 @@ span[role=link] {
     color: #27292E !important;
     border: 1px solid #575B62 !important;
     border-radius: 10px !important;
+}
+.lightTheme:disabled {
+    color: #86888E !important;
+    border: 1px solid #3F4248 !important;
+    cursor: not-allowed;
 }
 
 .lightThemeButton {
@@ -2311,13 +2330,17 @@ span[role=link] {
     /* border: 1px solid #7CD29B !important; */
     border-radius: 10px !important;
 }
-
 .lightThemeButton:hover {
     background-color: #96D5AF !important;
     color: #27292E !important;
     border: 1px solid #575B62 !important;
     /* border: 1px solid #7CD29B !important; */
     border-radius: 10px !important;
+}
+.lightThemeButton:disabled {
+    color: #86888E !important;
+    border: 1px solid #3F4248 !important;
+    cursor: not-allowed;
 }
 
 .lightDeleteButton {
@@ -2327,7 +2350,6 @@ span[role=link] {
     /* border: 1px solid #7CD29B !important; */
     border-radius: 10px !important;
 }
-
 .lightDeleteButton:hover {
     background-color: #96D5AF !important;
     color: #27292E !important;
@@ -2335,12 +2357,22 @@ span[role=link] {
     /* border: 1px solid #7CD29B !important; */
     border-radius: 10px !important;
 }
+.lightDeleteButton:disabled {
+    color: #86888E !important;
+    border: 1px solid #3F4248 !important;
+    cursor: not-allowed;
+}
 
 .lightThemeSidebarButton {
     background-color: #FDFDFD !important;
     color: #27292E !important;
     /* border: 1px solid #575B62 !important; */
     border-radius: 10px !important;
+}
+.lightThemeSidebarButton:disabled {
+    color: #86888E !important;
+    border: 1px solid #3F4248 !important;
+    cursor: not-allowed;
 }
 
 .themeMargin {
@@ -2352,8 +2384,18 @@ span[role=link] {
     background-color: #FDFDFD !important;
     color: #27292E !important;
 }
+.lightColor:disabled {
+    color: #86888E !important;
+    border: 1px solid #3F4248 !important;
+    cursor: not-allowed;
+}
 
 .darkColor {
     background-color: #27292E !important;
     color: #EEEFF1 !important;
+}
+.darkColor:disabled {
+    color: #86888E !important;
+    border: 1px solid #3F4248 !important;
+    cursor: not-allowed;
 }

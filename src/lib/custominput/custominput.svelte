@@ -9,7 +9,7 @@
 		value = $bindable(null),
 		type = "text",
 		disabled = false,
-		placeholder = "",
+		placeholder = "Type here",
 		onchangefunction = null,
 		multiple = false,
 		...props
@@ -17,7 +17,7 @@
 
 	function getClass() {
 		let classes =
-			"bg-bw50 py-2 rounded-[10px] border border-bw600 dark:border-bw600 dark:placeholder-bw500 dark:text-bw400 dark:bg-bw800 focus:outline-none ";
+			"bg-bw50 py-2 rounded-[10px] border border-bw600 dark:border-bw600 placeholder:text-bw500 dark:placeholder:text-bw500 text-bw950 dark:text-bw100 dark:bg-bw800 focus:outline-none ";
 		if (size === "sm") {
 			classes += "h-7";
 		} else if (size === "md") {

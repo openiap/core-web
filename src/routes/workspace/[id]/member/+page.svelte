@@ -3,23 +3,26 @@
 </script>
 
 <script lang="ts">
-    import { goto } from "$app/navigation";
-    import { base } from "$app/paths";
-    import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
-    import { Label } from "$lib/components/ui/label/index.js";
-    import { CustomSelect } from "$lib/customselect";
-    import { data as datacomponent } from "$lib/entities/data.svelte.js";
-    import { Entities } from "$lib/entities/index.js";
-    import { SearchInput } from "$lib/searchinput/index.js";
-    import { auth } from "$lib/stores/auth.svelte.js";
-    import { usersettings } from "$lib/stores/usersettings.svelte.js";
-    import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
-    import { SquarePlus, Trash2 } from "lucide-svelte";
-    import { toast } from "svelte-sonner";
+  import { goto } from "$app/navigation";
+  import { base } from "$app/paths";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
+  import { Label } from "$lib/components/ui/label/index.js";
+  import { CustomSelect } from "$lib/customselect";
+  import { data as datacomponent } from "$lib/entities/data.svelte.js";
+  import { Entities } from "$lib/entities/index.js";
+  import { SearchInput } from "$lib/searchinput/index.js";
+  import { auth } from "$lib/stores/auth.svelte.js";
+  import { usersettings } from "$lib/stores/usersettings.svelte.js";
+  import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
+  import { SquarePlus, Trash2 } from "lucide-svelte";
+  import { toast } from "svelte-sonner";
 
   let { data } = $props();
   $effect(() => {
-    if (data.id != usersettings.currentworkspace && usersettings.currentworkspace != "") {
+    if (
+      data.id != usersettings.currentworkspace &&
+      usersettings.currentworkspace != ""
+    ) {
       goto(base + "/workspace/" + usersettings.currentworkspace + "/member");
     } else if (usersettings.currentworkspace == "") {
       goto(base + "/workspace");
@@ -104,29 +107,25 @@
   }
 </script>
 
-<div class="mb-4 md:flex md:items-center md:justify-between">
+<div class="sm:flex space-y-4 sm:space-y-0 justify-between mb-4 sm:space-x-5">
   <SearchInput bind:searchstring />
 
-  <div
-  class="md:flex overflow-auto md:overflow-visible md:items-center xl:justify-end gap-4 md:gap-0 md:space-x-5 mb-2 xl:mb-0"
->
-    <HotkeyButton
-      title="Invite Member"
-      data-shortcut="ins"
-      class="touraddmember mb-2 md:mb-0"
-      size="sm"
-      variant="base"
-      aria-label="Invite Member"
-      disabled={loading}
-      onclick={() => {
-        loading = true;
-        goto(base + `/workspace/${data.id}/invite`);
-      }}
-    >
-      <SquarePlus />
-      Invite Member</HotkeyButton
-    >
-  </div>  
+  <HotkeyButton
+    title="Invite Member"
+    data-shortcut="ins"
+    class="touraddmember"
+    size="sm"
+    variant="base"
+    aria-label="Invite Member"
+    disabled={loading}
+    onclick={() => {
+      loading = true;
+      goto(base + `/workspace/${data.id}/invite`);
+    }}
+  >
+    <SquarePlus />
+    Invite Member</HotkeyButton
+  >
 </div>
 
 <Entities
@@ -158,7 +157,7 @@
   {/snippet}
   {#snippet role(item: any)}
     <CustomSelect
-    width=""
+      width=""
       class="h-6"
       type="single"
       bind:value={item.role}

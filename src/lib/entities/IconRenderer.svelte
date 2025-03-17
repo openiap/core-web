@@ -1,11 +1,15 @@
 <script lang="ts">
     import {
+        ALargeSmall,
+        BookOpenCheck,
         Bug,
         CalendarCheck,
         CalendarDays,
         CalendarSearch,
         Clapperboard,
+        Clock4,
         Contact,
+        CornerDownRight,
         Drama,
         Eye,
         FileBadge,
@@ -13,7 +17,9 @@
         Flag,
         Gauge,
         Ghost,
+        Glasses,
         Globe,
+        HardDrive,
         IdCard,
         Image,
         Languages,
@@ -22,8 +28,11 @@
         Mail,
         RefreshCcw,
         Ruler,
+        SearchCode,
+        Send,
         Server,
         SlidersVertical,
+        SquareEqual,
         SquareStack,
         Tag,
         Timer,
@@ -31,6 +40,7 @@
         User,
         UserRoundX,
         UsersRound,
+        Workflow
     } from "lucide-svelte";
     export let title: string;
     const iconClass = "h-4 w-4 me-1.5 text-bw600 dark:text-bw500";
@@ -58,8 +68,6 @@
     <Image class={iconClass} />
 {:else if title == "os"}
     <Laptop class={iconClass} />
-    <!-- {:else if title == "stripeprice"}
-    <Tag class={iconClass} /> -->
 {:else if title == "status"}
     <Gauge class={iconClass} />
 {:else if title == "image"}
@@ -120,6 +128,28 @@
     <Contact class={iconClass} />
 {:else if title == "language"}
     <Languages class={iconClass} />
-{:else}
+{:else if title == "size"}
+    <HardDrive class={iconClass} />
+{:else if title == "timestamp"}
+    <Clock4 class={iconClass} />
+{:else if title == "to"}
+    <Send class={iconClass} />
+{:else if title == "read"}
+    <Glasses class={iconClass} />
+{:else if title == "readcount"}
+    <BookOpenCheck class={iconClass} />
+{:else if title == "nodered_id"}
+    <Workflow class={iconClass} />
+{:else if title == "projectandname"}
+    <ALargeSmall class={iconClass} />
+{:else if title == "docsExamined"}
+    <SearchCode class={iconClass} />
+{:else if title == "nreturned"}
+    <CornerDownRight class={iconClass} />
+{:else if title == "ts"}
+    <Clock4 class={iconClass} />
+{:else if title == "ns" || title == "op" || title == "planSummary" || title == "millis"}
+    <SquareEqual class={iconClass} />
+    <!-- {:else} -->
     <!-- <MessageSquare class={iconClass} /> -->
 {/if}
