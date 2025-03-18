@@ -6,10 +6,10 @@
 	import "driver.js/dist/driver.css";
 	import Mousetrap from "mousetrap";
 	import {
-		agentTour,
-		baseTour,
-		driverObj,
-		entitiesTour,
+	    agentTour,
+	    baseTour,
+	    driverObj,
+	    entitiesTour,
 	} from "./onboarding.js";
 
 	class SidebarCategory {
@@ -307,6 +307,7 @@
 		mailhistory,
 		licensekey,
 	]);
+	export { agent, entities, home };
 </script>
 
 <script lang="ts">
@@ -368,9 +369,10 @@
 		}
 		let profileroles = auth.profile?.roles || [];
 		const isAdmin = profileroles.includes("admins");
-		const isWorkspaceAdmin = profileroles == null ? false : profileroles.find((x: any) =>
-			x.endsWith("admins"),
-		);
+		const isWorkspaceAdmin =
+			profileroles == null
+				? false
+				: profileroles.find((x: any) => x.endsWith("admins"));
 		resources.hidden = !isAdmin;
 		consoleitem.hidden = !isAdmin;
 		config.hidden = !isAdmin;
@@ -416,23 +418,24 @@
 	}
 	if (browser) {
 		Mousetrap.bind("g t", function (e) {
-			if (agent.isActive($page.url.pathname)) {
-				driverObj.setSteps(agentTour);
-				driverObj.drive();
-			} else if (home.isActive($page.url.pathname)) {
-				driverObj.setSteps(baseTour);
-				driverObj.drive();
-			} else if (entities.isActive($page.url.pathname)) {
-				driverObj.setSteps(entitiesTour);
-				driverObj.drive();
-			} else {
-				driverObj.highlight({
-					popover: {
-						title: "No tour available",
-						description: "No tour available for this page",
-					},
-				});
-			}
+			if (driverObj.isActive())
+				if (agent.isActive($page.url.pathname)) {
+					driverObj.setSteps(agentTour);
+					driverObj.drive();
+				} else if (home.isActive($page.url.pathname)) {
+					driverObj.setSteps(baseTour);
+					driverObj.drive();
+				} else if (entities.isActive($page.url.pathname)) {
+					driverObj.setSteps(entitiesTour);
+					driverObj.drive();
+				} else {
+					driverObj.highlight({
+						popover: {
+							title: "No tour available",
+							description: "No tour available for this page",
+						},
+					});
+				}
 		});
 	}
 	loadMenu();

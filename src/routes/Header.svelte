@@ -6,6 +6,7 @@
 	import * as Breadcrumb from "$lib/components/ui/breadcrumb/index.js";
 	import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
+	import { agent, entities, home } from "$lib/sidebar/app-sidebar.svelte";
 	import NavUser from "$lib/sidebar/nav-user.svelte";
 	import { auth } from "$lib/stores/auth.svelte";
 	import { sidemenu } from "$lib/stores/sidemenu.svelte";
@@ -13,19 +14,23 @@
 	import {
 	    ArrowLeftToLine,
 	    ArrowRightToLine,
-	    Github
+	    CircleHelp,
+	    Github,
 	} from "lucide-svelte";
 	import Moon from "lucide-svelte/icons/moon";
 	import Sun from "lucide-svelte/icons/sun";
 	import { toggleMode } from "mode-watcher";
 	import { capitalizeFirstLetter } from "../helper";
+	import {
+	    agentTour,
+	    baseTour,
+	    driverObj,
+	    entitiesTour,
+	} from "../lib/sidebar/onboarding";
 	import type { Workspace } from "./workspace/schema";
 
-	let { 
-		workspaces = [],
-	 } = $props();
+	let { workspaces = [] } = $props();
 
-	
 	let pathname = $state(
 		$state.snapshot(
 			$page.url.pathname
@@ -99,17 +104,29 @@
 	}
 	const validated = $derived(() => {
 		if (auth.profile != null && Object.keys(auth.profile).length > 0) {
-			if(auth.config?.validate_user_form != null && auth.config?.validate_user_form  != "") {
+			if (
+				auth.config?.validate_user_form != null &&
+				auth.config?.validate_user_form != ""
+			) {
 				// if(workspaces.length == 0) {
 				// 	return false;
 				// }
 				return auth.profile.validated;
 			} else {
 				return true;
-			}			
+			}
 		}
 		return auth.isConnected;
 	});
+	function checkTourUrl() {
+		if (
+			pathname.startsWith("Entities") ||
+			pathname.startsWith("Agent") ||
+			pathname == ""
+		) {
+			return true;
+		}
+	}
 </script>
 
 <header
@@ -117,28 +134,28 @@
 >
 	<div class="flex items-center">
 		{#if validated() == true}
-		<HotkeyButton
-			variant="ghost"
-			size="icon"
-			onclick={() => {
-				if (sidebar.isMobile) {
-					sidebar.toggle();
-				} else {
-					sidebar.toggle();
-					sidemenu.status = !sidemenu.status;
-				}
-			}}
-			class="me-2 text-bw500"
-			title={sidemenu.status ? "Close sidebar" : "Open sidebar"}
-		>
-			{#if sidebar.isMobile}
-				<ArrowRightToLine class="block dark:text-bw500" />
-			{:else if sidemenu.status}
-				<ArrowLeftToLine class="block dark:text-bw500" />
-			{:else}
-				<ArrowRightToLine class="block dark:text-bw500" />
-			{/if}
-		</HotkeyButton>
+			<HotkeyButton
+				variant="ghost"
+				size="icon"
+				onclick={() => {
+					if (sidebar.isMobile) {
+						sidebar.toggle();
+					} else {
+						sidebar.toggle();
+						sidemenu.status = !sidemenu.status;
+					}
+				}}
+				class="me-2 text-bw500"
+				title={sidemenu.status ? "Close sidebar" : "Open sidebar"}
+			>
+				{#if sidebar.isMobile}
+					<ArrowRightToLine class="block dark:text-bw500" />
+				{:else if sidemenu.status}
+					<ArrowLeftToLine class="block dark:text-bw500" />
+				{:else}
+					<ArrowRightToLine class="block dark:text-bw500" />
+				{/if}
+			</HotkeyButton>
 		{/if}
 
 		<Breadcrumb.Root>
@@ -168,6 +185,41 @@
 	<div class="flex items-center justify-end">
 		<div class="flex space-x-5 items-center">
 			<!-- <Search /> -->
+			{#if checkTourUrl()}
+				<HotkeyButton
+					onclick={() => {
+						if (browser) {
+							if (driverObj.isActive()) {
+								return;
+							}
+							if (agent.isActive($page.url.pathname)) {
+								driverObj.setSteps(agentTour);
+								driverObj.drive();
+							} else if (home.isActive($page.url.pathname)) {
+								driverObj.setSteps(baseTour);
+								driverObj.drive();
+							} else if (entities.isActive($page.url.pathname)) {
+								driverObj.setSteps(entitiesTour);
+								driverObj.drive();
+							} else {
+								driverObj.highlight({
+									popover: {
+										title: "No tour available",
+										description:
+											"No tour available for this page",
+									},
+								});
+							}
+						}
+					}}
+					variant="headericon"
+					size="icon"
+					aria-label="Help (g + t)"
+				>
+					<CircleHelp />
+				</HotkeyButton>
+			{/if}
+
 			<HotkeyButton
 				onclick={() =>
 					window.open("https://github.com/openiap", "_blank")}
@@ -193,8 +245,7 @@
 			</HotkeyButton>
 
 			{#if auth.profile != null && Object.keys(auth.profile).length > 0}
-				<NavUser
-				/>
+				<NavUser />
 			{:else}
 				<HotkeyButton
 					variant="success"
