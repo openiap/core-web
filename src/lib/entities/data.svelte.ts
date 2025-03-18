@@ -630,7 +630,7 @@ class entitiesdata {
 		let _page = page.replace(base, "");
 		switch (_page) {
 			case "/auditlog":
-				return ["_id", "name", "_type", "impostorname", "clientagent", "clientversion", "remoteip", "_created"];
+				return ["_id", "name", "success", "_type", "impostorname", "clientagent", "clientversion", "remoteip", "_created"];
 			case "/agent":
 				return ["name", "image", "os", "_productname", "_createdby", "status"];
 			case "/entities/agents":

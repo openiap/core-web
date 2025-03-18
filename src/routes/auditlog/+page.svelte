@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
+  import { StatusCard } from "$lib/statuscard/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
@@ -34,6 +35,11 @@
   bind:this={ref}
   bind:loading
 >
+  {#snippet success(item: any)}
+  <StatusCard
+    title={item.success ? "Success" : "Failed"}
+  />
+{/snippet}
   {#snippet action(item: any)}
     <HotkeyButton
       aria-label="View on Map"
