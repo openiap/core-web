@@ -99,7 +99,6 @@
         description: billing.name,
       });
       currentworkspace._billingid = billing._id;
-      currentworkspace._billingid = billingid;
       await auth.client.CustomCommand({
         command: "ensureworkspace",
         data: JSON.stringify(currentworkspace),
@@ -584,10 +583,10 @@
       <AlertDialog.Content>
         <AlertDialog.Header>
           <AlertDialog.Title>Create Billing Account</AlertDialog.Title>
-          <AlertDialog.Description>
+          <AlertDialog.Description class="mb-4">
             Please type the name of your new billing account.
-            <Input bind:value={newbillingaccountname} />
           </AlertDialog.Description>
+          <CustomInput bind:value={newbillingaccountname} autofocus width="w-full" />
         </AlertDialog.Header>
         <AlertDialog.Footer>
           <HotkeyButton disabled={loading} onclick={() => (nameprompt = false)}
@@ -599,6 +598,7 @@
         </AlertDialog.Footer>
       </AlertDialog.Content>
     </AlertDialog.Root>
+
     <CustomSuperDebug {formData} />
   </div>
 </div>
