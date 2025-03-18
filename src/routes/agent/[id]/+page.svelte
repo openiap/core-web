@@ -23,6 +23,7 @@
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import Timezoneselector from "$lib/timezoneselector/timezoneselector.svelte";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
+  import { Resource, ResourceUsage, type Product } from "$lib/types.svelte.js";
   import { AnsiUp } from "ansi_up";
   import {
     Box,
@@ -182,6 +183,11 @@
               loading = false;
               nameprompt = true;
               return;
+            } else if (confirmprice == false) {
+              cancel();
+              loading = false;
+              GetNextInvoice();
+              return;
             }
           }
           const savethis = { ...form.data };
@@ -249,6 +255,7 @@
           }
           goto(base + `/${page}`);
         } catch (error: any) {
+          console.error(error);
           toast.error("Error", {
             description: error.message,
           });
@@ -261,6 +268,7 @@
           (key) => key + " is " + form.errors[key],
         );
         if (errors.length > 0) {
+          console.error(errors);
           toast.error("Error", {
             description: errors.join(", "),
           });
@@ -299,6 +307,7 @@
     {
       stripeprice: "",
       name: "Free tier",
+      lookup_key: "",
       metadata: {
         resources: {
           requests: { memory: "128Mi" },
@@ -722,8 +731,8 @@
         jwt: auth.access_token,
       });
       form.submit();
-      // await addplan();
     } catch (error: any) {
+      console.error(error);
       toast.error("Error creating billing account", {
         description: error.message,
       });
@@ -731,6 +740,113 @@
       nameprompt = false;
       loading = false;
     }
+  }
+
+  let confirmprice = $state(false);
+  let confirmpricenextinvoice: any = $state(null as any);
+  let confirmpriceperiod_start: String = $state(null as any);
+  let confirmpriceperiod_end: String = $state(null as any);
+
+  async function GetNextInvoice() {
+    if (
+        confirmprice == false &&
+        auth.config.stripe_api_key != null &&
+        auth.config.stripe_api_key != ""
+      ) {
+        try {
+
+          let _workspaceid = usersettings.currentworkspace;
+          if (_workspaceid == null || _workspaceid == "") {
+            if (
+              usersettings.currentworkspace == null ||
+              usersettings.currentworkspace == ""
+            ) {
+              throw new Error("You must select a workspace first");
+            }
+            _workspaceid = usersettings.currentworkspace;
+          }
+          let currentworkspace = await auth.client.FindOne<any>({
+            collectionname: "users",
+            query: {
+              _type: "workspace",
+              _id: _workspaceid,
+            },
+            jwt: auth.access_token,
+          });
+          if (currentworkspace == null) {
+            throw new Error("Workspace not found");
+          }
+
+          var product = products.find(
+            (x: any) => x.stripeprice == $formData._stripeprice,
+          );
+          if(product == null) {
+            throw new Error("Product " + $formData._stripeprice + " not found");
+          }
+
+          confirmpricenextinvoice = JSON.parse(
+            await auth.client.CustomCommand({
+              command: "getnextinvoice",
+              id: currentworkspace._billingid,
+              data: JSON.stringify({
+                lookupkey: product.lookup_key,
+                stripeprice: product.stripeprice,
+                productname: product.name,
+                quantity: 1,
+              }),
+              jwt: auth.access_token,
+            }),
+          );
+          const period_start = new Date(
+            confirmpricenextinvoice.period_start * 1000,
+          );
+          const period_end = new Date(
+            confirmpricenextinvoice.period_end * 1000,
+          );
+          const monthNames = [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+          ];
+          confirmpriceperiod_start =
+            period_start.getDate() +
+            " " +
+            monthNames[period_start.getMonth()] +
+            " " +
+            period_start.getFullYear();
+          confirmpriceperiod_end =
+            period_end.getDate() +
+            " " +
+            monthNames[period_end.getMonth()] +
+            " " +
+            period_end.getFullYear();
+
+          if (confirmpricenextinvoice?.lines?.data != null) {
+            confirmpricenextinvoice.lines = confirmpricenextinvoice.lines.data;
+          }
+          loading = false;
+          confirmprice = true;
+          // svelte-ignore state_referenced_locally
+          return;
+        } catch (error:any) {
+          console.error(error);
+          toast.error("Error while getting next invoice", {
+            description: error.message,
+          });
+          confirmprice = false;
+        }
+      } else {
+        confirmprice = false;
+      }
   }
 </script>
 
@@ -1615,3 +1731,50 @@
   type="delete"
   onaccept={handleAcceptAgentDelete}
 ></Warningdialogue>
+
+<AlertDialog.Root bind:open={confirmprice}>
+  <AlertDialog.Content>
+    <AlertDialog.Header>
+      <AlertDialog.Title>Next invoice</AlertDialog.Title>
+      <AlertDialog.Description>
+        {#if confirmpricenextinvoice && confirmpricenextinvoice.lines}
+          <!-- Adding {confirmpriceresource.name} / {confirmpriceproduct.name}<br />
+          Will issue an invoice for the period<br /> -->
+          {confirmpriceperiod_start} - {confirmpriceperiod_end}<br />
+          With a total of
+          {confirmpricenextinvoice.total_excluding_tax / 100}
+          {confirmpricenextinvoice.currency}
+          {#if confirmpricenextinvoice.tax != null && confirmpricenextinvoice?.tax > 0}
+            plus {confirmpricenextinvoice.tax / 100}
+            {confirmpricenextinvoice.currency} in taxes
+          {/if}
+          <br />
+          <br />
+          <b>Lines:</b>
+          <br />
+          <ul>
+            {#each confirmpricenextinvoice.lines as line}
+              <li>
+                {line.description}
+                {line.amount / 100}
+                {line.currency}
+              </li>
+            {/each}
+          </ul>
+        {/if}
+      </AlertDialog.Description>
+    </AlertDialog.Header>
+    <AlertDialog.Footer>
+      <HotkeyButton disabled={loading} onclick={() => (confirmprice = false)}
+        >Cancel</HotkeyButton
+      >
+      <HotkeyButton
+        disabled={loading}
+        data-shortcut="enter"
+        onclick={() => {
+          form.submit();
+        }}>Continue</HotkeyButton
+      >
+    </AlertDialog.Footer>
+  </AlertDialog.Content>
+</AlertDialog.Root>

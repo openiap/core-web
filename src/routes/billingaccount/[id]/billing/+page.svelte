@@ -705,6 +705,7 @@
       >
       <HotkeyButton
         disabled={loading}
+        data-shortcut="enter"
         onclick={() => {
           increment(confirmpriceresource, confirmpriceproduct);
         }}>Continue</HotkeyButton
