@@ -200,7 +200,6 @@ class authState {
         if (!browser) {
             global.WebSocket = ws;
         }
-        console.debug("loadUser", access_token.substring(0, 10));
         return access_token;
     }
     connectWaitingPromisses: any[] = [];
