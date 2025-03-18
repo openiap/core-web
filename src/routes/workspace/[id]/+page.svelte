@@ -14,17 +14,16 @@
   import { auth } from "$lib/stores/auth.svelte.js";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import {
-    Check,
-    Info,
-    Mail,
-    SquareArrowDown,
-    SquareArrowUp,
+      Check,
+      Info,
+      Mail,
+      SquareArrowDown,
+      SquareArrowUp,
   } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newWorkspaceSchema } from "../schema.js";
-
   const { data } = $props();
   let _workspaceid = data.currentworkspace._id;
   let loading = $state(false);
@@ -306,7 +305,9 @@
                   <div class="text-bw400 font-medium text-sm">
                     Select a billing account for this workspace
                   </div>
-                  <div class="grid grid-cols-1 gap-2.5 xl:gap-0 xl:flex xl:space-x-5 pt-2 item-center">
+                  <div
+                    class="grid grid-cols-1 gap-2.5 xl:gap-0 xl:flex xl:space-x-5 pt-2 item-center"
+                  >
                     <CustomInput
                       {...props}
                       bind:value={$formData.name}
@@ -407,29 +408,29 @@
         </Card.Header>
         <div class={cardDiv}>
           <Card.Content>
-            <div class="flex">
-              <div>
-                <div>
-                  <Check class={iconClass} />
-                </div>
-                <div>
-                  <Check class={iconClass} />
-                </div>
-                <div>
-                  <Check class={iconClass} />
-                </div>
+            <div class="flex items-center">
+              <div class="font-medium self-start">
+                <Check class={iconClass} />
               </div>
-              <div>
-                <div>5 members in your workspace</div>
-                <div>1 cloud agent (4 hour runtime)</div>
-                <div>
-                  Support via our
-                  <a
-                    href="https://discourse.openiap.io/"
-                    target="_blank"
-                    class="hover:underline">{` community forum`}</a
-                  >
-                </div>
+              <div class="font-medium">5 members in your workspace</div>
+            </div>
+            <div class="flex items-center">
+              <div class="font-medium self-start">
+                <Check class={iconClass} />
+              </div>
+              <div class="font-medium">1 cloud agent (4 hour runtime)</div>
+            </div>
+            <div class="flex items-center">
+              <div class="font-medium self-start">
+                <Check class={iconClass} />
+              </div>
+              <div class="font-medium">
+                Support via our
+                <a
+                  href="https://discourse.openiap.io/"
+                  target="_blank"
+                  class="hover:underline">{` community forum`}</a
+                >
               </div>
             </div>
           </Card.Content>
@@ -458,36 +459,37 @@
         </Card.Header>
         <div class={cardDiv}>
           <Card.Content>
-            <div class="flex">
-              <div>
-                <div>
-                  <Check class={iconClass} />
-                </div>
-                <div>
-                  <Check class={iconClass} />
-                </div>
-                <div>
-                  <Check class={iconClass} />
-                </div>
-                <div>
-                  <Check class={iconClass} />
-                </div>
+            <div class="flex items-center">
+              <div class="font-medium self-start">
+                <Check class={iconClass} />
               </div>
-              <div>
-                <div>25 members in your workspace</div>
-                <div>Priced agents that run 24/7</div>
-                <div>
-                  {"Support via our "}
-                  <a
-                    class="hover:underline"
-                    href="https://discourse.openiap.io/"
-                    target="_blank">{` community forum`}</a
-                  >
-                </div>
-                <div>
-                  Billing support (reach out via the e-mail used in your
-                  invoice)
-                </div>
+              <div class="font-medium">25 members in your workspace</div>
+            </div>
+            <div class="flex items-center">
+              <div class="font-medium self-start">
+                <Check class={iconClass} />
+              </div>
+              <div class="font-medium">Priced agents that run 24/7</div>
+            </div>
+            <div class="flex items-center">
+              <div class="font-medium self-start">
+                <Check class={iconClass} />
+              </div>
+              <div class="font-medium">
+                Support via our
+                <a
+                  href="https://discourse.openiap.io/"
+                  target="_blank"
+                  class="hover:underline">{` community forum`}</a
+                >
+              </div>
+            </div>
+            <div class="flex items-center">
+              <div class="font-medium self-start">
+                <Check class={iconClass} />
+              </div>
+              <div class="font-medium">
+                Billing support (reach out via the e-mail used in your invoice)
               </div>
             </div>
           </Card.Content>
@@ -526,30 +528,36 @@
         </Card.Header>
         <div class={cardDiv}>
           <Card.Content>
-            <div class="flex">
-              <div>
-                <div>
-                  <Check class={iconClass} />
-                </div>
-                <div>
-                  <Check class={iconClass} />
-                </div>
-                <div>
-                  <Check class={iconClass} />
-                </div>
-                <div>
-                  <Check class={iconClass} />
-                </div>
+            <div class="flex items-center">
+              <div class="font-medium self-start">
+                <Check class={iconClass} />
               </div>
-              <div>
-                <div>Everything in the previous tiers</div>
-                <div>Unlimited members</div>
-                <div>Discount on agents that run 24/7</div>
-                <div>Unlimited api requests</div>
-                <div>
-                  Billing support (reach out via the e-mail used in your
-                  invoice)
-                </div>
+              <div class="font-medium">Everything in the previous tiers</div>
+            </div>
+            <div class="flex items-center">
+              <div class="font-medium self-start">
+                <Check class={iconClass} />
+              </div>
+              <div class="font-medium">Unlimited members</div>
+            </div>
+            <div class="flex items-center">
+              <div class="font-medium self-start">
+                <Check class={iconClass} />
+              </div>
+              <div class="font-medium">Discount on agents that run 24/7</div>
+            </div>
+            <div class="flex items-center">
+              <div class="font-medium self-start">
+                <Check class={iconClass} />
+              </div>
+              <div class="font-medium">Unlimited api requests</div>
+            </div>
+            <div class="flex items-center">
+              <div class="font-medium self-start">
+                <Check class={iconClass} />
+              </div>
+              <div class="font-medium">
+                Billing support (reach out via the e-mail used in your invoice)
               </div>
             </div>
           </Card.Content>
