@@ -28,17 +28,20 @@
   let deleteData: any = $state({});
 
   async function deleteitem(item: any) {
-    const deletecount = await auth.client.DeleteOne({
-      id: item._id,
-      collectionname: data.collectionname,
-      jwt: auth.access_token,
-    });
-    if (deletecount == 1) {
+    try {
+      await auth.client.DeleteWorkItemQueue({
+        wiqid: item._id,
+        jwt: auth.access_token,
+      });
       selected_items = selected_items.filter((i) => i !== item._id);
+      toast.success("Deleted successfully", {
+        description: "Deleted " + item.name + " item(s)",
+      });
       ref.reload();
-    } else {
+      datacomponent.persist();
+    } catch (error:any) {
       toast.error("Error while deleting", {
-        description: "Error while deleting",
+        description: error.message,
       });
     }
   }
@@ -83,6 +86,47 @@
     }
     loading = false;
   }
+  async function deleteitems(ids: string[]) {
+    let haderror = false;
+    loading = true;
+    showWarning = false;
+    let counter = 0;
+    try {
+      for (let i = 0; i < ids.length; i++) {
+        let id = ids[i];
+        var item = entities.find((x: any) => x._id == id);
+        if (item) {
+          try {
+            await auth.client.DeleteWorkItemQueue({
+              wiqid: item._id,
+              jwt: auth.access_token,
+            });
+            counter++;
+            selected_items = selected_items.filter((x: any) => x != item._id);
+            GetData();
+          } catch (error: any) {
+            haderror = true;
+            toast.error("Error while deleting", {
+              description: error.message,
+            });
+            return;
+          }
+        }
+      }
+      if (!haderror) {
+        toast.success("Successfully deleted " + counter + " workitemqueue(s)", {
+          description: "",
+        });
+      }
+    } catch (error: any) {
+      toast.error("Error while deleting", {
+        description: error.message,
+      });
+    } finally {
+      loading = false;
+    }
+    datacomponent.persist();
+  }
 </script>
 
 <div class="lg:flex space-y-4 lg:space-y-0 justify-between mb-4 lg:space-x-5">
@@ -110,6 +154,7 @@
   bind:searchstring
   page={data.page}
   {single_item_click}
+  delete_selected={deleteitems}
   total_count={data.total_count}
   bind:selected_items
   bind:entities
