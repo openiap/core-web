@@ -72,6 +72,23 @@
                 projection,
                 queryas,
             });
+            if (entities.length == 8) {
+                const item = await auth.client.FindOne<any>({
+                    collectionname,
+                    query: {
+                        ...basefilter,
+                        name: search,
+                    },
+                    jwt: auth.access_token,
+                    projection,
+                    queryas,
+                });
+                if (item != null) {
+                    if (entities.find((x) => x._id == item._id) == null) {
+                        entities.unshift(item);
+                    }
+                }
+            }
         } catch (error: any) {
             toast.error("Error loading entities", {
                 description: error.message,
