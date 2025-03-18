@@ -86,6 +86,7 @@
                 if (item != null) {
                     if (entities.find((x) => x._id == item._id) == null) {
                         entities.unshift(item);
+                        entities.pop();
                     }
                 }
             }
@@ -147,7 +148,7 @@
             <ChevronDown class="ml-2 h-4 w-4" />
         {/if}
     </Popover.Trigger>
-    <Popover.Content class="w-60 md:w-70">
+    <Popover.Content class="w-fit">
         {#await loadSearchResult("")}{/await}
 
         <Command.Root shouldFilter={false}>
