@@ -247,8 +247,10 @@
         }
       } else {
         loading = false;
-        let errors = Object.keys(form.errors).map((key) => key + " is " + form.errors[key]);
-        if(errors.length > 0) {
+        let errors = Object.keys(form.errors).map(
+          (key) => key + " is " + form.errors[key],
+        );
+        if (errors.length > 0) {
           toast.error("Error", {
             description: errors.join(", "),
           });
@@ -325,7 +327,6 @@
   let sizewarning = $state("");
 
   function ImageUpdated() {
-    $formData.webserver = false;
     sizewarningtitle = "";
     sizewarning = "";
     var image = images.find((x: any) => x.image == $formData.image);
@@ -339,58 +340,34 @@
     ) {
       languages = image.languages;
     }
-    var haschromium = false;
-    var haschrome = false;
-    if (image != null && image.chromium == true) {
-      haschromium = true;
-    }
-    if (image != null && image.chrome == true) {
-      haschrome = true;
-    }
+
     if ($formData.port != null && $formData.port != 0) {
       $formData.webserver = true;
-    } else {
-      $formData.webserver = false;
     }
-    if ($formData.image != null && $formData.image.indexOf("openiap/nodeagent") > -1) {
-      $formData.environment = {};
-    }
-    if ($formData.image != null && $formData.image.indexOf("openiap/noderedagent") > -1) {
-      $formData.environment = {
-        nodered_id: $formData.slug,
-        admin_role: "users",
-        api_role: "",
-      };
-    }
-    if ($formData.image != null && $formData.image.indexOf("openiap/nodechromiumagent") > -1) {
-      $formData.environment = {};
+
+    if (
+      $formData.image != null &&
+      $formData.image.indexOf("openiap/nodechromiumagent") > -1
+    ) {
       PlanUpdated();
     }
-    if ($formData.image != null && $formData.image.indexOf("openiap/dotnetagent") > -1) {
-      $formData.environment = {};
-    }
-    if ($formData.image != null && $formData.image.indexOf("openiap/pyagent") > -1) {
-      $formData.environment = {};
-    }
-    if ($formData.image != null && $formData.image.indexOf("openiap/pychromiumagent") > -1) {
-      $formData.environment = {};
+
+    if (
+      $formData.image != null &&
+      $formData.image.indexOf("openiap/pychromiumagent") > -1
+    ) {
       PlanUpdated();
     }
-    if ($formData.image != null && $formData.image.indexOf("openiap/grafana") > -1) {
-      $formData.environment = {
-        GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH:
-          "contains(roles[*], 'users') && 'Admin'",
-      };
+    if (
+      $formData.image != null &&
+      $formData.image.indexOf("openiap/grafana") > -1
+    ) {
       PlanUpdated();
     }
-    if ($formData.image != null && $formData.image.indexOf("elsaworkflow") > -1) {
-      var url =
-        window.location.protocol +
-        "//" +
-        auth.config?.agent_domain_schema.replace("$slug$", $formData.slug);
-      $formData.environment = {
-        ELSA__SERVER__BASEURL: url,
-      };
+    if (
+      $formData.image != null &&
+      $formData.image.indexOf("elsaworkflow") > -1
+    ) {
       PlanUpdated();
     }
   }
