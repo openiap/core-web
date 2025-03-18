@@ -13,6 +13,7 @@
   import { base } from "$app/paths";
   import { Header } from "$lib/components/ui/dialog/index.js";
   import { goto } from "$app/navigation";
+
   const { data } = $props();
   let _mode = $state.snapshot($mode);
   let step = $state("");
@@ -244,10 +245,11 @@
   <link rel="stylesheet" href="{base}/formio-dialog-content.css" />
   <link rel="stylesheet" href="{base}/formio.form.min.css" />
 </svelte:head>
+
 <div>
   {message}
 </div>
-<div>
+<div class="px-4 py-5 overflow-auto h-screen">
   {#if step == "form"}
     <div
       class="bootstrap-scope formio-dialog-content p-2"
@@ -257,7 +259,7 @@
   {#if step == "email"}
     <div class="font-bold mb-4">Validate User</div>
     <div>
-      <Card.Card class="mb-4">
+      <Card.Card class="mb-10">
         <Card.Header>Email validation</Card.Header>
         <Card.Content>
           <div class="grid gap-2">
@@ -270,7 +272,7 @@
               autocomplete="off"
             />
           </div>
-          <div class="">
+          <div class="grid grid-cols-2 gap-4 md:flex md:space-x-5 my-6">
             <HotkeyButton
               onclick={async () => {
                 try {
@@ -345,7 +347,7 @@
   {#if step == "workspace"}
     <div class="font-bold mb-4">Validate User</div>
     <div>
-      <Card.Card class="mb-4">
+      <Card.Card class="mb-10">
         <Card.Header>Create your first workspace</Card.Header>
         <Card.Content>
           <div class="grid gap-2">
@@ -411,7 +413,7 @@
   {#if step == "done"}
     <div class="font-bold mb-4">Validate User</div>
     <div>
-      <Card.Card class="mb-4">
+      <Card.Card class="mb-10">
         <Card.Header>Validation Complete</Card.Header>
         <Card.Content>
           <div class="grid gap-2">
@@ -422,3 +424,7 @@
     </div>
   {/if}
 </div>
+
+<style>
+
+</style>
