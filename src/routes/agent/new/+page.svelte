@@ -345,6 +345,8 @@
           <CustomInput
             width="w-full"
             disabled={loading}
+            autofocus
+            {...props}
             bind:value={$formData.name}
           />
         {/snippet}

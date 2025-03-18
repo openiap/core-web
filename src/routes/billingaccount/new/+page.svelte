@@ -64,7 +64,7 @@
       {#snippet children({ props })}
         <Form.Label>Name</Form.Label>
         <Form.Description>This is your billing account name.</Form.Description>
-        <CustomInput {...props} bind:value={$formData.name} />
+        <CustomInput {...props} autofocus bind:value={$formData.name} />
       {/snippet}
     </Form.Control>
     <Form.FieldErrors />
