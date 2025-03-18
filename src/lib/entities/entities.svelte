@@ -635,7 +635,7 @@
 											<Table.Cell class={head.cellclass}>
 												{item.members?.length}
 											</Table.Cell>
-										{:else if head.field == "_created" || head.field == "_modified" || head.field == "metadata._created" || head.field == "metadata._modified" || head.field == "dt" || head.field == "ts"}
+										{:else if head.field == "_created" || head.field == "_modified" || head.field == "lastrun" || head.field == "metadata._created" || head.field == "metadata._modified" || head.field == "dt" || head.field == "ts"}
 											<Table.Cell class={head.cellclass}>
 												{#if RenderItemData(item,head.field) != null}
 													{_timeSince(new Date(RenderItemData(item,head.field)
