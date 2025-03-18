@@ -1,30 +1,16 @@
 import { z } from 'zod';
 
 export const newFormSchema = z.object({
-  name: z.string().min(2).default(""),
-  email: z.string().email().optional(),
-  username: z.string().min(2).default(""),
-  password: z.string().min(6).default(""),
-  disabled: z.boolean(),
-  dblocked: z.boolean(),
-  validated: z.boolean(),
-  emailvalidated: z.boolean(),
-  formvalidated: z.boolean(),
-  federationids: z.array(z.string().email()).optional(),
+  name: z.string().min(1).default(""),
+  username: z.string().min(1).default(""),
+  password: z.string().default(""),
   _type: z.string().default("credential"),
 });
 export type NewFormSchema = typeof newFormSchema;
 
 export const editFormSchema = z.object({
   name: z.string().min(2),
-  email: z.string().email().optional(),
   username: z.string().min(2),
-  password: z.string().min(6).optional(),
-  disabled: z.boolean(),
-  dblocked: z.boolean(),
-  validated: z.boolean(),
-  emailvalidated: z.boolean(),
-  formvalidated: z.boolean(),
-  federationids: z.array(z.string().email()).optional(),
+  password: z.string().optional(),
 }).passthrough();
 export type EditFormSchema = typeof editFormSchema;
