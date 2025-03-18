@@ -67,6 +67,7 @@
         <Form.Label>Name</Form.Label>
         <CustomInput
           placeholder="Type name"
+          autofocus
           disabled={loading}
           {...props}
           bind:value={$formData.name}

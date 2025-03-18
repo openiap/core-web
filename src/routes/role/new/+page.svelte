@@ -92,6 +92,7 @@
         <CustomInput
           disabled={loading}
           {...props}
+          autofocus
           bind:value={$formData.name}
         />
       {/snippet}

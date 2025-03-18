@@ -280,6 +280,7 @@
       width="w-full"
       type="text"
       placeholder="Enter form name"
+      autofocus
       bind:value={data.name}
     />
     <HotkeyButton

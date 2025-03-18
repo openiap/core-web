@@ -176,6 +176,7 @@
           disabled={loading}
           placeholder="Type name"
           {...props}
+          autofocus
           bind:value={$formData.name}
         />
       {/snippet}
