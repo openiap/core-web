@@ -1,4 +1,5 @@
 <script lang="ts">
+  import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import * as Form from "$lib/components/ui/form/index.js";
@@ -23,6 +24,8 @@
   const { data } = $props();
 
   let loading = $state(false);
+  let nameprompt = $state(false);
+  let newbillingaccountname = $state(auth.profile.name + "s Billing Account");
   const form = superForm(defaults(zod(newFormSchema)), {
     dataType: "json",
     validators: zod(newFormSchema),
@@ -74,6 +77,13 @@
               throw new Error("Product not found");
             }
             stripeprice = product.stripeprice;
+            if (workspace?._billingid == null || workspace?._billingid == "") {
+              cancel();
+              loading = false;
+              nameprompt = true;
+              return;
+            }
+
           }
           form.data._stripeprice = "";
           let image = auth.config?.agent_images.find(
@@ -326,6 +336,66 @@
             "This instance will not start, or will run extremly slow if not assigned a plan with at least 256Mi ram or higher.";
         }
       }
+    }
+  }
+  async function createbillingaccount() {
+    let _workspaceid = usersettings.currentworkspace;
+    if (_workspaceid == null || _workspaceid == "") {
+      if (
+        usersettings.currentworkspace == null ||
+        usersettings.currentworkspace == ""
+      ) {
+        throw new Error("You must select a workspace first");
+      }
+      _workspaceid = usersettings.currentworkspace;
+    }
+    let currentworkspace = await auth.client.FindOne<any>({
+      collectionname: "users",
+      query: {
+        _type: "workspace",
+        _id: _workspaceid,
+      },
+      jwt: auth.access_token,
+    });
+    if (currentworkspace == null) {
+      throw new Error("Workspace not found");
+    }
+    if (newbillingaccountname == null || newbillingaccountname.trim() == "") {
+      toast.error("Please enter a name for the billing account");
+      newbillingaccountname = auth.profile.name + "s Billing Account";
+      return;
+    }
+    let billingdata: any = {
+      name: newbillingaccountname,
+      email: auth.profile.email,
+    };
+    loading = true;
+    try {
+      const billing = JSON.parse(
+        await auth.client.CustomCommand({
+          command: "ensurebilling",
+          data: JSON.stringify(billingdata),
+          jwt: auth.access_token,
+        }),
+      );
+      toast.success("Billing account created", {
+        description: billing.name,
+      });
+      currentworkspace._billingid = billing._id;
+      await auth.client.CustomCommand({
+        command: "ensureworkspace",
+        data: JSON.stringify(currentworkspace),
+        jwt: auth.access_token,
+      });
+      form.submit();
+      // await addplan();
+    } catch (error: any) {
+      toast.error("Error creating billing account", {
+        description: error.message,
+      });
+    } finally {
+      nameprompt = false;
+      loading = false;
     }
   }
 </script>
@@ -592,5 +662,33 @@
     Add more resources on the customer page to increase the limit.
   </div>
 </div>
+
+<AlertDialog.Root open={nameprompt}>
+  <AlertDialog.Content>
+    <form>
+      <AlertDialog.Header>
+        <AlertDialog.Title>Create Billing Account</AlertDialog.Title>
+        <AlertDialog.Description class="mb-4">
+          Please type the name of your new billing account.
+        </AlertDialog.Description>
+        <CustomInput
+          bind:value={newbillingaccountname}
+          autofocus
+          width="w-full"
+        />
+      </AlertDialog.Header>
+      <AlertDialog.Footer>
+        <HotkeyButton disabled={loading} onclick={() => (nameprompt = false)}
+          >Cancel</HotkeyButton
+        >
+        <HotkeyButton
+          type="submit"
+          disabled={loading}
+          onclick={createbillingaccount}>Continue</HotkeyButton
+        >
+      </AlertDialog.Footer>
+    </form>
+  </AlertDialog.Content>
+</AlertDialog.Root>
 
 <CustomSuperDebug {formData} />
