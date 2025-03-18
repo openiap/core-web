@@ -214,6 +214,9 @@ class authState {
                 this.profile.formvalidated = profile.formvalidated;
                 this.profile.emailvalidated = profile.emailvalidated;
                 this.profile.validated = profile.validated;
+                this.profile.name = profile.name;
+                this.profile.email = profile.email;
+                this.profile.company = profile.company;
             }
         }
     }
