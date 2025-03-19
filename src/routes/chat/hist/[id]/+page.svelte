@@ -4,6 +4,7 @@
   import Entities from "$lib/entities/entities.svelte";
   import { ObjectInput } from "$lib/objectinput/index.js";
   import { auth } from "$lib/stores/auth.svelte";
+    import { tick } from "svelte";
   import { string } from "zod";
 
   let { data } = $props();
@@ -23,6 +24,7 @@
     role: string;
     MongoQuery: string;
     MongoAggregate: string;
+    pipeline: any;
     workflowid: string;
     parameters: any[];
     correlationId: string;
@@ -30,6 +32,7 @@
   };
   let messages: message[] = $state(data.messages);
   let ref: any;
+  let msgLogEl: HTMLDivElement;
 
   async function init() {
     try {
@@ -38,7 +41,7 @@
           queuename: "",
           jwt: auth.access_token,
         },
-        (msg, payload, user, jwt) => {
+        async (msg, payload, user, jwt) => {
           if (payload.threadid != null && payload.threadid != "") {
             threadid = payload.threadid;
           }
@@ -78,8 +81,24 @@
           } else {
             console.log("payload", payload);
           }
+          await tick();
+          console.log("msgLogEl.scrollHeight", msgLogEl.scrollHeight);
+          msgLogEl.scroll(0,msgLogEl.scrollHeight+50);
+          setTimeout(() => {
+            msgLogEl.scroll(0,msgLogEl.scrollHeight+50);
+            // window.scrollTo({top: document.documentElement.scrollHeight, behavior: 'smooth'})
+          }, 200)
+
         },
       );
+      await tick();
+      console.log("msgLogEl.scrollHeight", msgLogEl.scrollHeight);
+      msgLogEl.scroll(0,msgLogEl.scrollHeight+50);
+      setTimeout(() => {
+        msgLogEl.scroll(0,msgLogEl.scrollHeight+50);
+        // window.scrollTo({top: document.documentElement.scrollHeight, behavior: 'smooth'})
+        }, 200)
+
     } catch (error) {
       console.error("error", error);
     }
@@ -87,6 +106,7 @@
   init();
 </script>
 
+<div bind:this={msgLogEl} class="h-[calc(100vh-4rem)] overflow-y-auto">
 {#each messages as msg}
   <div class="mb-4">
     {#if msg.role == "assistant"}
@@ -122,9 +142,16 @@
             total_count = entities.length;
             entities = _entities;
             if (msg.MongoQuery != null) {
+              console.log("msg.MongoQuery", msg.MongoQuery);
               mongoquery = JSON.parse(msg.MongoQuery);
             } else if (msg.MongoAggregate != null) {
+              console.log("msg.MongoAggregate", msg.MongoAggregate);
               mongoquery = JSON.parse(msg.MongoAggregate);
+            } else if (msg.pipeline != null) {
+              console.log("msg.pipeline", msg.pipeline);
+              mongoquery = msg.pipeline;
+            } else {
+              console.log("msg", msg);
             }
             ref.AutoDetectColumns();
           } catch (error) {
@@ -136,7 +163,7 @@
     {/if}
   </div>
 {/each}
-
+</div>
 <form>
   <CustomInput bind:value={chatmessage} label="Chat message" />
   <HotkeyButton
