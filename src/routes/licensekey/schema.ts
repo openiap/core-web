@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const newLicenseSchema = z.object({
-  name: z.string().min(2).default("app.mydomain.com"),
+  name: z.string().min(2).default(""),
   _billingid: z.string().optional()
 });
 export type NewLicenseSchema = typeof newLicenseSchema;
