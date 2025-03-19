@@ -1,0 +1,150 @@
+<script lang="ts">
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
+  import { CustomInput } from "$lib/custominput";
+    import Entities from "$lib/entities/entities.svelte";
+    import { ObjectInput } from "$lib/objectinput/index.js";
+  import { auth } from "$lib/stores/auth.svelte";
+    import { string } from "zod";
+
+
+
+  let { data } = $props();
+  let queuename = $state("");
+  let chatmessage = $state("");
+  let llmmodel = $state("openai/gpt-3.5-turbo-1106");
+  let threadid = $state(data.id);
+  let mongoquery = $state({});
+  let entities = $state([]);
+  let total_count = $state(0);
+
+  type message = {
+    name: string;
+    content: string;
+    error: boolean;
+    index: number;
+    role: string;
+    MongoQuery: string;
+    MongoAggregate: string;
+    workflowid: string;
+    parameters: any[];
+    correlationId: string;
+    robotid: string;
+  }; 
+  let messages: message[] = $state(data.messages);
+  let ref: any;
+
+  async function init() {
+    try {
+      queuename = await auth.client.RegisterQueue(
+        {
+          queuename: "",
+          jwt: auth.access_token,
+        },
+        (msg, payload, user, jwt) => {
+          if (payload.threadid != null && payload.threadid != "") {
+            threadid = payload.threadid;
+          }
+          // if (payload.error != null && payload.error != "") {
+          //   console.error("error", payload.error);
+          // } else 
+          if (payload.func == "message" || payload.func == "tool") {
+            console.log("payload", messages);
+            messages.push(payload.message);
+            messages = messages.sort((a, b) => a.index - b.index);
+          } else {
+            console.log("payload", payload);
+          }
+        },
+      );
+    } catch (error) {
+      console.error("error", error);
+    }
+  }
+  init();
+</script>
+
+{#each messages as msg}
+  <div class="mb-4">
+    {#if msg.role == "assistant"}
+      <div class="font-bold">Assistant</div>
+      <div>{msg.content}</div>
+      {:else if msg.role == "user"}
+      <div class="font-bold">User</div>
+      <div>{msg.content}</div>
+      {:else if msg.role == "tool"}
+      <div class="font-bold">Tool</div>
+       <HotkeyButton 
+        class="mb-4"
+        aria-label={msg.name}
+        type="submit"
+        onclick={async () => {
+          try {
+            if(msg.name == "RunOpenRPAWorkflow") {
+              const rpacommand = {
+                    command: "invoke",
+                    workflowid: msg.workflowid,
+                    data: msg.parameters
+                }
+                await auth.client.QueueMessage({
+                    correlationId: msg.correlationId,
+                    data: rpacommand,
+                    queuename: msg.robotid,
+                    replyto: queuename,
+                })
+
+              return;
+            }
+            let _entities = JSON.parse(msg.content);
+            total_count = entities.length;
+            entities = _entities
+            if(msg.MongoQuery != null) {
+              mongoquery = JSON.parse(msg.MongoQuery);
+            } else if ( msg.MongoAggregate != null) {
+              mongoquery = JSON.parse(msg.MongoAggregate);
+            }
+            ref.AutoDetectColumns();
+          } catch (error) {
+            console.error(error);
+          }
+
+        }}>{msg.name}</HotkeyButton>
+      {/if}
+  </div>
+{/each}
+
+<form>
+  <CustomInput bind:value={chatmessage} label="Chat message" />
+  <HotkeyButton
+    class="mb-4"
+    aria-label="Send"
+    type="submit"
+    onclick={async () => {
+      var payload = {
+        func: "chat",
+        model: $state.snapshot(llmmodel),
+        // model: "ollama/mistral",
+        // model: "ollama/functionary",
+        message: $state.snapshot(chatmessage),
+        threadid: $state.snapshot(threadid),
+        // json: true,
+      };
+      try {
+        const result: any = await auth.client.QueueMessage({
+          queuename: auth.config.llmchat_queue,
+          replyto: $state.snapshot(queuename),
+          data: payload,
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    }}>Send</HotkeyButton
+  >
+</form>
+<ObjectInput bind:value={mongoquery} label="Mongo query or pipeline" />
+<Entities
+  bind:entities
+  multi_select={false}
+  show_delete={false}
+  total_count={total_count}
+  bind:this={ref}
+/>

@@ -99,6 +99,14 @@ class entitiesdata {
 						total_count = await this.GetCount(page, collectionname, { _type: "credential" }, access_token, false);
 					}
 					break;
+				case base + "/chat/hist":
+					collectionname = "llmchat"
+					entities = await this.GetData(page, collectionname, { _type: "thread" }, access_token, false);
+					total_count = entities.length;
+					if(entities.length >= usersettings.pagesize) {
+						total_count = await this.GetCount(page, collectionname, { _type: "thread" }, access_token, false);
+					}
+					break;
 				case base + "/billingaccount":
 					collectionname = "users"
 					entities = await this.GetData(page, collectionname, { _type: "customer" }, access_token, false);
@@ -641,6 +649,8 @@ class entitiesdata {
 				return ["_id", "name", "members", "_created"];
 			case "/entities/users":
 				return ["_id", "name", "username", "email", "lastseen", "members", "_type", "_created"];
+			case "/chat/hist":
+				return ["_id", "name", "_created"];
 			case "/workitem":
 			case "/entities/workitems":
 				return ["name", "state", "errortype", "retries", "priority", "wiq", "lastrun", "_created"];
@@ -710,7 +720,9 @@ class entitiesdata {
 			case "/entities/cvr":
 				return ["name", "cvr", "virksomhedsformkort", "sidstOpdateret", "stiftelsesDato", "ophoersDato", "cvrstatus"];
 			default:
-				if (_page.startsWith("/workitem/")) {
+				if (_page.startsWith("/chat/hist/")) {
+					return ["_id", "name", "_type", "_createdby", "_created", "_modified"];
+				} else if (_page.startsWith("/workitem/")) {
 					return ["name", "state", "errortype", "retries", "priority", "wiq", "lastrun", "_created"];
 				} else if (_page.startsWith("/entities/")) {
 					if (_page.endsWith(".files")) {

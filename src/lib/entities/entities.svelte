@@ -41,6 +41,28 @@
 		detectColumns();
 		SetHeaders();
 	}
+	export async function AutoDetectColumns() {
+		tableheaders = [];
+		const page = $componentpage?.url?.pathname;
+		EnsureDefaultHeaders(page);
+		detectColumns();
+		SetHeaders();
+		if(entities.length > 0) {
+			let hasData = false;
+			tableheaders.forEach((header) => {
+				if(header.field != "_id" &&  header.show && entities.some((entity) => entity[header.field] != null)) {
+					hasData = true;
+				}
+			});
+			if(!hasData) {
+				tableheaders = [];
+				detectColumns();
+				tableheaders.forEach((header) => {
+					header.show = true;
+				});
+			}
+		}
+	}
 	let {
 		page = "entities",
 		entities = $bindable([]),
