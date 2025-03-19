@@ -52,6 +52,7 @@
   </div>  
 {/each}
 
+<div class="flex">
 <HotkeyButton
   class="mb-4"
   aria-label="Show history"
@@ -59,10 +60,10 @@
 >
   Show history
 </HotkeyButton>
-<form>
+</div>
+<form class="flex items-center space-x-2 mb-4">
   <CustomInput bind:value={chatmessage} label="Chat message" />
   <HotkeyButton
-    class="mb-4"
     aria-label="Send"
     type="submit"
     onclick={async () => {

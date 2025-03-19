@@ -106,7 +106,7 @@
   init();
 </script>
 
-<div bind:this={msgLogEl} class="h-[calc(100vh-4rem)] overflow-y-auto">
+<div bind:this={msgLogEl} class="h-[calc(100vh-4rem)] overflow-y-auto min-h-80">
 {#each messages as msg}
   <div class="mb-4">
     {#if msg.role == "assistant"}
@@ -164,10 +164,11 @@
   </div>
 {/each}
 </div>
-<form>
+<form class="flex items-center space-x-2 mb-4">
+  
   <CustomInput bind:value={chatmessage} label="Chat message" />
   <HotkeyButton
-    class="mb-4"
+    class=""
     aria-label="Send"
     type="submit"
     onclick={async () => {
@@ -192,7 +193,7 @@
     }}>Send</HotkeyButton
   >
 </form>
-<ObjectInput bind:value={mongoquery} label="Mongo query or pipeline" />
+<ObjectInput bind:value={mongoquery} label="Mongo query or pipeline" height="h-14" />
 <Entities
   bind:entities
   collectionname="customcommand"
