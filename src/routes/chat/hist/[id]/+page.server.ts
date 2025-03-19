@@ -1,6 +1,6 @@
 import { goto } from "$app/navigation";
 import { auth } from "$lib/stores/auth.svelte.js";
-import type { PageServerLoad } from "../../edit/$types.js";
+import type { PageServerLoad } from "./$types.js";
 export const load: PageServerLoad = async ({ parent }) => {
   try {
     const { access_token, id } = await parent();

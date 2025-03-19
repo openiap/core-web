@@ -1,12 +1,10 @@
 <script lang="ts">
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
   import { CustomInput } from "$lib/custominput";
-    import Entities from "$lib/entities/entities.svelte";
-    import { ObjectInput } from "$lib/objectinput/index.js";
+  import Entities from "$lib/entities/entities.svelte";
+  import { ObjectInput } from "$lib/objectinput/index.js";
   import { auth } from "$lib/stores/auth.svelte";
-    import { string } from "zod";
-
-
+  import { string } from "zod";
 
   let { data } = $props();
   let queuename = $state("");
@@ -29,7 +27,7 @@
     parameters: any[];
     correlationId: string;
     robotid: string;
-  }; 
+  };
   let messages: message[] = $state(data.messages);
   let ref: any;
 
@@ -44,9 +42,35 @@
           if (payload.threadid != null && payload.threadid != "") {
             threadid = payload.threadid;
           }
+          if (
+            messages.find((m) => m.correlationId == msg.correlationId) != null
+          ) {
+            let pre = document.getElementById(msg.correlationId);
+            if (pre != null) {
+              if (payload.command == "timeout") {
+                pre.innerText =
+                  payload.command + " is robot running?\n" + pre.innerText;
+              } else {
+                if (payload.data == null) payload.data = {};
+                if (Object.keys(payload.data).length == 0) {
+                  pre.innerText = payload.command + "\n" + pre.innerText;
+                } else {
+                  pre.innerText =
+                    payload.command +
+                    " " +
+                    JSON.stringify(payload.data) +
+                    "\n" +
+                    pre.innerText;
+                }
+              }
+            } else {
+              console.error("pre " + msg.correlationId + " is null", payload);
+            }
+            return;
+          }
           // if (payload.error != null && payload.error != "") {
           //   console.error("error", payload.error);
-          // } else 
+          // } else
           if (payload.func == "message" || payload.func == "tool") {
             console.log("payload", messages);
             messages.push(payload.message);
@@ -68,47 +92,48 @@
     {#if msg.role == "assistant"}
       <div class="font-bold">Assistant</div>
       <div>{msg.content}</div>
-      {:else if msg.role == "user"}
+    {:else if msg.role == "user"}
       <div class="font-bold">User</div>
       <div>{msg.content}</div>
-      {:else if msg.role == "tool"}
+    {:else if msg.role == "tool"}
       <div class="font-bold">Tool</div>
-       <HotkeyButton 
+      <HotkeyButton
         class="mb-4"
         aria-label={msg.name}
         type="submit"
         onclick={async () => {
           try {
-            if(msg.name == "RunOpenRPAWorkflow") {
+            if (msg.name == "RunOpenRPAWorkflow") {
               const rpacommand = {
-                    command: "invoke",
-                    workflowid: msg.workflowid,
-                    data: msg.parameters
-                }
-                await auth.client.QueueMessage({
-                    correlationId: msg.correlationId,
-                    data: rpacommand,
-                    queuename: msg.robotid,
-                    replyto: queuename,
-                })
+                command: "invoke",
+                workflowid: msg.workflowid,
+                data: msg.parameters,
+              };
+              await auth.client.QueueMessage({
+                correlationId: msg.correlationId,
+                data: rpacommand,
+                queuename: msg.robotid,
+                replyto: queuename,
+              });
 
               return;
             }
             let _entities = JSON.parse(msg.content);
             total_count = entities.length;
-            entities = _entities
-            if(msg.MongoQuery != null) {
+            entities = _entities;
+            if (msg.MongoQuery != null) {
               mongoquery = JSON.parse(msg.MongoQuery);
-            } else if ( msg.MongoAggregate != null) {
+            } else if (msg.MongoAggregate != null) {
               mongoquery = JSON.parse(msg.MongoAggregate);
             }
             ref.AutoDetectColumns();
           } catch (error) {
             console.error(error);
           }
-
-        }}>{msg.name}</HotkeyButton>
-      {/if}
+        }}>{msg.name}</HotkeyButton
+      >
+      <pre id={msg.correlationId}></pre>
+    {/if}
   </div>
 {/each}
 
@@ -145,6 +170,6 @@
   bind:entities
   multi_select={false}
   show_delete={false}
-  total_count={total_count}
+  {total_count}
   bind:this={ref}
 />

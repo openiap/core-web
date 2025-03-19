@@ -52,6 +52,13 @@
   </div>  
 {/each}
 
+<HotkeyButton
+  class="mb-4"
+  aria-label="Show history"
+  onclick={() => goto(base + `/chat/hist`)}
+>
+  Show history
+</HotkeyButton>
 <form>
   <CustomInput bind:value={chatmessage} label="Chat message" />
   <HotkeyButton

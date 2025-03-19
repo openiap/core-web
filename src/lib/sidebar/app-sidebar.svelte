@@ -81,6 +81,13 @@
 		`${base}/licensekey`,
 		true,
 	);
+	const chat = new SidebarItem(
+		"Chat",
+		"",
+		"tourchat",
+		`${base}/chat`, true
+		
+	);
 	const agent = new SidebarItem(
 		"Agents",
 		"g a",
@@ -134,6 +141,7 @@
 	);
 	const actions = new SidebarCategory("", false, [
 		home,
+		chat,
 		agent,
 		workitem,
 		workitemqueue,
@@ -396,6 +404,10 @@
 		}
 		hdrobots.hidden = !isWorkspaceAdmin;
 		mailhistory.hidden = !isAdmin;
+
+		if( auth.config?.llmchat_queue != null && auth.config?.llmchat_queue != "") {
+			chat.hidden = false;
+		}
 
 		if (auth.config?.enable_gitserver == true) {
 			gitrepo.hidden = false;
