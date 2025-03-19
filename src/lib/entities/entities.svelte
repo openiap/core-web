@@ -153,6 +153,10 @@
 		try {
 			const id = $componentpage?.params?.id;
 			const page = $componentpage?.url?.pathname;
+			console.log("page", page, "collectionname", collectionname);
+			if(collectionname == "customcommand") {
+				return;
+			}
 			const { entities: entitiesdata, total_count: totalcount } =
 				await data.Fetch(page, id, auth.access_token);
 			entities = entitiesdata;
@@ -430,6 +434,20 @@
 			setSort(field, "");
 		}
 		data.SaveHeaders(tableheaders);
+		entities = entities.sort((a: any, b: any) => {
+			for (let i = 0; i < tableheaders.length; i++) {
+				const _field = tableheaders[i].field;
+				const _order = tableheaders[i].order;
+				if (_order == "asc") {
+					if (a[_field] < b[_field]) return -1;
+					if (a[_field] > b[_field]) return 1;
+				} else if (_order == "desc") {
+					if (a[_field] > b[_field]) return -1;
+					if (a[_field] < b[_field]) return 1;
+				}
+			}
+			return 0;
+		});
 		GetData();
 	}
 

@@ -195,6 +195,7 @@
 <ObjectInput bind:value={mongoquery} label="Mongo query or pipeline" />
 <Entities
   bind:entities
+  collectionname="customcommand"
   multi_select={false}
   show_delete={false}
   {total_count}
