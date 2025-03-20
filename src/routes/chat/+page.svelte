@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { goto } from "$app/navigation";
+    import { base } from "$app/paths";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
   import { CustomInput } from "$lib/custominput";
   import Entities from "$lib/entities/entities.svelte";
