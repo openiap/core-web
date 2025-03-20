@@ -133,7 +133,7 @@ export const entitiesTour: DriveStep[] = [
             title: 'Entities',
             description: `Unlike most other databases, you can set finegrained permissions on who can access and modify any piece of data in the database.`,
             onNextClick: () => {
-                goto(base + '/entities/new');
+                goto(base + '/entities/entities/new');
                 driverObj.moveNext();
             },
         },
