@@ -51,7 +51,14 @@
               throw new Error("Workspace not found");
             }
             // @ts-ignore
-            form.data._acl = workspace._acl;
+            form.data._acl = JSON.parse(JSON.stringify(workspace._acl));
+            (form.data as any)._acl.forEach((ace: any) => {
+              if(ace.name.indexOf(" users") > -1) {
+                ace.rights = 65527;
+              } else {
+                ace.rights = 65535;
+              }
+            });
             if (
               auth.config?.workspace_enabled == true &&
               (form.data._workspaceid == null || form.data._workspaceid == "")
