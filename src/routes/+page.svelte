@@ -87,7 +87,7 @@
       },
     },
     {
-      title: ".net",
+      title: ".NET",
       logo: dotnetSvg,
       logolight: dotnetSvg,
       buttons: {
@@ -111,7 +111,7 @@
       },
     },
     {
-      title: "Php",
+      title: "PHP",
       logo: phpSvg,
       logolight: phpSvg,
       buttons: {
@@ -123,7 +123,7 @@
       },
     },
     {
-      title: "Brower",
+      title: "Browser",
       logo: browerSvg,
       logolight: browerSvg,
       buttons: {
@@ -139,7 +139,7 @@
 </script>
 
 {#if !data.entities || data.entities.length == 0}
-  <div class="mb-5 font-bold text-lg">Need help?</div>
+  <div class="mb-5 font-bold text-lg">Need Help?</div>
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-10">
     <div class={cardRoot}>
       <div class="flex flex-col justify-between h-full">
@@ -169,7 +169,7 @@
           <div class="mb-2 dark:text-bw50">Community Forum</div>
           <div class="mb-5 dark:text-bw400">
             Have questions? Ask away in our community forum or explore similar
-            discussions for inspiration!
+            discussions for inspiration:
           </div>
         </div>
         <div>
@@ -226,15 +226,17 @@
     </div>
   </div>
 
-  <div class="mt-3 mb-5 font-bold text-lg">Set-up</div>
+  <div class="mt-3 mb-5 font-bold text-lg">Set-Up</div>
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
     <div class={cardRoot}>
       <div class="flex flex-col justify-between h-full">
         <div>
-          <div class="mb-2 dark:text-bw50">Download OpenRPA</div>
+          <div class="mb-2 dark:text-bw50">
+            Get started with our vsc extension
+          </div>
           <div class="mb-5 dark:text-bw400">
-            For the best workflow experience and easy work item creation,
-            download OpenRPA:
+            Our VS Code extension, makes it easier to get started by helping you
+            manage your .env files efficiently. Download extension here:
           </div>
         </div>
         <div>

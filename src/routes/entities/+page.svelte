@@ -217,7 +217,7 @@
           onclick={() => {
             loading = true;
             goto(base + `/entities/${collectionname}/duplicates`);
-          }}>Show duplicates</Tabs.Trigger
+          }}>Show Duplicates</Tabs.Trigger
         >
         <Tabs.Trigger
           value="undelete"
