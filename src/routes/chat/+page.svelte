@@ -195,6 +195,14 @@
       }
     }}>Send</HotkeyButton
   >
+  <HotkeyButton
+  class=""
+  aria-label="Send"
+  type="submit"
+  onclick={async () => {
+    goto(base + "/chat/hist/");
+  }}>Old chat threads</HotkeyButton
+>
 </form>
 <ObjectInput bind:value={mongoquery} label="Mongo query or pipeline" height="h-14" />
 <Entities

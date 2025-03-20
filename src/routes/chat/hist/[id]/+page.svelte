@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { goto } from "$app/navigation";
+    import { base } from "$app/paths";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
   import { CustomInput } from "$lib/custominput";
   import Entities from "$lib/entities/entities.svelte";
@@ -195,6 +197,14 @@
       }
     }}>Send</HotkeyButton
   >
+  <HotkeyButton
+  class=""
+  aria-label="Send"
+  type="submit"
+  onclick={async () => {
+    goto(base + "/chat/hist/");
+  }}>Old chat threads</HotkeyButton
+>
 </form>
 <ObjectInput bind:value={mongoquery} label="Mongo query or pipeline" height="h-14" />
 <Entities
