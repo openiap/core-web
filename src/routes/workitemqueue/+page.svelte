@@ -54,9 +54,6 @@
   async function handleAccept() {
     try {
       await deleteitem(deleteData);
-      toast.success("Deleted successfully", {
-        description: "",
-      });
       await GetData();
     } catch (error: any) {
       toast.error("Error while deleting", {
