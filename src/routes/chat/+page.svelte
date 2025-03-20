@@ -1,39 +1,104 @@
 <script lang="ts">
-    import { goto } from "$app/navigation";
-    import { base } from "$app/paths";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
   import { CustomInput } from "$lib/custominput";
+  import Entities from "$lib/entities/entities.svelte";
+  import { ObjectInput } from "$lib/objectinput/index.js";
   import { auth } from "$lib/stores/auth.svelte";
+    import { tick } from "svelte";
+  import { string } from "zod";
 
+  let { data } = $props();
   let queuename = $state("");
   let chatmessage = $state("");
   let llmmodel = $state("openai/gpt-3.5-turbo-1106");
-  let threadid = $state("");
-  let messages = $state([
-    {
-      content:
-        "No openaikey set on customer object, and default OPENAI API KEY was not set",
-      error: true,
-      index: 1,
-      role: "assistant",
-    },
-  ]);
+  let threadid = $state(data.id);
+  let mongoquery = $state({});
+  let entities = $state([]);
+  let total_count = $state(0);
+
+  type message = {
+    name: string;
+    content: string;
+    error: boolean;
+    index: number;
+    role: string;
+    MongoQuery: string;
+    MongoAggregate: string;
+    pipeline: any;
+    workflowid: string;
+    parameters: any[];
+    correlationId: string;
+    robotid: string;
+  };
+  let messages: message[] = $state([]);
+  let ref: any;
+  let msgLogEl: HTMLDivElement;
 
   async function init() {
     try {
-      messages = [];
       queuename = await auth.client.RegisterQueue(
         {
           queuename: "",
           jwt: auth.access_token,
         },
-        (msg, payload, user, jwt) => {
+        async (msg, payload, user, jwt) => {
           if (payload.threadid != null && payload.threadid != "") {
             threadid = payload.threadid;
-            goto(base + `/chat/hist/${threadid}`);
           }
+          if (
+            messages.find((m) => m.correlationId == msg.correlationId) != null
+          ) {
+            let pre = document.getElementById(msg.correlationId);
+            if (pre != null) {
+              if (payload.command == "timeout") {
+                pre.innerText =
+                  payload.command + " is robot running?\n" + pre.innerText;
+              } else {
+                if (payload.data == null) payload.data = {};
+                if (Object.keys(payload.data).length == 0) {
+                  pre.innerText = payload.command + "\n" + pre.innerText;
+                } else {
+                  pre.innerText =
+                    payload.command +
+                    " " +
+                    JSON.stringify(payload.data) +
+                    "\n" +
+                    pre.innerText;
+                }
+              }
+            } else {
+              console.error("pre " + msg.correlationId + " is null", payload);
+            }
+            return;
+          }
+          // if (payload.error != null && payload.error != "") {
+          //   console.error("error", payload.error);
+          // } else
+          if (payload.func == "message" || payload.func == "tool") {
+            console.log("payload", messages);
+            messages.push(payload.message);
+            messages = messages.sort((a, b) => a.index - b.index);
+          } else {
+            console.log("payload", payload);
+          }
+          await tick();
+          console.log("msgLogEl.scrollHeight", msgLogEl.scrollHeight);
+          msgLogEl.scroll(0,msgLogEl.scrollHeight+50);
+          setTimeout(() => {
+            msgLogEl.scroll(0,msgLogEl.scrollHeight+50);
+            // window.scrollTo({top: document.documentElement.scrollHeight, behavior: 'smooth'})
+          }, 200)
+
         },
       );
+      await tick();
+      console.log("msgLogEl.scrollHeight", msgLogEl.scrollHeight);
+      msgLogEl.scroll(0,msgLogEl.scrollHeight+50);
+      setTimeout(() => {
+        msgLogEl.scroll(0,msgLogEl.scrollHeight+50);
+        // window.scrollTo({top: document.documentElement.scrollHeight, behavior: 'smooth'})
+        }, 200)
+
     } catch (error) {
       console.error("error", error);
     }
@@ -41,29 +106,69 @@
   init();
 </script>
 
+<div bind:this={msgLogEl} class="h-[calc(100vh-4rem)] overflow-y-auto min-h-80">
 {#each messages as msg}
   <div class="mb-4">
     {#if msg.role == "assistant"}
       <div class="font-bold">Assistant</div>
-    {:else}
+      <div>{msg.content}</div>
+    {:else if msg.role == "user"}
       <div class="font-bold">User</div>
-    {/if}
-    <div>{msg.content}</div>
-  </div>  
-{/each}
+      <div>{msg.content}</div>
+    {:else if msg.role == "tool"}
+      <div class="font-bold">Tool</div>
+      <HotkeyButton
+        class="mb-4"
+        aria-label={msg.name}
+        type="submit"
+        onclick={async () => {
+          try {
+            if (msg.name == "RunOpenRPAWorkflow") {
+              const rpacommand = {
+                command: "invoke",
+                workflowid: msg.workflowid,
+                data: msg.parameters,
+              };
+              await auth.client.QueueMessage({
+                correlationId: msg.correlationId,
+                data: rpacommand,
+                queuename: msg.robotid,
+                replyto: queuename,
+              });
 
-<div class="flex">
-<HotkeyButton
-  class="mb-4"
-  aria-label="Show history"
-  onclick={() => goto(base + `/chat/hist`)}
->
-  Show history
-</HotkeyButton>
+              return;
+            }
+            let _entities = JSON.parse(msg.content);
+            total_count = entities.length;
+            entities = _entities;
+            if (msg.MongoQuery != null) {
+              console.log("msg.MongoQuery", msg.MongoQuery);
+              mongoquery = JSON.parse(msg.MongoQuery);
+            } else if (msg.MongoAggregate != null) {
+              console.log("msg.MongoAggregate", msg.MongoAggregate);
+              mongoquery = JSON.parse(msg.MongoAggregate);
+            } else if (msg.pipeline != null) {
+              console.log("msg.pipeline", msg.pipeline);
+              mongoquery = msg.pipeline;
+            } else {
+              console.log("msg", msg);
+            }
+            ref.AutoDetectColumns();
+          } catch (error) {
+            console.error(error);
+          }
+        }}>{msg.name}</HotkeyButton
+      >
+      <pre id={msg.correlationId}></pre>
+    {/if}
+  </div>
+{/each}
 </div>
 <form class="flex items-center space-x-2 mb-4">
+  
   <CustomInput bind:value={chatmessage} label="Chat message" />
   <HotkeyButton
+    class=""
     aria-label="Send"
     type="submit"
     onclick={async () => {
@@ -82,9 +187,19 @@
           replyto: $state.snapshot(queuename),
           data: payload,
         });
+        chatmessage = "";
       } catch (error) {
         console.error(error);
       }
     }}>Send</HotkeyButton
   >
 </form>
+<ObjectInput bind:value={mongoquery} label="Mongo query or pipeline" height="h-14" />
+<Entities
+  bind:entities
+  collectionname="customcommand"
+  multi_select={false}
+  show_delete={false}
+  {total_count}
+  bind:this={ref}
+/>

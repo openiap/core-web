@@ -187,6 +187,7 @@
           replyto: $state.snapshot(queuename),
           data: payload,
         });
+        chatmessage = "";
       } catch (error) {
         console.error(error);
       }
