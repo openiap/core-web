@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { browser } from "$app/environment";
     import { goto } from "$app/navigation";
     import { base } from "$app/paths";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
@@ -83,14 +84,15 @@
           } else {
             console.log("payload", payload);
           }
-          await tick();
-          console.log("msgLogEl.scrollHeight", msgLogEl.scrollHeight);
-          msgLogEl.scroll(0,msgLogEl.scrollHeight+50);
-          setTimeout(() => {
+          if(msgLogEl != null) {
+            await tick();
+            console.log("msgLogEl.scrollHeight", msgLogEl.scrollHeight);
             msgLogEl.scroll(0,msgLogEl.scrollHeight+50);
-            // window.scrollTo({top: document.documentElement.scrollHeight, behavior: 'smooth'})
-          }, 200)
-
+            setTimeout(() => {
+              msgLogEl.scroll(0,msgLogEl.scrollHeight+50);
+              // window.scrollTo({top: document.documentElement.scrollHeight, behavior: 'smooth'})
+            }, 200)
+          }
         },
       );
       await tick();
@@ -105,7 +107,7 @@
       console.error("error", error);
     }
   }
-  init();
+  if(browser) init();
 </script>
 
 <div bind:this={msgLogEl} class="h-[calc(100vh-4rem)] overflow-y-auto min-h-80">
@@ -199,10 +201,10 @@
   >
   <HotkeyButton
   class=""
-  aria-label="Send"
-  type="submit"
+  aria-label="Old chat threads"
+  type="button"
   onclick={async () => {
-    goto(base + "/chat/hist/");
+    goto(base + "/chat/hist");
   }}>Old chat threads</HotkeyButton
 >
 </form>
