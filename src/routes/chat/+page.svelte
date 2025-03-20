@@ -134,6 +134,7 @@
                 data: rpacommand,
                 queuename: msg.robotid,
                 replyto: queuename,
+                jwt: auth.access_token,
               });
 
               return;
@@ -186,6 +187,7 @@
           queuename: auth.config.llmchat_queue,
           replyto: $state.snapshot(queuename),
           data: payload,
+          jwt: auth.access_token,
         });
         chatmessage = "";
       } catch (error) {
