@@ -244,7 +244,7 @@
 <div>
   {message}
 </div>
-<div class="px-4 py-5 overflow-auto h-screen">
+<div class="px-4 pt-0 py-5 overflow-auto h-screen">
   {#if step == "form"}
     <div
       class="bootstrap-scope formio-dialog-content p-2"
