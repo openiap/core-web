@@ -267,7 +267,7 @@
     data-shortcut="ctrl+s"
   >
     <Check />
-    Update Configuration"</HotkeyButton
+    Update Configuration</HotkeyButton
   >
 </form>
 
