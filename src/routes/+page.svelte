@@ -138,7 +138,7 @@
   const cardRoot = "text-sm bg-bw200 dark:bg-bw900 rounded-[10px] p-5";
 </script>
 
-{#if !data.entities || data.entities.length == 0}
+{#if (!data.entities || data.entities.length == 0) && (auth.config.web_hide_general_info == null || auth.config.web_hide_general_info == false)}
   <div class="mb-5 font-bold text-lg">Need Help?</div>
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-10">
     <div class={cardRoot}>
@@ -279,6 +279,23 @@
           >
         </div>
       </div>
+    </div>
+  </div>
+{:else if !data.entities || data.entities.length == 0}
+  <div class="container mx-auto p-4 space-y-4">
+    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <Card.Root class="hover:shadow-lg transition-shadow">
+        <Card.Header>
+          <Card.Title class="flex items-center justify-between">
+            <span>No pending tasks</span>
+          </Card.Title>
+        </Card.Header>
+        <Card.Content>
+          <div class="text-sm dark:text-bw400">
+            There are no new or pending tasks waiting for input.
+          </div>
+        </Card.Content>
+      </Card.Root>
     </div>
   </div>
 {:else}

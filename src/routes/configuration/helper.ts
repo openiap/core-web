@@ -105,6 +105,7 @@ const settings = [
     { "name": "enable_guest", "type": "boolean", "default": false },
     { "name": "enable_guest_file_upload", "type": "boolean", "default": false },
 
+    { "name": "web_hide_general_info", "type": "boolean", "default": false },
     { "name": "enable_gitserver", "type": "boolean", "default": false },
     { "name": "enable_gitserver_guest", "type": "boolean", "default": false },
     { "name": "enable_gitserver_guest_create", "type": "boolean", "default": false },

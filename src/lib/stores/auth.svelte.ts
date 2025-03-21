@@ -27,6 +27,7 @@ class Config {
     getting_started_url: string = "";
     validate_user_form: string = "";
     validate_emails: boolean = false;
+    web_hide_general_info: boolean = false;
     forgot_pass_emails: boolean = false;
     supports_watch: boolean = false;
     agent_images: any[] = [];
