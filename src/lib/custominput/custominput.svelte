@@ -16,7 +16,6 @@
 		...props
 	} = $props();
 	export function focus() {
-		console.log("focus", ref);
 		ref.focus();
 	}
 
