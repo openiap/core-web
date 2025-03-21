@@ -36,6 +36,7 @@
   let messages: message[] = $state(data.messages);
   let ref: any;
   let msgLogEl: HTMLDivElement;
+  let chatInput: any = null;
 
   async function init() {
     try {
@@ -78,15 +79,11 @@
           //   console.error("error", payload.error);
           // } else
           if (payload.func == "message" || payload.func == "tool") {
-            console.log("payload", messages);
             messages.push(payload.message);
             messages = messages.sort((a, b) => a.index - b.index);
-          } else {
-            console.log("payload", payload);
           }
           if(msgLogEl != null) {
             await tick();
-            console.log("msgLogEl.scrollHeight", msgLogEl.scrollHeight);
             msgLogEl.scroll(0,msgLogEl.scrollHeight+50);
             setTimeout(() => {
               msgLogEl.scroll(0,msgLogEl.scrollHeight+50);
@@ -96,7 +93,6 @@
         },
       );
       await tick();
-      console.log("msgLogEl.scrollHeight", msgLogEl.scrollHeight);
       msgLogEl.scroll(0,msgLogEl.scrollHeight+50);
       setTimeout(() => {
         msgLogEl.scroll(0,msgLogEl.scrollHeight+50);
@@ -147,16 +143,13 @@
             total_count = entities.length;
             entities = _entities;
             if (msg.MongoQuery != null) {
-              console.log("msg.MongoQuery", msg.MongoQuery);
               mongoquery = JSON.parse(msg.MongoQuery);
             } else if (msg.MongoAggregate != null) {
-              console.log("msg.MongoAggregate", msg.MongoAggregate);
               mongoquery = JSON.parse(msg.MongoAggregate);
             } else if (msg.pipeline != null) {
-              console.log("msg.pipeline", msg.pipeline);
               mongoquery = msg.pipeline;
             } else {
-              console.log("msg", msg);
+              console.debug("msg", msg);
             }
             ref.AutoDetectColumns();
           } catch (error) {
@@ -171,7 +164,7 @@
 </div>
 <form class="flex items-center space-x-2 mb-4">
   
-  <CustomInput bind:value={chatmessage} label="Chat message" />
+  <CustomInput bind:value={chatmessage} bind:this={chatInput} label="Chat message" />
   <HotkeyButton
     class=""
     aria-label="Send"
@@ -187,6 +180,10 @@
         // json: true,
       };
       try {
+        setTimeout(() => {
+          chatInput.focus();
+        }, 100);
+        chatInput.focus();
         const result: any = await auth.client.QueueMessage({
           queuename: auth.config.llmchat_queue,
           replyto: $state.snapshot(queuename),

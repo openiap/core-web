@@ -194,21 +194,16 @@
   async function getstep() {
     try {
       await auth.reloadUser();
-      console.log("getstep", $state.snapshot(auth.profile));
       if (auth.profile.formvalidated != true) {
-        console.log("step form");
         step = "form";
       } else if (
         auth.profile.validated == false &&
         auth.profile.formvalidated == true
       ) {
-        console.log("step email");
         step = "email";
       } else if (data.workspace == null) {
-        console.log("step workspace");
         step = "workspace";
       } else {
-        console.log("step done");
         step = "done";
         goto(base + "/");
       }

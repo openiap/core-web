@@ -61,7 +61,6 @@
                             param.value = payload.data[key];
                         }
                     });
-                    console.log("item", $state.snapshot(item.Parameters));
                     item = item;
                 } else {
                     loading = true;
@@ -218,7 +217,6 @@
                     workflowid: data.id,
                     data: payload,
                 };
-                console.log("payload", payload);
                 await auth.client.QueueMessage({
                     queuename: robot,
                     data: rpacommand,

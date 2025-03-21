@@ -1,4 +1,5 @@
 import { auth } from "$lib/stores/auth.svelte.js";
+import { toast } from "svelte-sonner";
 import type { Workspace } from "../workspace/schema.js";
 import type { PageLoad } from "./$types.js";
 export const load: PageLoad = async ({ parent, params }) => {
@@ -13,7 +14,8 @@ export const load: PageLoad = async ({ parent, params }) => {
       }
       workspace = await auth.client.FindOne<Workspace>({ collectionname: "users", query: { _type: "workspace" }, jwt: access_token });
     } else {
-      console.log("validate_user_form not set");
+      toast.error("validate_user_form not set");
+      console.error("validate_user_form not set");
     }
     return { form, workspace };
   } catch (error) {

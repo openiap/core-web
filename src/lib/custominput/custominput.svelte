@@ -12,8 +12,13 @@
 		placeholder = "Type here",
 		onchangefunction = null,
 		multiple = false,
+		ref = $bindable(null),
 		...props
 	} = $props();
+	export function focus() {
+		console.log("focus", ref);
+		ref.focus();
+	}
 
 	function getClass() {
 		let classes =
@@ -37,4 +42,5 @@
 	class={getClass()}
 	onchange={onchangefunction}
 	{multiple}
+	bind:ref={ref} 
 />
