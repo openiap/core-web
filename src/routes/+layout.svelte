@@ -240,6 +240,9 @@
 				// if(workspaces.length == 0) {
 				// 	return false;
 				// }
+				if(auth.profile.validated == null) {
+					return false;
+				}
 				return auth.profile.validated;
 			} else {
 				return true;

@@ -9,6 +9,7 @@ const { UserManager, WebStorageStateStore } = pkg;
 import ws from 'ws';
 import posthog from "posthog-js";
 import { ChevronsLeftRightEllipsisIcon, Cookie } from "lucide-svelte";
+import { goto } from "$app/navigation";
 class Config {
     webversion: string = "";
     webcommit: string = "";
@@ -249,8 +250,12 @@ class authState {
                         }
                         await this.reloadUser();
                     } catch (error:any) {
-                        console.error("Failed to signin", error.message);
-                        this.isAuthenticated = false;                        
+                        this.isAuthenticated = false;
+                        if(error.message.indexOf("not validated") > -1) {
+                            goto(base +  "/validate");
+                        } else {
+                            console.error("Failed to signin", error.message);
+                        }
                     }
                 }
                 await this.client.connect(true);
