@@ -83,10 +83,12 @@
               nameprompt = true;
               return;
             } else if (confirmprice == false) {
-              cancel();
-              loading = false;
-              GetNextInvoice();
-              return;
+              if(auth.config.stripe_api_key != null && auth.config.stripe_api_key != "") {
+                cancel();
+                loading = false;
+                GetNextInvoice();
+                return;
+              }
             }
 
           }

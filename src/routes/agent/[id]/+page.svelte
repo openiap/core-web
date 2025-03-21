@@ -183,11 +183,13 @@
               loading = false;
               nameprompt = true;
               return;
-            } else if (confirmprice == false) {
-              cancel();
-              loading = false;
-              GetNextInvoice();
-              return;
+            } else if (confirmprice == false && form.data._stripeprice != data.item._stripeprice) {
+              if(auth.config.stripe_api_key != null && auth.config.stripe_api_key != "") {
+                cancel();
+                loading = false;
+                GetNextInvoice();
+                return;
+              }
             }
           }
           const savethis = { ...form.data };
