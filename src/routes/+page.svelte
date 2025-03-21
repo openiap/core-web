@@ -232,11 +232,11 @@
       <div class="flex flex-col justify-between h-full">
         <div>
           <div class="mb-2 dark:text-bw50">
-            Get started with our vsc extension
+            Get started with our VSC extension
           </div>
           <div class="mb-5 dark:text-bw400">
             Our VS Code extension, makes it easier to get started by helping you
-            manage your .env files efficiently. Download extension here:
+            manage your .env files efficiently. Download the extension here:
           </div>
         </div>
         <div>

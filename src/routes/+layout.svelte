@@ -24,6 +24,7 @@
 		BatchLogRecordProcessor,
 	} from "@opentelemetry/sdk-logs";
 	import * as logsAPI from "@opentelemetry/api-logs";
+	import HeaderValidate from "./HeaderValidate.svelte";
 
 	let { children, data } = $props();
 	datacomponent.parsesettings(data.settings);
@@ -41,44 +42,48 @@
 			["ofid"]: auth.config.ofid,
 		});
 		const loggerProvider = new LoggerProvider({ resource });
-		loggerProvider.addLogRecordProcessor(new BatchLogRecordProcessor(logExporter));
+		loggerProvider.addLogRecordProcessor(
+			new BatchLogRecordProcessor(logExporter),
+		);
 		const logger = loggerProvider.getLogger("default", auth.config.version);
 
 		const originalConsole = {
 			log: console.log,
 			debug: console.debug,
 			warn: console.warn,
-			error: console.error
+			error: console.error,
 		};
 
 		/**
 		 * Get caller info (filename + line) by inspecting the stack.
-		 * This is simplified for Node. 
+		 * This is simplified for Node.
 		 */
 		function getCallerInfo(): { filename: string; line: number } {
 			try {
-			const error = new Error();
-			// Remove the first stack line ("Error") and this function's own frame
-			const lines = error.stack?.split("\n").slice(2) ?? [];
+				const error = new Error();
+				// Remove the first stack line ("Error") and this function's own frame
+				const lines = error.stack?.split("\n").slice(2) ?? [];
 
-			for (const line of lines) {
-				// Attempt to match "(filename.js:123:45)" or "at /path/filename.js:123:45"
-				const match = line.match(/\((.*):(\d+):\d+\)/) || line.match(/at (.*):(\d+):\d+/);
-				if (match) {
-				return {
-					filename: match[1]?.split("/").pop() ?? "unknown",
-					line: parseInt(match[2], 10)
-				};
+				for (const line of lines) {
+					// Attempt to match "(filename.js:123:45)" or "at /path/filename.js:123:45"
+					const match =
+						line.match(/\((.*):(\d+):\d+\)/) ||
+						line.match(/at (.*):(\d+):\d+/);
+					if (match) {
+						return {
+							filename: match[1]?.split("/").pop() ?? "unknown",
+							line: parseInt(match[2], 10),
+						};
+					}
 				}
-			}
 			} catch {
-			// Fall through
+				// Fall through
 			}
 			return { filename: "unknown", line: 0 };
 		}
 
 		/**
-		 * A helper to capture the stack, call the original console method, 
+		 * A helper to capture the stack, call the original console method,
 		 * then emit the log to OpenTelemetry.
 		 */
 		function logWithStackPreserved(
@@ -92,41 +97,62 @@
 
 			// Convert log arguments into a single message
 			const message = args
-			.map(arg => (typeof arg === "object" ? JSON.stringify(arg) : String(arg)))
-			.join(" ");
+				.map((arg) =>
+					typeof arg === "object" ? JSON.stringify(arg) : String(arg),
+				)
+				.join(" ");
 
-			let attributes:any = {
+			let attributes: any = {
 				filename: callerInfo.filename,
 				line: callerInfo.line,
 				// full_stack: new Error().stack
 			};
-			if(auth.profile != null && Object.keys(auth.profile).length > 0) {
+			if (auth.profile != null && Object.keys(auth.profile).length > 0) {
 				attributes.userid = $state.snapshot(auth.profile.sub);
 				attributes.email = $state.snapshot(auth.profile.email);
 			}
 			// Emit to OpenTelemetry
 			logger.emit({
-			severityNumber,
-			severityText,
-			body: message.trim(),
-			attributes: attributes
+				severityNumber,
+				severityText,
+				body: message.trim(),
+				attributes: attributes,
 			});
 		}
 
 		// Override console methods
 		console.log = (...args: unknown[]) =>
-			logWithStackPreserved(originalConsole.log, logsAPI.SeverityNumber.INFO, "INFO", ...args);
+			logWithStackPreserved(
+				originalConsole.log,
+				logsAPI.SeverityNumber.INFO,
+				"INFO",
+				...args,
+			);
 
 		console.debug = (...args: unknown[]) =>
-			logWithStackPreserved(originalConsole.debug, logsAPI.SeverityNumber.DEBUG, "DEBUG", ...args);
+			logWithStackPreserved(
+				originalConsole.debug,
+				logsAPI.SeverityNumber.DEBUG,
+				"DEBUG",
+				...args,
+			);
 
 		console.warn = (...args: unknown[]) =>
-			logWithStackPreserved(originalConsole.warn, logsAPI.SeverityNumber.WARN, "WARN", ...args);
+			logWithStackPreserved(
+				originalConsole.warn,
+				logsAPI.SeverityNumber.WARN,
+				"WARN",
+				...args,
+			);
 
 		console.error = (...args: unknown[]) =>
-			logWithStackPreserved(originalConsole.error, logsAPI.SeverityNumber.ERROR, "ERROR", ...args);
+			logWithStackPreserved(
+				originalConsole.error,
+				logsAPI.SeverityNumber.ERROR,
+				"ERROR",
+				...args,
+			);
 	}
-
 
 	if (auth.config != null) {
 		console.log(
@@ -236,7 +262,10 @@
 	}
 	const validated = $derived(() => {
 		if (auth.profile != null && Object.keys(auth.profile).length > 0) {
-			if(auth.config.validate_user_form != null && auth.config.validate_user_form  != "") {
+			if (
+				auth.config.validate_user_form != null &&
+				auth.config.validate_user_form != ""
+			) {
 				// if(workspaces.length == 0) {
 				// 	return false;
 				// }
@@ -246,13 +275,13 @@
 				return auth.profile.validated;
 			} else {
 				return true;
-			}			
+			}
 		}
 		return auth.isConnected;
 	});
 	function validatedCheck() {
-		if(browser && validated() == false && auth.isAuthenticated == true) {
-			if($page.url.pathname != base + "/validate") {
+		if (browser && validated() == false && auth.isAuthenticated == true) {
+			if ($page.url.pathname != base + "/validate") {
 				goto(base + "/validate");
 			}
 		}
@@ -262,7 +291,6 @@
 		auth.isAuthenticated;
 		validatedCheck();
 	});
-
 </script>
 
 <svelte:head>
@@ -299,6 +327,9 @@
 			</Sidebar.Inset>
 		</Sidebar.Provider>
 	</div>
+{:else if $page.url.pathname == base + "/validate"}
+	<HeaderValidate />
+	{@render children()}
 {:else}
 	{@render children()}
 {/if}
