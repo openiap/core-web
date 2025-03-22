@@ -231,7 +231,6 @@
                       let _entities = JSON.parse(msg.content);
                       total_count = entities.length;
                       entities = _entities;
-                      console.log("msg", msg);
                       if (msg.name == "GetCollections") {
                         entities = entities.map((e: any) => {
                           return { name: e };

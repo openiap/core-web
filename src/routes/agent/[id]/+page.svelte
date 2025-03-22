@@ -532,7 +532,6 @@
           jwt: auth.access_token,
         },
         (msg, payload, user, jwt) => {
-          console.log(payload.command, "msg", msg, "payload", payload);
           switch (payload.command) {
             case "runpackage":
               if (payload.completed != true) {
