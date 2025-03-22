@@ -3,11 +3,11 @@
 </script>
 
 <script lang="ts">
-  import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
   import { browser } from "$app/environment";
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import * as Accordion from "$lib/components/ui/accordion";
+  import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import * as Tabs from "$lib/components/ui/tabs/index.js";
@@ -23,7 +23,6 @@
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import Timezoneselector from "$lib/timezoneselector/timezoneselector.svelte";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
-  import { Resource, ResourceUsage, type Product } from "$lib/types.svelte.js";
   import { AnsiUp } from "ansi_up";
   import {
     Box,
@@ -35,7 +34,6 @@
     Info,
     Laptop,
     Play,
-    Podcast,
     RefreshCcw,
     Square,
     SquareActivity,
@@ -183,8 +181,14 @@
               loading = false;
               nameprompt = true;
               return;
-            } else if (confirmprice == false && form.data._stripeprice != data.item._stripeprice) {
-              if(auth.config.stripe_api_key != null && auth.config.stripe_api_key != "") {
+            } else if (
+              confirmprice == false &&
+              form.data._stripeprice != data.item._stripeprice
+            ) {
+              if (
+                auth.config.stripe_api_key != null &&
+                auth.config.stripe_api_key != ""
+              ) {
                 cancel();
                 loading = false;
                 GetNextInvoice();
@@ -557,9 +561,12 @@
               break;
 
             case "listprocesses":
-              let _processes:any[] = [];
-              openAccordion = payload.processes.length > 0 ? [payload.processes[0]?.id] : [""];
-              payload.processes.forEach((element:any) => {
+              let _processes: any[] = [];
+              openAccordion =
+                payload.processes.length > 0
+                  ? [payload.processes[0]?.id]
+                  : [""];
+              payload.processes.forEach((element: any) => {
                 if (firstListProcess) {
                   auth.client.QueueMessage(
                     {
@@ -576,12 +583,12 @@
                   );
                 }
                 let process = processes.find((p) => p.id == element.id);
-                if(process == null) {
+                if (process == null) {
                   _processes.push(element);
                 } else {
-                  if(element.output != null && element.output != "") {
+                  if (element.output != null && element.output != "") {
                     process.output = element.output;
-                  }                  
+                  }
                   _processes.push(process);
                 }
               });
@@ -768,104 +775,101 @@
 
   async function GetNextInvoice() {
     if (
-        confirmprice == false &&
-        auth.config.stripe_api_key != null &&
-        auth.config.stripe_api_key != ""
-      ) {
-        try {
-
-          let _workspaceid = usersettings.currentworkspace;
-          if (_workspaceid == null || _workspaceid == "") {
-            if (
-              usersettings.currentworkspace == null ||
-              usersettings.currentworkspace == ""
-            ) {
-              throw new Error("You must select a workspace first");
-            }
-            _workspaceid = usersettings.currentworkspace;
+      confirmprice == false &&
+      auth.config.stripe_api_key != null &&
+      auth.config.stripe_api_key != ""
+    ) {
+      try {
+        let _workspaceid = usersettings.currentworkspace;
+        if (_workspaceid == null || _workspaceid == "") {
+          if (
+            usersettings.currentworkspace == null ||
+            usersettings.currentworkspace == ""
+          ) {
+            throw new Error("You must select a workspace first");
           }
-          let currentworkspace = await auth.client.FindOne<any>({
-            collectionname: "users",
-            query: {
-              _type: "workspace",
-              _id: _workspaceid,
-            },
-            jwt: auth.access_token,
-          });
-          if (currentworkspace == null) {
-            throw new Error("Workspace not found");
-          }
-
-          var product = products.find(
-            (x: any) => x.stripeprice == $formData._stripeprice,
-          );
-          if(product == null) {
-            throw new Error("Product " + $formData._stripeprice + " not found");
-          }
-
-          confirmpricenextinvoice = JSON.parse(
-            await auth.client.CustomCommand({
-              command: "getnextinvoice",
-              id: currentworkspace._billingid,
-              data: JSON.stringify({
-                lookupkey: product.lookup_key,
-                stripeprice: product.stripeprice,
-                productname: product.name,
-                quantity: 1,
-              }),
-              jwt: auth.access_token,
-            }),
-          );
-          const period_start = new Date(
-            confirmpricenextinvoice.period_start * 1000,
-          );
-          const period_end = new Date(
-            confirmpricenextinvoice.period_end * 1000,
-          );
-          const monthNames = [
-            "January",
-            "February",
-            "March",
-            "April",
-            "May",
-            "June",
-            "July",
-            "August",
-            "September",
-            "October",
-            "November",
-            "December",
-          ];
-          confirmpriceperiod_start =
-            period_start.getDate() +
-            " " +
-            monthNames[period_start.getMonth()] +
-            " " +
-            period_start.getFullYear();
-          confirmpriceperiod_end =
-            period_end.getDate() +
-            " " +
-            monthNames[period_end.getMonth()] +
-            " " +
-            period_end.getFullYear();
-
-          if (confirmpricenextinvoice?.lines?.data != null) {
-            confirmpricenextinvoice.lines = confirmpricenextinvoice.lines.data;
-          }
-          loading = false;
-          confirmprice = true;
-          // svelte-ignore state_referenced_locally
-          return;
-        } catch (error:any) {
-          console.error(error);
-          toast.error("Error while getting next invoice", {
-            description: error.message,
-          });
-          confirmprice = false;
+          _workspaceid = usersettings.currentworkspace;
         }
-      } else {
+        let currentworkspace = await auth.client.FindOne<any>({
+          collectionname: "users",
+          query: {
+            _type: "workspace",
+            _id: _workspaceid,
+          },
+          jwt: auth.access_token,
+        });
+        if (currentworkspace == null) {
+          throw new Error("Workspace not found");
+        }
+
+        var product = products.find(
+          (x: any) => x.stripeprice == $formData._stripeprice,
+        );
+        if (product == null) {
+          throw new Error("Product " + $formData._stripeprice + " not found");
+        }
+
+        confirmpricenextinvoice = JSON.parse(
+          await auth.client.CustomCommand({
+            command: "getnextinvoice",
+            id: currentworkspace._billingid,
+            data: JSON.stringify({
+              lookupkey: product.lookup_key,
+              stripeprice: product.stripeprice,
+              productname: product.name,
+              quantity: 1,
+            }),
+            jwt: auth.access_token,
+          }),
+        );
+        const period_start = new Date(
+          confirmpricenextinvoice.period_start * 1000,
+        );
+        const period_end = new Date(confirmpricenextinvoice.period_end * 1000);
+        const monthNames = [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December",
+        ];
+        confirmpriceperiod_start =
+          period_start.getDate() +
+          " " +
+          monthNames[period_start.getMonth()] +
+          " " +
+          period_start.getFullYear();
+        confirmpriceperiod_end =
+          period_end.getDate() +
+          " " +
+          monthNames[period_end.getMonth()] +
+          " " +
+          period_end.getFullYear();
+
+        if (confirmpricenextinvoice?.lines?.data != null) {
+          confirmpricenextinvoice.lines = confirmpricenextinvoice.lines.data;
+        }
+        loading = false;
+        confirmprice = true;
+        // svelte-ignore state_referenced_locally
+        return;
+      } catch (error: any) {
+        console.error(error);
+        toast.error("Error while getting next invoice", {
+          description: error.message,
+        });
         confirmprice = false;
       }
+    } else {
+      confirmprice = false;
+    }
   }
 </script>
 

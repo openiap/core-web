@@ -4,7 +4,7 @@ import type { PageServerLoad } from "./$types.js";
 export const load: PageServerLoad = async ({ parent }) => {
   try {
     const { access_token, id } = await parent();
-    if(id == null || id == "") {
+    if (id == null || id == "") {
       goto("/chat");
       return { thread: null, messages: [] };
     }

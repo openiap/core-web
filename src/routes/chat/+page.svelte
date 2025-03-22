@@ -7,15 +7,15 @@
   import Entities from "$lib/entities/entities.svelte";
   import { ObjectInput } from "$lib/objectinput/index.js";
   import { auth } from "$lib/stores/auth.svelte";
-  import { tick } from "svelte";
   import {
-    ArrowRight,
-    ArrowUp,
-    CircleHelp,
-    History,
-    Info,
-    Maximize2,
+      ArrowRight,
+      ArrowUp,
+      CircleHelp,
+      History,
+      Info,
+      Maximize2,
   } from "lucide-svelte";
+  import { tick } from "svelte";
   import { toast } from "svelte-sonner";
 
   type message = {
@@ -43,8 +43,11 @@
   let mongoquery = $state({});
   let entities = $state([]);
   let total_count = $state(0);
+  // svelte-ignore non_reactive_update
   let ref: any;
+  // svelte-ignore non_reactive_update
   let msgLogEl: HTMLDivElement;
+  // svelte-ignore non_reactive_update
   let chatInput: any = null;
 
   let showChat: boolean = $state(true);
@@ -111,7 +114,7 @@
         msgLogEl.scroll(0, msgLogEl.scrollHeight + 50);
         // window.scrollTo({top: document.documentElement.scrollHeight, behavior: 'smooth'})
       }, 200);
-    } catch (error:any) {
+    } catch (error: any) {
       toast.error("Error initializing chat", {
         description: error.message,
       });
@@ -154,7 +157,7 @@
         jwt: auth.access_token,
       });
       chatmessage = "";
-    } catch (error:any) {
+    } catch (error: any) {
       toast.error("Error sending message", {
         description: error.message,
       });
@@ -248,7 +251,7 @@
                       }
                       await tick();
                       ref.AutoDetectColumns();
-                    } catch (error:any) {
+                    } catch (error: any) {
                       toast.error("Error sending message", {
                         description: error.message,
                       });
