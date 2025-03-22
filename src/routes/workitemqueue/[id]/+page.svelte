@@ -77,14 +77,24 @@
           if (!form.data.amqpqueue) {
             form.data.amqpqueue = form.data.name;
           }
-          await auth.client.UpdateOne({
-            collectionname: "mq",
-            item: form.data,
+          // await auth.client.UpdateOne({
+          //   collectionname: "mq",
+          //   item: form.data,
+          //   jwt: auth.access_token,
+          // });
+          let data:any = {...form.data};
+          delete data._created;
+          delete data._modified;
+          await auth.client.UpdateWorkItemQueue({
+            workitemqueue: data,
+            skiprole: false,
             jwt: auth.access_token,
           });
+          
           toast.success("Workitemqueue updated");
           goto(base + `/workitemqueue`);
         } catch (error: any) {
+          console.error(error); 
           toast.error("Error", {
             description: error.message,
           });
