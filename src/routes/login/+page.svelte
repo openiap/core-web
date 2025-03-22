@@ -64,6 +64,7 @@
             <div class="grid gap-2">
               <Label class="dark:text-bw100 font-normal" for="email">Email</Label>
               <CustomInput
+                autofocus
                 class="dark:bg-transparent"
                 width=""
                 id="username"
