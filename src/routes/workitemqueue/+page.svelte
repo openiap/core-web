@@ -71,8 +71,8 @@
       await auth.client.UpdateWorkitemQueue({
         workitemqueue: data,
         purge: true,
+        skiprole: false,
         jwt: auth.access_token,
-        skiprole: true,
       });
 
       toast.success("Data purged");

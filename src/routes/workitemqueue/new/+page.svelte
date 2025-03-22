@@ -14,6 +14,7 @@
   import { zod } from "sveltekit-superforms/adapters";
   import type { Workspace } from "../../workspace/schema.js";
   import { newFormSchema } from "../schema.js";
+  import { WorkItemQueue } from "@openiap/jsapi";
 
   let loading = $state(false);
   let agentdata = $state({});
@@ -79,11 +80,33 @@
             form.data.amqpqueue = form.data.name;
           }
 
-          await auth.client.InsertOne({
-            collectionname: "mq",
-            item: { ...form.data, _type: "workitemqueue" },
-            jwt: auth.access_token,
-          });
+          if (form.data._workspaceid != null && form.data._workspaceid != "") {
+            const newitem = await auth.client.InsertOne<WorkItemQueue>({
+              collectionname: "mq",
+              item: { ...form.data, _type: "workitemqueue" },
+              jwt: auth.access_token,
+            });
+            if (newitem != null) {
+              delete newitem._created;
+              delete newitem._modified;
+              console.log("UpdateWorkItemQueue", newitem);
+              await auth.client.UpdateWorkItemQueue({
+                workitemqueue: newitem,
+                jwt: auth.access_token,
+                skiprole: false,
+              });
+            }
+          } else {
+            let data = JSON.parse(JSON.stringify(form.data));
+            data._type = "workitemqueue";
+            data._created = new Date(data._created);
+            data._modified = new Date(data._modified);
+            await auth.client.AddWorkItemQueue({
+              workitemqueue: data,
+              jwt: auth.access_token,
+            });
+          }
+
           toast.success("Workitemqueue added");
           goto(base + `/workitemqueue`);
         } catch (error: any) {
@@ -94,8 +117,10 @@
           loading = false;
         }
       } else {
-        let errors = Object.keys(form.errors).map((key) => key + " is " + (form.errors as any)[key]);
-        if(errors.length > 0) {
+        let errors = Object.keys(form.errors).map(
+          (key) => key + " is " + (form.errors as any)[key],
+        );
+        if (errors.length > 0) {
           toast.error("Error", {
             description: errors.join(", "),
           });
@@ -122,6 +147,7 @@
       {#snippet children({ props })}
         <Form.Label>Name</Form.Label>
         <CustomInput
+          autofocus
           placeholder="Type name"
           disabled={loading}
           {...props}
