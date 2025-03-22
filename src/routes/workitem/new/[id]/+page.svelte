@@ -25,6 +25,13 @@
     validators: zod(newFormSchema),
     SPA: true,
     onUpdate: async ({ form, cancel }) => {
+      if(form.data.wiqid == "" || form.data.wiqid == null) {
+        toast.error("Error", {
+          description: "Please select a queue first",
+        });
+        cancel();
+        return;
+      }
       if (form.valid) {
         loading = true;
         try {
