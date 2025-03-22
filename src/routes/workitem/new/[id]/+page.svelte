@@ -114,6 +114,7 @@
       {#snippet children({ props })}
         <Form.Label>Name</Form.Label>
         <CustomInput
+          autofocus
           placeholder="Type name"
           disabled={loading}
           {...props}

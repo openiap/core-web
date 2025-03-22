@@ -18,6 +18,7 @@
 	import {
 		Check,
 		CircleX,
+		CloudLightning,
 		Columns4,
 		MoveLeft,
 		MoveRight,
@@ -47,14 +48,18 @@
 		EnsureDefaultHeaders(page);
 		detectColumns();
 		SetHeaders();
-		if(entities.length > 0) {
+		if (entities.length > 0) {
 			let hasData = false;
 			tableheaders.forEach((header) => {
-				if(header.field != "_id" &&  header.show && entities.some((entity) => entity[header.field] != null)) {
+				if (
+					header.field != "_id" &&
+					header.show &&
+					entities.some((entity) => entity[header.field] != null)
+				) {
 					hasData = true;
 				}
 			});
-			if(!hasData) {
+			if (!hasData) {
 				tableheaders = [];
 				detectColumns();
 				tableheaders.forEach((header) => {
@@ -108,6 +113,9 @@
 		single_item_click = (item: any) => {},
 		multi_select = true,
 		show_delete = true,
+		custom_multi_action_label = "",
+		custom_multi_action = async (ids: string[]) => {
+		},
 		...rest
 	} = $props();
 
@@ -154,7 +162,7 @@
 			const id = $componentpage?.params?.id;
 			const page = $componentpage?.url?.pathname;
 			console.log("page", page, "collectionname", collectionname);
-			if(collectionname == "customcommand") {
+			if (collectionname == "customcommand") {
 				return;
 			}
 			const { entities: entitiesdata, total_count: totalcount } =
@@ -527,14 +535,21 @@
 			return parseInt((secondsPast / 60).toString()) + "m";
 		}
 		if (secondsPast <= 86400) {
-			return parseInt((secondsPast / 3600).toString()) + "h" + " " + parseInt(
-				(secondsPast % 3600 / 60).toString(),
-			) + "m";
+			return (
+				parseInt((secondsPast / 3600).toString()) +
+				"h" +
+				" " +
+				parseInt(((secondsPast % 3600) / 60).toString()) +
+				"m"
+			);
 		}
 		if (secondsPast > 86400) {
 			let day = timeStamp.getDate();
 			// @ts-ignore
-			let month = timeStamp?.toDateString().match(/ [a-zA-Z]*/)[0].replace(" ", "");
+			let month = timeStamp
+				?.toDateString()
+				.match(/ [a-zA-Z]*/)[0]
+				.replace(" ", "");
 			let year =
 				timeStamp.getFullYear() == now.getFullYear()
 					? ""
@@ -677,9 +692,15 @@
 											</Table.Cell>
 										{:else if head.field == "_created" || head.field == "_modified" || head.field == "lastrun" || head.field == "metadata._created" || head.field == "metadata._modified" || head.field == "dt" || head.field == "ts"}
 											<Table.Cell class={head.cellclass}>
-												{#if RenderItemData(item,head.field) != null}
-													{_timeSince(new Date(RenderItemData(item,head.field)
-													))}
+												{#if RenderItemData(item, head.field) != null}
+													{_timeSince(
+														new Date(
+															RenderItemData(
+																item,
+																head.field,
+															),
+														),
+													)}
 												{:else}
 													""
 												{/if}
@@ -757,18 +778,34 @@
 		<div
 			class="grid grid-cols-1 gap-4 lg:gap-0 md:grid-cols-2 md:space-y-0 lg:flex mt-4 lg:space-x-5 items-center mb-2"
 		>
-			{#if multi_select && show_delete == true}
-				<HotkeyButton
-					aria-label={`Delete ${selected_items.length} Items`}
-					disabled={loading || selected_items.length === 0}
-					onclick={() => (showWarning = true)}
-					data-shortcut="del"
-					size="base"
-					variant="danger"
-				>
-					<Trash2 />
-					Delete {selected_items.length} Items</HotkeyButton
-				>
+			{#if multi_select}
+				{#if custom_multi_action_label}
+					<HotkeyButton
+						aria-label={`${custom_multi_action_label} ${selected_items.length} Items`}
+						disabled={loading || selected_items.length === 0}
+						onclick={() => {
+							custom_multi_action(selected_items.map((x) => x._id));
+						}}
+						size="base"
+						variant="base"
+					>
+						<CloudLightning />
+						{custom_multi_action_label} {selected_items.length} Items</HotkeyButton
+					>
+				{/if}
+				{#if show_delete == true}
+					<HotkeyButton
+						aria-label={`Delete ${selected_items.length} Items`}
+						disabled={loading || selected_items.length === 0}
+						onclick={() => (showWarning = true)}
+						data-shortcut="del"
+						size="base"
+						variant="danger"
+					>
+						<Trash2 />
+						Delete {selected_items.length} Items</HotkeyButton
+					>
+				{/if}
 				<Hotkeybutton
 					aria-label="Clear All Selections"
 					disabled={loading || selected_items.length === 0}
@@ -780,6 +817,7 @@
 					Clear All Selections</Hotkeybutton
 				>
 			{/if}
+
 			<Hotkeybutton
 				aria-label="Customise Table"
 				variant="base"
