@@ -262,8 +262,7 @@
         <div>
           <div class="mb-2 dark:text-bw50">Download OpenRPA</div>
           <div class="mb-5 dark:text-bw400">
-            For the best workflow experience and easy work item creation,
-            download OpenRPA:
+            If you are looking for a free and open source Robotic Process Automation tool, we also maintain OpenRPA that you can easily manage from OpenCore:
           </div>
         </div>
         <div>

@@ -82,7 +82,7 @@
                   </a> -->
               </div>
               <CustomInput
-                placeholder="********"
+                placeholder=""
                 class="dark:bg-transparent"
                 width=""
                 id="password"
