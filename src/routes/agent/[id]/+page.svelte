@@ -532,9 +532,18 @@
           jwt: auth.access_token,
         },
         (msg, payload, user, jwt) => {
+          console.log(payload.command, "msg", msg, "payload", payload);
           switch (payload.command) {
             case "runpackage":
               if (payload.completed != true) {
+                let process = processes.find((p) => p.id == msg.correlationId);
+                if (process != null) return;
+                processes.push({
+                  id: msg.correlationId,
+                  output: "no output",
+                  name: payload.name,
+                });
+
                 break;
               }
             case "completed":
@@ -549,9 +558,9 @@
               break;
 
             case "listprocesses":
-              processes = payload.processes;
-              openAccordion = processes.length > 0 ? [processes[0]?.id] : [""];
-              processes.forEach((element) => {
+              let _processes:any[] = [];
+              openAccordion = payload.processes.length > 0 ? [payload.processes[0]?.id] : [""];
+              payload.processes.forEach((element:any) => {
                 if (firstListProcess) {
                   auth.client.QueueMessage(
                     {
@@ -567,9 +576,18 @@
                     false,
                   );
                 }
-                // element.output = "";
+                let process = processes.find((p) => p.id == element.id);
+                if(process == null) {
+                  _processes.push(element);
+                } else {
+                  if(element.output != null && element.output != "") {
+                    process.output = element.output;
+                  }                  
+                  _processes.push(process);
+                }
               });
               firstListProcess = false;
+              processes = _processes;
 
               break;
             case "stream":
@@ -1672,14 +1690,15 @@
                   id={"process" + process.id}
                   disabled={loading}
                   onclick={() => {
-                    deleteData = process;
-                    showWarning = true;
+                    // deleteData = process;
+                    // showWarning = true;
+                    killpackage(process.id);
                   }}
                   variant="danger">Kill process</HotkeyButton
                 >
                 <br />
                 {@html ansi
-                  .ansi_to_html(process.output)
+                  .ansi_to_html(process.output ? process.output : "No output")
                   .split("\n")
                   .join("<br>")}
               </Accordion.Content>
