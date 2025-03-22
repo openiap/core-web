@@ -111,8 +111,10 @@
         msgLogEl.scroll(0, msgLogEl.scrollHeight + 50);
         // window.scrollTo({top: document.documentElement.scrollHeight, behavior: 'smooth'})
       }, 200);
-    } catch (error) {
-      console.error("error", error);
+    } catch (error:any) {
+      toast.error("Error initializing chat", {
+        description: error.message,
+      });
     }
   }
   if (browser) init();
@@ -152,8 +154,10 @@
         jwt: auth.access_token,
       });
       chatmessage = "";
-    } catch (error) {
-      console.error(error);
+    } catch (error:any) {
+      toast.error("Error sending message", {
+        description: error.message,
+      });
     }
   }
   $effect(() => {
@@ -243,9 +247,12 @@
                       } else {
                         console.debug("msg", msg);
                       }
+                      await tick();
                       ref.AutoDetectColumns();
-                    } catch (error) {
-                      console.error(error);
+                    } catch (error:any) {
+                      toast.error("Error sending message", {
+                        description: error.message,
+                      });
                     }
                   }}
                 >
