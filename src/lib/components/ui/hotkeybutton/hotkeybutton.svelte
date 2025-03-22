@@ -33,6 +33,7 @@
 				tab: "text-foreground",
 				deleteentity:
 					"shadow-light dark:shadow-dark border border-bw300 hover:border-bw400 dark:border-bw700 dark:hover:border-bw400 bg-bw50 dark:bg-bw850 hover:bg-lightbgred dark:hover:bg-darkbghoverred text-bw950 dark:text-bw100",
+				sendchat:"shadow-light dark:shadow-dark border bg-lightbggreen hover:bg-lighthovergreen dark:border-bw100 dark:text-bw850 dark:bg-bw100 dark:hover:bg-bw300 dark:hover:border-hidden",
 			},
 			size: {
 				base: "h-8 px-2.5 py-1.5 rounded-[10px]",
@@ -43,6 +44,7 @@
 				refresh: "h-5 p-1 rounded-[10px]",
 				entity: "h-8 px-2.5 py-1.5",
 				ghost: "",
+				sendchat: "rounded-full h-8 w-8 p-2",
 			},
 		},
 		defaultVariants: {

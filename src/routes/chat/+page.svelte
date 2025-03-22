@@ -1,23 +1,22 @@
 <script lang="ts">
-    import { browser } from "$app/environment";
-    import { goto } from "$app/navigation";
-    import { base } from "$app/paths";
+  import { browser } from "$app/environment";
+  import { goto } from "$app/navigation";
+  import { base } from "$app/paths";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
   import { CustomInput } from "$lib/custominput";
   import Entities from "$lib/entities/entities.svelte";
   import { ObjectInput } from "$lib/objectinput/index.js";
   import { auth } from "$lib/stores/auth.svelte";
-    import { tick } from "svelte";
-  import { string } from "zod";
-
-  let { data } = $props();
-  let queuename = $state("");
-  let chatmessage = $state("");
-  let llmmodel = $state("openai/gpt-3.5-turbo-1106");
-  let threadid = $state(data.id);
-  let mongoquery = $state({});
-  let entities = $state([]);
-  let total_count = $state(0);
+  import { tick } from "svelte";
+  import {
+    ArrowRight,
+    ArrowUp,
+    CircleHelp,
+    History,
+    Info,
+    Maximize2,
+  } from "lucide-svelte";
+  import { toast } from "svelte-sonner";
 
   type message = {
     name: string;
@@ -32,11 +31,25 @@
     parameters: any[];
     correlationId: string;
     robotid: string;
+    query: string;
   };
-  let messages: message[] = $state([]);
+
+  let { data } = $props();
+  let queuename = $state("");
+  let chatmessage = $state("");
+  let llmmodel = $state("openai/gpt-3.5-turbo-1106");
+  let threadid = $state(data.id);
+  let messages: message[] = $state(data.messages);
+  let mongoquery = $state({});
+  let entities = $state([]);
+  let total_count = $state(0);
   let ref: any;
   let msgLogEl: HTMLDivElement;
   let chatInput: any = null;
+
+  let showChat: boolean = $state(true);
+  let showQuery: boolean = $state(true);
+  let showTable: boolean = $state(true);
 
   async function init() {
     try {
@@ -82,135 +95,299 @@
             messages.push(payload.message);
             messages = messages.sort((a, b) => a.index - b.index);
           }
-          if(msgLogEl != null) {
+          if (msgLogEl != null) {
             await tick();
-            msgLogEl.scroll(0,msgLogEl.scrollHeight+50);
+            msgLogEl.scroll(0, msgLogEl.scrollHeight + 50);
             setTimeout(() => {
-              msgLogEl.scroll(0,msgLogEl.scrollHeight+50);
+              msgLogEl.scroll(0, msgLogEl.scrollHeight + 50);
               // window.scrollTo({top: document.documentElement.scrollHeight, behavior: 'smooth'})
-            }, 200)
+            }, 200);
           }
         },
       );
       await tick();
-      msgLogEl.scroll(0,msgLogEl.scrollHeight+50);
+      msgLogEl.scroll(0, msgLogEl.scrollHeight + 50);
       setTimeout(() => {
-        msgLogEl.scroll(0,msgLogEl.scrollHeight+50);
+        msgLogEl.scroll(0, msgLogEl.scrollHeight + 50);
         // window.scrollTo({top: document.documentElement.scrollHeight, behavior: 'smooth'})
-        }, 200)
-
+      }, 200);
     } catch (error) {
       console.error("error", error);
     }
   }
-  if(browser) init();
+  if (browser) init();
+
+  const starterQuestions = [
+    "Find the email of user named macuser",
+    "What are the last 20 audit entries ?",
+    "list the number of audit entries, grouped by month",
+    "get then top 20 OpenRPA workflows grouped by created user",
+    "What is the top 10 most run openrpa workflow grouped by name?",
+    // "What is the top 10 most run openrpa workflow grouped by name, and then write a short story about OpenRPA the happy robot",
+  ];
+
+  function renderIcon() {
+    if (entities.length == 0) return false;
+    else return true;
+  }
 </script>
 
-<div bind:this={msgLogEl} class="h-[calc(100vh-4rem)] overflow-y-auto min-h-80">
-{#each messages as msg}
-  <div class="mb-4">
-    {#if msg.role == "assistant"}
-      <div class="font-bold">Assistant</div>
-      <div>{msg.content}</div>
-    {:else if msg.role == "user"}
-      <div class="font-bold">User</div>
-      <div>{msg.content}</div>
-    {:else if msg.role == "tool"}
-      <div class="font-bold">Tool</div>
+<div class="mb-6">
+  {#if renderIcon()}
+    <div class="flex items-center space-x-3 mb-3">
       <HotkeyButton
-        class="mb-4"
-        aria-label={msg.name}
-        type="submit"
-        onclick={async () => {
-          try {
-            if (msg.name == "RunOpenRPAWorkflow") {
-              const rpacommand = {
-                command: "invoke",
-                workflowid: msg.workflowid,
-                data: msg.parameters,
-              };
-              await auth.client.QueueMessage({
-                correlationId: msg.correlationId,
-                data: rpacommand,
-                queuename: msg.robotid,
-                replyto: queuename,
-                jwt: auth.access_token,
-              });
-
-              return;
-            }
-            let _entities = JSON.parse(msg.content);
-            total_count = entities.length;
-            entities = _entities;
-            if (msg.MongoQuery != null) {
-              mongoquery = JSON.parse(msg.MongoQuery);
-            } else if (msg.MongoAggregate != null) {
-              mongoquery = JSON.parse(msg.MongoAggregate);
-            } else if (msg.pipeline != null) {
-              mongoquery = msg.pipeline;
-            } else {
-              console.debug("msg", msg);
-            }
-            ref.AutoDetectColumns();
-          } catch (error) {
-            console.error(error);
-          }
-        }}>{msg.name}</HotkeyButton
+        class="bg-bw600 p-1 rounded-[5px]"
+        variant="ghostfull"
+        size="ghost"
+        onclick={() => (showChat = !showChat)}
       >
-      <pre id={msg.correlationId}></pre>
+        <Maximize2 class="h-4 w-4 text-bw100" />
+      </HotkeyButton>
+      <p>Chat</p>
+    </div>
+  {/if}
+  {#if showChat == true}
+    <div
+      bind:this={msgLogEl}
+      class=" overflow-y-auto min-h-80 dark:bg-bw850 border rounded-[10px] dark:border-bw600 mb-4"
+    >
+      {#if messages.length == 0}
+        <div
+          class="mb-4 dark:bg-[#52565B] m-2 p-2 rounded-[10px] flex items-center space-x-5 max-w-[calc(100%-10rem)]"
+        >
+          <div class="ms-3">
+            <Info class="h-3 w-3" />
+          </div>
+          <p>
+            Ask about data within OpenCore or trigger OpenRPA workflows for
+            connected robots. Use the buttons below for example conversation
+            starters. If the robot doesn’t respond correctly, try resetting the
+            conversation with the reset button and ask again.
+          </p>
+        </div>
+      {/if}
+      {#each messages as msg}
+        {#if msg.role == "tool"}
+          <div class="mb-4 chat-container p-2.5">
+            <div class={`justify-start`}>
+              <div
+                class={"p-3 rounded-[10px] max-w-[75%] bg-[#373A3F] text-bw100 rounded-bl-none " +
+                  msg.role}
+              >
+                <HotkeyButton
+                  aria-label={msg.name}
+                  type="submit"
+                  onclick={async () => {
+                    try {
+                      if (msg.name == "RunOpenRPAWorkflow") {
+                        const rpacommand = {
+                          command: "invoke",
+                          workflowid: msg.workflowid,
+                          data: msg.parameters,
+                        };
+                        await auth.client.QueueMessage({
+                          correlationId: msg.correlationId,
+                          data: rpacommand,
+                          queuename: msg.robotid,
+                          replyto: queuename,
+                          jwt: auth.access_token,
+                        });
+
+                        return;
+                      }
+                      let _entities = JSON.parse(msg.content);
+                      total_count = entities.length;
+                      entities = _entities;
+                      console.log("msg", msg);
+                      if (msg.name == "GetCollections") {
+                        entities = entities.map((e: any) => {
+                          return { name: e };
+                        }) as any;
+                      } else if (msg.MongoQuery != null) {
+                        mongoquery = JSON.parse(msg.MongoQuery);
+                      } else if (msg.MongoAggregate != null) {
+                        mongoquery = JSON.parse(msg.MongoAggregate);
+                      } else if (msg.pipeline != null) {
+                        mongoquery = msg.pipeline;
+                      } else if (msg.query != null) {
+                        mongoquery = msg.query;
+                      } else {
+                        console.debug("msg", msg);
+                      }
+                      ref.AutoDetectColumns();
+                    } catch (error) {
+                      console.error(error);
+                    }
+                  }}
+                >
+                  <ArrowRight />
+                  {msg.name}</HotkeyButton
+                >
+                <pre id={msg.correlationId}></pre>
+              </div>
+            </div>
+          </div>
+        {:else if msg.content != null && msg.content != ""}
+          <div class="mb-4 chat-container p-2.5">
+            <div
+              class={` ${msg.role === "user" ? "flex justify-end" : "justify-start"}`}
+            >
+              <div
+                class={`p-3 rounded-[10px] max-w-[75%] ${msg.role} ${
+                  msg.role === "user"
+                    ? "bg-[#52565B] text-bw100 rounded-br-none"
+                    : "bg-[#373A3F] text-bw100 rounded-bl-none"
+                }`}
+              >
+                {msg.content}
+              </div>
+            </div>
+          </div>
+        {/if}
+      {/each}
+    </div>
+    <div class="flex justify-center">
+      <form
+        class="flex flex-col items-center space-x-2 mb-4 p-5 border rounded-[10px] dark:boder-bw600 dark:bg-bw900 w-[700px]"
+      >
+        <CustomInput
+          bind:value={chatmessage}
+          bind:this={chatInput}
+          placeholder="Chat with OpenCore about your data or tell it to do something with your data "
+          width="w-full"
+          class="mb-4 dark:border-hidden dark:bg-bw900"
+        />
+        <div class="flex w-full items-center justify-between space-x-2">
+          <div class="flex space-x-5">
+            <HotkeyButton
+              class="dark:text-bw400"
+              aria-label="Old chat threads"
+              type="button"
+              onclick={async () => {
+                goto(base + "/chat/hist");
+              }}
+            >
+              <History />
+              Restart</HotkeyButton
+            >
+            <HotkeyButton
+              class="dark:text-bw400"
+              aria-label="Old chat threads"
+              type="button"
+              onclick={async () => {
+                goto(base + "/chat/hist");
+              }}
+            >
+              <History />
+              History</HotkeyButton
+            >
+          </div>
+          <HotkeyButton
+            class=""
+            variant="sendchat"
+            size="sendchat"
+            aria-label="Send"
+            type="submit"
+            onclick={async () => {
+              if (chatmessage == "")
+                return toast.error("Please enter a message");
+              var payload = {
+                func: "chat",
+                model: $state.snapshot(llmmodel),
+                // model: "ollama/mistral",
+                // model: "ollama/functionary",
+                message: $state.snapshot(chatmessage),
+                threadid: $state.snapshot(threadid),
+                // json: true,
+              };
+              try {
+                setTimeout(() => {
+                  chatInput.focus();
+                }, 100);
+                chatInput.focus();
+                const result: any = await auth.client.QueueMessage({
+                  queuename: auth.config.llmchat_queue,
+                  replyto: $state.snapshot(queuename),
+                  data: payload,
+                  jwt: auth.access_token,
+                });
+                chatmessage = "";
+              } catch (error) {
+                console.error(error);
+              }
+            }}><ArrowUp /></HotkeyButton
+          >
+        </div>
+      </form>
+    </div>
+  {/if}
+</div>
+
+{#if messages.length == 0}
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-2 mb-2">
+    {#each starterQuestions as question}
+      <div class="mb-2">
+        <HotkeyButton
+          class="dark:text-bw400"
+          aria-label="Old chat threads"
+          type="button"
+          onclick={async () => {
+            chatmessage = question;
+            chatInput.focus();
+          }}
+        >
+          <CircleHelp class="h-4 w-4" />
+          {question}
+        </HotkeyButton>
+      </div>
+    {/each}
+  </div>
+{/if}
+
+{#if entities.length > 0}
+  <div class="mb-6">
+    <div class="flex items-center space-x-3 mb-3">
+      <HotkeyButton
+        class="bg-bw600 p-1 rounded-[5px]"
+        variant="ghostfull"
+        size="ghost"
+        onclick={() => (showQuery = !showQuery)}
+      >
+        <Maximize2 class="h-4 w-4 text-bw100" />
+      </HotkeyButton>
+      <p>MongoQuery / Workflow</p>
+    </div>
+    {#if showQuery}
+      <ObjectInput
+        bind:value={mongoquery}
+        label="Mongo query or pipeline"
+        height="h-14"
+        classname="mb-4"
+      />
     {/if}
   </div>
-{/each}
-</div>
-<form class="flex items-center space-x-2 mb-4">
-  
-  <CustomInput bind:value={chatmessage} bind:this={chatInput} label="Chat message" />
-  <HotkeyButton
-    class=""
-    aria-label="Send"
-    type="submit"
-    onclick={async () => {
-      var payload = {
-        func: "chat",
-        model: $state.snapshot(llmmodel),
-        // model: "ollama/mistral",
-        // model: "ollama/functionary",
-        message: $state.snapshot(chatmessage),
-        threadid: $state.snapshot(threadid),
-        // json: true,
-      };
-      try {
-        setTimeout(() => {
-          chatInput.focus();
-        }, 100);
-        chatInput.focus();
-        const result: any = await auth.client.QueueMessage({
-          queuename: auth.config.llmchat_queue,
-          replyto: $state.snapshot(queuename),
-          data: payload,
-          jwt: auth.access_token,
-        });
-        chatmessage = "";        
-      } catch (error) {
-        console.error(error);
-      }
-    }}>Send</HotkeyButton
-  >
-  <HotkeyButton
-  class=""
-  aria-label="Old chat threads"
-  type="button"
-  onclick={async () => {
-    goto(base + "/chat/hist");
-  }}>Old chat threads</HotkeyButton
->
-</form>
-<ObjectInput bind:value={mongoquery} label="Mongo query or pipeline" height="h-14" />
-<Entities
-  bind:entities
-  collectionname="customcommand"
-  multi_select={false}
-  show_delete={false}
-  {total_count}
-  bind:this={ref}
-/>
+
+  <div>
+    <div class="flex items-center space-x-3 mb-3">
+      <HotkeyButton
+        class="bg-bw600 p-1 rounded-[5px]"
+        variant="ghostfull"
+        size="ghost"
+        onclick={() => (showTable = !showTable)}
+      >
+        <Maximize2 class="h-4 w-4 text-bw100" />
+      </HotkeyButton>
+      <p>Data</p>
+    </div>
+    {#if showTable}
+      <Entities
+        bind:entities
+        collectionname="customcommand"
+        multi_select={false}
+        show_delete={false}
+        {total_count}
+        bind:this={ref}
+      />
+    {/if}
+  </div>
+{/if}
