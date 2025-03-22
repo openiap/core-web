@@ -130,6 +130,35 @@
     if (entities.length == 0) return false;
     else return true;
   }
+  async function sendChat() {
+    var payload = {
+      func: "chat",
+      model: $state.snapshot(llmmodel),
+      // model: "ollama/mistral",
+      // model: "ollama/functionary",
+      message: $state.snapshot(chatmessage),
+      threadid: $state.snapshot(threadid),
+      // json: true,
+    };
+    try {
+      setTimeout(() => {
+        chatInput.focus();
+      }, 100);
+      chatInput.focus();
+      const result: any = await auth.client.QueueMessage({
+        queuename: auth.config.llmchat_queue,
+        replyto: $state.snapshot(queuename),
+        data: payload,
+        jwt: auth.access_token,
+      });
+      chatmessage = "";
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  $effect(() => {
+    chatInput.focus();
+  });
 </script>
 
 <div class="mb-6">
@@ -291,30 +320,7 @@
             onclick={async () => {
               if (chatmessage == "")
                 return toast.error("Please enter a message");
-              var payload = {
-                func: "chat",
-                model: $state.snapshot(llmmodel),
-                // model: "ollama/mistral",
-                // model: "ollama/functionary",
-                message: $state.snapshot(chatmessage),
-                threadid: $state.snapshot(threadid),
-                // json: true,
-              };
-              try {
-                setTimeout(() => {
-                  chatInput.focus();
-                }, 100);
-                chatInput.focus();
-                const result: any = await auth.client.QueueMessage({
-                  queuename: auth.config.llmchat_queue,
-                  replyto: $state.snapshot(queuename),
-                  data: payload,
-                  jwt: auth.access_token,
-                });
-                chatmessage = "";
-              } catch (error) {
-                console.error(error);
-              }
+              await sendChat();
             }}><ArrowUp /></HotkeyButton
           >
         </div>
@@ -333,7 +339,7 @@
           type="button"
           onclick={async () => {
             chatmessage = question;
-            chatInput.focus();
+            sendChat();
           }}
         >
           <CircleHelp class="h-4 w-4" />
