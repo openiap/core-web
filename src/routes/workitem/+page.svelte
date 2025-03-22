@@ -19,6 +19,7 @@
   import {
     Box,
     Check,
+    CloudLightning,
     Filter,
     HandHelping,
     Pencil,
@@ -45,21 +46,6 @@
   let filter = $state(false);
   let filterby: "all" | "new" | "successful" | "failed" | "processing" = "all";
 
-  async function deleteitem(item: any) {
-    const deletecount = await auth.client.DeleteOne({
-      id: item._id,
-      collectionname: "workitems",
-      jwt: auth.access_token,
-    });
-    if (deletecount == 1) {
-      selected_items = selected_items.filter((i) => i !== item._id);
-      ref.reload();
-    } else {
-      toast.error("Error while deleting", {
-        description: "Error while deleting",
-      });
-    }
-  }
   function single_item_click(item: any) {
     goto(base + `/workitem/edit/${item._id}`);
   }
@@ -103,6 +89,54 @@
       await GetData();
     }
   }
+  async function deleteitem(item: any) {
+    await auth.client.DeleteWorkitem({
+      _id: item._id,
+      jwt: auth.access_token,
+    });
+  }
+  async function delete_selected(ids: string[]) {
+    try {
+      for (let i = 0; i < selected_items.length; i++) {
+        await deleteitem(entities.find((entity: any) => entity._id == selected_items[i]));
+      }
+      selected_items = [];
+				toast.success("Deleted " + ids.length + " items successfully", {
+					description: "",
+				});
+      GetData();
+      datacomponent.persist();
+    } catch (error: any) {
+      toast.error("Error while deleting", {
+        description: error.message,
+      });
+    }
+  }
+  async function requeueitem(item: any) {
+    let workitem = { ...item, state: "retry" };
+    delete workitem.nextrun;
+    delete workitem.lastrun;
+    await auth.client.UpdateWorkitem({
+      workitem,
+      ignoremaxretries: true,
+      jwt: auth.access_token,
+    });
+  }
+
+  async function custom_multi_action(ids: string[]) {
+    try {
+      for (let i = 0; i < selected_items.length; i++) {
+        await requeueitem(entities.find((entity: any) => entity._id == selected_items[i]));
+      }
+      toast.success("successfully requeued " + selected_items.length + " items");
+      GetData();
+    } catch (error: any) {
+      toast.error("Error while requeuing", {
+        description: error.message,
+      });
+    }
+  }
+
 </script>
 
 <div class="lg:flex lg:justify-between mb-2 md:mb-4">
@@ -261,6 +295,9 @@
   bind:searchstring
   {single_item_click}
   total_count={data.total_count}
+  custom_multi_action_label="Requeue"
+  {delete_selected}
+  {custom_multi_action}
   bind:selected_items
   bind:entities
   bind:this={ref}
@@ -293,6 +330,25 @@
   {/snippet}
   {#snippet action(item: any)}
     <div class="flex items-center justify-end space-x-2">
+      <HotkeyButton
+        aria-label="Requeue"
+        disabled={loading}
+        onclick={async () => {
+          try {
+            await requeueitem(item);
+            toast.success("successfully requeued item");
+            GetData();
+          } catch (error: any) {
+            toast.error("Error while requeuing", {
+              description: error.message,
+            });
+          }
+          }}
+        size="tableicon"
+        variant="icon"
+      >
+        <CloudLightning />
+      </HotkeyButton>
       <HotkeyButton
         aria-label="Edit"
         disabled={loading}

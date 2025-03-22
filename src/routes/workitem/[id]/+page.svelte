@@ -100,6 +100,12 @@
       for (let i = 0; i < selected_items.length; i++) {
         await deleteitem(entities.find((entity: any) => entity._id == selected_items[i]));
       }
+      selected_items = [];
+				toast.success("Deleted " + ids.length + " items successfully", {
+					description: "",
+				});
+      GetData();
+      datacomponent.persist();
     } catch (error: any) {
       toast.error("Error while deleting", {
         description: error.message,
@@ -123,6 +129,7 @@
         await requeueitem(entities.find((entity: any) => entity._id == selected_items[i]));
       }
       toast.success("successfully requeued " + selected_items.length + " items");      
+      GetData();
     } catch (error: any) {
       toast.error("Error while requeuing", {
         description: error.message,
@@ -333,6 +340,7 @@
           try {
             await requeueitem(item);
             toast.success("successfully requeued item");
+            GetData();
           } catch (error: any) {
             toast.error("Error while requeuing", {
               description: error.message,
