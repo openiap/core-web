@@ -201,6 +201,7 @@
           delete savethis._billingid;
           delete savethis._resourceusageid;
           delete savethis._productname;
+          savethis.schedules = $state.snapshot(schedules);
           await auth.client.UpdateOne({
             collectionname,
             item: savethis,
@@ -288,6 +289,8 @@
     },
   });
   const { form: formData, enhance, message, validateForm } = form;
+
+  let schedules: any[] = $state(data.item.schedules);
   try {
     formData.set(data.item);
     validateForm({ update: true });
@@ -475,8 +478,8 @@
       copyData.cron = packageData.cron || "* * * * *";
     }
     if (
-      $formData.schedules &&
-      $formData.schedules.some(
+      schedules &&
+      schedules.some(
         (schedule) => schedule.packageid === copyData.packageid,
       )
     ) {
@@ -484,7 +487,7 @@
         description: "This schedule already exists.",
       });
     } else {
-      $formData.schedules = [...($formData.schedules || []), copyData];
+      schedules = [...(schedules || []), copyData];
     }
     packageData = null;
     toast.success("Package added successfully", {
@@ -494,11 +497,11 @@
   async function handleAccept() {
     try {
       let index = deleteData;
-      let arr = $formData.schedules;
+      let arr = schedules;
       if (arr) {
         arr.splice(index, 1);
       }
-      $formData.schedules = arr;
+      schedules = arr;
       toast.success("Killed successfully", {
         description: "",
       });
@@ -870,6 +873,17 @@
     } else {
       confirmprice = false;
     }
+  }
+
+  function scheduleenvudated(item:any) {
+    // console.log("FINDME!");
+    // $formData.schedules = $state.snapshot(schedules);
+    // if (schedules == null) return;
+    // let newitem = {...item};
+    // console.log(item.env)
+    // schedules = schedules.filter((x) => x.packageid != item.packageid);
+    // schedules = [...schedules, newitem];
+
   }
 </script>
 
@@ -1523,10 +1537,10 @@
         </div>
       </div>
 
-      {#if $formData.schedules}
-        {#each $formData.schedules as item, index}
+      {#if schedules}
+        {#each schedules as item, index}
           <div class="my-4">
-            {#if $formData.schedules}
+            {#if schedules}
               <div class="text-lg my-6">
                 Package {index + 1}
               </div>
@@ -1616,7 +1630,7 @@
                 <Form.Field {form} name="item.env">
                   <Form.Control>
                     <Form.Label>Environment</Form.Label>
-                    <ObjectInput disabled={loading} bind:value={item.env} />
+                    <ObjectInput disabled={loading} bind:value={item.env} onchange={scheduleenvudated} />
                   </Form.Control>
                   <Form.FieldErrors />
                 </Form.Field>
