@@ -201,7 +201,7 @@
         auth.profile.formvalidated == true
       ) {
         step = "email";
-      } else if (data.workspace == null) {
+      } else if (data.workspace == null && auth.config.workspace_enabled == true) {
         step = "workspace";
       } else {
         step = "done";

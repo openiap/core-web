@@ -247,9 +247,15 @@
 					currentworkspace = usersettings.currentworkspace;
 					await loadWorkspaces();
 					auth.isAuthenticated = true;
-					const redirect = window.localStorage.getItem("redirect");
-					window.localStorage.removeItem("redirect");
-					goto(redirect || "/");
+					if(validated() == false) {
+						// if ($page.url.pathname != base + "/validate") {
+						// 	goto(base + "/validate");
+						// }
+					} else {
+						const redirect = window.localStorage.getItem("redirect");
+						window.localStorage.removeItem("redirect");
+						goto(redirect || "/");
+					}
 				}
 			});
 		}
@@ -270,7 +276,7 @@
 				// 	return false;
 				// }
 				if(auth.profile.validated == null) {
-					return false;
+					return true;
 				}
 				return auth.profile.validated;
 			} else {
@@ -283,6 +289,14 @@
 		if (browser && validated() == false && auth.isAuthenticated == true) {
 			if ($page.url.pathname != base + "/validate") {
 				goto(base + "/validate");
+				return;
+			}
+		}
+		if (browser) {
+			const redirect = window.localStorage.getItem("redirect");
+			if(redirect != null && redirect != "") {
+				window.localStorage.removeItem("redirect");
+				goto(redirect || "/");
 			}
 		}
 	}
