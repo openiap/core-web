@@ -133,7 +133,7 @@
 </script>
 
 <header
-	class="flex h-16 shrink-0 items-center justify-between px-4 rounded mx-2"
+	class="flex h-16 shrink-0 items-center justify-between px-4 md:px-2 rounded mx-2"
 >
 	<div class="flex items-center">
 		{#if validated() == true}
