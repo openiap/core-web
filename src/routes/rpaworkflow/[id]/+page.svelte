@@ -139,14 +139,14 @@
     <Entityselector
         queryas={usersettings.currentworkspace}
         width="md:w-fit w-64"
-        class="mb-4"
+        class="mb-10"
         disabled={loading}
         collectionname="users"
         basefilter={{ _type: "user", _rpaheartbeat: { $exists: true } }}
         bind:value={robot}
     />
     {#each item.Parameters as param}
-        <div>
+        <div class="mb-2">
             {param?.name} : {#if param != null && param.value != null && param.value.indexOf && param.value.indexOf("[]")}comma
                 seperated list of
             {/if}
@@ -154,6 +154,7 @@
         </div>
         {#if param?.type == "System.Boolean"}
             <CustomSwitch
+                class="mb-10"
                 disabled={loading}
                 bind:checked={param.value}
                 aria-readonly
@@ -161,12 +162,14 @@
             <span> {param.value ? "On" : "Off"} </span><br />
         {:else if param?.type == "System.Int32"}
             <CustomInput
+                class="mb-10"
                 bind:value={param.value}
                 label={param.name}
                 type="number"
             />
         {:else}
             <CustomInput
+                class="mb-10"
                 bind:value={param.value}
                 label={param.name}
                 type={param.type}
@@ -174,7 +177,7 @@
         {/if}
     {/each}
     <HotkeyButton
-        class="mt-4"
+        data-shortcut="enter"
         disabled={loading || robot == ""}
         onclick={async () => {
             try {
