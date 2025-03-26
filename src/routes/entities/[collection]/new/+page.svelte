@@ -58,11 +58,6 @@
   });
   const { form: formData, enhance, message, validateForm } = form;
   try {
-    // if(auth.config.timeseries_collections.indexOf(data.collectionname)) {
-    //   formData.set({  });
-    // } else {
-    //   formData.set({ name: "new item", _type: "test" });
-    // }
     formData.set({ name: "new item", _type: "test" });
     validateForm({ update: true });
   } catch (error: any) {
