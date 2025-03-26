@@ -8,12 +8,12 @@
   import { ObjectInput } from "$lib/objectinput/index.js";
   import { auth } from "$lib/stores/auth.svelte";
   import {
-      ArrowRight,
-      ArrowUp,
-      CircleHelp,
-      History,
-      Info,
-      Maximize2,
+    ArrowRight,
+    ArrowUp,
+    CircleHelp,
+    History,
+    Info,
+    Maximize2,
   } from "lucide-svelte";
   import { tick } from "svelte";
   import { toast } from "svelte-sonner";
@@ -125,8 +125,8 @@
   const starterQuestions = [
     "Find the email of user named %username%",
     "What are the last 20 audit entries ?",
-    "list the number of audit entries, grouped by month",
-    "get then top 20 OpenRPA workflows grouped by created user",
+    "List the number of audit entries grouped by month",
+    "Get the top 20 OpenRPA workflows grouped by created user",
     "What is the top 10 most run openrpa workflow grouped by name?",
     // "What is the top 10 most run openrpa workflow grouped by name, and then write a short story about OpenRPA the happy robot",
   ];
@@ -185,14 +185,14 @@
   {#if showChat == true}
     <div
       bind:this={msgLogEl}
-      class=" overflow-y-auto min-h-80 dark:bg-bw850 border rounded-[10px] dark:border-bw600 mb-4"
+      class=" overflow-y-auto min-h-80 dark:bg-bw850 border rounded-[10px] dark:border-bw600 mb-4 text-[14px] font-normal"
     >
       {#if messages.length == 0}
         <div
-          class="mb-4 dark:bg-[#52565B] m-2 p-2 rounded-[10px] flex items-center space-x-5 max-w-[calc(100%-10rem)]"
+          class="mb-4 dark:bg-[#52565B] m-2 p-2 rounded-[10px] flex items-center space-x-5 w-fit lg:max-w-[calc(100%-10rem)]"
         >
           <div class="ms-3">
-            <Info class="h-3 w-3" />
+            <Info class="h-4 w-4" />
           </div>
           <p>
             Ask about data within OpenCore or trigger OpenRPA workflows for
