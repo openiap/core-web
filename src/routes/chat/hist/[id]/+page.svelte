@@ -299,14 +299,14 @@
           <div class="flex space-x-5">
             <HotkeyButton
               class="dark:text-bw400"
-              aria-label="Old chat threads"
+              aria-label="New conversation"
               type="button"
               onclick={async () => {
-                goto(base + "/chat/hist");
+                goto(base + "/chat");
               }}
             >
               <History />
-              Restart</HotkeyButton
+              New conversation</HotkeyButton
             >
             <HotkeyButton
               class="dark:text-bw400"

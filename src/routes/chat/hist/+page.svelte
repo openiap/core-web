@@ -68,7 +68,7 @@
     }}
   >
     <SquarePlus />
-    Create User</HotkeyButton
+    New conversation</HotkeyButton
   >
 </div>
 
