@@ -85,7 +85,7 @@
 		"Chat",
 		"",
 		"tourchat",
-		`${base}/chat`, true
+		`${base}/chat`, false
 		
 	);
 	const agent = new SidebarItem(
@@ -406,7 +406,13 @@
 		mailhistory.hidden = !isAdmin;
 
 		if( auth.config?.llmchat_queue != null && auth.config?.llmchat_queue != "") {
-			chat.hidden = false;
+			if(auth.isAuthenticated == false) {
+				chat.hidden = true;
+			} else {
+				chat.hidden = false;
+			}			
+		} else  {
+			chat.hidden = true;
 		}
 
 		if (auth.config?.enable_gitserver == true) {
