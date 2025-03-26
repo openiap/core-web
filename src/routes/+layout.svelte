@@ -253,8 +253,10 @@
 						// }
 					} else {
 						const redirect = window.localStorage.getItem("redirect");
-						window.localStorage.removeItem("redirect");
-						goto(redirect || "/");
+						if(redirect != null && redirect != "") {
+							window.localStorage.removeItem("redirect");
+							goto(redirect || "/");
+						}
 					}
 				}
 			});
@@ -293,10 +295,12 @@
 			}
 		}
 		if (browser) {
-			const redirect = window.localStorage.getItem("redirect");
-			if(redirect != null && redirect != "") {
-				window.localStorage.removeItem("redirect");
-				goto(redirect || "/");
+			if ($page.url.pathname != base + "/login") {
+				const redirect = window.localStorage.getItem("redirect");
+				if(redirect != null && redirect != "") {
+					window.localStorage.removeItem("redirect");
+					goto(redirect || "/");
+				}
 			}
 		}
 	}
