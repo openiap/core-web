@@ -123,7 +123,7 @@
   if (browser) init();
 
   const starterQuestions = [
-    "Find the email of user named macuser",
+    "Find the email of user named %username%",
     "What are the last 20 audit entries ?",
     "list the number of audit entries, grouped by month",
     "get then top 20 OpenRPA workflows grouped by created user",
@@ -347,12 +347,12 @@
           aria-label="Old chat threads"
           type="button"
           onclick={async () => {
-            chatmessage = question;
+            chatmessage = question.replace("%username%", auth.profile.username);
             sendChat();
           }}
         >
           <CircleHelp class="h-4 w-4" />
-          {question}
+          {question.replace("%username%", auth.profile.username)}
         </HotkeyButton>
       </div>
     {/each}
