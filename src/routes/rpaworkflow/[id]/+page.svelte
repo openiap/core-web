@@ -40,16 +40,36 @@
                 } else if (payload.command == "invokefailed") {
                     loading = false;
                     if (payload && payload.data && payload.data.Message) {
-                        output = payload.command + ": " + payload.data.Message + "\n" + output;
+                        output =
+                            payload.command +
+                            ": " +
+                            payload.data.Message +
+                            "\n" +
+                            output;
                     } else {
-                        output = payload.command + ": " + JSON.stringify(payload) + "\n" + output;
+                        output =
+                            payload.command +
+                            ": " +
+                            JSON.stringify(payload) +
+                            "\n" +
+                            output;
                     }
                 } else if (payload.command == "error") {
                     loading = false;
                     if (payload && payload.data && payload.data.Message) {
-                        output = payload.command + ": " + payload.data.Message + "\n" + output;
+                        output =
+                            payload.command +
+                            ": " +
+                            payload.data.Message +
+                            "\n" +
+                            output;
                     } else {
-                        output = payload.command + ": " + JSON.stringify(payload) + "\n" + output;
+                        output =
+                            payload.command +
+                            ": " +
+                            JSON.stringify(payload) +
+                            "\n" +
+                            output;
                     }
                 } else if (payload.command == "invokecompleted") {
                     loading = false;
@@ -119,7 +139,7 @@
     <Entityselector
         queryas={usersettings.currentworkspace}
         width="md:w-fit w-64"
-        class="mb-4 md:mb-0"
+        class="mb-4"
         disabled={loading}
         collectionname="users"
         basefilter={{ _type: "user", _rpaheartbeat: { $exists: true } }}
@@ -127,30 +147,34 @@
     />
     {#each item.Parameters as param}
         <div>
-            {param?.name} : {#if param != null && param.value != null && param.value.indexOf && param.value.indexOf("[]")}comma seperated list of {/if} {param?.type}
+            {param?.name} : {#if param != null && param.value != null && param.value.indexOf && param.value.indexOf("[]")}comma
+                seperated list of
+            {/if}
+            {param?.type}
         </div>
         {#if param?.type == "System.Boolean"}
-        <CustomSwitch
-            disabled={loading}
-            bind:checked={param.value}
-            aria-readonly
-        />
-        <span> {param.value ? "On" : "Off"} </span><br>
+            <CustomSwitch
+                disabled={loading}
+                bind:checked={param.value}
+                aria-readonly
+            />
+            <span> {param.value ? "On" : "Off"} </span><br />
         {:else if param?.type == "System.Int32"}
-        <CustomInput
-            bind:value={param.value}
-            label={param.name}
-            type="number"
-        />        
+            <CustomInput
+                bind:value={param.value}
+                label={param.name}
+                type="number"
+            />
         {:else}
-        <CustomInput
-            bind:value={param.value}
-            label={param.name}
-            type={param.type}
-        />
+            <CustomInput
+                bind:value={param.value}
+                label={param.name}
+                type={param.type}
+            />
         {/if}
     {/each}
     <HotkeyButton
+        class="mt-4"
         disabled={loading || robot == ""}
         onclick={async () => {
             try {
