@@ -47,9 +47,15 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 		let entities: any[] = [];
 		const id = params.id;
 		datacomponent.loadsettings(page);
+		if(params.collection != null && params.collection != "" && usersettings.entities_collectionname != params.collection) {
+			usersettings.entities_collectionname = params.collection;
+			await usersettings.dopersist(access_token);
+		}
 		usersettings.entities_collectionname = (params.collection != null ? params.collection : usersettings.entities_collectionname);
 		if(usersettings.entities_collectionname == null || usersettings.entities_collectionname == "") {
 			usersettings.entities_collectionname = "entities";
+		} else {
+			
 		}
 		const { entities: entitiesdata, total_count: totalcount, collectionname } = await datacomponent.Fetch(page, id, access_token);
 		entities = entitiesdata;

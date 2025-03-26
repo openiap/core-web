@@ -874,17 +874,6 @@
       confirmprice = false;
     }
   }
-
-  function scheduleenvudated(item:any) {
-    // console.log("FINDME!");
-    // $formData.schedules = $state.snapshot(schedules);
-    // if (schedules == null) return;
-    // let newitem = {...item};
-    // console.log(item.env)
-    // schedules = schedules.filter((x) => x.packageid != item.packageid);
-    // schedules = [...schedules, newitem];
-
-  }
 </script>
 
 <Tabs.Root value="2" class="w-full">
@@ -1630,7 +1619,7 @@
                 <Form.Field {form} name="item.env">
                   <Form.Control>
                     <Form.Label>Environment</Form.Label>
-                    <ObjectInput disabled={loading} bind:value={item.env} onchange={scheduleenvudated} />
+                    <ObjectInput disabled={loading} bind:value={item.env} />
                   </Form.Control>
                   <Form.FieldErrors />
                 </Form.Field>

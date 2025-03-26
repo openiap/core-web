@@ -152,7 +152,7 @@ class _usersettings implements userSettings {
         }
         this.persisttimer = setTimeout(async () => this.dopersist(), 1000);
     }
-    async dopersist() {
+    async dopersist(access_token: string = "") {
         this.persisttimer = null;
         if (this.userid == null || this.userid == "") {
             return;
@@ -200,8 +200,13 @@ class _usersettings implements userSettings {
         // @ts-ignore
         delete item.persisttimer;
         delete (item as any)._id;
-        let result = await auth.client.InsertOrUpdateOne<userSettings>({ collectionname: "users", item, uniqeness: "userid,_type", jwt: auth.access_token });
-        this._id = result._id;
+        if(access_token != null && access_token != "") {
+            let result = await auth.client.InsertOrUpdateOne<userSettings>({ collectionname: "users", item, uniqeness: "userid,_type", jwt: access_token });
+            this._id = result._id;
+        } else {
+            let result = await auth.client.InsertOrUpdateOne<userSettings>({ collectionname: "users", item, uniqeness: "userid,_type", jwt: auth.access_token });
+            this._id = result._id;
+        }
     }
 }
 
