@@ -8,7 +8,7 @@
     import { useSidebar } from "$lib/components/ui/sidebar/index.js";
     import { auth } from "$lib/stores/auth.svelte";
     import { usersettings } from "$lib/stores/usersettings.svelte";
-    import { Crown, LogOut, Trash2 } from "lucide-svelte";
+    import { BadgeCheck, Crown, LogOut, Trash2 } from "lucide-svelte";
 
     const sidebar = useSidebar();
     let avatar = $state("");
@@ -76,11 +76,16 @@
                 </DropdownMenu.Label>
                 <DropdownMenu.Separator />
                 <DropdownMenu.Group>
-                    <!-- <DropdownMenu.Item>
+                    <DropdownMenu.Item
+                    class="cursor-pointer dark:text-bw100"
+                    onclick={() => {
+                        goto(base + `/user/${auth.profile?.sub}`);
+                    }}
+                    >
                         <BadgeCheck />
-                        Account
+                        Account Page
                     </DropdownMenu.Item>
-                    <DropdownMenu.Item>
+                    <!-- <DropdownMenu.Item>
                         <CreditCard />
                         Billing
                     </DropdownMenu.Item> -->

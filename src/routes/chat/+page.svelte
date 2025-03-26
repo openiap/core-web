@@ -347,12 +347,12 @@
           aria-label="Old chat threads"
           type="button"
           onclick={async () => {
-            chatmessage = question.replace("%username%", auth.profile.username);
+            chatmessage = question.replace("%username%", auth.profile?.name ?? "anything");
             sendChat();
           }}
         >
           <CircleHelp class="h-4 w-4" />
-          {question.replace("%username%", auth.profile.username)}
+          {question.replace("%username%", auth.profile?.name ?? "anything")}
         </HotkeyButton>
       </div>
     {/each}

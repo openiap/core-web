@@ -85,7 +85,7 @@
 		"Chat",
 		"",
 		"tourchat",
-		`${base}/chat`, true
+		`${base}/chat`, false
 		
 	);
 	const agent = new SidebarItem(
@@ -93,7 +93,7 @@
 		"g a",
 		"touragents",
 		`${base}/agent`,
-		false,
+		true,
 	);
 	const workitem = new SidebarItem(
 		"Work Items",
@@ -393,12 +393,12 @@
 			auth.config?.workspace_enabled == true ||
 			auth.config?.multi_tenant == true
 		) {
-			billingaccounts.hidden = false;
 			if (auth.config?.workspace_enabled == true) {
 				billingaccounts.title = "Billing Accounts";
 			} else {
 				billingaccounts.title = "Customers";
 			}
+			billingaccounts.hidden = !auth.isAuthenticated;
 		} else {
 			billingaccounts.hidden = true;
 		}
@@ -406,11 +406,23 @@
 		mailhistory.hidden = !isAdmin;
 
 		if( auth.config?.llmchat_queue != null && auth.config?.llmchat_queue != "") {
-			chat.hidden = false;
+			if(auth.isAuthenticated == false) {
+				chat.hidden = true;
+			} else {
+				chat.hidden = false;
+			}			
+		} else  {
+			chat.hidden = true;
 		}
+		agent.hidden = !auth.isAuthenticated;
+		auditlogs.hidden = !auth.isAuthenticated;
+		credentials.hidden = !auth.isAuthenticated;
+		files.hidden = !auth.isAuthenticated;
+		workitemqueue.hidden = !auth.isAuthenticated;
+		
 
 		if (auth.config?.enable_gitserver == true) {
-			gitrepo.hidden = false;
+			gitrepo.hidden = !auth.isAuthenticated;
 			gitrepo.url = auth.baseurl + "/git";
 		} else {
 			gitrepo.hidden = true;
