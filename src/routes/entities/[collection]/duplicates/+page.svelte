@@ -273,31 +273,38 @@
           data-shortcut="enter"
           disabled={loading}
           onclick={async () => {
-            loading = true;
-            const uniquenessFields = uniqueness
-              .split(",")
-              .map((field) => field.trim());
-            const _id: any = {};
-            uniquenessFields.forEach((field) => {
-              _id[field] = `$${field}`;
-            });
-            const aggregates: any[] = [{ $group: { _id, count: { $sum: 1 } } }];
-            if (query != "") {
-              aggregates.unshift({ $match: query });
+            try {
+              
+              loading = true;
+              const uniquenessFields = uniqueness
+                .split(",")
+                .map((field) => field.trim());
+              const _id: any = {};
+              uniquenessFields.forEach((field) => {
+                _id[field] = `$${field}`;
+              });
+              const aggregates: any[] = [{ $group: { _id, count: { $sum: 1 } } }];
+              if (query != "") {
+                aggregates.unshift({ $match: JSON.parse(query) });
+              }
+              if (!includeones) {
+                aggregates.push({ $match: { count: { $gt: 1 } } });
+              }
+              aggregates.push({ $sort: { count: -1 } });
+              const _entities = await auth.client.Aggregate<any>({
+                collectionname: data.collectionname,
+                aggregates,
+                jwt: data.access_token,
+              });
+              for (let i = 0; i < _entities.length; i++) {
+                _entities[i].name = _entities[i]._id;
+              }
+              entities = _entities;
+            } catch (error:any) {
+              toast.error("Error while fetching entities", {
+                description: error.message,
+              });              
             }
-            if (!includeones) {
-              aggregates.push({ $match: { count: { $gt: 1 } } });
-            }
-            aggregates.push({ $sort: { count: -1 } });
-            const _entities = await auth.client.Aggregate<any>({
-              collectionname: data.collectionname,
-              aggregates,
-              jwt: data.access_token,
-            });
-            for (let i = 0; i < _entities.length; i++) {
-              _entities[i].name = _entities[i]._id;
-            }
-            entities = _entities;
             loading = false;
           }}
         >
