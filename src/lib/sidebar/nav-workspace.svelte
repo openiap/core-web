@@ -101,7 +101,7 @@
     let triggerRef = $state<HTMLButtonElement>(null!);
 </script>
 
-{#if auth.config?.workspace_enabled == true && auth.config?.validlicense == true}
+{#if auth.config?.workspace_enabled == true && auth.config?.validlicense == true && auth.isAuthenticated}
     <Sidebar.Menu>
         <Sidebar.MenuItem>
             <DropdownMenu.Root>
