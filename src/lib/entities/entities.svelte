@@ -322,6 +322,9 @@
 				}
 			} else if (_workspaceid != usersettings.currentworkspace) {
 				_workspaceid = usersettings.currentworkspace;
+				data.settings.page_index = 0;
+				page_index = data.settings.page_index;
+				data.persist();
 				GetData();
 			} else if (_collectionname != collectionname) {
 				_collectionname = collectionname;
