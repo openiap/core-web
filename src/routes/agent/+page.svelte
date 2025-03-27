@@ -612,17 +612,20 @@
               </div>
             </DropdownMenu.Item> -->
 
+          {#if item._workspaceid != null && item._workspaceid != ""}
           <DropdownMenu.Item
             class="cursor-pointer border border-transparent hover:border-bw500 rounded-[10px]"
             onclick={() => {
-              toast.error("Not implemented yet", {});
+              loading = true;
+              goto(base + `/workspace/${item._workspaceid}`);
             }}
           >
             <div class="flex items-center">
               <Receipt class="mr-2 size-4" />
-              <span>Billing</span>
+              <span>Workspace</span>
             </div>
           </DropdownMenu.Item>
+          {/if}
 
           <DropdownMenu.Item
             class="cursor-pointer border border-transparent hover:border-bw500 rounded-[10px]"
