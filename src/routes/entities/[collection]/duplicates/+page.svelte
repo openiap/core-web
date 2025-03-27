@@ -128,18 +128,20 @@
     class="h-full max-w-max flex-shrink-0 p-2 rounded-[10px] bg-bw100 dark:bg-bw900 pb-10 hidden xl:block"
   >
     <div class="w-full px-1">
-      <HotkeyButton
-        variant="entitycreate"
-        title="Create Collection"
-        class="w-full justify-start"
-        size="entity"
-        aria-label="Create Collection"
-        disabled={loading}
-        onclick={() => goto(base + `/entities/new`)}
-      >
-        <Plus />
-        Create Collection</HotkeyButton
-      >
+      {#if isAdmin}
+        <HotkeyButton
+          variant="entitycreate"
+          title="Create Collection"
+          class="w-full justify-start"
+          size="entity"
+          aria-label="Create Collection"
+          disabled={loading}
+          onclick={() => goto(base + `/entities/new`)}
+        >
+          <Plus />
+          Create Collection</HotkeyButton
+        >
+      {/if}
     </div>
     <div class="h-full overflow-auto">
       <ScrollArea class="max-h-full w-[266px] overflow-auto">
@@ -274,7 +276,6 @@
           disabled={loading}
           onclick={async () => {
             try {
-              
               loading = true;
               const uniquenessFields = uniqueness
                 .split(",")
@@ -283,7 +284,9 @@
               uniquenessFields.forEach((field) => {
                 _id[field] = `$${field}`;
               });
-              const aggregates: any[] = [{ $group: { _id, count: { $sum: 1 } } }];
+              const aggregates: any[] = [
+                { $group: { _id, count: { $sum: 1 } } },
+              ];
               if (query != "") {
                 aggregates.unshift({ $match: JSON.parse(query) });
               }
@@ -300,10 +303,10 @@
                 _entities[i].name = _entities[i]._id;
               }
               entities = _entities;
-            } catch (error:any) {
+            } catch (error: any) {
               toast.error("Error while fetching entities", {
                 description: error.message,
-              });              
+              });
             }
             loading = false;
           }}
