@@ -13,14 +13,14 @@
   import { auth } from "$lib/stores/auth.svelte";
 
   let loading = $state(false);
-  
+
   function goto(url: string) {
     window.location.href = auth.baseurl + url;
   }
 
   function renderIcon(name: string, provider: string) {
-    if (name == null) return Openid;
-    if (provider == null) return Openid;
+    if (name == null) return Saml;
+    if (provider == null) return Saml;
     if (name.toLowerCase().indexOf("google") > -1) {
       return Google;
     }
@@ -28,6 +28,9 @@
       return Hotmail;
     }
     if (name.toLowerCase().indexOf("office") > -1) {
+      return Office365;
+    }
+    if (name.toLowerCase().indexOf("microsoft") > -1) {
       return Office365;
     }
     if (provider.toLowerCase().indexOf("oidc") > -1) {
@@ -39,7 +42,22 @@
     if (provider.toLowerCase().indexOf("google") > -1) {
       return Google;
     }
-    return Openid;
+    return Saml;
+  }
+  function renderClass(name: string, provider: string) {
+    if (name == null) return "w-4 h-4 mr-2";
+    if (provider == null) return "w-4 h-4 mr-2";
+
+    if (name.toLowerCase().indexOf("office") > -1) {
+      return "w-4 h-4 mr-2";
+    }
+    if (name.toLowerCase().indexOf("microsoft") > -1) {
+      return "w-4 h-4 mr-2";
+    }
+    if (provider.toLowerCase().indexOf("saml") > -1) {
+      return "w-4 h-4 mr-2";
+    }
+    return "w-6 h-6 mr-2";
   }
 </script>
 
@@ -124,7 +142,7 @@
                   <img
                     src={renderIcon(lp.name, lp.provider)}
                     alt={lp.name}
-                    class="w-6 h-6 mr-2"
+                    class={renderClass(lp.name, lp.provider)}
                   />
                   {lp.name}</HotkeyButton
                 >
