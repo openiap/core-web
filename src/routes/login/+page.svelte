@@ -12,6 +12,8 @@
   import Saml from "$lib/images/login/saml.svg";
   import { auth } from "$lib/stores/auth.svelte";
 
+  let loading = $state(false);
+  
   function goto(url: string) {
     window.location.href = auth.baseurl + url;
   }
@@ -97,7 +99,12 @@
                 autocomplete="current-password"
               />
             </div>
-            <HotkeyButton type="submit" class="w-full">Login</HotkeyButton>
+            <HotkeyButton
+              type="submit"
+              class="w-full"
+              aria-label="login"
+              disabled={loading}>Login</HotkeyButton
+            >
             {#if auth.config?.loginproviders != null}
               <div class="flex items-center justify-center">
                 <Separator class="w-2/5" />
@@ -105,7 +112,15 @@
                 <Separator class="w-2/5" />
               </div>
               {#each auth.config?.loginproviders.filter((x: any) => x.provider != "local") as lp}
-                <HotkeyButton class="w-full" onclick={() => goto("/" + lp.id)}>
+                <HotkeyButton
+                  disabled={loading}
+                  aria-label={"Login with " + lp.name}
+                  class="w-full"
+                  onclick={() => {
+                    loading = true;
+                    goto("/" + lp.id);
+                  }}
+                >
                   <img
                     src={renderIcon(lp.name, lp.provider)}
                     alt={lp.name}
