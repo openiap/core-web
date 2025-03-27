@@ -24,8 +24,14 @@
   import { superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newWorkspaceSchema } from "../schema.js";
+    import { browser } from "$app/environment";
   const { data } = $props();
-  let _workspaceid = data.currentworkspace._id;
+  // if(browser) {
+  //   if(data.currentworkspace == null) {
+  //     goto(base + "/workspace");
+  //   }
+  // }
+  let _workspaceid = data.currentworkspace?._id;
   let loading = $state(false);
   let resourcecount = $state(data.resourcecount);
   let currentworkspace = $state(data.currentworkspace);

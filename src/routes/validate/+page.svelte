@@ -259,6 +259,7 @@
       bind:this={ref}
     ></div>
   {/if}
+  <form>
   {#if step == "email"}
     <div class="font-bold mb-4">Validate User</div>
     <div>
@@ -271,6 +272,7 @@
               type="text"
               bind:value={emailcode}
               placeholder="Email code"
+              autofocus
               required
               autocomplete="off"
             />
@@ -298,6 +300,7 @@
               variant="success"
               size="base"
               aria-label="Validate email"
+              type="submit"
               data-shortcut="enter"
               >Validate Code
             </HotkeyButton>
@@ -357,6 +360,7 @@
             <Label for="workspace">Workspace Name</Label>
             <Input
               type="text"
+              autofocus
               bind:value={data.workspace}
               placeholder="Workspace name"
               required
@@ -376,9 +380,16 @@
                       jwt: auth.access_token,
                     }),
                   );
+                  console.log("ensureworkspace", data.workspace);
                   if (data.workspace != null) {
                     usersettings.currentworkspace = data.workspace._id;
                     usersettings.persist();
+                    // goto(
+                    //   base +
+                    //     "/workspace/" +
+                    //     data.workspace._id
+                    // );
+                    // return;
                   } else {
                     console.error("Error data.workspace is null");
                   }
@@ -395,6 +406,7 @@
               }}
               variant="success"
               size="base"
+              type="submit"
               aria-label="Create workspace"
               data-shortcut="enter"
               >Create Workspace
@@ -425,6 +437,7 @@
       </Card.Card>
     </div>
   {/if}
+</form>
 </div>
 
 <style>
