@@ -175,7 +175,7 @@
         size="base"
         onclick={() => {
           let arr = $formData.paths || [];
-          $formData.paths = [...arr, "test"];
+          $formData.paths = [...arr, "$.[?(@ && @._type == 'test')]"];
         }}
       >
         <Plus />

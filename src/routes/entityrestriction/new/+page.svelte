@@ -13,6 +13,7 @@
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newFormSchema } from "../schema.js";
+  import Acl from "$lib/acl/acl.svelte";
 
   let loading = $state(false);
 
@@ -64,6 +65,8 @@
 {/if}
 
 <form method="POST" use:enhance>
+  <Acl bind:value={$formData} />
+
   <Form.Field {form} name="name" class="mb-10">
     <Form.Control>
       {#snippet children({ props })}
@@ -153,7 +156,7 @@
       size="base"
       onclick={() => {
         let arr = $formData.paths || [];
-        $formData.paths = [...arr, "test"];
+        $formData.paths = [...arr, "$.[?(@ && @._type == 'test')]"];
       }}
     >
       <Plus />

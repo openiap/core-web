@@ -323,10 +323,10 @@ class entitiesdata {
 					break;
 				case base + "/entityrestriction":
 					collectionname = "config";
-					entities = await this.GetData(page, collectionname, { _type: "restriction" }, access_token);
+					entities = await this.GetData(page, collectionname, { _type: "restriction" }, access_token, false);
 					total_count = entities.length;
 					if (entities.length >= usersettings.pagesize) {
-						total_count = await this.GetCount(page, collectionname, { _type: "restriction" }, access_token);
+						total_count = await this.GetCount(page, collectionname, { _type: "restriction" }, access_token, false);
 					}
 					break;
 				default:
