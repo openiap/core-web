@@ -201,13 +201,21 @@
         auth.profile.formvalidated == true
       ) {
         step = "email";
-      } else if (data.workspace == null && auth.config.workspace_enabled == true) {
+      } else if (
+        data.workspace == null &&
+        auth.config.workspace_enabled == true
+      ) {
+        console.log("data.workspace", data.workspace);
+        console.log(
+          "auth.config.workspace_enabled",
+          auth.config.workspace_enabled,
+        );
         step = "workspace";
       } else {
         step = "done";
         goto(base + "/");
       }
-    } catch (error:any) {
+    } catch (error: any) {
       console.error(error);
       toast.error("Error getting step", {
         description: error.message,
@@ -345,7 +353,7 @@
       <Card.Card class="mb-10">
         <Card.Header>Create your first workspace</Card.Header>
         <Card.Content>
-          <div class="grid gap-2">
+          <div class="grid gap-2 mb-4">
             <Label for="workspace">Workspace Name</Label>
             <Input
               type="text"
@@ -359,25 +367,24 @@
             <HotkeyButton
               onclick={async () => {
                 try {
-                  await auth.client.CustomCommand({
-                    command: "ensureworkspace",
-                    data: JSON.stringify({
-                      name: $state.snapshot(data.workspace),
+                  data.workspace = JSON.parse(
+                    await auth.client.CustomCommand({
+                      command: "ensureworkspace",
+                      data: JSON.stringify({
+                        name: $state.snapshot(data.workspace),
+                      }),
+                      jwt: auth.access_token,
                     }),
-                    jwt: auth.access_token,
-                  });
-                  toast.success("Workspace created", {
-                    description: "Workspace has been created",
-                  });
-                  data.workspace = await auth.client.FindOne<any>({
-                    collectionname: "users",
-                    query: { _type: "workspace" },
-                    jwt: auth.access_token,
-                  });
+                  );
                   if (data.workspace != null) {
                     usersettings.currentworkspace = data.workspace._id;
                     usersettings.persist();
+                  } else {
+                    console.error("Error data.workspace is null");
                   }
+                  toast.success("Workspace created", {
+                    description: "Workspace has been created",
+                  });
                   await getstep();
                 } catch (error: any) {
                   console.error(error);
@@ -421,5 +428,4 @@
 </div>
 
 <style>
-
 </style>
