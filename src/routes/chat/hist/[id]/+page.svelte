@@ -51,8 +51,8 @@
   let chatInput: any = null;
 
   let showChat: boolean = $state(true);
-  let showQuery: boolean = $state(true);
-  let showTable: boolean = $state(true);
+  let showQuery: boolean = $state(false);
+  let showTable: boolean = $state(false);
 
   async function init() {
     try {
@@ -172,7 +172,7 @@
   {#if renderIcon()}
     <div class="flex items-center space-x-3 mb-3">
       <HotkeyButton
-        class="bg-bw600 p-1 rounded-[5px]"
+        class="bg-bw700 hover:bg-bw600 dark:bg-bw600 dark:hover:bg-bw500 p-1 rounded-[5px]"
         variant="ghostfull"
         size="ghost"
         onclick={() => (showChat = !showChat)}
@@ -185,11 +185,11 @@
   {#if showChat == true}
     <div
       bind:this={msgLogEl}
-      class=" overflow-y-auto min-h-80 dark:bg-bw850 border rounded-[10px] dark:border-bw600 mb-4 text-[14px] font-normal"
+      class=" overflow-y-auto min-h-80 bg-bw200 dark:bg-bw850 border rounded-[10px] dark:border-bw600 mb-4 text-[14px] font-normal"
     >
       {#if messages.length == 0}
         <div
-          class="mb-4 dark:bg-[#52565B] m-2 p-2 rounded-[10px] flex items-center space-x-5 w-fit lg:max-w-[calc(100%-10rem)]"
+          class="mb-4 bg-[#BEBEBE] border-[#86888E] dark:bg-[#52565B] m-2 p-2 rounded-[10px] flex items-center space-x-5 w-fit lg:max-w-[calc(100%-10rem)]"
         >
           <div class="ms-3">
             <Info class="h-4 w-4" />
@@ -207,7 +207,7 @@
           <div class="mb-4 chat-container p-2.5">
             <div class={`justify-start`}>
               <div
-                class={"p-3 rounded-[10px] max-w-[75%] bg-[#373A3F] text-bw100 rounded-bl-none " +
+                class={"p-3 rounded-[10px] max-w-[75%] bg-[#BEBEBE] dark:bg-[#373A3F] text-bw950 dark:text-bw100 rounded-bl-none " +
                   msg.role}
               >
                 <HotkeyButton
@@ -249,8 +249,14 @@
                       } else {
                         console.debug("msg", msg);
                       }
+                      showQuery = true;
                       await tick();
-                      ref.AutoDetectColumns();
+                      if (entities.length > 0) {
+                        showTable = true;
+                        await tick();
+                        ref.AutoDetectColumns();
+                      } else {
+                      }
                     } catch (error: any) {
                       toast.error("Error sending message", {
                         description: error.message,
@@ -258,7 +264,7 @@
                     }
                   }}
                 >
-                  <ArrowRight />
+                  <ArrowRight class="h-4 w-4" />
                   {msg.name}</HotkeyButton
                 >
                 <pre id={msg.correlationId}></pre>
@@ -273,8 +279,8 @@
               <div
                 class={`p-3 rounded-[10px] max-w-[75%] ${msg.role} ${
                   msg.role === "user"
-                    ? "bg-[#52565B] text-bw100 rounded-br-none"
-                    : "bg-[#373A3F] text-bw100 rounded-bl-none"
+                    ? "bg-[#AFAFAF] dark:bg-[#52565B] text-bw950 dark:text-bw100 rounded-br-none"
+                    : "bg-[#BEBEBE] dark:bg-[#373A3F] text-bw950 dark:text-bw100 rounded-bl-none"
                 }`}
               >
                 {msg.content}
@@ -286,14 +292,14 @@
     </div>
     <div class="flex justify-center">
       <form
-        class="flex flex-col items-center space-x-2 mb-4 p-5 border rounded-[10px] dark:boder-bw600 dark:bg-bw900 w-[700px]"
+        class="flex flex-col items-center space-x-2 mb-4 p-5 border border-bw600 rounded-[10px] dark:boder-bw600 bg-bw200 dark:bg-bw900 w-[700px]"
       >
         <CustomInput
           bind:value={chatmessage}
           bind:this={chatInput}
           placeholder="Chat with OpenCore about your data or tell it to do something with your data "
           width="w-full"
-          class="mb-4 dark:border-hidden dark:bg-bw900"
+          class="mb-4 border-hidden bg-bw200 dark:bg-bw900"
         />
         <div class="flex w-full items-center justify-between space-x-2">
           <div class="flex space-x-5">
@@ -302,6 +308,7 @@
               aria-label="New conversation"
               type="button"
               onclick={async () => {
+                if (data.id == null || data.id == "") return location.reload();
                 goto(base + "/chat");
               }}
             >
@@ -330,7 +337,7 @@
               if (chatmessage == "")
                 return toast.error("Please enter a message");
               await sendChat();
-            }}><ArrowUp /></HotkeyButton
+            }}><ArrowUp class="h-4 w-4" /></HotkeyButton
           >
         </div>
       </form>
@@ -347,19 +354,22 @@
           aria-label="Old chat threads"
           type="button"
           onclick={async () => {
-            chatmessage = question.replace("%username%", auth.profile.username);
+            chatmessage = question.replace(
+              "%username%",
+              auth.profile?.name ?? "anything",
+            );
             sendChat();
           }}
         >
           <CircleHelp class="h-4 w-4" />
-          {question.replace("%username%", auth.profile.username)}
+          {question.replace("%username%", auth.profile?.name ?? "anything")}
         </HotkeyButton>
       </div>
     {/each}
   </div>
 {/if}
 
-{#if entities.length > 0}
+{#if messages.length > 0}
   <div class="mb-6">
     <div class="flex items-center space-x-3 mb-3">
       <HotkeyButton
@@ -403,6 +413,8 @@
         {total_count}
         bind:this={ref}
       />
+    {:else if showQuery == true}
+      <div>No data found</div>
     {/if}
   </div>
 {/if}
