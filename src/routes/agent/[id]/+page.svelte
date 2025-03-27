@@ -1739,6 +1739,7 @@
           >Cancel</HotkeyButton
         >
         <HotkeyButton
+          variant="success"
           type="submit"
           disabled={loading}
           onclick={createbillingaccount}>Continue</HotkeyButton

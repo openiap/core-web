@@ -582,6 +582,7 @@
             >Cancel</HotkeyButton
           >
           <HotkeyButton disabled={loading} onclick={createbillingaccount}
+          variant="success"
             >Continue</HotkeyButton
           >
         </AlertDialog.Footer>
