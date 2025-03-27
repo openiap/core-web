@@ -53,7 +53,7 @@ class entitiesdata {
 					collectionname = "workflow_instances";
 					entities = await this.GetData(page, collectionname, taskquery, access_token, false);
 					total_count = entities.length;
-					if(entities.length >= usersettings.pagesize) {
+					if (entities.length >= usersettings.pagesize) {
 						total_count = await this.GetCount(page, collectionname, taskquery, access_token, false);
 					}
 					break;
@@ -62,14 +62,14 @@ class entitiesdata {
 					if (usersettings.currentworkspace != null && usersettings.currentworkspace != "") {
 						entities = await this.GetData(page, collectionname, { _type: "agent", _workspaceid: usersettings.currentworkspace }, access_token);
 						total_count = entities.length;
-						if(entities.length >= usersettings.pagesize) {
-								total_count = await this.GetCount(page, collectionname, { _type: "agent", _workspaceid: usersettings.currentworkspace }, access_token);
+						if (entities.length >= usersettings.pagesize) {
+							total_count = await this.GetCount(page, collectionname, { _type: "agent", _workspaceid: usersettings.currentworkspace }, access_token);
 						}
 					} else {
 						entities = await this.GetData(page, collectionname, { _type: "agent" }, access_token);
 						total_count = entities.length;
-						if(entities.length >= usersettings.pagesize) {
-								total_count = await this.GetCount(page, collectionname, { _type: "agent" }, access_token);
+						if (entities.length >= usersettings.pagesize) {
+							total_count = await this.GetCount(page, collectionname, { _type: "agent" }, access_token);
 						}
 					}
 					break;
@@ -77,7 +77,7 @@ class entitiesdata {
 					collectionname = "audit";
 					entities = await this.GetData(page, collectionname, {}, access_token);
 					total_count = entities.length;
-					if(entities.length >= usersettings.pagesize) {
+					if (entities.length >= usersettings.pagesize) {
 						total_count = await this.GetCount(page, collectionname, {}, access_token);
 					}
 					break;
@@ -95,7 +95,7 @@ class entitiesdata {
 					collectionname = "openrpa"
 					entities = await this.GetData(page, collectionname, { _type: "credential" }, access_token, false);
 					total_count = entities.length;
-					if(entities.length >= usersettings.pagesize) {
+					if (entities.length >= usersettings.pagesize) {
 						total_count = await this.GetCount(page, collectionname, { _type: "credential" }, access_token, false);
 					}
 					break;
@@ -103,7 +103,7 @@ class entitiesdata {
 					collectionname = "llmchat"
 					entities = await this.GetData(page, collectionname, { _type: "thread" }, access_token, false);
 					total_count = entities.length;
-					if(entities.length >= usersettings.pagesize) {
+					if (entities.length >= usersettings.pagesize) {
 						total_count = await this.GetCount(page, collectionname, { _type: "thread" }, access_token, false);
 					}
 					break;
@@ -111,7 +111,7 @@ class entitiesdata {
 					collectionname = "users"
 					entities = await this.GetData(page, collectionname, { _type: "customer" }, access_token, false);
 					total_count = entities.length;
-					if(entities.length >= usersettings.pagesize) {
+					if (entities.length >= usersettings.pagesize) {
 						total_count = await this.GetCount(page, collectionname, { _type: "customer" }, access_token, false);
 					}
 					break;
@@ -124,14 +124,14 @@ class entitiesdata {
 					collectionname = "openrpa"
 					entities = await this.GetData(page, collectionname, { _type: "credential" }, access_token, false);
 					total_count = entities.length;
-					if(entities.length >= usersettings.pagesize) {
+					if (entities.length >= usersettings.pagesize) {
 						total_count = await this.GetCount(page, collectionname, { _type: "credential" }, access_token, false);
 					}
 				case base + `/entities/${usersettings.entities_collectionname}`:
 					collectionname = usersettings.entities_collectionname;
 					entities = await this.GetData(page, collectionname, {}, access_token, false);
 					total_count = entities.length;
-					if(entities.length >= usersettings.pagesize) {
+					if (entities.length >= usersettings.pagesize) {
 						total_count = await this.GetCount(page, collectionname, {}, access_token, false);
 					}
 					break;
@@ -139,7 +139,7 @@ class entitiesdata {
 					collectionname = usersettings.entities_collectionname + "_hist";
 					entities = await this.GetData(page, collectionname, { _deleted: { "$exists": true } }, access_token, false);
 					total_count = entities.length;
-					if(entities.length >= usersettings.pagesize) {
+					if (entities.length >= usersettings.pagesize) {
 						total_count = await this.GetCount(page, collectionname, {}, access_token, false);
 					}
 					break;
@@ -147,7 +147,7 @@ class entitiesdata {
 					collectionname = usersettings.entities_collectionname + "_hist";
 					entities = await this.GetData(page, collectionname, { id }, access_token, false);
 					total_count = entities.length;
-					if(entities.length >= usersettings.pagesize) {
+					if (entities.length >= usersettings.pagesize) {
 						total_count = await this.GetCount(page, collectionname, { id }, access_token, false);
 					}
 					break;
@@ -155,7 +155,7 @@ class entitiesdata {
 					collectionname = "fs.files";
 					entities = await this.GetData(page, collectionname, {}, access_token, false);
 					total_count = entities.length;
-					if(entities.length >= usersettings.pagesize) {
+					if (entities.length >= usersettings.pagesize) {
 						total_count = await this.GetCount(page, collectionname, {}, access_token, false);
 					}
 					break;
@@ -163,7 +163,7 @@ class entitiesdata {
 					collectionname = "forms";
 					entities = await this.GetData(page, collectionname, { _type: "form" }, access_token, false);
 					total_count = entities.length;
-					if(entities.length >= usersettings.pagesize) {
+					if (entities.length >= usersettings.pagesize) {
 						total_count = await this.GetCount(page, collectionname, { _type: "form" }, access_token, false);
 					}
 					break;
@@ -171,7 +171,7 @@ class entitiesdata {
 					collectionname = "workflow";
 					entities = await this.GetData(page, collectionname, { _type: "workflow", web: true }, access_token, false);
 					total_count = entities.length;
-					if(entities.length >= usersettings.pagesize) {
+					if (entities.length >= usersettings.pagesize) {
 						total_count = await this.GetCount(page, collectionname, { _type: "workflow", web: true }, access_token, false);
 					}
 					break;
@@ -179,7 +179,7 @@ class entitiesdata {
 					collectionname = "forms";
 					entities = await this.GetData(page, collectionname, { _type: "resource" }, access_token, false);
 					total_count = entities.length;
-					if(entities.length >= usersettings.pagesize) {
+					if (entities.length >= usersettings.pagesize) {
 						total_count = await this.GetCount(page, collectionname, { _type: "resource" }, access_token, false);
 					}
 					break;
@@ -187,7 +187,7 @@ class entitiesdata {
 					collectionname = "openrpa"
 					entities = await this.GetData(page, collectionname, { _type: "unattendedclient" }, access_token, false);
 					total_count = entities.length;
-					if(entities.length >= usersettings.pagesize) {
+					if (entities.length >= usersettings.pagesize) {
 						total_count = await this.GetCount(page, collectionname, { _type: "unattendedclient" }, access_token, false);
 					}
 					break;
@@ -195,7 +195,7 @@ class entitiesdata {
 					collectionname = "config";
 					entities = await this.GetData(page, collectionname, { _type: "license" }, access_token, false);
 					total_count = entities.length;
-					if(entities.length >= usersettings.pagesize) {
+					if (entities.length >= usersettings.pagesize) {
 						total_count = await this.GetCount(page, collectionname, { _type: "license" }, access_token, false);
 					}
 					break;
@@ -203,7 +203,7 @@ class entitiesdata {
 					collectionname = "mailhist";
 					entities = await this.GetData(page, collectionname, {}, access_token, false);
 					total_count = entities.length;
-					if(entities.length >= usersettings.pagesize) {
+					if (entities.length >= usersettings.pagesize) {
 						total_count = await this.GetCount(page, collectionname, {}, access_token, false);
 					}
 					break;
@@ -211,7 +211,7 @@ class entitiesdata {
 					collectionname = "agents";
 					entities = await this.GetData(page, collectionname, { _type: "package" }, access_token, false);
 					total_count = entities.length;
-					if(entities.length >= usersettings.pagesize) {
+					if (entities.length >= usersettings.pagesize) {
 						total_count = await this.GetCount(page, collectionname, { _type: "package" }, access_token, false);
 					}
 					break;
@@ -219,7 +219,7 @@ class entitiesdata {
 					collectionname = "config";
 					entities = await this.GetData(page, collectionname, { _type: "provider" }, access_token, false);
 					total_count = entities.length;
-					if(entities.length >= usersettings.pagesize) {
+					if (entities.length >= usersettings.pagesize) {
 						total_count = await this.GetCount(page, collectionname, { _type: "provider" }, access_token, false);
 					}
 					break;
@@ -227,7 +227,7 @@ class entitiesdata {
 					collectionname = "config";
 					entities = await this.GetData(page, collectionname, { _type: "resource" }, access_token, false);
 					total_count = entities.length;
-					if(entities.length >= usersettings.pagesize) {
+					if (entities.length >= usersettings.pagesize) {
 						total_count = await this.GetCount(page, collectionname, { _type: "resource" }, access_token, false);
 					}
 					break;
@@ -235,7 +235,7 @@ class entitiesdata {
 					collectionname = "users";
 					entities = await this.GetData(page, collectionname, { _type: "role" }, access_token);
 					total_count = entities.length;
-					if(entities.length >= usersettings.pagesize) {
+					if (entities.length >= usersettings.pagesize) {
 						total_count = await this.GetCount(page, collectionname, { _type: "role" }, access_token);
 					}
 					break;
@@ -243,7 +243,7 @@ class entitiesdata {
 					collectionname = "openrpa"
 					entities = await this.GetData(page, collectionname, { _type: "workflow" }, access_token, false);
 					total_count = entities.length;
-					if(entities.length >= usersettings.pagesize) {
+					if (entities.length >= usersettings.pagesize) {
 						total_count = await this.GetCount(page, collectionname, { _type: "workflow" }, access_token, false);
 					}
 					break;
@@ -251,7 +251,7 @@ class entitiesdata {
 					collectionname = "users";
 					entities = await this.GetData(page, collectionname, { _type: "user" }, access_token);
 					total_count = entities.length;
-					if(entities.length >= usersettings.pagesize) {
+					if (entities.length >= usersettings.pagesize) {
 						total_count = await this.GetCount(page, collectionname, { _type: "user" }, access_token);
 					}
 					break;
@@ -259,7 +259,7 @@ class entitiesdata {
 					collectionname = "workitems";
 					entities = await this.GetData(page, collectionname, {}, access_token);
 					total_count = entities.length;
-					if(entities.length >= usersettings.pagesize) {
+					if (entities.length >= usersettings.pagesize) {
 						total_count = await this.GetCount(page, collectionname, {}, access_token);
 					}
 					break;
@@ -267,7 +267,7 @@ class entitiesdata {
 					collectionname = "workitems";
 					entities = await this.GetData(page, collectionname, { wiqid: id }, access_token);
 					total_count = entities.length;
-					if(entities.length >= usersettings.pagesize) {
+					if (entities.length >= usersettings.pagesize) {
 						total_count = await this.GetCount(page, collectionname, { wiqid: id }, access_token);
 					}
 					break;
@@ -275,7 +275,7 @@ class entitiesdata {
 					collectionname = "mq";
 					entities = await this.GetData(page, collectionname, { _type: "workitemqueue" }, access_token);
 					total_count = entities.length;
-					if(entities.length >= usersettings.pagesize) {
+					if (entities.length >= usersettings.pagesize) {
 						total_count = await this.GetCount(page, collectionname, { _type: "workitemqueue" }, access_token);
 					}
 					break;
@@ -283,7 +283,7 @@ class entitiesdata {
 					collectionname = "users";
 					entities = await this.GetData(page, collectionname, { _type: "workspace" }, access_token, false);
 					total_count = entities.length;
-					if(entities.length >= usersettings.pagesize) {
+					if (entities.length >= usersettings.pagesize) {
 						total_count = await this.GetCount(page, collectionname, { _type: "workspace" }, access_token, false);
 					}
 					break;
@@ -291,7 +291,7 @@ class entitiesdata {
 					collectionname = "users";
 					entities = await this.GetData(page, collectionname, { _type: "member", workspaceid: id, status: { "$ne": "rejected" } }, access_token);
 					total_count = entities.length;
-					if(entities.length >= usersettings.pagesize) {
+					if (entities.length >= usersettings.pagesize) {
 						total_count = await this.GetCount(page, collectionname, { _type: "member", workspaceid: id, status: { "$ne": "rejected" } }, access_token);
 					}
 					break;
@@ -299,7 +299,7 @@ class entitiesdata {
 					collectionname = "users";
 					entities = await this.GetData(page, collectionname, { _type: "member" }, access_token, false);
 					total_count = entities.length;
-					if(entities.length >= usersettings.pagesize) {
+					if (entities.length >= usersettings.pagesize) {
 						total_count = await this.GetCount(page, collectionname, { _type: "member" }, access_token, false);
 					}
 					break;
@@ -317,8 +317,16 @@ class entitiesdata {
 					let query: any = { ...basequery, ...{ "$or": [{ "userid": userid }, { "email": email }] } };
 					entities = await this.GetData(page, collectionname, query, access_token, false);
 					total_count = entities.length;
-					if(entities.length >= usersettings.pagesize) {
+					if (entities.length >= usersettings.pagesize) {
 						total_count = await this.GetCount(page, collectionname, query, access_token, false);
+					}
+					break;
+				case base + "/entityrestriction":
+					collectionname = "config";
+					entities = await this.GetData(page, collectionname, { _type: "restriction" }, access_token);
+					total_count = entities.length;
+					if (entities.length >= usersettings.pagesize) {
+						total_count = await this.GetCount(page, collectionname, { _type: "restriction" }, access_token);
 					}
 					break;
 				default:
@@ -384,7 +392,7 @@ class entitiesdata {
 			return total_count;
 		}
 		if (!browser) {
-			if(server_skipcollections.indexOf(collectionname) > -1) {
+			if (server_skipcollections.indexOf(collectionname) > -1) {
 				return total_count;
 			}
 		}
@@ -644,18 +652,20 @@ class entitiesdata {
 			case "/entities/agents":
 				return ["name", "image", "os", "_productname", "_type", "_createdby"];
 			case "/user":
-				if(auth.config.validate_emails == true || (auth.config.validate_user_form != null && auth.config.validate_user_form != "")) {
-					return ["_id", "name", "username", "email", "validated", "lastseen", "_created"];	
+				if (auth.config.validate_emails == true || (auth.config.validate_user_form != null && auth.config.validate_user_form != "")) {
+					return ["_id", "name", "username", "email", "validated", "lastseen", "_created"];
 				}
 				return ["_id", "name", "username", "email", "lastseen", "_created"];
 			case "/role":
 				return ["_id", "name", "members", "_created"];
+			case "/entityrestriction":
+				return ["_id", "name", "collection", "_created"];
 			case "/entities/users":
-				if(auth.config.validate_emails == true || (auth.config.validate_user_form != null && auth.config.validate_user_form != "")) {
+				if (auth.config.validate_emails == true || (auth.config.validate_user_form != null && auth.config.validate_user_form != "")) {
 					return ["_id", "name", "username", "email", "validated", "lastseen", "members", "_type", "_created"];
 				}
 				return ["_id", "name", "username", "email", "lastseen", "members", "_type", "_created"];
-				
+
 			case "/chat/hist":
 				return ["_id", "name", "_created"];
 			case "/workitem":

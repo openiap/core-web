@@ -6,10 +6,10 @@
 	import "driver.js/dist/driver.css";
 	import Mousetrap from "mousetrap";
 	import {
-	    agentTour,
-	    baseTour,
-	    driverObj,
-	    entitiesTour,
+		agentTour,
+		baseTour,
+		driverObj,
+		entitiesTour,
 	} from "./onboarding.js";
 
 	class SidebarCategory {
@@ -81,13 +81,7 @@
 		`${base}/licensekey`,
 		true,
 	);
-	const chat = new SidebarItem(
-		"Chat",
-		"",
-		"tourchat",
-		`${base}/chat`, false
-		
-	);
+	const chat = new SidebarItem("Chat", "", "tourchat", `${base}/chat`, false);
 	const agent = new SidebarItem(
 		"Agents",
 		"g a",
@@ -296,6 +290,13 @@
 		`${base}/mailhistory`,
 		true,
 	);
+	const entityrestriction = new SidebarItem(
+		"Entity Restrictions",
+		"",
+		"tourmailhistory",
+		`${base}/entityrestriction`,
+		true,
+	);
 	const management = new SidebarCategory("Management", false, [
 		entities,
 		clients,
@@ -314,6 +315,7 @@
 		hdrobots,
 		mailhistory,
 		licensekey,
+		entityrestriction,
 	]);
 	export { agent, entities, home };
 </script>
@@ -388,7 +390,11 @@
 		formresources.hidden = !isWorkspaceAdmin;
 		forms.hidden = !auth.isAuthenticated;
 		clients.hidden = !isWorkspaceAdmin;
-
+		if (auth.config?.enable_entity_restriction == true) {
+			entityrestriction.hidden = !isAdmin;
+		} else {
+			entityrestriction.hidden = true;
+		}
 		if (
 			auth.config?.workspace_enabled == true ||
 			auth.config?.multi_tenant == true
@@ -405,13 +411,16 @@
 		hdrobots.hidden = !isWorkspaceAdmin;
 		mailhistory.hidden = !isAdmin;
 
-		if( auth.config?.llmchat_queue != null && auth.config?.llmchat_queue != "") {
-			if(auth.isAuthenticated == false) {
+		if (
+			auth.config?.llmchat_queue != null &&
+			auth.config?.llmchat_queue != ""
+		) {
+			if (auth.isAuthenticated == false) {
 				chat.hidden = true;
 			} else {
 				chat.hidden = false;
-			}			
-		} else  {
+			}
+		} else {
 			chat.hidden = true;
 		}
 		agent.hidden = !auth.isAuthenticated;
@@ -419,7 +428,6 @@
 		credentials.hidden = !auth.isAuthenticated;
 		files.hidden = !auth.isAuthenticated;
 		workitemqueue.hidden = !auth.isAuthenticated;
-		
 
 		if (auth.config?.enable_gitserver == true) {
 			gitrepo.hidden = !auth.isAuthenticated;
