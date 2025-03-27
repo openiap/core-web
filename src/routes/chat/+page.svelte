@@ -302,8 +302,7 @@
               aria-label="New conversation"
               type="button"
               onclick={async () => {
-                // goto(base + "/chat/hist");
-                location.reload();
+                goto(base + "/chat");
               }}
             >
               <History />
@@ -348,12 +347,12 @@
           aria-label="Old chat threads"
           type="button"
           onclick={async () => {
-            chatmessage = question.replace("%username%", auth.profile?.name ?? "anything");
+            chatmessage = question.replace("%username%", auth.profile.username);
             sendChat();
           }}
         >
           <CircleHelp class="h-4 w-4" />
-          {question.replace("%username%", auth.profile?.name ?? "anything")}
+          {question.replace("%username%", auth.profile.username)}
         </HotkeyButton>
       </div>
     {/each}
