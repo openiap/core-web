@@ -201,10 +201,10 @@ class entitiesdata {
 					break;
 				case base + "/mailhistory":
 					collectionname = "mailhist";
-					entities = await this.GetData(page, collectionname, {}, access_token);
+					entities = await this.GetData(page, collectionname, {}, access_token, false);
 					total_count = entities.length;
 					if(entities.length >= usersettings.pagesize) {
-						total_count = await this.GetCount(page, collectionname, {}, access_token);
+						total_count = await this.GetCount(page, collectionname, {}, access_token, false);
 					}
 					break;
 				case base + "/package":
@@ -217,10 +217,10 @@ class entitiesdata {
 					break;
 				case base + "/provider":
 					collectionname = "config";
-					entities = await this.GetData(page, collectionname, { _type: "provider" }, access_token);
+					entities = await this.GetData(page, collectionname, { _type: "provider" }, access_token, false);
 					total_count = entities.length;
 					if(entities.length >= usersettings.pagesize) {
-						total_count = await this.GetCount(page, collectionname, { _type: "provider" }, access_token);
+						total_count = await this.GetCount(page, collectionname, { _type: "provider" }, access_token, false);
 					}
 					break;
 				case base + "/resource":
