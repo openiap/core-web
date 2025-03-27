@@ -114,7 +114,7 @@
               {#each auth.config?.loginproviders.filter((x: any) => x.provider != "local") as lp}
                 <HotkeyButton
                   disabled={loading}
-                  aria-label={"Login with " + lp.name}
+                  aria-label={lp.name}
                   class="w-full"
                   onclick={() => {
                     loading = true;
