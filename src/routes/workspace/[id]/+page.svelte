@@ -14,11 +14,11 @@
   import { auth } from "$lib/stores/auth.svelte.js";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import {
-      Check,
-      Info,
-      Mail,
-      SquareArrowDown,
-      SquareArrowUp,
+    Check,
+    Info,
+    Mail,
+    SquareArrowDown,
+    SquareArrowUp,
   } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { superForm } from "sveltekit-superforms";
@@ -411,7 +411,7 @@
               <div class="font-medium self-start">
                 <Check class={iconClass} />
               </div>
-              <div class="font-medium">5 members in your workspace</div>
+              <div class="font-medium">3 members in your workspace</div>
             </div>
             <div class="flex items-center">
               <div class="font-medium self-start">
@@ -462,26 +462,13 @@
               <div class="font-medium self-start">
                 <Check class={iconClass} />
               </div>
+              <div class="font-medium">All free tier features</div>
+            </div>
+            <div class="flex items-center">
+              <div class="font-medium self-start">
+                <Check class={iconClass} />
+              </div>
               <div class="font-medium">25 members in your workspace</div>
-            </div>
-            <div class="flex items-center">
-              <div class="font-medium self-start">
-                <Check class={iconClass} />
-              </div>
-              <div class="font-medium">Priced agents that run 24/7</div>
-            </div>
-            <div class="flex items-center">
-              <div class="font-medium self-start">
-                <Check class={iconClass} />
-              </div>
-              <div class="font-medium">
-                Support via our
-                <a
-                  href="https://discourse.openiap.io/"
-                  target="_blank"
-                  class="hover:underline">{` community forum`}</a
-                >
-              </div>
             </div>
             <div class="flex items-center">
               <div class="font-medium self-start">
@@ -537,7 +524,7 @@
               <div class="font-medium self-start">
                 <Check class={iconClass} />
               </div>
-              <div class="font-medium">Unlimited members</div>
+              <div class="font-medium">Custom amount of members</div>
             </div>
             <div class="flex items-center">
               <div class="font-medium self-start">
@@ -555,9 +542,7 @@
               <div class="font-medium self-start">
                 <Check class={iconClass} />
               </div>
-              <div class="font-medium">
-                Billing support (reach out via the e-mail used in your invoice)
-              </div>
+              <div class="font-medium">Discount on support hours</div>
             </div>
           </Card.Content>
           <Card.Footer class="flex justify-between">
@@ -586,7 +571,11 @@
           <AlertDialog.Description class="mb-4">
             Please type the name of your new billing account.
           </AlertDialog.Description>
-          <CustomInput bind:value={newbillingaccountname} autofocus width="w-full" />
+          <CustomInput
+            bind:value={newbillingaccountname}
+            autofocus
+            width="w-full"
+          />
         </AlertDialog.Header>
         <AlertDialog.Footer>
           <HotkeyButton disabled={loading} onclick={() => (nameprompt = false)}

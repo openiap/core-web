@@ -101,7 +101,7 @@
           <div class="flex items-center py-1 px-2">
             <div class="flex items-center space-x-2 w-full">
               <LogIn class="h-4 w-4" />
-              <Label for="r2" class="cursor-pointer">jwtsignin</Label>
+              <Label for="r2" class="cursor-pointer">JWT Signin</Label>
             </div>
 
             <RadioGroup.Item
@@ -118,7 +118,7 @@
           <div class="flex items-center py-1 px-2">
             <div class="flex items-center space-x-2 w-full">
               <BookCopy class="h-4 w-4" />
-              <Label for="r3" class="cursor-pointer">impersonate</Label>
+              <Label for="r3" class="cursor-pointer">Impersonate</Label>
             </div>
             <RadioGroup.Item
               class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
@@ -134,7 +134,7 @@
           <div class="flex items-center py-1 px-2">
             <div class="flex items-center space-x-2 w-full">
               <MapPinPlus class="h-4 w-4" />
-              <Label for="r4" class="cursor-pointer">assignplan</Label>
+              <Label for="r4" class="cursor-pointer">Assign Plan</Label>
             </div>
             <RadioGroup.Item
               class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
@@ -150,7 +150,7 @@
           <div class="flex items-center py-1 px-2 space-x-20">
             <div class="flex items-center space-x-2 w-full">
               <MapPinX class="h-4 w-4" />
-              <Label for="r5" class="cursor-pointer">unassignplan</Label>
+              <Label for="r5" class="cursor-pointer">Unassign Plan</Label>
             </div>
             <RadioGroup.Item
               class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
@@ -167,7 +167,7 @@
           <div class="flex items-center py-1 px-2 space-x-20">
             <div class="flex items-center space-x-2 w-full">
               <ShieldCheck class="h-4 w-4" />
-              <Label for="r5" class="cursor-pointer">ensureagent</Label>
+              <Label for="r5" class="cursor-pointer">Ensure Agent</Label>
             </div>
             <RadioGroup.Item
               class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
@@ -183,7 +183,7 @@
           <div class="flex items-center py-1 px-2 space-x-20">
             <div class="flex items-center space-x-2 w-full">
               <ShieldOff class="h-4 w-4" />
-              <Label for="r5" class="cursor-pointer">killagent</Label>
+              <Label for="r5" class="cursor-pointer">Kill Agent</Label>
             </div>
             <RadioGroup.Item
               class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
@@ -199,7 +199,7 @@
           <div class="flex items-center py-1 px-2 space-x-20">
             <div class="flex items-center space-x-2 w-full">
               <ShieldMinus class="h-4 w-4" />
-              <Label for="r5" class="cursor-pointer">removeagent</Label>
+              <Label for="r5" class="cursor-pointer">Remove Agent</Label>
             </div>
             <RadioGroup.Item
               class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
@@ -215,7 +215,7 @@
           <div class="flex items-center py-1 px-2 space-x-20">
             <div class="flex items-center space-x-2 w-full">
               <TriangleAlert class="h-4 w-4" />
-              <Label for="r5" class="cursor-pointer">issue</Label>
+              <Label for="r5" class="cursor-pointer">Issue</Label>
             </div>
             <RadioGroup.Item
               class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
