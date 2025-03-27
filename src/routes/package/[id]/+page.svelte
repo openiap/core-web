@@ -40,8 +40,10 @@
           loading = false;
         }
       } else {
-        let errors = Object.keys(form.errors).map((key) => key + " is " + form.errors[key]);
-        if(errors.length > 0) {
+        let errors = Object.keys(form.errors).map(
+          (key) => key + " is " + form.errors[key],
+        );
+        if (errors.length > 0) {
           toast.error("Error", {
             description: errors.join(", "),
           });
@@ -215,7 +217,7 @@
         <Form.Label>Package file</Form.Label>
         <div class="flex items-center space-x-5">
           <CustomInput
-            size="md"
+            height="h-full"
             disabled={loading}
             type="file"
             bind:value={fileData}
@@ -226,7 +228,7 @@
             onclick={() => (fileData = null)}
             aria-label="Clear"
             variant="danger"
-            size="lg"
+            size="file"
           >
             Clear
           </HotkeyButton>

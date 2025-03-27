@@ -125,17 +125,17 @@
   <div class="flex gap-2 w-full">
     <SearchInput bind:searchstring />
   </div>
-  <div class="flex space-x-5">
+  <div class="flex space-x-5 justify-end">
     <CustomInput
-      width="w-full"
-      height="h-7"
+      width="lg:w-64"
+      height="h-full"
       disabled={loading}
       type="file"
       bind:value={fileData}
       onchangefunction={handleChange}
     />
     <HotkeyButton
-      size="sm"
+      size="file"
       disabled={loading || !fileData}
       onclick={uploadFile}
       aria-label="Upload"
