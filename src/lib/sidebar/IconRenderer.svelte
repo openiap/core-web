@@ -27,7 +27,7 @@
         UserRoundPlus,
         Users,
         UsersRound,
-        Zap
+        Zap,
     } from "lucide-svelte";
     export let title: string;
 </script>
@@ -49,7 +49,7 @@
 {:else if title == "Users"}
     <Users />
 {:else if title == "My Memberships"}
-    <BookUser  />
+    <BookUser />
 {:else if title == "Members"}
     <UsersRound />
 {:else if title == "Invite Member"}
@@ -80,6 +80,8 @@
     <CircleGauge />
 {:else if title == "Audit Logs"}
     <FileClock />
+{:else if title == "Database"}
+    <DatabaseZap />
 {:else if title == "Entities"}
     <DatabaseZap />
 {:else if title == "Home"}
