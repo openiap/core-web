@@ -359,7 +359,14 @@ class entitiesdata {
 		}
 		let queryas = undefined;
 		if (workspacefilter == true && ["cvr", "cvrfinancial", "cvrperson"].indexOf(collectionname) == -1) {
-			if (this.settings.searchstring.length == 24 && this.settings.searchstring.match(/^[0-9a-fA-F]{24}$/)) {
+			if(collectionname == "mq" || collectionname == "workitems") {
+				let or = [
+					{"_workspaceid": usersettings.currentworkspace},
+					{"_workspaceid": {"$exists": false}},
+				]
+				usequery = {...usequery, "$or": or};
+
+			} else if (this.settings.searchstring.length == 24 && this.settings.searchstring.match(/^[0-9a-fA-F]{24}$/)) {
 			} else {
 				if (usersettings.currentworkspace != null && usersettings.currentworkspace != "") {
 					queryas = usersettings.currentworkspace;
