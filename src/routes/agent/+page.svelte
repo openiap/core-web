@@ -51,9 +51,17 @@
   let loading = $state(false);
   let knownpods: any = [];
   let clients: any = [];
-  let filterby: "all" | "daemon" | "pods" | "docker" | "assistant" = "all";
+  let filterby: "all" | "daemon" | "pods" | "docker" | "assistant" =
+    usersettings.agentfilter;
   let filter = $state(false);
-
+  console.log(filterby);
+  if (browser && filterby == "pods") {
+    GetData().catch((error: any) => {
+      toast.error("Error while getting data", {
+        description: error.message,
+      });
+    });
+  }
   async function deleteitem(item: any) {
     try {
       await auth.client.CustomCommand({
@@ -311,7 +319,9 @@
   });
 </script>
 
-<div class={"xl:flex xl:items-center xl:justify-between mb-2 xl:mb-4 xl:space-x-4"}>
+<div
+  class={"xl:flex xl:items-center xl:justify-between mb-2 xl:mb-4 xl:space-x-4"}
+>
   <div class="xl:flex xl:items-center xl:space-x-5 mb-2 xl:mb-0 w-full">
     <SearchInput bind:searchstring class="w-full xl:w-[284px] mb-2 xl:mb-0" />
     <div class="w-fit">
@@ -324,7 +334,7 @@
           Filter</Popover.Trigger
         >
         <Popover.Content class="w-fit bg-bw50 dark:bg-popover py-2 px-1">
-          <RadioGroup.Root value="All" class="flex flex-col">
+          <RadioGroup.Root value={filterby} class="flex flex-col">
             <div class="flex items-center py-1 px-2">
               <div class="flex items-center space-x-2 w-full">
                 <Rows2 class="h-4 w-4" />
@@ -332,11 +342,13 @@
               </div>
               <RadioGroup.Item
                 class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
-                value="All"
+                value="all"
                 id="r1"
                 disabled={loading}
                 onclick={async () => {
                   filterby = "all";
+                  usersettings.agentfilter = filterby;
+                  usersettings.persist();
                   await GetData();
                   await getPods(false);
                 }}
@@ -350,11 +362,13 @@
 
               <RadioGroup.Item
                 class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
-                value="Daemon"
+                value="daemon"
                 id="r2"
                 disabled={loading}
                 onclick={async () => {
                   filterby = "daemon";
+                  usersettings.agentfilter = filterby;
+                  usersettings.persist();
                   await GetData();
                   await getPods(false);
                 }}
@@ -367,11 +381,13 @@
               </div>
               <RadioGroup.Item
                 class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
-                value="Pods"
+                value="pods"
                 id="r3"
                 disabled={loading}
                 onclick={async () => {
                   filterby = "pods";
+                  usersettings.agentfilter = filterby;
+                  usersettings.persist();
                   await GetData();
                 }}
               />
@@ -383,11 +399,13 @@
               </div>
               <RadioGroup.Item
                 class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
-                value="Docker"
+                value="docker"
                 id="r4"
                 disabled={loading}
                 onclick={async () => {
                   filterby = "docker";
+                  usersettings.agentfilter = filterby;
+                  usersettings.persist();
                   await GetData();
                   await getPods(false);
                 }}
@@ -400,11 +418,13 @@
               </div>
               <RadioGroup.Item
                 class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
-                value="Assistant"
+                value="assistant"
                 id="r5"
                 disabled={loading}
                 onclick={async () => {
                   filterby = "assistant";
+                  usersettings.agentfilter = filterby;
+                  usersettings.persist();
                   await GetData();
                   await getPods(false);
                 }}
@@ -418,6 +438,8 @@
                 <HotkeyButton
                   size="ghost"
                   onclick={async () => {
+                    usersettings.agentfilter = filterby;
+                    usersettings.persist();
                     await GetData();
                     await getPods(false);
                   }}
@@ -613,18 +635,18 @@
             </DropdownMenu.Item> -->
 
           {#if item._workspaceid != null && item._workspaceid != ""}
-          <DropdownMenu.Item
-            class="cursor-pointer border border-transparent hover:border-bw500 rounded-[10px]"
-            onclick={() => {
-              loading = true;
-              goto(base + `/workspace/${item._workspaceid}`);
-            }}
-          >
-            <div class="flex items-center">
-              <Receipt class="mr-2 size-4" />
-              <span>Workspace</span>
-            </div>
-          </DropdownMenu.Item>
+            <DropdownMenu.Item
+              class="cursor-pointer border border-transparent hover:border-bw500 rounded-[10px]"
+              onclick={() => {
+                loading = true;
+                goto(base + `/workspace/${item._workspaceid}`);
+              }}
+            >
+              <div class="flex items-center">
+                <Receipt class="mr-2 size-4" />
+                <span>Workspace</span>
+              </div>
+            </DropdownMenu.Item>
           {/if}
 
           <DropdownMenu.Item

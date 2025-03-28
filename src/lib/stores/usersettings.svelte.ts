@@ -23,6 +23,7 @@ export type userSettings = {
     pagesettings: pageSettings[];
     currentpage: string;
     pagesize: number;
+    agentfilter: "all" | "daemon" | "pods" | "docker" | "assistant";
 }
 export class pagesettings implements pageSettings {
     page: string;
@@ -49,6 +50,7 @@ class _usersettings implements userSettings {
     currentpage: string = "";
     pagesize: number = $state(12);
     defaultpagesize: number = 12;
+    agentfilter: "all" | "daemon" | "pods" | "docker" | "assistant" = "all";
     constructor() {
         this._id = "";
         this._type = "usersettings";
@@ -57,6 +59,7 @@ class _usersettings implements userSettings {
         this.entities_collectionname = "entities";
         this.currentworkspace = "";
         this.pagesize = this.defaultpagesize;
+        this.agentfilter = "all";
     }
     getpagesettings(page: string) {
         let settings = this.pagesettings.find(x => x.page == page);
@@ -82,6 +85,7 @@ class _usersettings implements userSettings {
         this.entities_collectionname = "";
         this.pagesettings = [];
         this.currentpage = "";
+        this.agentfilter = "all";
         if (auth.profile.sub == null || auth.profile.sub == "") {
             this.currentworkspace = "";
             return $state.snapshot(this);
@@ -106,6 +110,7 @@ class _usersettings implements userSettings {
         this.currentworkspace = "";
         this.pagesettings = [];
         this.pagesize = this.defaultpagesize;
+        this.agentfilter = "all";
         this.dopersist();
     }
     loadpage(settings: pageSettings) {
@@ -128,6 +133,11 @@ class _usersettings implements userSettings {
         this.name = settings.name;
         this.pagesettings = settings.pagesettings;
         this.pagesize;
+        this.agentfilter = settings.agentfilter;
+        // @ts-ignore
+        if (this.agentfilter == null || this.agentfilter == "") {
+            this.agentfilter = "all";
+        }
         // @ts-ignore
         if (this.pagesize != null && this.pagesize != "") {
             this.pagesize = settings.pagesize;
@@ -200,7 +210,7 @@ class _usersettings implements userSettings {
         // @ts-ignore
         delete item.persisttimer;
         delete (item as any)._id;
-        if(access_token != null && access_token != "") {
+        if (access_token != null && access_token != "") {
             let result = await auth.client.InsertOrUpdateOne<userSettings>({ collectionname: "users", item, uniqeness: "userid,_type", jwt: access_token });
             this._id = result._id;
         } else {
