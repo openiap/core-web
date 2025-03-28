@@ -22,6 +22,7 @@
         ScanFace,
         Server,
         Settings,
+        ShieldBan,
         SquareCode,
         SquareTerminal,
         UserRoundPlus,
@@ -90,6 +91,8 @@
     <ChartSpline />
 {:else if title == "Git Repositories"}
     <GitMerge />
+{:else if title == "Entity Restrictions"}
+    <ShieldBan />
 {:else}
     <MessageSquare />
 {/if}
