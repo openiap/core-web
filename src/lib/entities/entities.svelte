@@ -566,7 +566,7 @@
 
 <div class="main">
 	<div class="mb-2">
-		<div class="text-red-500">{data.errormessage}</div>
+		<!-- <div class="text-red-500">{data.errormessage}</div> -->
 		<div class="overflow-hidden rounded-[10px] border border-bw500">
 			<div class={`border-bw500 rounded-[10px]`}>
 				<Table.Root>
