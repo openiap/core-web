@@ -181,7 +181,7 @@
 		allworkspaces,
 	]);
 	const entities = new SidebarItem(
-		"Entities",
+		"Database",
 		"g e",
 		"tourentities",
 		`${base}/entities`,
