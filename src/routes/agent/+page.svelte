@@ -51,6 +51,7 @@
   let loading = $state(false);
   let knownpods: any = [];
   let clients: any = [];
+  // svelte-ignore non_reactive_update
   let filterby: "all" | "daemon" | "pods" | "docker" | "assistant" =
     usersettings.agentfilter;
   let filter = $state(false);

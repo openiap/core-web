@@ -180,6 +180,7 @@
     <div class="mb-2 font-medium text-sm">Upload Files</div>
     <div class="flex justify-start space-x-5">
       <CustomInput
+        height="h-full"
         placeholder="Type name"
         disabled={loading}
         type="file"

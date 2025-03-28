@@ -283,6 +283,7 @@
   <div class="mb-10">
     <div class="mb-2 font-medium text-sm">Upload Files</div>
     <CustomInput
+      height="h-full"
       placeholder="Type name"
       disabled={loading}
       type="file"
