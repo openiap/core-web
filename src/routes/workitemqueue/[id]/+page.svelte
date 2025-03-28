@@ -159,7 +159,7 @@
             basefilter={{ _type: "workspace" }}
             projection={{ name: 1 }}
             class="w-64"
-            name="project"
+            name="workspace"
             noitem={true}
           />
         {/snippet}
