@@ -114,8 +114,7 @@
 		multi_select = true,
 		show_delete = true,
 		custom_multi_action_label = "",
-		custom_multi_action = async (ids: string[]) => {
-		},
+		custom_multi_action = async (ids: string[]) => {},
 		...rest
 	} = $props();
 
@@ -594,7 +593,7 @@
 									/></Table.Head
 								>
 							{/if}
-							{#each tableheaders as head, index}
+							{#each tableheaders as head}
 								{#if head.show}
 									<Table.Head
 										class={head.headclass +
@@ -669,8 +668,25 @@
 											<Table.Cell
 												class={head.cellclass +
 													` ${!loading && "cursor-pointer"} `}
-												onclick={() => {
-													if (
+												onclick={(event) => {
+													if (event.shiftKey) {
+														// get the text
+														const text =
+															RenderItemData(
+																item,
+																head.field,
+															);
+														// copy to clipboard
+														navigator.clipboard.writeText(
+															text,
+														);
+														toast.success(
+															"Copied " +
+																text +
+																" to clipboard",
+														);
+														event.stopPropagation();
+													} else if (
 														multi_select &&
 														selected_items.length >
 															0
@@ -690,11 +706,79 @@
 												)}
 											</Table.Cell>
 										{:else if head.field == "members"}
-											<Table.Cell class={head.cellclass}>
+											<Table.Cell
+												class={head.cellclass}
+												onclick={(event) => {
+													if (event.shiftKey) {
+														// get the text
+														const text =
+															RenderItemData(
+																item,
+																head.field,
+															);
+														// copy to clipboard
+														navigator.clipboard.writeText(
+															text,
+														);
+														toast.success(
+															"Copied " +
+																text +
+																" to clipboard",
+														);
+														event.stopPropagation();
+													} else if (
+														multi_select &&
+														selected_items.length >
+															0
+													) {
+														ToggleSelect(item);
+													} else {
+														if (!loading) {
+															single_item_click(
+																item,
+															);
+														}
+													}
+												}}
+											>
 												{item.members?.length}
 											</Table.Cell>
 										{:else if head.field == "_created" || head.field == "_modified" || head.field == "lastrun" || head.field == "lastseen" || head.field == "metadata._created" || head.field == "metadata._modified" || head.field == "dt" || head.field == "ts"}
-											<Table.Cell class={head.cellclass}>
+											<Table.Cell
+												class={head.cellclass}
+												onclick={(event) => {
+													if (event.shiftKey) {
+														// get the text
+														const text =
+															RenderItemData(
+																item,
+																head.field,
+															);
+														// copy to clipboard
+														navigator.clipboard.writeText(
+															text,
+														);
+														toast.success(
+															"Copied " +
+																text +
+																" to clipboard",
+														);
+														event.stopPropagation();
+													} else if (
+														multi_select &&
+														selected_items.length >
+															0
+													) {
+														ToggleSelect(item);
+													} else {
+														if (!loading) {
+															single_item_click(
+																item,
+															);
+														}
+													}
+												}}
+											>
 												{#if RenderItemData(item, head.field) != null}
 													{_timeSince(
 														new Date(
@@ -709,7 +793,41 @@
 												{/if}
 											</Table.Cell>
 										{:else if head.field == "state"}
-											<Table.Cell class={head.cellclass}>
+											<Table.Cell
+												class={head.cellclass}
+												onclick={(event) => {
+													if (event.shiftKey) {
+														// get the text
+														const text =
+															RenderItemData(
+																item,
+																head.field,
+															);
+														// copy to clipboard
+														navigator.clipboard.writeText(
+															text,
+														);
+														toast.success(
+															"Copied " +
+																text +
+																" to clipboard",
+														);
+														event.stopPropagation();
+													} else if (
+														multi_select &&
+														selected_items.length >
+															0
+													) {
+														ToggleSelect(item);
+													} else {
+														if (!loading) {
+															single_item_click(
+																item,
+															);
+														}
+													}
+												}}
+											>
 												{#if item != null && item.state != null && item.state != ""}
 													<StatusCard
 														bind:title={
@@ -723,7 +841,40 @@
 												{/if}
 											</Table.Cell>
 										{:else if head.field == "errortype"}
-											<Table.Cell class={head.cellclass}>
+											<Table.Cell class={head.cellclass}
+											onclick={(event) => {
+												if (event.shiftKey) {
+													// get the text
+													const text =
+														RenderItemData(
+															item,
+															head.field,
+														);
+													// copy to clipboard
+													navigator.clipboard.writeText(
+														text,
+													);
+													toast.success(
+														"Copied " +
+															text +
+															" to clipboard",
+													);
+													event.stopPropagation();
+												} else if (
+													multi_select &&
+													selected_items.length >
+														0
+												) {
+													ToggleSelect(item);
+												} else {
+													if (!loading) {
+														single_item_click(
+															item,
+														);
+													}
+												}
+											}}
+											>
 												{#if item != null && item.errortype != null && item.errortype != ""}
 													<StatusCard
 														bind:title={
@@ -738,15 +889,29 @@
 											</Table.Cell>
 										{:else if rest[head.field] != null}
 											<Table.Cell class={head.cellclass}
-												>{@render rest[head.field](
-													item,
-												)}</Table.Cell
-											>
-										{:else}
-											<Table.Cell
-												class={head.cellclass}
-												onclick={() => {
-													if (multi_select) {
+												onclick={(event) => {
+													if (event.shiftKey) {
+														// get the text
+														const text =
+															RenderItemData(
+																item,
+																head.field,
+															);
+														// copy to clipboard
+														navigator.clipboard.writeText(
+															text,
+														);
+														toast.success(
+															"Copied " +
+																text +
+																" to clipboard",
+														);
+														event.stopPropagation();
+													} else if (
+														multi_select &&
+														selected_items.length >
+															0
+													) {
 														ToggleSelect(item);
 													} else {
 														if (!loading) {
@@ -754,6 +919,41 @@
 																item,
 															);
 														}
+													}
+												}}
+												>{@render rest[head.field](
+													item,
+												)}</Table.Cell
+											>
+										{:else}
+											<Table.Cell
+												class={head.cellclass}
+												onclick={(event) => {
+													if (event.shiftKey) {
+														// get the text
+														const text = RenderItemData(
+															item,
+															head.field,
+														);
+														// copy to clipboard
+														navigator.clipboard.writeText(
+															text,
+														);
+														toast.success(
+															"Copied " +
+																text +
+																" to clipboard",
+														);
+														event.stopPropagation();
+														
+													} else if (multi_select) {
+														ToggleSelect(item);
+													} else {
+														// if (!loading) {
+														// 	single_item_click(
+														// 		item,
+														// 	);
+														// }
 													}
 												}}
 												>{RenderItemData(
@@ -787,13 +987,16 @@
 						aria-label={`${custom_multi_action_label} ${selected_items.length} Items`}
 						disabled={loading || selected_items.length === 0}
 						onclick={() => {
-							custom_multi_action(selected_items.map((x) => x._id));
+							custom_multi_action(
+								selected_items.map((x) => x._id),
+							);
 						}}
 						size="base"
 						variant="base"
 					>
 						<CloudLightning />
-						{custom_multi_action_label} {selected_items.length} Items</HotkeyButton
+						{custom_multi_action_label}
+						{selected_items.length} Items</HotkeyButton
 					>
 				{/if}
 				{#if show_delete == true}

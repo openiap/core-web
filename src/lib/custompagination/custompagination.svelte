@@ -33,7 +33,7 @@
 						</HotkeyButton>
 					</Pagination.PrevButton>
 				</Pagination.Item>
-				{#each pages as page (page.key)}
+				{#each pages as page}
 					{#if page.type === "ellipsis"}
 						<Pagination.Item>
 							<Pagination.Ellipsis />

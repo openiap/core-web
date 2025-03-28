@@ -133,8 +133,10 @@
 		true,
 		true,
 	);
+	const homeCat = new SidebarCategory("", false, [
+		home
+	]);
 	const actions = new SidebarCategory("", false, [
-		home,
 		chat,
 		agent,
 		workitem,
@@ -345,7 +347,7 @@
 		...restProps
 	}: ExtendedComponentProps = $props();
 
-	const navMain = $state([actions, workspace, management]);
+	const navMain = $state([homeCat, actions, workspace, management]);
 	function loadMenu() {
 		if (
 			auth.config?.workspace_enabled == true &&
@@ -447,19 +449,20 @@
 				grafana.url = auth.config?.grafana_url;
 			}
 		}
-		if(workitem.hidden != true) {
-			workitem.hidden = !auth.isAuthenticated;
-		}
-		if (workitemqueue.hidden != true) {
-			workitemqueue.hidden = !auth.isAuthenticated;
-		}
-		if (formworkflow.hidden != true) {
-			formworkflow.hidden = !auth.isAuthenticated;
-		}
-		if (rpaworkflow.hidden != true) {
-			rpaworkflow.hidden = !auth.isAuthenticated;
-		}
+		// if(workitem.hidden != true) {
+		// 	workitem.hidden = !auth.isAuthenticated;
+		// }
+		// if (workitemqueue.hidden != true) {
+		// 	workitemqueue.hidden = !auth.isAuthenticated;
+		// }
+		// if (formworkflow.hidden != true) {
+		// 	formworkflow.hidden = !auth.isAuthenticated;
+		// }
+		// if (rpaworkflow.hidden != true) {
+		// 	rpaworkflow.hidden = !auth.isAuthenticated;
+		// }
 		management.hidden = !auth.isAuthenticated;
+		actions.hidden = !auth.isAuthenticated;
 
 	}
 	if (browser) {
@@ -505,7 +508,7 @@
 		</Sidebar.Header>
 		<Sidebar.Content class="h-full overflow-hidden">
 			<div class="h-full overflow-auto mb-24">
-				{#each navMain as group (group.title)}
+				{#each navMain as group}
 					{#if !group.hidden}
 						<Sidebar.Group class="ps-8">
 							{#if group.title && group.title != ""}
@@ -516,7 +519,7 @@
 							{/if}
 							<Sidebar.GroupContent>
 								<Sidebar.Menu>
-									{#each group.items as item (item.title)}
+									{#each group.items as item}
 										{#if !item.hidden}
 											<Sidebar.MenuItem
 												class="rounded-[10px] hover:rounded-[10px]"

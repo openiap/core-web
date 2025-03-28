@@ -191,7 +191,7 @@
                     </Command.Root>
                     <Separator /> -->
                     {#if search == null || search == ""}
-                        {#each workspaces as workspace, index (workspace._id)}
+                        {#each workspaces as workspace}
                             <DropdownMenu.Item
                                 onSelect={() => selectWorkspace(workspace)}
                                 class={`rounded-[10px] p-1.5 px-2.5`}

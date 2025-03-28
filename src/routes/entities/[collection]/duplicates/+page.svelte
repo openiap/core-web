@@ -146,7 +146,7 @@
     <div class="h-full overflow-auto">
       <ScrollArea class="max-h-full w-[266px] overflow-auto">
         <div class="pt-0 py-4 px-1 flex flex-col">
-          {#each collections as collection, index}
+          {#each collections as collection}
             <div class="flex items-center justify-between py-1">
               <HotkeyButton
                 aria-label={collection.name}
