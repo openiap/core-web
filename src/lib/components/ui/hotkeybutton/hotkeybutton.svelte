@@ -45,7 +45,7 @@
 				refresh: "h-5 p-1 rounded-[10px]",
 				entity: "h-8 px-2.5 py-1.5",
 				ghost: "",
-				sendchat: "h-8 w-8 p-2",
+				sendchat: "h-8 w-8 p-2 rounded-full",
 				file: "h-full rounded-[10px] p-2",
 			},
 		},

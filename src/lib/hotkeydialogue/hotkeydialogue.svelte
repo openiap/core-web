@@ -2,13 +2,15 @@
 	import * as Dialog from "$lib/components/ui/dialog/index.js";
 	import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
 	import Separator from "$lib/components/ui/separator/separator.svelte";
-    import { text } from "@sveltejs/kit";
+	import { text } from "@sveltejs/kit";
 	import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp } from "lucide-svelte";
 
 	let open = $state(false);
 
-	let rootClass = "grid grid-cols-4"
-	let textClass = "text-[#22477D] dark:text-yellow-300"
+	let rootClass = "grid grid-cols-6";
+	let textClass = "text-[#22477D] dark:text-yellow-300";
+	let keydiv = "justify-self-end col-span-2";
+	let actiontag = "col-span-4";
 </script>
 
 <Dialog.Root bind:open>
@@ -24,131 +26,127 @@
 			<Dialog.Description class="w-full">
 				<div class="grid grid-cols-2 overflow-auto p-2">
 					<div class={rootClass}>
-						<div class="justify-self-end col-span-1">
+						<div class={keydiv}>
 							<span class={textClass}>g</span>
 							<span>+</span>
 							<span class={textClass}>e</span>
 						</div>
 
-						<span class="col-span-3"> : Goto entities </span>
+						<span class={actiontag}> : Goto entities </span>
 					</div>
 					<div class={rootClass}>
-						<div class="justify-self-end col-span-1">
+						<div class={keydiv}>
 							<span class={textClass}>g</span>
 							<span>+</span>
 							<span class={textClass}>h</span>
 						</div>
 
-						<span class="col-span-3"> : Goto home page </span>
+						<span class={actiontag}> : Goto home page </span>
 					</div>
 					<div class={rootClass}>
-						<div class="justify-self-end col-span-1">
+						<div class={keydiv}>
 							<span class={textClass}>g</span>
 							<span>+</span>
 							<span class={textClass}>a</span>
 						</div>
 
-						<span class="col-span-3"> : Goto agents page </span>
+						<span class={actiontag}> : Goto agents page </span>
 					</div>
 					<div class={rootClass}>
-						<div class="justify-self-end col-span-1">
+						<div class={keydiv}>
 							<span class={textClass}>g</span>
 							<span>+</span>
 							<span class={textClass}>w</span>
 						</div>
 
-						<span class="col-span-3"> : Goto workitems page </span>
+						<span class={actiontag}> : Goto workitems page </span>
 					</div>
 					<div class={rootClass}>
-						<div class="justify-self-end col-span-1">
+						<div class={keydiv}>
 							<span class={textClass}>g</span>
 							<span>+</span>
 							<span class={textClass}>i</span>
 						</div>
 
-						<span class="col-span-3">
-							: Goto Git Repositories
-						</span>
+						<span class={actiontag}> : Goto Git Repositories </span>
 					</div>
 					<div class={rootClass}>
-						<div class="justify-self-end col-span-1">
+						<div class={keydiv}>
 							<span class={textClass}>g</span>
 							<span>+</span>
 							<span class={textClass}>u</span>
 						</div>
 
-						<span class="col-span-3"> : Goto users page </span>
+						<span class={actiontag}> : Goto users page </span>
 					</div>
 					<div class={rootClass}>
-						<div class="justify-self-end col-span-1">
+						<div class={keydiv}>
 							<span class={textClass}>g</span>
 							<span>+</span>
 							<span class={textClass}>r</span>
 						</div>
 
-						<span class="col-span-3"> : Goto roles page </span>
+						<span class={actiontag}> : Goto roles page </span>
 					</div>
 					<div class={rootClass}>
-						<div class="justify-self-end col-span-1">
+						<div class={keydiv}>
 							<span class={textClass}>g</span>
 							<span>+</span>
 							<span class={textClass}>f</span>
 						</div>
 
-						<span class="col-span-3"> : Goto grafana page </span>
+						<span class={actiontag}> : Goto grafana page </span>
 					</div>
 					<div class={rootClass}>
-						<div class="justify-self-end col-span-1">
+						<div class={keydiv}>
 							<span class={textClass}>g</span>
 							<span>+</span>
 							<span class={textClass}>l</span>
 						</div>
 
-						<span class="col-span-3"> : Goto licence page </span>
+						<span class={actiontag}> : Goto licence page </span>
 					</div>
 					<div class={rootClass}>
-						<div class="justify-self-end col-span-1">
+						<div class={keydiv}>
 							<span class={textClass}>g</span>
 							<span>+</span>
 							<span class={textClass}>b</span>
 						</div>
 
-						<span class="col-span-3">
-							: Goto billing accounts
-						</span>
+						<span class={actiontag}> : Goto billing accounts </span>
 					</div>
 					<div class={rootClass}>
-						<div class="justify-self-end col-span-1">
+						<div class={keydiv}>
 							<span class={textClass}>g</span>
 							<span>+</span>
 							<span class={textClass}>t</span>
 						</div>
 
-						<span class="col-span-3"> : Open page tour </span>
+						<span class={actiontag}> : Open page tour </span>
 					</div>
 					<!-- <div class={rootClass}>
-						<div class="justify-self-end col-span-1">
+						<div class={keydiv}>
 							<div class="text-yellow-300 flex">
 								<ArrowUp class="h-4 w-4" />
 								<ArrowRight class="h-4 w-4" />
 							</div>
 						</div>
 
-						<span class="col-span-3"> : Change collection </span>
+						<span class={actiontag}> : Change collection </span>
 					</div>
 					<div class={rootClass}>
-						<div class="justify-self-end col-span-1">
+						<div class={keydiv}>
 							<div class="text-yellow-300 flex">
 								<ArrowLeft class="h-4 w-4" />
 								<ArrowRight class="h-4 w-4" />
 							</div>
 						</div>
 
-						<span class="col-span-3"> : Change page </span>
+						<span class={actiontag}> : Change page </span>
 					</div> -->
 					<div class={rootClass}>
-						<div class="justify-self-end col-span-1">
-							<div class={"flex "+ textClass}>
+						<div class={keydiv}>
+							<div class={"flex " + textClass}>
 								<ArrowLeft class="h-4 w-4" />
 								<ArrowUp class="h-4 w-4" />
 								<ArrowRight class="h-4 w-4" />
@@ -156,41 +154,48 @@
 							</div>
 						</div>
 
-						<span class="col-span-3"> : Navigate entities </span>
+						<span class={actiontag}> : Navigate entities </span>
 					</div>
 					<div class={rootClass}>
-						<div class="justify-self-end col-span-1">
+						<div class={keydiv}>
 							<span class={textClass}>Ctrl</span>
 							<span>+</span>
 							<span class={textClass}>d</span>
 						</div>
 
-						<span class="col-span-3"> : Open Debug pane </span>
+						<span class={actiontag}> : Open Debug pane </span>
 					</div>
 					<div class={rootClass}>
-						<div class="justify-self-end col-span-1">
+						<div class={keydiv}>
+							<span class={textClass}>hold shift </span>
+						</div>
+
+						<span class={actiontag}> : Copy table cell text </span>
+					</div>
+					<div class={rootClass}>
+						<div class={keydiv}>
 							<span class={textClass}>Ctrl</span>
 							<span>+</span>
 							<span class={textClass}>f</span>
 						</div>
 
-						<span class="col-span-3"> : Focus local search </span>
+						<span class={actiontag}> : Focus local search </span>
 					</div>
 					<div class={rootClass}>
-						<div class="justify-self-end col-span-1">
+						<div class={keydiv}>
 							<span class={textClass}>Ctrl</span>
 							<span>+</span>
 							<span class={textClass}>s</span>
 						</div>
 
-						<span class="col-span-3"> : Save form </span>
+						<span class={actiontag}> : Save form </span>
 					</div>
 					<div class={rootClass}>
-						<div class="justify-self-end col-span-1">
+						<div class={keydiv}>
 							<span class={textClass}>Ins Key</span>
 						</div>
 
-						<span class="col-span-3"> : Create Data </span>
+						<span class={actiontag}> : Create Data </span>
 					</div>
 				</div>
 			</Dialog.Description>
