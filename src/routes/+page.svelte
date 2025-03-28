@@ -151,14 +151,20 @@
           </div>
         </div>
         <div>
-          <a
+          <HotkeyButton
+            aria-label={"Goto Documentation"}
+            size="sm"
+            onclick={() => window.open("https://docs.openiap.io/", "_blank")}
+            >Documentation</HotkeyButton
+          >
+          <!-- <a
             href="https://docs.openiap.io/"
             class="dark:text-buttonlink"
             target="_blank"
             rel="noopener noreferrer"
           >
             https://docs.openiap.io/
-          </a>
+          </a> -->
         </div>
       </div>
     </div>
@@ -173,12 +179,19 @@
           </div>
         </div>
         <div>
-          <a
+          <HotkeyButton
+            aria-label={"Goto the community forum"}
+            size="sm"
+            onclick={() =>
+              window.open("https://discourse.openiap.io/", "_blank")}
+            >Community Forum</HotkeyButton
+          >
+          <!-- <a
             href="https://discourse.openiap.io/"
             class="dark:text-buttonlink"
             target="_blank"
             rel="noopener noreferrer">https://discourse.openiap.io/</a
-          >
+          > -->
         </div>
       </div>
     </div>
@@ -208,6 +221,7 @@
             >
               {#if item?.buttons?.package?.link}
                 <HotkeyButton
+                  aria-label={"Goto " + item?.buttons?.package?.title}
                   size="sm"
                   onclick={() =>
                     window.open(item?.buttons?.package?.link, "_blank")}
@@ -215,6 +229,7 @@
                 >
               {/if}
               <HotkeyButton
+                aria-label={"Goto " + item?.title + " example"}
                 size="sm"
                 onclick={() => window.open(item?.buttons?.example, "_blank")}
                 >Example</HotkeyButton
@@ -241,6 +256,7 @@
         </div>
         <div>
           <HotkeyButton
+            aria-label="Download VSC extension"
             onclick={() =>
               // window.open(
               //   "vscode:extension/openiap.openiap-assistant",
@@ -262,11 +278,14 @@
         <div>
           <div class="mb-2 dark:text-bw50">Download OpenRPA</div>
           <div class="mb-5 dark:text-bw400">
-            If you are looking for a free and open source Robotic Process Automation tool, we also maintain OpenRPA that you can easily manage from OpenCore:
+            If you are looking for a free and open source Robotic Process
+            Automation tool, we also maintain OpenRPA that you can easily manage
+            from OpenCore:
           </div>
         </div>
         <div>
           <HotkeyButton
+            aria-label="Download OpenRPA"
             onclick={() =>
               window.open(
                 "https://github.com/open-rpa/openrpa/releases/latest/download/OpenRPA.msi",
