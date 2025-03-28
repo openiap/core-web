@@ -508,7 +508,7 @@
 				{#each navMain as group, index}
 					{#if !group.hidden}
 						<Sidebar.Group
-							class={`"ps-8" ${index == 0 ? "py-0 my-0" : index == 1 ? "pt-1" : ""}`}
+							class={`ps-8 ${index == 0 ? "py-0 pt-2" : index == 1 ? "pt-1" : ""}`}
 						>
 							{#if group.title && group.title != ""}
 								<Sidebar.GroupLabel
