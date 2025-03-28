@@ -12,20 +12,20 @@
 	import { sidemenu } from "$lib/stores/sidemenu.svelte";
 	import { usersettings } from "$lib/stores/usersettings.svelte.js";
 	import {
-	    ArrowLeftToLine,
-	    ArrowRightToLine,
-	    CircleHelp,
-	    Github,
+		ArrowLeftToLine,
+		ArrowRightToLine,
+		CircleHelp,
+		Github,
 	} from "lucide-svelte";
 	import Moon from "lucide-svelte/icons/moon";
 	import Sun from "lucide-svelte/icons/sun";
 	import { toggleMode } from "mode-watcher";
 	import { capitalizeFirstLetter } from "../helper";
 	import {
-	    agentTour,
-	    baseTour,
-	    driverObj,
-	    entitiesTour,
+		agentTour,
+		baseTour,
+		driverObj,
+		entitiesTour,
 	} from "../lib/sidebar/onboarding";
 	import type { Workspace } from "./workspace/schema";
 
@@ -111,7 +111,7 @@
 				// if(workspaces.length == 0) {
 				// 	return false;
 				// }
-				if(auth.profile.validated == null) {
+				if (auth.profile.validated == null) {
 					return false;
 				}
 				return auth.profile.validated;
@@ -188,7 +188,7 @@
 	<div class="flex items-center justify-end">
 		<div class="flex space-x-5 items-center">
 			<!-- <Search /> -->
-			{#if checkTourUrl()}
+			{#if checkTourUrl() && auth.isAuthenticated}
 				<HotkeyButton
 					onclick={() => {
 						if (browser) {
