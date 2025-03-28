@@ -133,9 +133,7 @@
 		true,
 		true,
 	);
-	const homeCat = new SidebarCategory("", false, [
-		home
-	]);
+	const homeCat = new SidebarCategory("", false, [home]);
 	const actions = new SidebarCategory("", false, [
 		chat,
 		agent,
@@ -463,7 +461,6 @@
 		// }
 		management.hidden = !auth.isAuthenticated;
 		actions.hidden = !auth.isAuthenticated;
-
 	}
 	if (browser) {
 		Mousetrap.bind("g t", function (e) {
@@ -508,9 +505,11 @@
 		</Sidebar.Header>
 		<Sidebar.Content class="h-full overflow-hidden">
 			<div class="h-full overflow-auto mb-24">
-				{#each navMain as group}
+				{#each navMain as group, index}
 					{#if !group.hidden}
-						<Sidebar.Group class="ps-8">
+						<Sidebar.Group
+							class={`"ps-8" ${index == 0 ? "py-0 my-0" : index == 1 ? "pt-1" : ""}`}
+						>
 							{#if group.title && group.title != ""}
 								<Sidebar.GroupLabel
 									class="font-bold text-black dark:text-bw300"
