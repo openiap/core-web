@@ -447,6 +447,20 @@
 				grafana.url = auth.config?.grafana_url;
 			}
 		}
+		if(workitem.hidden != true) {
+			workitem.hidden = !auth.isAuthenticated;
+		}
+		if (workitemqueue.hidden != true) {
+			workitemqueue.hidden = !auth.isAuthenticated;
+		}
+		if (formworkflow.hidden != true) {
+			formworkflow.hidden = !auth.isAuthenticated;
+		}
+		if (rpaworkflow.hidden != true) {
+			rpaworkflow.hidden = !auth.isAuthenticated;
+		}
+		management.hidden = !auth.isAuthenticated;
+
 	}
 	if (browser) {
 		Mousetrap.bind("g t", function (e) {
