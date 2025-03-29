@@ -24,7 +24,7 @@
     let message = $state("");
     let loading = $state(false);
     let output = $state("");
-    let robot = $state("");
+    let robot = $state(data.item._createdbyid);
     let queuename = "";
 
     async function init() {
@@ -135,7 +135,7 @@
 <div>
     {message}
 </div>
-<div>
+<div class="mb-10">
     <Entityselector
         queryas={usersettings.currentworkspace}
         width="md:w-fit w-64"
@@ -144,6 +144,7 @@
         collectionname="users"
         basefilter={{ _type: "user", _rpaheartbeat: { $exists: true } }}
         bind:value={robot}
+        name="Robot"
     />
     {#each item.Parameters as param}
         <div class="mb-2">
@@ -177,7 +178,7 @@
         {/if}
     {/each}
     <HotkeyButton
-        data-shortcut="enter"
+        data-shortcut="enter,ctrl+s"
         disabled={loading || robot == ""}
         onclick={async () => {
             try {

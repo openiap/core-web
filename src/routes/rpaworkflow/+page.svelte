@@ -5,23 +5,43 @@
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
+  import { EntitySelector } from "$lib/entityselector/index.js";
   import Searchinput from "$lib/searchinput/searchinput.svelte";
   import { Pencil, Play } from "lucide-svelte";
 
   let { data } = $props();
   let ref: any;
   let loading = $state(false);
+  let project = $state("");
   datacomponent.parsesettings(data.settings);
   let searchstring = $state(datacomponent.settings.searchstring);
   let selected_items = $state([]);
   let entities = $state(data.entities);
   function single_item_click(item: any) {
-    goto(base + `/rpaworkflow/${item._id}`)
+    goto(base + `/rpaworkflow/${item._id}`);
   }
 </script>
 
-<div class="mb-4">
+<div class="lg:flex space-y-4 lg:space-y-0 mb-4 lg:space-x-5">
   <Searchinput bind:searchstring />
+  <EntitySelector
+    handleChangeFunction={async (value: any) => {
+      console.log(value, project);
+      if (value == "") {
+        return (searchstring = "");
+      }
+      searchstring = JSON.stringify({ _type: "workflow", projectid: value });
+    }}
+    width="md:w-fit w-full"
+    height="h-7"
+    class="mb-10"
+    disabled={loading}
+    collectionname="openrpa"
+    basefilter={{ _type: "project" }}
+    bind:value={project}
+    name="Project"
+    allowunselect={true}
+  />
 </div>
 <Entities
   collectionname={data.collectionname}

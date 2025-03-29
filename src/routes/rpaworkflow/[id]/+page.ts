@@ -16,7 +16,8 @@ export const load: PageLoad = async ({ parent, params }) => {
     _id: string;
     name: string;
     Parameters: Array<Parameter>; // Use the defined type here
-  } = { _id: "", name: "", Parameters: [{ name: "", type: "", value: "" }] };
+    _createdbyid: string;
+  } = { _id: "", name: "", Parameters: [{ name: "", type: "", value: "" }], _createdbyid: "" };
   try {
     if (params.id == null || params.id == "") { goto(base + `/rpaworkflow`); return { item }; }
     item = await auth.client.FindOne<any>({ collectionname: "openrpa", query: { _id: params.id, _type: "workflow" }, jwt: access_token });

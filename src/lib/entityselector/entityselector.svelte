@@ -20,6 +20,7 @@
         width = "w-full md:w-1/2 lg:w-1/3",
         showType = false,
         queryas = null,
+        allowunselect = false,
         ...restProps
     } = $props();
 
@@ -162,6 +163,24 @@
             />
             <Command.List class="py-[5px]">
                 <Command.Empty>No entity found.</Command.Empty>
+                {#if allowunselect == true}
+                <Command.Item
+                    title={"No " + name}
+                    onSelect={() => {
+                        if (returnObject) {
+                            value = "";
+                        } else {
+                            value = "";
+                        }
+                        handleChangeFunction(value);
+                        closeAndRefocusTrigger();
+                    }}
+                    value={""}
+                    class="text-sm cursor-pointer mx-2 rounded-[10px]"
+                >
+                    Unselect {name}
+                </Command.Item>
+                {/if}
                 {#each entities as item}
                     <Command.Item
                         title={rendername(item)}
@@ -171,7 +190,7 @@
                             } else {
                                 value = item._id;
                             }
-                            handleChangeFunction();
+                            handleChangeFunction(value);
                             closeAndRefocusTrigger();
                         }}
                         value={item._id}
