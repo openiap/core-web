@@ -22,32 +22,48 @@
     let newid = $state("");
 
     async function addace(id: string) {
-        if (value._acl == null) {
-            value._acl = [];
-        }
-        var item = await auth.client.FindOne<any>({
-            collectionname: "users",
-            query: { _id: id },
-            jwt: auth.access_token,
-        });
-        const exists = value._acl.some((ace: any) => ace._id === item._id);
-        if (!exists) {
-            value._acl = [
-                ...value._acl,
-                { _id: item._id, name: item.name, rights: 65535 },
-            ];
+        if ("metadata" in value) {
+            if (value.metadata._acl == null) {
+                value.metadata._acl = [];
+            }
+            var item2 = await auth.client.FindOne<any>({
+                collectionname: "users",
+                query: { _id: id },
+                jwt: auth.access_token,
+            });
+            const exists = value.metadata._acl.some(
+                (ace: any) => ace._id === item2._id,
+            );
+            if (!exists) {
+                value.metadata._acl = [
+                    ...value.metadata._acl,
+                    { _id: item2._id, name: item2.name, rights: 65535 },
+                ];
+            } else {
+                toast.error("Role already exists in ACL");
+            }
+            newid = "";
         } else {
-            toast.error("Role already exists in ACL");
+            if (value._acl == null) {
+                value._acl = [];
+            }
+            var item = await auth.client.FindOne<any>({
+                collectionname: "users",
+                query: { _id: id },
+                jwt: auth.access_token,
+            });
+            const exists = value._acl.some((ace: any) => ace._id === item._id);
+            if (!exists) {
+                value._acl = [
+                    ...value._acl,
+                    { _id: item._id, name: item.name, rights: 65535 },
+                ];
+            } else {
+                toast.error("Role already exists in ACL");
+            }
+            newid = "";
         }
-        newid = "";
     }
-    // Not sure why this is here
-    // $effect(() => {
-    //     if (newid != "") {
-    //         addace(newid);
-    //         newid = "";
-    //     }
-    // });
 </script>
 
 <Accordion.Root
@@ -84,30 +100,57 @@
             {/if}
         </Hotkeybutton>
         <Accordion.Content class="px-2.5 border-0 py-1">
-            {#each value._acl as ace, i}
-                <div
-                    class="flex flex-col lg:flex-row items-center justify-between border dark:border-bw600 dark:bg-bw1000 p-0.75 rounded-lg my-1.5"
-                >
-                    <Ace bind:value={value._acl[i]} {loading} />
-                    <Hotkeybutton
-                        aria-label="Delete"
-                        disabled={loading}
-                        class="ml-2.5 m-1"
-                        variant="danger"
-                        size="base"
-                        onclick={() => {
-                            value._acl.splice(i, 1);
-                            if (value._acl.length == 0) {
-                                delete value._acl;
-                            }
-                            value = { ...value };
-                        }}
+            {#if "metadata" in value}
+                {#each value.metadata._acl as ace, i}
+                    <div
+                        class="flex flex-col lg:flex-row items-center justify-between border dark:border-bw600 dark:bg-bw1000 p-0.75 rounded-lg my-1.5"
                     >
-                        <Trash2 class="w-4 h-4" />
-                        Delete</Hotkeybutton
+                        <Ace bind:value={value.metadata._acl[i]} {loading} />
+                        <Hotkeybutton
+                            aria-label="Delete"
+                            disabled={loading}
+                            class="ml-2.5 m-1"
+                            variant="danger"
+                            size="base"
+                            onclick={() => {
+                                value.metadata._acl.splice(i, 1);
+                                if (value.metadata._acl.length == 0) {
+                                    delete value.metadata._acl;
+                                }
+                                value = { ...value };
+                            }}
+                        >
+                            <Trash2 class="w-4 h-4" />
+                            Delete</Hotkeybutton
+                        >
+                    </div>
+                {/each}
+            {:else}
+                {#each value._acl as ace, i}
+                    <div
+                        class="flex flex-col lg:flex-row items-center justify-between border dark:border-bw600 dark:bg-bw1000 p-0.75 rounded-lg my-1.5"
                     >
-                </div>
-            {/each}
+                        <Ace bind:value={value._acl[i]} {loading} />
+                        <Hotkeybutton
+                            aria-label="Delete"
+                            disabled={loading}
+                            class="ml-2.5 m-1"
+                            variant="danger"
+                            size="base"
+                            onclick={() => {
+                                value._acl.splice(i, 1);
+                                if (value._acl.length == 0) {
+                                    delete value._acl;
+                                }
+                                value = { ...value };
+                            }}
+                        >
+                            <Trash2 class="w-4 h-4" />
+                            Delete</Hotkeybutton
+                        >
+                    </div>
+                {/each}
+            {/if}
             <div class={"flex space-x-4 mt-4"}>
                 <EntitySelector
                     bind:value={newid}
