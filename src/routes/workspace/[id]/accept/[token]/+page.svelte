@@ -2,6 +2,7 @@
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import { page } from "$app/stores";
+  import posthog from "posthog-js";
   import Button from "$lib/components/ui/button/button.svelte";
   import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
@@ -38,6 +39,12 @@
         description: "",
       });
       usersettings.currentworkspace = $formData.workspaceid;
+      if(usersettings.currentworkspace != null && usersettings.currentworkspace != "") {
+        try {
+          posthog.group("workspace", usersettings.currentworkspace);
+        } catch (error) {
+        }
+      }
       usersettings.persist();
       goto(base + `/workspace/${$formData.workspaceid}/member`);
     } catch (error: any) {

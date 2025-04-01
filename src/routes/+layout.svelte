@@ -214,6 +214,12 @@
 	async function update_currentworkspace(workspaceid: string) {
 		usersettings.currentworkspace = workspaceid;
 		currentworkspace = workspaceid;
+		if(workspaceid != null && workspaceid != "") {
+            try {
+                posthog.group("workspace", workspaceid);
+            } catch (error) {
+            }
+        }
 		await loadWorkspaces();
 		await usersettings.dopersist();
 		if (workspaceid == null || workspaceid == "") {
@@ -245,6 +251,12 @@
 					);
 					await usersettings.dbload(access_token);
 					currentworkspace = usersettings.currentworkspace;
+					if(usersettings.currentworkspace != null && usersettings.currentworkspace != "") {
+						try {
+							posthog.group("workspace", usersettings.currentworkspace);
+						} catch (error) {
+						}
+					}
 					await loadWorkspaces();
 					auth.isAuthenticated = true;
 					if(validated() == false) {

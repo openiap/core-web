@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Formio } from "formiojs";
   import { mode } from "mode-watcher";
+  import posthog from "posthog-js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import * as Card from "$lib/components/ui/card/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
@@ -383,6 +384,12 @@
                   console.log("ensureworkspace", data.workspace);
                   if (data.workspace != null) {
                     usersettings.currentworkspace = data.workspace._id;
+                    if(usersettings.currentworkspace != null && usersettings.currentworkspace != "") {
+                      try {
+                        posthog.group("workspace", usersettings.currentworkspace);
+                      } catch (error) {
+                      }
+                    }
                     usersettings.persist();
                     // goto(
                     //   base +

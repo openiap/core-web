@@ -1,5 +1,6 @@
 import { browser } from "$app/environment";
 import { auth } from "./auth.svelte";
+import posthog from "posthog-js";
 export type sort = "asc" | "desc" | "";
 export type SettingsTableHeader = {
     field: string;
@@ -153,6 +154,12 @@ class _usersettings implements userSettings {
         }
         this.entities_collectionname = settings.entities_collectionname;
         this.currentworkspace = settings.currentworkspace;
+        if(this.currentworkspace != null && this.currentworkspace != "") {
+            try {
+                posthog.group("workspace", this.currentworkspace);
+            } catch (error) {
+            }
+        }
     }
     private persisttimer: NodeJS.Timeout | null = null;
     persist() {

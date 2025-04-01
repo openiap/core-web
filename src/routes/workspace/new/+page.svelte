@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
+  import posthog from "posthog-js";
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { CustomInput } from "$lib/custominput/index.js";
@@ -32,6 +33,12 @@
           );
           toast.success("Workspace added");
           usersettings.currentworkspace = workspace._id;
+          if(usersettings.currentworkspace != null && usersettings.currentworkspace != "") {
+            try {
+              posthog.group("workspace", usersettings.currentworkspace);
+            } catch (error) {
+            }
+          }
           await usersettings.dopersist();
           goto(base + `/workspace/${workspace._id}`);
         } catch (error: any) {

@@ -5,6 +5,7 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
+  import posthog from "posthog-js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { Label } from "$lib/components/ui/label/index.js";
   import { CustomSelect } from "$lib/customselect";
@@ -32,6 +33,13 @@
   let loading = $state(false);
   datacomponent.parsesettings(data.settings);
   usersettings.currentworkspace = data.id as any;
+  if(usersettings.currentworkspace != null && usersettings.currentworkspace != "") {
+    try {
+      posthog.group("workspace", usersettings.currentworkspace);
+    } catch (error) {
+    }
+  }
+
   let searchstring = $state(datacomponent.settings?.searchstring);
   let query = $derived(() => ({
     _type: "member",

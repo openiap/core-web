@@ -190,6 +190,9 @@ class authState {
                         name: auth.profile.name,
                         email: auth.profile.email,
                     });
+                    if(auth.profile.company != null && auth.profile.company != "") {
+                        posthog.group("company", auth.profile.company);
+                    }
                 } catch (error: any) {
                     console.error(error.message);
                 }
@@ -218,6 +221,16 @@ class authState {
                 this.profile.name = profile.name;
                 this.profile.email = profile.email;
                 this.profile.company = profile.company;
+                if(auth.profile.company != null && auth.profile.company != "") {
+                    try {
+                        posthog.identify(auth.profile._id, {
+                            name: auth.profile.name,
+                            email: auth.profile.email,
+                        });
+                        posthog.group("company", auth.profile.company);
+                    } catch (error) {
+                    }
+                }
             }
         }
     }

@@ -1,5 +1,6 @@
 import { goto } from "$app/navigation";
 import { base } from "$app/paths";
+import posthog from "posthog-js";
 import type { Billing } from "$lib/billing.svelte.js";
 import { data } from "$lib/entities/data.svelte.js";
 import { auth } from "$lib/stores/auth.svelte.js";
@@ -26,6 +27,12 @@ export const load: PageLoad = async ({ parent, params }) => {
     if (params.id == null || params.id == "") { goto(base + `/workspace`); return { form, currentbilling, entities, total_count, currentworkspace, resourcecount }; }
     if (usersettings.currentworkspace != params.id) {
       usersettings.currentworkspace = params.id;
+      if(usersettings.currentworkspace != null && usersettings.currentworkspace != "") {
+        try {
+          posthog.group("workspace", usersettings.currentworkspace);
+        } catch (error) {
+        }
+      }
       await usersettings.dopersist();
     }
 
@@ -51,6 +58,12 @@ export const load: PageLoad = async ({ parent, params }) => {
     currentworkspace = item;
     if (usersettings.currentworkspace != item._id) {
       usersettings.currentworkspace = item._id;
+      if(usersettings.currentworkspace != null && usersettings.currentworkspace != "") {
+        try {
+          posthog.group("workspace", usersettings.currentworkspace);
+        } catch (error) {
+        }
+      }
       await usersettings.dopersist();
     }
 
