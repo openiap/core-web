@@ -90,8 +90,8 @@ class authState {
             this.client.maxreconnectms = 1000;
             try {
                 await this.client.connect(true);
-                if(this.config.enable_guest) {
-                    this.client.Signin({username: "guest", password: "guest"});
+                if (this.config.enable_guest) {
+                    this.client.Signin({ username: "guest", password: "guest" });
                 }
                 this.client.onDisconnected = async () => {
                     console.debug("**** serverinit.onDisconnected");
@@ -190,7 +190,7 @@ class authState {
                         name: auth.profile.name,
                         email: auth.profile.email,
                     });
-                } catch (error:any) {
+                } catch (error: any) {
                     console.error(error.message);
                 }
             }
@@ -209,9 +209,9 @@ class authState {
         if (this.client == null || !this.client.connected) {
             return;
         }
-        if(this.profile != null && this.profile.sub != null && this.profile.sub != "") {
+        if (this.profile != null && this.profile.sub != null && this.profile.sub != "") {
             const profile = await this.client.FindOne<any>({ collectionname: "users", query: { _id: this.profile.sub }, jwt: this.access_token });
-            if(profile != null) {
+            if (profile != null) {
                 this.profile.formvalidated = profile.formvalidated;
                 this.profile.emailvalidated = profile.emailvalidated;
                 this.profile.validated = profile.validated;
@@ -228,31 +228,31 @@ class authState {
         if (this.client == null) {
             try {
                 this.client = new openiap(wsurl, "");
-                if(wsurl.indexOf("demo.openiap.io") > -1 || wsurl.indexOf("dev.openiap.io") > -1 || wsurl.indexOf("home.openiap.io") > -1) {
+                if (wsurl.indexOf("demo.openiap.io") > -1 || wsurl.indexOf("dev.openiap.io") > -1 || wsurl.indexOf("home.openiap.io") > -1) {
                     this.client.maxreconnectms = 1000; // as a dev, i have no patience
                 } else {
                     this.client.maxreconnectms = 5000; // default is 30 seconds, but we want to reconnect faster
                 }
                 this.client.onConnected = async () => {
-                    this.isConnected = true;
+                    if (this.isConnected == false) this.isConnected = true;
                     this.connectWaitingPromisses.forEach((resolve: any) => {
                         resolve();
                     });
                     try {
-                        if(access_token != null && access_token != "") {
-                            const res = await this.client.Signin({jwt: access_token});
-                            this.isAuthenticated = true;
+                        if (access_token != null && access_token != "") {
+                            const res = await this.client.Signin({ jwt: access_token });
+                            if (this.isAuthenticated == false) this.isAuthenticated = true;
                         } else {
-                            if(this.config.enable_guest) {
-                                this.client.Signin({username: "guest", password: "guest"});
+                            if (this.config.enable_guest) {
+                                this.client.Signin({ username: "guest", password: "guest" });
                             }
-                            this.isAuthenticated = false;
+                            if (this.isAuthenticated == true) this.isAuthenticated = false;
                         }
                         await this.reloadUser();
-                    } catch (error:any) {
-                        this.isAuthenticated = false;
-                        if(error.message.indexOf("not validated") > -1) {
-                            goto(base +  "/validate");
+                    } catch (error: any) {
+                        if (this.isAuthenticated == true) this.isAuthenticated = false;
+                        if (error.message.indexOf("not validated") > -1) {
+                            goto(base + "/validate");
                         } else {
                             console.error("Failed to signin", error.message);
                         }
@@ -276,12 +276,12 @@ class authState {
                         });
                     }
                     console.error("Failed to connect to server", error.message);
-                    this.isConnected = false;
-                    this.isAuthenticated = false;
+                    if (this.isConnected == true) this.isConnected = false;
+                    if (this.isAuthenticated == true) this.isAuthenticated = false;
                 } else {
                     console.error("Failed to connect to server", error.message);
-                    this.isConnected = false;
-                    this.isAuthenticated = false;
+                    if (this.isConnected == true) this.isConnected = false;
+                    if (this.isAuthenticated == true) this.isAuthenticated = false;
                 }
             }
         } else {
