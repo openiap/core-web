@@ -69,6 +69,7 @@
         }
       }
       if (!haderror) {
+        selected_items = [];
         toast.success("Successfully deleted " + counter + " agent(s)", {
           description: "",
         });

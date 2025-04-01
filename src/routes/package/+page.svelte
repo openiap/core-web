@@ -40,6 +40,48 @@
       });
     }
   }
+  async function delete_selected(ids: string[]) {
+    let haderror = false;
+    loading = true;
+    showWarning = false;
+    let counter = 0;
+    try {
+      for (let i = 0; i < ids.length; i++) {
+        let id = ids[i];
+        var item = entities.find((x: any) => x._id == id);
+        if (item) {
+          try {
+            await auth.client.CustomCommand({
+              command: "deletepackage",
+              id: item._id,
+              jwt: auth.access_token,
+            });
+            counter++;
+            selected_items = selected_items.filter((x: any) => x != item._id);
+            ref.reload();
+          } catch (error: any) {
+            haderror = true;
+            toast.error("Error while deleting", {
+              description: error.message,
+            });
+            return;
+          }
+        }
+      }
+      if (!haderror) {
+        selected_items = [];
+        toast.success("Successfully deleted " + counter + " agent(s)", {
+          description: "",
+        });
+      }
+    } catch (error: any) {
+      toast.error("Error while deleting", {
+        description: error.message,
+      });
+    } finally {
+      loading = false;
+    }
+  }
 </script>
 
 <div class="lg:flex space-y-4 lg:space-y-0 justify-between mb-4 lg:space-x-5">
@@ -66,6 +108,7 @@
   bind:searchstring
   {single_item_click}
   total_count={data.total_count}
+  {delete_selected}
   bind:selected_items
   bind:entities
   bind:this={ref}
