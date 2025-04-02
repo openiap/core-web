@@ -318,6 +318,17 @@
       getPods(false);
     }
   });
+  function parseImage(name:string) {
+    if (name == null || name == "") return "";
+    let parts = name.split("/");
+    if (parts.length > 1 && parts[0].indexOf(".") > -1) {
+      name = parts[parts.length - 1];
+    }
+    if (name.indexOf(":") > -1) {
+      name = name.split(":")[0];
+    }
+    return name;
+  }
 </script>
 
 <div
@@ -530,6 +541,9 @@
       Free tier
     {/if}
   {/snippet}
+  {#snippet image(item: any)}
+    {parseImage(item.image)}
+  {/snippet}  
   {#snippet action(item: any)}
     <div class="flex items-center justify-end space-x-2.5">
       <HotkeyButton
