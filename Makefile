@@ -8,11 +8,11 @@ bump:
 	@sed -i 's/version=.*/version=$(VERSION)/' .env
 	@sed -i 's/hash=.*/hash=$(HASH)/' .env
 	
-build:
+build: bump
 	@sed -i 's/version=.*/version=$(VERSION)/' .env
 	@sed -i 's/hash=.*/hash=$(HASH)/' .env
 	@npm run build
-pack:
+pack: bump
 	@sed -i 's/base: "\/ui"/base: ""/' svelte.config.js
 	@sed -i 's/version=.*/version=$(VERSION)/' .env
 	@sed -i 's/hash=.*/hash=$(HASH)/' .env
