@@ -40,8 +40,10 @@
           loading = false;
         }
       } else {
-        let errors = Object.keys(form.errors).map((key) => key + " is " + (form.errors as any)[key]);
-        if(errors.length > 0) {
+        let errors = Object.keys(form.errors).map(
+          (key) => key + " is " + (form.errors as any)[key],
+        );
+        if (errors.length > 0) {
           toast.error("Error", {
             description: errors.join(", "),
           });
@@ -92,7 +94,20 @@
             collectionname="users"
             {loading}
             basefilter={{ _type: "customer" }}
-          ></EntitySelector>
+            propertyname="_id"
+            name="billing account"
+          >
+            {#snippet rendername(item: any)}
+              {item.name}
+            {/snippet}
+            {#snippet rendercontent(item: any)}
+              {#if item == null}
+                Select a billing account
+              {:else}
+                {item.name}
+              {/if}
+            {/snippet}</EntitySelector
+          >
         {/snippet}
       </Form.Control>
       <Form.FieldErrors />

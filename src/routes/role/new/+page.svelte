@@ -50,8 +50,10 @@
           loading = false;
         }
       } else {
-        let errors = Object.keys(form.errors).map((key) => key + " is " + (form.errors as any)[key]);
-        if(errors.length > 0) {
+        let errors = Object.keys(form.errors).map(
+          (key) => key + " is " + (form.errors as any)[key],
+        );
+        if (errors.length > 0) {
           toast.error("Error", {
             description: errors.join(", "),
           });
@@ -197,8 +199,24 @@
   {/if}
 
   <div class="flex space-x-2 mb-10">
-    <EntitySelector bind:value={newid} collectionname="users" {loading}
-    ></EntitySelector>
+    <EntitySelector
+      bind:value={newid}
+      collectionname="users"
+      {loading}
+      propertyname="_id"
+      name="member"
+    >
+      {#snippet rendername(item: any)}
+        {item.name}
+      {/snippet}
+      {#snippet rendercontent(item: any)}
+        {#if item == null}
+          Select a member
+        {:else}
+          {item.name}
+        {/if}
+      {/snippet}</EntitySelector
+    >
     <HotkeyButton
       variant="success"
       size="base"

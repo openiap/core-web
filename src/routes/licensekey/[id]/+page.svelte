@@ -122,8 +122,10 @@
           loading = false;
         }
       } else {
-        let errors = Object.keys(form.errors).map((key) => key + " is " + form.errors[key]);
-        if(errors.length > 0) {
+        let errors = Object.keys(form.errors).map(
+          (key) => key + " is " + form.errors[key],
+        );
+        if (errors.length > 0) {
           toast.error("Error", {
             description: errors.join(", "),
           });
@@ -302,7 +304,20 @@
           collectionname="users"
           {loading}
           basefilter={{ _type: "customer" }}
-        ></EntitySelector>
+          propertyname="_id"
+          name="billing account"
+        >
+          {#snippet rendername(item: any)}
+            {item.name}
+          {/snippet}
+          {#snippet rendercontent(item: any)}
+            {#if item == null}
+              Select a billing account
+            {:else}
+              {item.name}
+            {/if}
+          {/snippet}</EntitySelector
+        >
       {/snippet}
     </Form.Control>
 
@@ -330,153 +345,154 @@
   </Form.Field>
 
   {#if data.item._stripeprice != null && data.item._stripeprice != ""}
-  <Form.Field {form} name="connections" class="mb-10">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Connections</Form.Label>
-        <Form.Description>Max number of concurent connections.</Form.Description
-        >
-        <div class="flex items-center w-full md:w-1/2 lg:w-1/3 space-x-2">
-          <div class="w-full">
-            <CustomInput
-              width="w-full"
-              disabled={true}
-              placeholder="Type name"
-              {...props}
-              bind:value={$formData.connections}
-            />
+    <Form.Field {form} name="connections" class="mb-10">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Connections</Form.Label>
+          <Form.Description
+            >Max number of concurent connections.</Form.Description
+          >
+          <div class="flex items-center w-full md:w-1/2 lg:w-1/3 space-x-2">
+            <div class="w-full">
+              <CustomInput
+                width="w-full"
+                disabled={true}
+                placeholder="Type name"
+                {...props}
+                bind:value={$formData.connections}
+              />
+            </div>
+            <HotkeyButton
+              size="base"
+              disabled={loading}
+              onclick={() => {
+                valuepromptaction = "addconnection";
+                valueprompttitle = "Add connections";
+                valuepromptdescription =
+                  "How many connections do you want to add?";
+                valuepromptvalue = 1;
+                valueprompt = true;
+              }}
+            >
+              <SquarePlus />
+            </HotkeyButton>
+            <HotkeyButton
+              size="base"
+              disabled={loading}
+              onclick={() => {
+                valuepromptaction = "removeconnection";
+                valueprompttitle = "Remove connections";
+                valuepromptdescription =
+                  "How many connections do you want to remove?";
+                valuepromptvalue = 1;
+                valueprompt = true;
+              }}
+            >
+              <SquareMinus />
+            </HotkeyButton>
           </div>
-          <HotkeyButton
-            size="base"
-            disabled={loading}
-            onclick={() => {
-              valuepromptaction = "addconnection";
-              valueprompttitle = "Add connections";
-              valuepromptdescription =
-                "How many connections do you want to add?";
-              valuepromptvalue = 1;
-              valueprompt = true;
-            }}
-          >
-            <SquarePlus />
-          </HotkeyButton>
-          <HotkeyButton
-            size="base"
-            disabled={loading}
-            onclick={() => {
-              valuepromptaction = "removeconnection";
-              valueprompttitle = "Remove connections";
-              valuepromptdescription =
-                "How many connections do you want to remove?";
-              valuepromptvalue = 1;
-              valueprompt = true;
-            }}
-          >
-            <SquareMinus />
-          </HotkeyButton>
-        </div>
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
 
-  <Form.Field {form} name="workspaces" class="mb-10">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Workspaces</Form.Label>
-        <Form.Description>Max number of workspaces.</Form.Description>
-        <div class="flex items-center w-full md:w-1/2 lg:w-1/3 space-x-2">
-          <div class="w-full">
-            <CustomInput
-              width="w-full"
-              disabled={true}
-              placeholder="Type name"
-              {...props}
-              bind:value={$formData.workspaces}
-            />
+    <Form.Field {form} name="workspaces" class="mb-10">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Workspaces</Form.Label>
+          <Form.Description>Max number of workspaces.</Form.Description>
+          <div class="flex items-center w-full md:w-1/2 lg:w-1/3 space-x-2">
+            <div class="w-full">
+              <CustomInput
+                width="w-full"
+                disabled={true}
+                placeholder="Type name"
+                {...props}
+                bind:value={$formData.workspaces}
+              />
+            </div>
+            <HotkeyButton
+              size="base"
+              disabled={loading}
+              onclick={() => {
+                valuepromptaction = "addworkspace";
+                valueprompttitle = "Add workspaces";
+                valuepromptdescription =
+                  "How many workspaces do you want to add?";
+                valuepromptvalue = 1;
+                valueprompt = true;
+              }}
+            >
+              <SquarePlus />
+            </HotkeyButton>
+            <HotkeyButton
+              size="base"
+              disabled={loading}
+              onclick={() => {
+                valuepromptaction = "removeworkspace";
+                valueprompttitle = "Remove workspaces";
+                valuepromptdescription =
+                  "How many workspaces do you want to remove?";
+                valuepromptvalue = 1;
+                valueprompt = true;
+              }}
+            >
+              <SquareMinus />
+            </HotkeyButton>
           </div>
-          <HotkeyButton
-            size="base"
-            disabled={loading}
-            onclick={() => {
-              valuepromptaction = "addworkspace";
-              valueprompttitle = "Add workspaces";
-              valuepromptdescription =
-                "How many workspaces do you want to add?";
-              valuepromptvalue = 1;
-              valueprompt = true;
-            }}
-          >
-            <SquarePlus />
-          </HotkeyButton>
-          <HotkeyButton
-            size="base"
-            disabled={loading}
-            onclick={() => {
-              valuepromptaction = "removeworkspace";
-              valueprompttitle = "Remove workspaces";
-              valuepromptdescription =
-                "How many workspaces do you want to remove?";
-              valuepromptvalue = 1;
-              valueprompt = true;
-            }}
-          >
-            <SquareMinus />
-          </HotkeyButton>
-        </div>
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
 
-  <Form.Field {form} name="gitrepos" class="mb-10">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Git repositories</Form.Label>
-        <Form.Description>Max number of git repositories.</Form.Description>
-        <div class="flex items-center w-full md:w-1/2 lg:w-1/3 space-x-2">
-          <div class="w-full">
-            <CustomInput
-              width="w-full"
-              disabled={true}
-              placeholder="Type name"
-              {...props}
-              bind:value={$formData.gitrepos}
-            />
+    <Form.Field {form} name="gitrepos" class="mb-10">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Git repositories</Form.Label>
+          <Form.Description>Max number of git repositories.</Form.Description>
+          <div class="flex items-center w-full md:w-1/2 lg:w-1/3 space-x-2">
+            <div class="w-full">
+              <CustomInput
+                width="w-full"
+                disabled={true}
+                placeholder="Type name"
+                {...props}
+                bind:value={$formData.gitrepos}
+              />
+            </div>
+            <HotkeyButton
+              size="base"
+              disabled={loading}
+              onclick={() => {
+                valuepromptaction = "addgitrepo";
+                valueprompttitle = "Add git repositories";
+                valuepromptdescription =
+                  "How many git repositories do you want to add?";
+                valuepromptvalue = 1;
+                valueprompt = true;
+              }}
+            >
+              <SquarePlus />
+            </HotkeyButton>
+            <HotkeyButton
+              size="base"
+              disabled={loading}
+              onclick={() => {
+                valuepromptaction = "removegitrepo";
+                valueprompttitle = "Remove git repositories";
+                valuepromptdescription =
+                  "How many git repositories do you want to remove?";
+                valuepromptvalue = 1;
+                valueprompt = true;
+              }}
+            >
+              <SquareMinus />
+            </HotkeyButton>
           </div>
-          <HotkeyButton
-            size="base"
-            disabled={loading}
-            onclick={() => {
-              valuepromptaction = "addgitrepo";
-              valueprompttitle = "Add git repositories";
-              valuepromptdescription =
-                "How many git repositories do you want to add?";
-              valuepromptvalue = 1;
-              valueprompt = true;
-            }}
-          >
-            <SquarePlus />
-          </HotkeyButton>
-          <HotkeyButton
-            size="base"
-            disabled={loading}
-            onclick={() => {
-              valuepromptaction = "removegitrepo";
-              valueprompttitle = "Remove git repositories";
-              valuepromptdescription =
-                "How many git repositories do you want to remove?";
-              valuepromptvalue = 1;
-              valueprompt = true;
-            }}
-          >
-            <SquareMinus />
-          </HotkeyButton>
-        </div>
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
   {/if}
 
   {#if isAdmin}

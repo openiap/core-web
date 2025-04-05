@@ -82,7 +82,7 @@
           //   item: form.data,
           //   jwt: auth.access_token,
           // });
-          let data:any = {...form.data};
+          let data: any = { ...form.data };
           delete data._created;
           delete data._modified;
           await auth.client.UpdateWorkItemQueue({
@@ -90,11 +90,11 @@
             skiprole: false,
             jwt: auth.access_token,
           });
-          
+
           toast.success("Workitemqueue updated");
           goto(base + `/workitemqueue`);
         } catch (error: any) {
-          console.error(error); 
+          console.error(error);
           toast.error("Error", {
             description: error.message,
           });
@@ -102,8 +102,10 @@
           loading = false;
         }
       } else {
-        let errors = Object.keys(form.errors).map((key) => key + " is " + form.errors[key]);
-        if(errors.length > 0) {
+        let errors = Object.keys(form.errors).map(
+          (key) => key + " is " + form.errors[key],
+        );
+        if (errors.length > 0) {
           toast.error("Error", {
             description: errors.join(", "),
           });
@@ -160,8 +162,20 @@
             projection={{ name: 1 }}
             class="w-64"
             name="workspace"
-            noitem={true}
-          />
+            allowunselect={true}
+            propertyname="_id"
+          >
+            {#snippet rendername(item: any)}
+              {item.name}
+            {/snippet}
+            {#snippet rendercontent(item: any)}
+              {#if item == null}
+                Select a workspace
+              {:else}
+                {item.name}
+              {/if}
+            {/snippet}</EntitySelector
+          >
         {/snippet}
       </Form.Control>
       <Form.FieldErrors />
@@ -173,14 +187,26 @@
       {#snippet children({ props })}
         <Form.Label>Project</Form.Label>
         <EntitySelector
+          propertyname="_id"
           collectionname="openrpa"
           bind:value={$formData.projectid}
           basefilter={{ _type: "project" }}
           projection={{ name: 1 }}
           class="w-64"
           name="project"
-          noitem={true}
-        />
+          allowunselect={true}
+        >
+          {#snippet rendername(item: any)}
+            {item.name}
+          {/snippet}
+          {#snippet rendercontent(item: any)}
+            {#if item == null}
+              Select a project
+            {:else}
+              {item.name}
+            {/if}
+          {/snippet}</EntitySelector
+        >
       {/snippet}
     </Form.Control>
     <Form.FieldErrors />
@@ -245,8 +271,20 @@
           projection={{ name: 1, projectandname: 1 }}
           class="w-64"
           name="workflowid"
-          noitem={true}
-        />
+          allowunselect={true}
+          propertyname="_id"
+        >
+          {#snippet rendername(item: any)}
+            {item.name}
+          {/snippet}
+          {#snippet rendercontent(item: any)}
+            {#if item == null}
+              Select a workflow
+            {:else}
+              {item.name}
+            {/if}
+          {/snippet}</EntitySelector
+        >
       {/snippet}
     </Form.Control>
     <Form.FieldErrors />
@@ -265,8 +303,20 @@
           projection={{ name: 1, _type: 1 }}
           class="w-64"
           name="robotqueue"
-          noitem={true}
-        />
+          allowunselect={true}
+          propertyname="_id"
+        >
+          {#snippet rendername(item: any)}
+            {item.name}
+          {/snippet}
+          {#snippet rendercontent(item: any)}
+            {#if item == null}
+              Select a robot/role
+            {:else}
+              {item.name}
+            {/if}
+          {/snippet}
+        </EntitySelector>
       {/snippet}
     </Form.Control>
     <Form.FieldErrors />
@@ -276,19 +326,32 @@
     <div class="mb-2 font-medium text-sm">AMQP Queue</div>
     <EntitySelector
       collectionname="mq"
-      bind:value={amqpqueuedata}
+      bind:value={$formData.amqpqueue}
       basefilter={{ _type: "queue" }}
       projection={{ name: 1, _type: 1 }}
       class="w-64"
       name="amqpqueue"
-      noitem={true}
-      handleChangeFunction={() => {
+      allowunselect={true}
+      handleChangeFunction={(value: any, item: any) => {
+        if (item == null) {
+          $formData.amqpqueue = "";
+        }
         // @ts-ignore
-        $formData.amqpqueue = amqpqueuedata.name;
+        // $formData.amqpqueue = amqpqueuedata.name;
         agentdata = { slug: null };
       }}
-      returnObject={true}
-    />
+      propertyname="name"
+      >{#snippet rendername(item: any)}
+        {item.name}
+      {/snippet}
+      {#snippet rendercontent(item: any)}
+        {#if item == null}
+          Select a queue
+        {:else}
+          {item.name}
+        {/if}
+      {/snippet}
+    </EntitySelector>
   </div>
 
   <div class="mb-10">
@@ -306,9 +369,18 @@
         $formData.amqpqueue = agentdata.slug + "agent";
         amqpqueuedata = { name: null };
       }}
-      noitem={true}
-      returnObject={true}
-    />
+      allowunselect={true}
+      >{#snippet rendername(item: any)}
+        {item.name}
+      {/snippet}
+      {#snippet rendercontent(item: any)}
+        {#if item == null}
+          Select an agent
+        {:else}
+          {item.name}
+        {/if}
+      {/snippet}
+    </EntitySelector>
   </div>
 
   <Form.Field {form} name="packageid" class="mb-10">
@@ -323,8 +395,19 @@
           projection={{ name: 1, _type: 1 }}
           class="w-64"
           name="package"
-          noitem={true}
-        />
+          allowunselect={true}
+        >
+          {#snippet rendername(item: any)}
+            {item.name}
+          {/snippet}
+          {#snippet rendercontent(item: any)}
+            {#if item == null}
+              Select a package
+            {:else}
+              {item.name}
+            {/if}
+          {/snippet}</EntitySelector
+        >
       {/snippet}
     </Form.Control>
     <Form.FieldErrors />
@@ -350,12 +433,23 @@
         <EntitySelector
           queryas={usersettings.currentworkspace}
           collectionname="mq"
-          bind:value={$formData.success_wiq}
+          bind:value={$formData.success_wiqid}
           basefilter={{ _type: "workitemqueue" }}
           class="w-64"
           name="workitem queue"
-          noitem={true}
-        />
+          allowunselect={true}
+          propertyname="_id"
+          >{#snippet rendername(item: any)}
+            {item.name}
+          {/snippet}
+          {#snippet rendercontent(item: any)}
+            {#if item == null}
+              Select a workitem queue
+            {:else}
+              {item.name}
+            {/if}
+          {/snippet}</EntitySelector
+        >
       {/snippet}
     </Form.Control>
     <Form.FieldErrors />
@@ -372,8 +466,19 @@
           basefilter={{ _type: "workitemqueue" }}
           class="w-64"
           name="workitem queue"
-          noitem={true}
-        />
+          allowunselect={true}
+          propertyname="_id"
+          >{#snippet rendername(item: any)}
+            {item.name}
+          {/snippet}
+          {#snippet rendercontent(item: any)}
+            {#if item == null}
+              Select a workitem queue
+            {:else}
+              {item.name}
+            {/if}
+          {/snippet}</EntitySelector
+        >
       {/snippet}
     </Form.Control>
     <Form.FieldErrors />

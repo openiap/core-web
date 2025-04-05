@@ -57,8 +57,10 @@
           loading = false;
         }
       } else {
-        let errors = Object.keys(form.errors).map((key) => key + " is " + form.errors[key]);
-        if(errors.length > 0) {
+        let errors = Object.keys(form.errors).map(
+          (key) => key + " is " + form.errors[key],
+        );
+        if (errors.length > 0) {
           toast.error("Error", {
             description: errors.join(", "),
           });
@@ -190,7 +192,18 @@
           basefilter={{ _type: "workitemqueue" }}
           class="w-64"
           name="queue"
-        />
+          propertyname="_id"
+          >{#snippet rendername(item: any)}
+            {item.name}
+          {/snippet}
+          {#snippet rendercontent(item: any)}
+            {#if item == null}
+              Select a queue
+            {:else}
+              {item.name}
+            {/if}
+          {/snippet}</EntitySelector
+        >
       {/snippet}
     </Form.Control>
     <Form.FieldErrors />

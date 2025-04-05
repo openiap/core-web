@@ -41,7 +41,19 @@
     bind:value={project}
     name="Project"
     allowunselect={true}
-  />
+    propertyname="_id"
+  >
+    {#snippet rendername(item: any)}
+      {item.name}
+    {/snippet}
+    {#snippet rendercontent(item: any)}
+      {#if item == null}
+        Filter by project
+      {:else}
+        {item.name}
+      {/if}
+    {/snippet}</EntitySelector
+  >
 </div>
 <Entities
   collectionname={data.collectionname}

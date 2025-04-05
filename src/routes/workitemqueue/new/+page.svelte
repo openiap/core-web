@@ -145,14 +145,26 @@
       {#snippet children({ props })}
         <Form.Label>Project</Form.Label>
         <EntitySelector
+          propertyname="_id"
           collectionname="openrpa"
           bind:value={$formData.projectid}
           basefilter={{ _type: "project" }}
           projection={{ name: 1 }}
           class="w-64"
           name="project"
-          noitem={true}
-        />
+          allowunselect={true}
+        >
+          {#snippet rendername(item: any)}
+            {item.name}
+          {/snippet}
+          {#snippet rendercontent(item: any)}
+            {#if item == null}
+              Select a project
+            {:else}
+              {item.name}
+            {/if}
+          {/snippet}</EntitySelector
+        >
       {/snippet}
     </Form.Control>
     <Form.FieldErrors />
@@ -217,8 +229,20 @@
           projection={{ name: 1, projectandname: 1 }}
           class="w-64"
           name="workflowid"
-          noitem={true}
-        />
+          allowunselect={true}
+          propertyname="_id"
+        >
+          {#snippet rendername(item: any)}
+            {item.name}
+          {/snippet}
+          {#snippet rendercontent(item: any)}
+            {#if item == null}
+              Select a workflow
+            {:else}
+              {item.name}
+            {/if}
+          {/snippet}</EntitySelector
+        >
       {/snippet}
     </Form.Control>
     <Form.FieldErrors />
@@ -237,8 +261,20 @@
           projection={{ name: 1, _type: 1 }}
           class="w-64"
           name="robotqueue"
-          noitem={true}
-        />
+          allowunselect={true}
+          propertyname="_id"
+        >
+          {#snippet rendername(item: any)}
+            {item.name}
+          {/snippet}
+          {#snippet rendercontent(item: any)}
+            {#if item == null}
+              Select a robot/role
+            {:else}
+              {item.name}
+            {/if}
+          {/snippet}
+        </EntitySelector>
       {/snippet}
     </Form.Control>
     <Form.FieldErrors />
@@ -253,14 +289,27 @@
       projection={{ name: 1, _type: 1 }}
       class="w-64"
       name="amqpqueue"
-      noitem={true}
-      handleChangeFunction={() => {
-        // @ts-ignore
-        $formData.amqpqueue = amqpqueuedata.name;
+      allowunselect={true}
+      handleChangeFunction={(item: any, value: any) => {
+        if (value == null) {
+          $formData.amqpqueue = "";
+        } else {
+          $formData.amqpqueue = value.name;
+          amqpqueuedata = value.name;
+        }
         agentdata = { slug: null };
       }}
-      returnObject={true}
-    />
+      >{#snippet rendername(item: any)}
+        {item.name}
+      {/snippet}
+      {#snippet rendercontent(item: any)}
+        {#if item == null}
+          Select a queue
+        {:else}
+          {item.name}
+        {/if}
+      {/snippet}
+    </EntitySelector>
   </div>
 
   <div class="mb-10">
@@ -273,14 +322,26 @@
       projection={{ slug: 1, name: 1, _type: 1 }}
       class="w-64"
       name="agent"
-      handleChangeFunction={() => {
-        // @ts-ignore
-        $formData.amqpqueue = agentdata.slug + "agent";
+      handleChangeFunction={(item: any, value: any) => {
+        if (value == null) {
+          $formData.amqpqueue = "";
+        } else {
+          $formData.amqpqueue = value.slug + "agent";
+        }
         amqpqueuedata = { name: null };
       }}
-      noitem={true}
-      returnObject={true}
-    />
+      allowunselect={true}
+      >{#snippet rendername(item: any)}
+        {item.name}
+      {/snippet}
+      {#snippet rendercontent(item: any)}
+        {#if item == null}
+          Select an agent
+        {:else}
+          {item.name}
+        {/if}
+      {/snippet}
+    </EntitySelector>
   </div>
 
   <Form.Field {form} name="packageid" class="mb-10">
@@ -295,8 +356,20 @@
           projection={{ name: 1, _type: 1 }}
           class="w-64"
           name="package"
-          noitem={true}
-        />
+          allowunselect={true}
+          propertyname="_id"
+        >
+          {#snippet rendername(item: any)}
+            {item.name}
+          {/snippet}
+          {#snippet rendercontent(item: any)}
+            {#if item == null}
+              Select a package
+            {:else}
+              {item.name}
+            {/if}
+          {/snippet}</EntitySelector
+        >
       {/snippet}
     </Form.Control>
     <Form.FieldErrors />
@@ -326,8 +399,19 @@
           basefilter={{ _type: "workitemqueue" }}
           class="w-64"
           name="workitem queue"
-          noitem={true}
-        />
+          allowunselect={true}
+          propertyname="_id"
+          >{#snippet rendername(item: any)}
+            {item.name}
+          {/snippet}
+          {#snippet rendercontent(item: any)}
+            {#if item == null}
+              Select a workitem queue
+            {:else}
+              {item.name}
+            {/if}
+          {/snippet}</EntitySelector
+        >
       {/snippet}
     </Form.Control>
     <Form.FieldErrors />
@@ -344,8 +428,19 @@
           basefilter={{ _type: "workitemqueue" }}
           class="w-64"
           name="workitem queue"
-          noitem={true}
-        />
+          allowunselect={true}
+          propertyname="_id"
+          >{#snippet rendername(item: any)}
+            {item.name}
+          {/snippet}
+          {#snippet rendercontent(item: any)}
+            {#if item == null}
+              Select a workitem queue
+            {:else}
+              {item.name}
+            {/if}
+          {/snippet}</EntitySelector
+        >
       {/snippet}
     </Form.Control>
     <Form.FieldErrors />

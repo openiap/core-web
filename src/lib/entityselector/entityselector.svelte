@@ -9,18 +9,18 @@
         value = $bindable(),
         collectionname = "entities",
         basefilter = {},
-        returnObject = false,
         loading = false,
         class: className = "",
         height = "h-8",
         handleChangeFunction = () => {},
         name = "Entity",
         projection = {},
-        noitem = false,
         width = "w-full md:w-1/2 lg:w-1/3",
-        showType = false,
         queryas = null,
         allowunselect = false,
+        propertyname = "",
+        rendername = null,
+        rendercontent = null,
         ...restProps
     } = $props();
 
@@ -28,36 +28,43 @@
     let entities: any[] = $state([]);
     let isOpen = $state(false);
 
-    const triggerContent = $derived(async () => {
-        let id;
-        if (value == "") {
-            return placeholder;
+    async function getCurrentItem() {
+        let _basefilter = $state.snapshot(basefilter);
+        var query: any = { ..._basefilter };
+        let _value = $state.snapshot(value);
+
+        if (_value == "") {
+            return null;
         }
-        if (value == null) {
-            return placeholder;
+        if (_value == null) {
+            return null;
         }
-        if (returnObject) {
-            id = value?._id;
+
+        if (propertyname == "") {
+            if (!_value._id) {
+                return null;
+            }
+            query._id = _value._id;
         } else {
-            id = value;
+            if (typeof _value == "string") {
+                query[propertyname] = _value;
+            } else if (typeof _value == "object") {
+                query[propertyname] = _value[propertyname];
+            }
         }
-        if (id == null) {
-            return placeholder;
-        }
+
         let item = await auth.client.FindOne<any>({
             collectionname,
-            query: { _id: id },
+            query,
             jwt: auth.access_token,
             queryas,
         });
-        if (item != null) {
-            if (showType) {
-                return "(" + item._type + ") " + item.name;
-            } else {
-                return item.name;
-            }
-        }
-        return placeholder;
+        return item;
+    }
+
+    const triggerContent = $derived(async () => {
+        let item = await getCurrentItem();
+        return item;
     });
     async function loadSearchResult(search: string) {
         let query = { ...basefilter };
@@ -97,33 +104,9 @@
             });
             entities = [];
         }
-        if (noitem) {
-            if (name === "workitem queue") {
-                entities.unshift({
-                    _id: "",
-                    name: `(no workitem queue)`,
-                    value: null,
-                    _type: null,
-                } as any);
-            } else {
-                entities.unshift({
-                    _id: null,
-                    name: `(no ${name})`,
-                    value: null,
-                    _type: null,
-                } as any);
-            }
-        }
     }
     function closeAndRefocusTrigger() {
         isOpen = false;
-    }
-    function rendername(item: any) {
-        if (showType) {
-            return item._type ? `(${item._type}) ${item.name}` : item.name;
-        } else {
-            return item.name;
-        }
     }
 </script>
 
@@ -141,7 +124,13 @@
         {#await triggerContent()}
             Loading...
         {:then triggerContent}
-            {triggerContent}
+            {#if rendercontent == null}
+                {triggerContent}
+            {:else}
+                {@render rendercontent(triggerContent)}
+            {/if}
+        {:catch error}
+            {error.message}
         {/await}
         {#if isOpen}
             <ChevronUp class="ml-2 h-4 w-4 " />
@@ -164,39 +153,39 @@
             <Command.List class="py-[5px]">
                 <Command.Empty>No entity found.</Command.Empty>
                 {#if allowunselect == true}
-                <Command.Item
-                    title={"No " + name}
-                    onSelect={() => {
-                        if (returnObject) {
+                    <Command.Item
+                        title={"No " + name}
+                        onSelect={() => {
                             value = "";
-                        } else {
-                            value = "";
-                        }
-                        handleChangeFunction(value);
-                        closeAndRefocusTrigger();
-                    }}
-                    value={""}
-                    class="text-sm cursor-pointer mx-2 rounded-[10px]"
-                >
-                    Unselect {name}
-                </Command.Item>
+                            handleChangeFunction(value, null);
+                            closeAndRefocusTrigger();
+                        }}
+                        value={""}
+                        class="text-sm cursor-pointer mx-2 rounded-[10px]"
+                    >
+                        Unselect {name}
+                    </Command.Item>
                 {/if}
                 {#each entities as item}
                     <Command.Item
-                        title={rendername(item)}
                         onSelect={() => {
-                            if (returnObject) {
+                            if (propertyname == "") {
+                                // new thing removed _id to return object instead of the id for workitemqueue (agent and mq req obj) and agent schedule (req obj)
                                 value = item;
                             } else {
-                                value = item._id;
+                                value = item[propertyname];
                             }
-                            handleChangeFunction(value);
+                            handleChangeFunction(value, item);
                             closeAndRefocusTrigger();
                         }}
                         value={item._id}
                         class="text-sm cursor-pointer mx-2 rounded-[10px]"
                     >
-                        {rendername(item)}
+                        {#if rendername}
+                            {@render rendername(item)}
+                        {:else}
+                            {item.name}
+                        {/if}
                     </Command.Item>
                 {/each}
             </Command.List>

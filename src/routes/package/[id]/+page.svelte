@@ -7,6 +7,7 @@
   import { CustomInput } from "$lib/custominput/index.js";
   import { CustomSelect } from "$lib/customselect/index.js";
   import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
+  import { EntitySelector } from "$lib/entityselector/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
@@ -16,6 +17,7 @@
   const page = "package";
   let loading = $state(false);
   let fileData = $state(null);
+
   const { data } = $props();
   const form = superForm(defaults(zod(editFormSchema)), {
     dataType: "json",
@@ -25,6 +27,24 @@
       if (form.valid) {
         loading = true;
         try {
+          if ($formData.fileid == "" && $formData.repo == "") {
+            toast.error("Error", {
+              description: "Either File or git repository  is required",
+            });
+            cancel();
+            loading = false;
+            return;
+          }
+          if ($formData.repo != "") {
+            if ($formData.ref == "") {
+              toast.error("Error", {
+                description: "Select a branch",
+              });
+              cancel();
+              loading = false;
+              return;
+            }
+          }
           await auth.client.UpdateOne({
             collectionname: "agents",
             item: { ...form.data },
@@ -99,6 +119,8 @@
       loading = false;
     };
     reader.readAsArrayBuffer(file1);
+    $formData.repo = "";
+    $formData.ref = "";
   }
 
   async function downloadFile() {
@@ -238,6 +260,83 @@
     <Form.FieldErrors />
   </Form.Field>
 
+  <Form.Field {form} name="repo" class="mb-10">
+    <Form.Control>
+      {#snippet children({ props })}
+        <Form.Label>Repository</Form.Label>
+        <div class="flex items-center space-x-5">
+          <EntitySelector
+            allowunselect={true}
+            propertyname="repo"
+            handleChangeFunction={(value: any, item: any) => {
+              if (item == null) {
+                $formData.ref = "";
+                $formData.repo = "";
+              } else {
+                $formData.ref = item.headref;
+                $formData.fileid = "";
+                fileData = null;
+              }
+            }}
+            collectionname="git"
+            disabled={loading}
+            bind:value={$formData.repo}
+            basefilter={{ _type: "hash", ref: "HEAD" }}
+            name="Repository"
+          >
+            {#snippet rendername(item: any)}
+              {item.repo}
+            {/snippet}
+            {#snippet rendercontent(item: any)}
+              {#if item == null}
+                Select a repository
+              {:else}
+                {item.repo}
+              {/if}
+            {/snippet}</EntitySelector
+          >
+        </div>
+      {/snippet}
+    </Form.Control>
+    <Form.FieldErrors />
+  </Form.Field>
+
+  {#if $formData.repo != ""}
+    <Form.Field {form} name="ref" class="mb-10">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Ref/Branch</Form.Label>
+          <div class="flex items-center space-x-5">
+            <EntitySelector
+              allowunselect={true}
+              propertyname="ref"
+              collectionname="git"
+              disabled={loading}
+              bind:value={$formData.ref}
+              basefilter={{
+                _type: "hash",
+                ref: { $ne: "HEAD" },
+                repo: $formData.repo,
+              }}
+              name="Branch"
+            >
+              {#snippet rendername(item: any)}
+                {item.ref}
+              {/snippet}
+              {#snippet rendercontent(item: any)}
+                {#if item == null}
+                  Select a branch
+                {:else}
+                  {item.ref}
+                {/if}
+              {/snippet}
+            </EntitySelector>
+          </div>
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+  {/if}
   <HotkeyButton
     type="submit"
     data-shortcut="ctrl+s"

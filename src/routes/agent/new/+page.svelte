@@ -83,14 +83,16 @@
               nameprompt = true;
               return;
             } else if (confirmprice == false) {
-              if(auth.config.stripe_api_key != null && auth.config.stripe_api_key != "") {
+              if (
+                auth.config.stripe_api_key != null &&
+                auth.config.stripe_api_key != ""
+              ) {
                 cancel();
                 loading = false;
                 GetNextInvoice();
                 return;
               }
             }
-
           }
           form.data._stripeprice = "";
           let image = auth.config?.agent_images.find(
@@ -153,8 +155,10 @@
           loading = false;
         }
       } else {
-        let errors = Object.keys(form.errors).map((key) => key + " is " + (form.errors as any)[key]);
-        if(errors.length > 0) {
+        let errors = Object.keys(form.errors).map(
+          (key) => key + " is " + (form.errors as any)[key],
+        );
+        if (errors.length > 0) {
           console.error(errors);
           toast.error("Error", {
             description: errors.join(", "),
@@ -416,104 +420,101 @@
 
   async function GetNextInvoice() {
     if (
-        confirmprice == false &&
-        auth.config.stripe_api_key != null &&
-        auth.config.stripe_api_key != ""
-      ) {
-        try {
-
-          let _workspaceid = usersettings.currentworkspace;
-          if (_workspaceid == null || _workspaceid == "") {
-            if (
-              usersettings.currentworkspace == null ||
-              usersettings.currentworkspace == ""
-            ) {
-              throw new Error("You must select a workspace first");
-            }
-            _workspaceid = usersettings.currentworkspace;
+      confirmprice == false &&
+      auth.config.stripe_api_key != null &&
+      auth.config.stripe_api_key != ""
+    ) {
+      try {
+        let _workspaceid = usersettings.currentworkspace;
+        if (_workspaceid == null || _workspaceid == "") {
+          if (
+            usersettings.currentworkspace == null ||
+            usersettings.currentworkspace == ""
+          ) {
+            throw new Error("You must select a workspace first");
           }
-          let currentworkspace = await auth.client.FindOne<any>({
-            collectionname: "users",
-            query: {
-              _type: "workspace",
-              _id: _workspaceid,
-            },
-            jwt: auth.access_token,
-          });
-          if (currentworkspace == null) {
-            throw new Error("Workspace not found");
-          }
-
-          var product = products.find(
-            (x: any) => x.stripeprice == $formData._stripeprice,
-          );
-          if(product == null) {
-            throw new Error("Product " + $formData._stripeprice + " not found");
-          }
-
-          confirmpricenextinvoice = JSON.parse(
-            await auth.client.CustomCommand({
-              command: "getnextinvoice",
-              id: currentworkspace._billingid,
-              data: JSON.stringify({
-                lookupkey: product.lookup_key,
-                stripeprice: product.stripeprice,
-                productname: product.name,
-                quantity: 1,
-              }),
-              jwt: auth.access_token,
-            }),
-          );
-          const period_start = new Date(
-            confirmpricenextinvoice.period_start * 1000,
-          );
-          const period_end = new Date(
-            confirmpricenextinvoice.period_end * 1000,
-          );
-          const monthNames = [
-            "January",
-            "February",
-            "March",
-            "April",
-            "May",
-            "June",
-            "July",
-            "August",
-            "September",
-            "October",
-            "November",
-            "December",
-          ];
-          confirmpriceperiod_start =
-            period_start.getDate() +
-            " " +
-            monthNames[period_start.getMonth()] +
-            " " +
-            period_start.getFullYear();
-          confirmpriceperiod_end =
-            period_end.getDate() +
-            " " +
-            monthNames[period_end.getMonth()] +
-            " " +
-            period_end.getFullYear();
-
-          if (confirmpricenextinvoice?.lines?.data != null) {
-            confirmpricenextinvoice.lines = confirmpricenextinvoice.lines.data;
-          }
-          loading = false;
-          confirmprice = true;
-          // svelte-ignore state_referenced_locally
-          return;
-        } catch (error:any) {
-          console.error(error);
-          toast.error("Error while getting next invoice", {
-            description: error.message,
-          });
-          confirmprice = false;
+          _workspaceid = usersettings.currentworkspace;
         }
-      } else {
+        let currentworkspace = await auth.client.FindOne<any>({
+          collectionname: "users",
+          query: {
+            _type: "workspace",
+            _id: _workspaceid,
+          },
+          jwt: auth.access_token,
+        });
+        if (currentworkspace == null) {
+          throw new Error("Workspace not found");
+        }
+
+        var product = products.find(
+          (x: any) => x.stripeprice == $formData._stripeprice,
+        );
+        if (product == null) {
+          throw new Error("Product " + $formData._stripeprice + " not found");
+        }
+
+        confirmpricenextinvoice = JSON.parse(
+          await auth.client.CustomCommand({
+            command: "getnextinvoice",
+            id: currentworkspace._billingid,
+            data: JSON.stringify({
+              lookupkey: product.lookup_key,
+              stripeprice: product.stripeprice,
+              productname: product.name,
+              quantity: 1,
+            }),
+            jwt: auth.access_token,
+          }),
+        );
+        const period_start = new Date(
+          confirmpricenextinvoice.period_start * 1000,
+        );
+        const period_end = new Date(confirmpricenextinvoice.period_end * 1000);
+        const monthNames = [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December",
+        ];
+        confirmpriceperiod_start =
+          period_start.getDate() +
+          " " +
+          monthNames[period_start.getMonth()] +
+          " " +
+          period_start.getFullYear();
+        confirmpriceperiod_end =
+          period_end.getDate() +
+          " " +
+          monthNames[period_end.getMonth()] +
+          " " +
+          period_end.getFullYear();
+
+        if (confirmpricenextinvoice?.lines?.data != null) {
+          confirmpricenextinvoice.lines = confirmpricenextinvoice.lines.data;
+        }
+        loading = false;
+        confirmprice = true;
+        // svelte-ignore state_referenced_locally
+        return;
+      } catch (error: any) {
+        console.error(error);
+        toast.error("Error while getting next invoice", {
+          description: error.message,
+        });
         confirmprice = false;
       }
+    } else {
+      confirmprice = false;
+    }
   }
 </script>
 
@@ -732,6 +733,7 @@
           <Form.Label class="me-6">Runas</Form.Label>
           <div class="md:flex md:items-center md:space-x-4 my-2">
             <Entityselector
+              propertyname="_id"
               width="md:w-fit w-64"
               class="mb-4 md:mb-0"
               disabled={loading}
@@ -739,7 +741,18 @@
               collectionname="users"
               basefilter={{ _type: "user" }}
               bind:value={$formData.runas}
-            />
+            >
+              {#snippet rendername(item: any)}
+                {item.name}
+              {/snippet}
+              {#snippet rendercontent(item: any)}
+                {#if item == null}
+                  Nothing selected
+                {:else}
+                  {item.name}
+                {/if}
+              {/snippet}</Entityselector
+            >
             <HotkeyButton
               aria-label="User Details"
               disabled={loading}

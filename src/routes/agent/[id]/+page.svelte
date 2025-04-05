@@ -479,9 +479,7 @@
     }
     if (
       schedules &&
-      schedules.some(
-        (schedule) => schedule.packageid === copyData.packageid,
-      )
+      schedules.some((schedule) => schedule.packageid === copyData.packageid)
     ) {
       toast.error("Error while adding package", {
         description: "This schedule already exists.",
@@ -1412,6 +1410,7 @@
               <Form.Label>Runas</Form.Label>
               <div class="md:flex md:items-center md:space-x-4 my-2">
                 <Entityselector
+                  propertyname="_id"
                   queryas={usersettings.currentworkspace}
                   width="md:w-fit w-64"
                   class="mb-4 md:mb-0"
@@ -1420,7 +1419,19 @@
                   collectionname="users"
                   basefilter={{ _type: "user" }}
                   bind:value={$formData.runas}
-                />
+                  allowunselect={false}
+                >
+                  {#snippet rendername(item: any)}
+                    {"(" + item._type + ") " + item.name}
+                  {/snippet}
+                  {#snippet rendercontent(item: any)}
+                    {#if item == null}
+                      Nothing selected
+                    {:else}
+                      {"(" + item._type + ") " + item.name}
+                    {/if}
+                  {/snippet}
+                </Entityselector>
                 <HotkeyButton
                   aria-label="User Details"
                   disabled={loading}
@@ -1494,6 +1505,7 @@
             width="w-full md:w-[400px]"
             collectionname="agents"
             handleChangeFunction={() => {
+              // console.log("packageData", packageData);
               if (packageData?.daemon == false) {
                 packageData.cron = "* * * * *";
               } else {
@@ -1504,9 +1516,20 @@
               _type: "package",
               language: { $in: $formData.languages },
             }}
-            returnObject={true}
             bind:value={packageData}
-          />
+            name="Package"
+            >{#snippet rendername(item: any)}
+              {item.name}
+            {/snippet}
+            {#snippet rendercontent(item: any)}
+              {console.log("item", item)}
+              {#if item == null}
+                Select a package
+              {:else}
+                {item.name}
+              {/if}
+            {/snippet}</Entityselector
+          >
 
           {#if packageData?.daemon == false}
             <div class="flex items-center space-x-2">
@@ -1670,7 +1693,20 @@
         collectionname="agents"
         basefilter={{ _type: "package", language: { $in: agent.languages } }}
         bind:value={packageId}
-      />
+        propertyname="_id"
+        name="package"
+      >
+        {#snippet rendername(item: any)}
+          {item.name}
+        {/snippet}
+        {#snippet rendercontent(item: any)}
+          {#if item == null}
+            Select a package
+          {:else}
+            {item.name}
+          {/if}
+        {/snippet}</Entityselector
+      >
       <HotkeyButton onclick={runpackage}>
         <Play />
         Run Package</HotkeyButton

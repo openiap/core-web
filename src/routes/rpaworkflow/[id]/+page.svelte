@@ -145,7 +145,19 @@
         basefilter={{ _type: "user", _rpaheartbeat: { $exists: true } }}
         bind:value={robot}
         name="Robot"
-    />
+        propertyname="_id"
+    >
+        {#snippet rendername(item: any)}
+            {item.name}
+        {/snippet}
+        {#snippet rendercontent(item: any)}
+            {#if item == null}
+                Filter by project
+            {:else}
+                {item.name}
+            {/if}
+        {/snippet}</Entityselector
+    >
     {#each item.Parameters as param}
         <div class="mb-2">
             {param?.name} : {#if param != null && param.value != null && param.value.indexOf && param.value.indexOf("[]")}comma

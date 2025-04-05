@@ -98,12 +98,14 @@
   async function delete_selected(ids: string[]) {
     try {
       for (let i = 0; i < selected_items.length; i++) {
-        await deleteitem(entities.find((entity: any) => entity._id == selected_items[i]));
+        await deleteitem(
+          entities.find((entity: any) => entity._id == selected_items[i]),
+        );
       }
       selected_items = [];
-				toast.success("Deleted " + ids.length + " items successfully", {
-					description: "",
-				});
+      toast.success("Deleted " + ids.length + " items successfully", {
+        description: "",
+      });
       GetData();
       datacomponent.persist();
     } catch (error: any) {
@@ -126,9 +128,13 @@
   async function custom_multi_action(ids: string[]) {
     try {
       for (let i = 0; i < selected_items.length; i++) {
-        await requeueitem(entities.find((entity: any) => entity._id == selected_items[i]));
+        await requeueitem(
+          entities.find((entity: any) => entity._id == selected_items[i]),
+        );
       }
-      toast.success("successfully requeued " + selected_items.length + " items");      
+      toast.success(
+        "successfully requeued " + selected_items.length + " items",
+      );
       GetData();
     } catch (error: any) {
       toast.error("Error while requeuing", {
@@ -145,6 +151,7 @@
     <div class="flex flex-col md:flex-row md:space-x-5 space-y-4 md:space-y-0">
       <SearchInput bind:searchstring />
       <EntitySelector
+        propertyname="_id"
         class="w-full xl:w-[284px]"
         height="h-7"
         collectionname="mq"
@@ -152,9 +159,18 @@
         bind:value={queue}
         basefilter={{ _type: "workitemqueue" }}
         handleChangeFunction={filterData}
-        name="Queue"
-        showType={false}
-      />
+        name="queue"
+        >{#snippet rendername(item: any)}
+          {item.name}
+        {/snippet}
+        {#snippet rendercontent(item: any)}
+          {#if item == null}
+            Filter by queue
+          {:else}
+            {item.name}
+          {/if}
+        {/snippet}</EntitySelector
+      >
     </div>
 
     <HotkeyButton
@@ -346,7 +362,7 @@
               description: error.message,
             });
           }
-          }}
+        }}
         size="tableicon"
         variant="icon"
       >

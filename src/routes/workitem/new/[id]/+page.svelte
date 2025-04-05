@@ -25,7 +25,7 @@
     validators: zod(newFormSchema),
     SPA: true,
     onUpdate: async ({ form, cancel }) => {
-      if(form.data.wiqid == "" || form.data.wiqid == null) {
+      if (form.data.wiqid == "" || form.data.wiqid == null) {
         toast.error("Error", {
           description: "Please select a queue first",
         });
@@ -54,8 +54,10 @@
           loading = false;
         }
       } else {
-        let errors = Object.keys(form.errors).map((key) => key + " is " + (form.errors as any)[key]);
-        if(errors.length > 0) {
+        let errors = Object.keys(form.errors).map(
+          (key) => key + " is " + (form.errors as any)[key],
+        );
+        if (errors.length > 0) {
           toast.error("Error", {
             description: errors.join(", "),
           });
@@ -71,7 +73,7 @@
   });
   const { form: formData, enhance, message } = form;
   $formData.wiqid = data.id === "new" ? "" : data.id || "";
-  $formData.payload = {}
+  $formData.payload = {};
   function uploadFiles() {
     return new Promise<void>((resolve, reject) => {
       if (files.length > 0) {
@@ -142,7 +144,18 @@
           bind:value={$formData.wiqid}
           basefilter={{ _type: "workitemqueue" }}
           name="queue"
-        />
+          propertyname="_id"
+          >{#snippet rendername(item: any)}
+            {item.name}
+          {/snippet}
+          {#snippet rendercontent(item: any)}
+            {#if item == null}
+              Select a queue
+            {:else}
+              {item.name}
+            {/if}
+          {/snippet}</EntitySelector
+        >
       {/snippet}
     </Form.Control>
     <Form.FieldErrors />
@@ -152,9 +165,7 @@
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Payload</Form.Label>
-        <ObjectInput bind:value={$formData.payload} class="h-36" 
-        {...props}
-        />
+        <ObjectInput bind:value={$formData.payload} class="h-36" {...props} />
       {/snippet}
     </Form.Control>
     <Form.FieldErrors />
