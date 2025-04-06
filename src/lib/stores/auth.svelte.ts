@@ -95,11 +95,13 @@ class authState {
                 }
                 this.client.onDisconnected = async () => {
                     console.debug("**** serverinit.onDisconnected");
-                    this.isConnected = false;
+                    // stop the UI from changing
+                    // this.isConnected = false;
                 }
                 this.client.onConnected = async () => {
                     console.debug("**** serverinit.onConnected");
-                    this.isConnected = true;
+                    // stop the UI from changing
+                    // this.isConnected = true;
                 }
                 this.isConnected = true;
             } catch (error) {
