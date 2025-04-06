@@ -347,7 +347,7 @@ class entitiesdata {
 
 	async GetData(page: string, collectionname: string, query: any, access_token: string, workspacefilter: boolean = true) {
 		let orderby = this.getOrderBy(page, collectionname);
-		let usequery = this.createQuery(this.settings.searchstring, query);
+		let usequery = this.createQuery(collectionname, this.settings.searchstring, query);
 		let top = usersettings.pagesize;
 		let skip = this.settings.page_index * top;
 
@@ -359,13 +359,13 @@ class entitiesdata {
 		}
 		let queryas = undefined;
 		if (workspacefilter == true && ["cvr", "cvrfinancial", "cvrperson"].indexOf(collectionname) == -1) {
-			if(collectionname == "mq" || collectionname == "workitems") {
+			if (collectionname == "mq" || collectionname == "workitems") {
 				if (usersettings.currentworkspace != null && usersettings.currentworkspace != "") {
 					let or = [
-						{"_workspaceid": usersettings.currentworkspace},
-						{"_workspaceid": {"$exists": false}},
+						{ "_workspaceid": usersettings.currentworkspace },
+						{ "_workspaceid": { "$exists": false } },
 					]
-					usequery = {...usequery, "$or": or};
+					usequery = { ...usequery, "$or": or };
 				}
 			} else if (this.settings.searchstring.length == 24 && this.settings.searchstring.match(/^[0-9a-fA-F]{24}$/)) {
 			} else {
@@ -404,7 +404,7 @@ class entitiesdata {
 				return total_count;
 			}
 		}
-		let usequery = this.createQuery(this.settings.searchstring, query);
+		let usequery = this.createQuery(collectionname, this.settings.searchstring, query);
 		let queryas = undefined;
 		if (workspacefilter == true && ["cvr", "cvrfinancial", "cvrperson"].indexOf(collectionname) == -1) {
 			if (usersettings.currentworkspace != null && usersettings.currentworkspace != "") {
@@ -527,7 +527,7 @@ class entitiesdata {
 		}
 	}
 
-	createQuery(searchstring: string, query: any) {
+	createQuery(collectionname: string, searchstring: string, query: any) {
 		let q: any = { ...query };
 		if (searchstring == null || searchstring == "") {
 			return q;
@@ -551,7 +551,22 @@ class entitiesdata {
 				this.errormessage = "Incomplete query object";
 			}
 		} else {
-			q["name"] = { $regex: searchstring, $options: "i" };
+			if (collectionname == "openrpa") {
+				let or = [
+					{ "name": { $regex: searchstring, $options: "i" } },
+					{ "projectandname": { $regex: searchstring, $options: "i" } }]
+				q["$or"] = or;
+
+			}
+			else if (collectionname == "users") {
+				let or = [
+					{ "name": { $regex: searchstring, $options: "i" } },
+					{ "email": { $regex: searchstring, $options: "i" } }]
+				q["$or"] = or;
+			}
+			else {
+				q["name"] = { $regex: searchstring, $options: "i" };
+			}
 		}
 		return q;
 	}

@@ -190,6 +190,7 @@
         {/if}
     {/each}
     <HotkeyButton
+        variant="success"
         data-shortcut="enter,ctrl+s"
         disabled={loading || robot == ""}
         onclick={async () => {
