@@ -93,7 +93,7 @@
             instance.showstatus = instance.status.containerStatuses[0].started
               ? "Running"
               : "Stopped " +
-                instance.status.containerStatuses[0].state.waiting.reason;
+                instance.status.containerStatuses[0]?.state?.waiting?.reason;
           }
         }
         if (instance.metadata.deletionTimestamp)
