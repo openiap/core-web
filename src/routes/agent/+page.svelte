@@ -202,7 +202,7 @@
           model.status = instance.status.containerStatuses[0].started
             ? "running"
             : "stopped " +
-              instance.status.containerStatuses[0].state.waiting.reason;
+              instance.status.containerStatuses[0]?.state?.waiting?.reason;
         }
       }
       if (instance.metadata.deletionTimestamp) model.status = "deleting";
