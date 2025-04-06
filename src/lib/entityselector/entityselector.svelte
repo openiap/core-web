@@ -24,7 +24,7 @@
         ...restProps
     } = $props();
 
-    let placeholder = `Select ${name}`;
+    let placeholder = `Search ${name}`;
     let entities: any[] = $state([]);
     let isOpen = $state(false);
 

@@ -150,7 +150,7 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  {#if ($formData._workspaceid == null || $formData._workspaceid == "") && auth.config?.workspace_enabled == true}
+  {#if (data.item._workspaceid == null || data.item._workspaceid == "") && auth.config?.workspace_enabled == true}
     <Form.Field {form} name="_workspaceid" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
