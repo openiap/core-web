@@ -1,4 +1,4 @@
-import { web_client_id, web_domain, web_protocol, version, hash, posthog_token } from '$env/static/private';
+import { web_client_id, web_domain, web_protocol, version, hash, posthog_token, wsapiurl } from '$env/static/private';
 import { auth } from '$lib/stores/auth.svelte';
 import type { Handle, ServerInit } from '@sveltejs/kit';
 
@@ -15,7 +15,7 @@ export const init: ServerInit = async () => {
         wsurl = process.env.web_wsapiurl;
     }
     try {
-        await auth.serverinit(wsurl, protocol, domain);
+        await auth.serverinit(wsapiurl, wsurl, protocol, domain);
         if(auth.config != null) {
             auth.config.webcommit = hash;
             auth.config.webversion = version;

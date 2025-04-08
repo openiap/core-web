@@ -79,14 +79,14 @@ class authState {
         }
         this.config = await f.json();
     }
-    async serverinit(wsurl: string, protocol: string, domain: string) {
+    async serverinit(wsapiurl: string, wsurl: string, protocol: string, domain: string) {
         this.baseurl = protocol + '://' + domain;
         if (this.config == null) {
             await this.getConfig(wsurl, fetch);
         }
         if (this.client == null) {
             global.WebSocket = ws;
-            this.client = new openiap(wsurl, "");
+            this.client = new openiap(wsapiurl, "");
             this.client.maxreconnectms = 1000;
             try {
                 await this.client.connect(true);
