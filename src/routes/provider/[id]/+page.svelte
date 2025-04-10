@@ -132,31 +132,43 @@
     });
   }
   // Adding missing keys
-  if ($formData.provider === undefined) {
+  if ($formData.provider == null) {
     $formData.provider = "saml";
   }
-  if ($formData.saml_signout_url === undefined) {
+  if ($formData.name == null) {
+    $formData.name = "";
+  }
+  if ($formData.saml_signout_url == null) {
     $formData.saml_signout_url = "";
   }
-  if ($formData.saml_federation_metadata === undefined) {
+  if ($formData.saml_federation_metadata == null) {
     $formData.saml_federation_metadata = "";
   }
-  if ($formData.introspection === undefined) {
-    $formData.introspection = "";
+  if ($formData.introspection_endpoint == null) {
+    $formData.introspection_endpoint = "";
   }
-  if ($formData.consumerKey === undefined) {
+  if ($formData.introspection_client_id == null) {
+    $formData.introspection_client_id = "";
+  }
+  if ($formData.introspection_client_secret == null) {
+    $formData.introspection_client_secret = "";
+  }  
+  if ($formData.consumerKey == null) {
     $formData.consumerKey = "";
   }
-  if ($formData.consumerSecret === undefined) {
+  if ($formData.consumerSecret == null) {
     $formData.consumerSecret = "";
   }
-  if ($formData.id === undefined) {
+  if ($formData.id == null) {
     $formData.id = "";
   }
-  if ($formData.issuer === undefined) {
+  if ($formData.issuer == null) {
     $formData.issuer = "";
   }
-  if ($formData.order === undefined) {
+  if ($formData.saml_signout_url == null) {
+    $formData.saml_signout_url = "";
+  }  
+  if ($formData.order == null) {
     $formData.order = 0;
   }
 </script>

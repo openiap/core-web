@@ -18,8 +18,8 @@
 		if (item._id != null) return item._id;
 		if (item.image != null) return item.image;
 		if (item.stripeprice != null) return item.stripeprice;
-		if (item.name != null) return item.name;
 		if (item.value != null) return item.value;
+		if (item.name != null) return item.name;
 		return "";
 	}
 </script>
