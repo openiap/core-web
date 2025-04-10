@@ -153,10 +153,23 @@
             {/if}
             <div class={"flex space-x-4 mt-4"}>
                 <EntitySelector
+                    name="role"
+                    propertyname="_id"
                     bind:value={newid}
                     collectionname="users"
                     {loading}
-                ></EntitySelector>
+                >
+                    {#snippet rendername(item: any)}
+                        {item.name}
+                    {/snippet}
+                    {#snippet rendercontent(item: any)}
+                        {#if item == null}
+                            Select role
+                        {:else}
+                            {item.name}
+                        {/if}
+                    {/snippet}</EntitySelector
+                >
                 <Hotkeybutton
                     aria-label="Add"
                     disabled={loading}
