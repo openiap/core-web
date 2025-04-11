@@ -764,6 +764,9 @@ class entitiesdata {
 					return ["_id", "name", "_type", "_createdby", "_created", "_modified"];
 				} else if (_page.startsWith("/workitem/")) {
 					return ["name", "state", "errortype", "retries", "priority", "wiq", "lastrun", "_created"];
+				} else if (page.endsWith("/deleted")) {
+					console.debug("Unknown deleted page", page);
+					return ["_id", "name", "_type", "_deleted", "_deletedby", "_created", "_version"];
 				} else if (_page.startsWith("/entities/")) {
 					if (_page.endsWith(".files")) {
 						return ["_id", "metadata.name", "metadata._createdby", "metadata._created"];
@@ -771,11 +774,7 @@ class entitiesdata {
 				} else if (page.indexOf("/history/") > -1) {
 					console.debug("Unknown history page", page);
 					return ["_id", "name", "_createdby", "_modified", "_deleted", "_version"];
-				} else if (page.endsWith("/deleted")) {
-					console.debug("Unknown deleted page", page);
-					return ["_id", "name", "_type", "_deleted", "_deletedby", "_created", "_version"];
-				}
-				else if (page.endsWith("/duplicates")) {
+				} else if (page.endsWith("/duplicates")) {
 					return ["_id", "name", "count"];
 				}
 				console.debug("Unknown page", page);

@@ -53,9 +53,11 @@
   }
   function selectcollection(name: string) {
     collectionname = name;
+    getData();
     // usersettings.entities_collectionname = name;
     // datacomponent.persist();
-    sveltepage.url.pathname = base + `/entities/${collectionname}/deleted`;
+    console.log(collectionname);
+    sveltepage.url.pathname = base + `/entities/${collectionname}/duplicates`;
     replaceState(sveltepage.url, sveltepage.state);
   }
   async function single_item_click(item: any) {
@@ -116,6 +118,41 @@
   checkInitialTableDelete();
   let profileroles = auth.profile?.roles || [];
   const isAdmin = profileroles.includes("admins");
+
+  async function getData() {
+    try {
+      loading = true;
+      const uniquenessFields = uniqueness
+        .split(",")
+        .map((field) => field.trim());
+      const _id: any = {};
+      uniquenessFields.forEach((field) => {
+        _id[field] = `$${field}`;
+      });
+      const aggregates: any[] = [{ $group: { _id, count: { $sum: 1 } } }];
+      if (query != "") {
+        aggregates.unshift({ $match: JSON.parse(query) });
+      }
+      if (!includeones) {
+        aggregates.push({ $match: { count: { $gt: 1 } } });
+      }
+      aggregates.push({ $sort: { count: -1 } });
+      const _entities = await auth.client.Aggregate<any>({
+        collectionname: collectionname,
+        aggregates,
+        jwt: data.access_token,
+      });
+      for (let i = 0; i < _entities.length; i++) {
+        _entities[i].name = _entities[i]._id;
+      }
+      entities = _entities;
+    } catch (error: any) {
+      toast.error("Error while fetching entities", {
+        description: error.message,
+      });
+    }
+    loading = false;
+  }
 </script>
 
 {#if errormessage && errormessage != ""}
@@ -274,42 +311,7 @@
           variant="base"
           data-shortcut="enter"
           disabled={loading}
-          onclick={async () => {
-            try {
-              loading = true;
-              const uniquenessFields = uniqueness
-                .split(",")
-                .map((field) => field.trim());
-              const _id: any = {};
-              uniquenessFields.forEach((field) => {
-                _id[field] = `$${field}`;
-              });
-              const aggregates: any[] = [
-                { $group: { _id, count: { $sum: 1 } } },
-              ];
-              if (query != "") {
-                aggregates.unshift({ $match: JSON.parse(query) });
-              }
-              if (!includeones) {
-                aggregates.push({ $match: { count: { $gt: 1 } } });
-              }
-              aggregates.push({ $sort: { count: -1 } });
-              const _entities = await auth.client.Aggregate<any>({
-                collectionname: data.collectionname,
-                aggregates,
-                jwt: data.access_token,
-              });
-              for (let i = 0; i < _entities.length; i++) {
-                _entities[i].name = _entities[i]._id;
-              }
-              entities = _entities;
-            } catch (error: any) {
-              toast.error("Error while fetching entities", {
-                description: error.message,
-              });
-            }
-            loading = false;
-          }}
+          onclick={getData}
         >
           <Search class="h-4 w-4" />
           Search
