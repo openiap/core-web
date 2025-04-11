@@ -10,8 +10,8 @@
         SquarePlus,
         Trash2,
     } from "lucide-svelte";
-    import { Ace } from "./index.js";
     import { toast } from "svelte-sonner";
+    import { Ace } from "./index.js";
 
     let {
         class: className = "mb-10",
@@ -63,6 +63,9 @@
             }
             newid = "";
         }
+    }
+    {
+        console.log("value.metadataace", value);
     }
 </script>
 
@@ -153,20 +156,32 @@
             {/if}
             <div class={"flex space-x-4 mt-4"}>
                 <EntitySelector
-                    name="role"
+                    name="role/user"
                     propertyname="_id"
                     bind:value={newid}
                     collectionname="users"
                     {loading}
+                    basefilter={{
+                        $or: [{ _type: "user" }, { _type: "role" }],
+                    }}
                 >
                     {#snippet rendername(item: any)}
-                        {item.name}
+                        {#if item._type == "user"}
+                            {console.log(item)}
+                            ({item._type}) {item.name}
+                            {item.email ? `/ ${item.email}` : ""}
+                        {:else}
+                            ({item._type}) {item.name}
+                        {/if}
                     {/snippet}
                     {#snippet rendercontent(item: any)}
                         {#if item == null}
-                            Select role
+                            Select role/user
+                        {:else if item._type == "user"}
+                            ({item._type}) {item.name}
+                            {item.email ? `/ ${item.email}` : ""}
                         {:else}
-                            {item.name}
+                            ({item._type}) {item.name}
                         {/if}
                     {/snippet}</EntitySelector
                 >

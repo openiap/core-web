@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Checkbox } from "$lib/components/ui/checkbox/index.js";
-    import { Label } from "$lib/components/ui/label/index.js";
+    import { auth } from "$lib/stores/auth.svelte";
 
     const items = [
         { value: 2, label: "Read" },
@@ -11,6 +11,7 @@
     ];
 
     let { value = $bindable(null), loading = false } = $props();
+    const metadata = $state({ email: null, _type: null, name: null });
 
     const IsBitSet = $derived((bit: number) => {
         return (value.rights & bit) === bit;
@@ -23,14 +24,41 @@
         if (bit == 65535) return 0;
         return value.rights ^ bit;
     }
+    function getAcl() {
+        if (value == null) return;
+        auth.client
+            .FindOne({
+                collectionname: "users",
+                query: { _id: value._id },
+                jwt: auth.access_token,
+            })
+            .then((item: any) => {
+                if (item == null) return;
+                metadata.email = item?.email;
+                metadata._type = item?._type;
+                metadata.name = item?.name;
+            });
+    }
+    getAcl();
 </script>
 
-<div class="flex flex-col space-y-2 lg:space-y-0 lg:flex-row items-center p-2 justify-between w-full">
+<div
+    class="flex flex-col space-y-2 lg:space-y-0 lg:flex-row items-center p-2 justify-between w-full"
+>
     <div>
-        {value.name}
+        {#if metadata?.name == null}
+            Loading...
+        {:else if metadata?._type == "user"}
+            ({metadata?._type}) {metadata?.name}
+            {metadata?.email ? `/ ${metadata?.email}` : ""}
+        {:else}
+            ({metadata?._type}) {metadata?.name}
+        {/if}
     </div>
 
-    <div class="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 gap-4 items-center lg:flex">
+    <div
+        class="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 gap-4 items-center lg:flex"
+    >
         {#each items as item}
             <div
                 role="button"
