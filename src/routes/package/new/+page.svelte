@@ -86,6 +86,11 @@
     { value: "rust", label: "Rust" },
     { value: "exec", label: "Exec" },
     { value: "powershell", label: "Powershell" },
+    { value: "php", label: "Php" },
+    { value: "java", label: "Java" },
+    { value: "c", label: "C" },
+    { value: "binary", label: "Binary" },
+    { value: "shell", label: "Shell" },
   ];
 
   const triggerContent = $derived(
