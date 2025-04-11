@@ -298,7 +298,9 @@
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Billing Account</Form.Label>
-        <Form.Description>License is the following tier:</Form.Description>
+        <Form.Description
+          >License is linked to this Billing Account:</Form.Description
+        >
         <EntitySelector
           bind:value={$formData._billingid}
           collectionname="users"
@@ -328,9 +330,7 @@
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>License</Form.Label>
-        <Form.Description
-          >License is linked to this Billing Account:</Form.Description
-        >
+        <Form.Description>License is the following tier:</Form.Description>
         <CustomSelect
           {loading}
           {...props}
