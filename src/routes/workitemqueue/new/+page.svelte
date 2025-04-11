@@ -74,6 +74,8 @@
               jwt: auth.access_token,
             });
             form.data.success_wiq = item.name;
+            console.log(item);
+            if (item == null) throw new Error("Workitemqueue not found");
           }
 
           if (!form.data.amqpqueue) {
@@ -84,6 +86,9 @@
           data._type = "workitemqueue";
           data._created = new Date(data._created);
           data._modified = new Date(data._modified);
+          // delete data.success_wiq;
+          console.log("data", $state.snapshot(data));
+          // return;
           await auth.client.AddWorkItemQueue({
             workitemqueue: data,
             jwt: auth.access_token,
@@ -140,36 +145,6 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Field {form} name="projectid" class="mb-10">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Project</Form.Label>
-        <EntitySelector
-          propertyname="_id"
-          collectionname="openrpa"
-          bind:value={$formData.projectid}
-          basefilter={{ _type: "project" }}
-          projection={{ name: 1 }}
-          class="w-64"
-          name="project"
-          allowunselect={true}
-        >
-          {#snippet rendername(item: any)}
-            {item.name}
-          {/snippet}
-          {#snippet rendercontent(item: any)}
-            {#if item == null}
-              Select a project
-            {:else}
-              {item.name}
-            {/if}
-          {/snippet}</EntitySelector
-        >
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-
   <Form.Field {form} name="maxretries" class="mb-10">
     <Form.Control>
       {#snippet children({ props })}
@@ -218,51 +193,32 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Field {form} name="workflowid" class="mb-10">
-    <Form.Control>
-      {#snippet children({ props })}
-        <Form.Label>Workflow</Form.Label>
-        <EntitySelector
-          collectionname="openrpa"
-          bind:value={$formData.workflowid}
-          basefilter={{ _type: "workflow" }}
-          projection={{ name: 1, projectandname: 1 }}
-          class="w-64"
-          name="workflowid"
-          allowunselect={true}
-          propertyname="_id"
-        >
-          {#snippet rendername(item: any)}
-            {item.name}
-          {/snippet}
-          {#snippet rendercontent(item: any)}
-            {#if item == null}
-              Select a workflow
-            {:else}
-              {item.name}
-            {/if}
-          {/snippet}</EntitySelector
-        >
-      {/snippet}
-    </Form.Control>
-    <Form.FieldErrors />
-  </Form.Field>
-
   <Form.Field {form} name="robotqueue" class="mb-10">
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Robot/role</Form.Label>
         <EntitySelector
+          {loading}
           collectionname="users"
           bind:value={$formData.robotqueue}
           basefilter={{
-            $or: [{ _type: "user" }, { _type: "role", rparole: true }],
+            $or: [
+              {
+                _type: "user",
+                _rpaheartbeat: { $exists: true, $nin: ["", null] },
+              },
+              { _type: "role", rparole: true },
+            ],
           }}
           projection={{ name: 1, _type: 1 }}
           class="w-64"
           name="robotqueue"
           allowunselect={true}
           propertyname="_id"
+          handleChangeFunction={() => {
+            $formData.projectid = "";
+            $formData.workflowid = "";
+          }}
         >
           {#snippet rendername(item: any)}
             {item.name}
@@ -280,9 +236,80 @@
     <Form.FieldErrors />
   </Form.Field>
 
+  {#if $formData.robotqueue}
+    <Form.Field {form} name="projectid" class="mb-10">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Project</Form.Label>
+          <EntitySelector
+            queryas={$formData.robotqueue}
+            {loading}
+            propertyname="_id"
+            collectionname="openrpa"
+            bind:value={$formData.projectid}
+            basefilter={{ _type: "project" }}
+            projection={{ name: 1 }}
+            class="w-64"
+            name="project"
+            allowunselect={true}
+            handleChangeFunction={() => {
+              $formData.workflowid = "";
+            }}
+          >
+            {#snippet rendername(item: any)}
+              {item.name}
+            {/snippet}
+            {#snippet rendercontent(item: any)}
+              {#if item == null}
+                Select a project
+              {:else}
+                {item.name}
+              {/if}
+            {/snippet}</EntitySelector
+          >
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+  {/if}
+
+  {#if $formData.projectid}
+    <Form.Field {form} name="workflowid" class="mb-10">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Workflow</Form.Label>
+          <EntitySelector
+            {loading}
+            collectionname="openrpa"
+            bind:value={$formData.workflowid}
+            basefilter={{ _type: "workflow", projectid: $formData.projectid }}
+            projection={{ name: 1, projectandname: 1 }}
+            class="w-64"
+            name="workflowid"
+            allowunselect={true}
+            propertyname="_id"
+          >
+            {#snippet rendername(item: any)}
+              {item.name}
+            {/snippet}
+            {#snippet rendercontent(item: any)}
+              {#if item == null}
+                Select a workflow
+              {:else}
+                {item.name}
+              {/if}
+            {/snippet}</EntitySelector
+          >
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+  {/if}
+
   <div class="mb-10">
     <div class="mb-2 font-medium text-sm">AMQP Queue</div>
     <EntitySelector
+      {loading}
       collectionname="mq"
       bind:value={amqpqueuedata}
       basefilter={{ _type: "queue" }}
@@ -315,6 +342,7 @@
   <div class="mb-10">
     <div class="mb-2 font-medium text-sm">Agent</div>
     <EntitySelector
+      {loading}
       queryas={usersettings.currentworkspace}
       collectionname="agents"
       bind:value={agentdata}
@@ -349,6 +377,7 @@
       {#snippet children({ props })}
         <Form.Label>Package</Form.Label>
         <EntitySelector
+          {loading}
           queryas={usersettings.currentworkspace}
           collectionname="agents"
           bind:value={$formData.packageid}
@@ -393,6 +422,7 @@
       {#snippet children({ props })}
         <Form.Label>on success, push to</Form.Label>
         <EntitySelector
+          {loading}
           queryas={usersettings.currentworkspace}
           collectionname="mq"
           bind:value={$formData.success_wiqid}
@@ -422,6 +452,7 @@
       {#snippet children({ props })}
         <Form.Label>on failure, push to</Form.Label>
         <EntitySelector
+          {loading}
           queryas={usersettings.currentworkspace}
           collectionname="mq"
           bind:value={$formData.failed_wiqid}
