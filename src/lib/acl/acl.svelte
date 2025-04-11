@@ -64,9 +64,6 @@
             newid = "";
         }
     }
-    {
-        console.log("value.metadataace", value);
-    }
 </script>
 
 <Accordion.Root
@@ -168,7 +165,6 @@
                 >
                     {#snippet rendername(item: any)}
                         {#if item._type == "user"}
-                            {console.log(item)}
                             ({item._type}) {item.name}
                             {item.email ? `/ ${item.email}` : ""}
                         {:else}
