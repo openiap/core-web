@@ -156,6 +156,7 @@
             {/if}
             <div class={"flex space-x-4 mt-4"}>
                 <EntitySelector
+                    width="min-w-[380px]"
                     name="role/user"
                     propertyname="_id"
                     bind:value={newid}
