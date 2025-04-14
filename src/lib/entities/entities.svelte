@@ -119,6 +119,7 @@
 		custom_reload = async () => {
 			await GetData();
 		},
+		show_reload = true,
 		...rest
 	} = $props();
 
@@ -987,15 +988,17 @@
 		<div
 			class="grid grid-cols-1 gap-4 lg:gap-0 md:grid-cols-2 md:space-y-0 lg:flex mt-4 lg:space-x-5 items-center mb-2"
 		>
-			<HotkeyButton
-				aria-label={`Reload Data`}
-				disabled={loading}
-				onclick={() => custom_reload()}
-				size="base"
-			>
-				<RefreshCcw />
-				Reload Data</HotkeyButton
-			>
+			{#if show_reload == true}
+				<HotkeyButton
+					aria-label={`Reload Data`}
+					disabled={loading}
+					onclick={() => custom_reload()}
+					size="base"
+				>
+					<RefreshCcw />
+					Reload Data</HotkeyButton
+				>
+			{/if}
 			{#if multi_select}
 				{#if custom_multi_action_label}
 					<HotkeyButton

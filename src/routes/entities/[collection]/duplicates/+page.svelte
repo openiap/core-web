@@ -331,7 +331,8 @@
       bind:this={ref}
       bind:loading
       single_item_click={(item: any) => single_item_click(item)}
-    ></Entities>
+      show_reload={false}
+      ></Entities>
   </div>
 </div>
 

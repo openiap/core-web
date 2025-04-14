@@ -293,6 +293,7 @@
       {single_item_click}
       bind:this={ref}
       bind:loading
+      show_reload={false}
     >
       {#snippet action(item: any)}
         <HotkeyButton
