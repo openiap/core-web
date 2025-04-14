@@ -160,6 +160,9 @@
         basefilter={{ _type: "workitemqueue" }}
         handleChangeFunction={filterData}
         name="queue"
+        custom_reload={() => {
+          GetData();
+        }}
         >{#snippet rendername(item: any)}
           {item.name}
         {/snippet}
