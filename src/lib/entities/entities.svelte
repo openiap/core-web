@@ -986,7 +986,7 @@
 		</div>
 
 		<div
-			class="grid grid-cols-1 gap-4 lg:gap-0 md:grid-cols-2 md:space-y-0 lg:flex mt-4 lg:space-x-5 items-center mb-2"
+			class="grid grid-cols-1 gap-4 md:grid-cols-2 md:space-y-0 xl:flex mt-4 xl:space-x-5 xl:gap-0 items-center mb-2"
 		>
 			{#if show_reload == true}
 				<HotkeyButton
