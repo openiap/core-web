@@ -9,6 +9,7 @@
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
   import Searchinput from "$lib/searchinput/searchinput.svelte";
+  import { auth } from "$lib/stores/auth.svelte";
   import { MapPinHouse, User } from "lucide-svelte";
 
   let { data } = $props();
@@ -22,6 +23,21 @@
     if (item.user != null && item.user._id != "") {
       goto(base + `/user/${item.user._id}`);
     }
+  }
+  async function getData() {
+    loading = true;
+    try {
+      entities = JSON.parse(
+        await auth.client.CustomCommand({
+          command: "getclients",
+          jwt: auth.access_token,
+        }),
+      );
+      data.total_count = entities.length;
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+    loading = false;
   }
 </script>
 
@@ -39,6 +55,9 @@
   bind:entities
   bind:this={ref}
   bind:loading
+  custom_reload={() => {
+    getData();
+  }}
 >
   {#snippet id(item: any)}
     <button

@@ -318,7 +318,7 @@
       getPods(false);
     }
   });
-  function parseImage(name:string) {
+  function parseImage(name: string) {
     if (name == null || name == "") return "";
     let parts = name.split("/");
     if (parts.length > 1 && parts[0].indexOf(".") > -1) {
@@ -500,7 +500,7 @@
       <Box />
       Packages</HotkeyButton
     >
-    <HotkeyButton
+    <!-- <HotkeyButton
       aria-label="Reload"
       size="sm"
       variant="base"
@@ -512,7 +512,7 @@
     >
       <RefreshCcw />
       Reload</HotkeyButton
-    >
+    > -->
   </div>
 </div>
 
@@ -526,6 +526,10 @@
   bind:entities
   bind:this={ref}
   bind:loading
+  custom_reload={async () => {
+    await GetData();
+    await getPods(true);
+  }}
 >
   {#snippet status(item: any)}
     {#if item && item.status}
@@ -543,7 +547,7 @@
   {/snippet}
   {#snippet image(item: any)}
     {parseImage(item.image)}
-  {/snippet}  
+  {/snippet}
   {#snippet action(item: any)}
     <div class="flex items-center justify-end space-x-2.5">
       <HotkeyButton

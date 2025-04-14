@@ -25,6 +25,7 @@
 		Rows4,
 		Table as TableIcon,
 		Trash2,
+		RefreshCcw,
 	} from "lucide-svelte";
 	import ArrowDown from "lucide-svelte/icons/arrow-down";
 	import ArrowUp from "lucide-svelte/icons/arrow-up";
@@ -115,6 +116,9 @@
 		show_delete = true,
 		custom_multi_action_label = "",
 		custom_multi_action = async (ids: string[]) => {},
+		custom_reload = async () => {
+			await GetData();
+		},
 		...rest
 	} = $props();
 
@@ -841,39 +845,40 @@
 												{/if}
 											</Table.Cell>
 										{:else if head.field == "errortype"}
-											<Table.Cell class={head.cellclass}
-											onclick={(event) => {
-												if (event.shiftKey) {
-													// get the text
-													const text =
-														RenderItemData(
-															item,
-															head.field,
+											<Table.Cell
+												class={head.cellclass}
+												onclick={(event) => {
+													if (event.shiftKey) {
+														// get the text
+														const text =
+															RenderItemData(
+																item,
+																head.field,
+															);
+														// copy to clipboard
+														navigator.clipboard.writeText(
+															text,
 														);
-													// copy to clipboard
-													navigator.clipboard.writeText(
-														text,
-													);
-													toast.success(
-														"Copied " +
-															text +
-															" to clipboard",
-													);
-													event.stopPropagation();
-												} else if (
-													multi_select &&
-													selected_items.length >
-														0
-												) {
-													ToggleSelect(item);
-												} else {
-													if (!loading) {
-														single_item_click(
-															item,
+														toast.success(
+															"Copied " +
+																text +
+																" to clipboard",
 														);
+														event.stopPropagation();
+													} else if (
+														multi_select &&
+														selected_items.length >
+															0
+													) {
+														ToggleSelect(item);
+													} else {
+														if (!loading) {
+															single_item_click(
+																item,
+															);
+														}
 													}
-												}
-											}}
+												}}
 											>
 												{#if item != null && item.errortype != null && item.errortype != ""}
 													<StatusCard
@@ -888,7 +893,8 @@
 												{/if}
 											</Table.Cell>
 										{:else if rest[head.field] != null}
-											<Table.Cell class={head.cellclass}
+											<Table.Cell
+												class={head.cellclass}
 												onclick={(event) => {
 													if (event.shiftKey) {
 														// get the text
@@ -931,10 +937,11 @@
 												onclick={(event) => {
 													if (event.shiftKey) {
 														// get the text
-														const text = RenderItemData(
-															item,
-															head.field,
-														);
+														const text =
+															RenderItemData(
+																item,
+																head.field,
+															);
 														// copy to clipboard
 														navigator.clipboard.writeText(
 															text,
@@ -945,7 +952,6 @@
 																" to clipboard",
 														);
 														event.stopPropagation();
-														
 													} else if (multi_select) {
 														ToggleSelect(item);
 													} else {
@@ -981,6 +987,15 @@
 		<div
 			class="grid grid-cols-1 gap-4 lg:gap-0 md:grid-cols-2 md:space-y-0 lg:flex mt-4 lg:space-x-5 items-center mb-2"
 		>
+			<HotkeyButton
+				aria-label={`Reload Data`}
+				disabled={loading}
+				onclick={() => custom_reload()}
+				size="base"
+			>
+				<RefreshCcw />
+				Reload Data</HotkeyButton
+			>
 			{#if multi_select}
 				{#if custom_multi_action_label}
 					<HotkeyButton
