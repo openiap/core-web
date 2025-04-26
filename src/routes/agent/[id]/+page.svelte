@@ -484,7 +484,7 @@
       const duplicateSchedules = schedules.filter(
         (schedule) => schedule.packageid === copyData.packageid,
       );
-      copyData.name = copyData.name + " " + duplicateSchedules.length;
+      copyData.name = copyData.name + duplicateSchedules.length;
       schedules = [...(schedules || []), copyData];
     } else {
       schedules = [...(schedules || []), copyData];
