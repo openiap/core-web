@@ -472,6 +472,19 @@
     class="md:flex overflow-auto md:overflow-visible md:items-center xl:justify-end gap-4 md:gap-0 md:space-x-5 mb-2 xl:mb-0"
   >
     <HotkeyButton
+      aria-label="Packages"
+      size="sm"
+      variant="base"
+      disabled={loading}
+      onclick={() => {
+        loading = true;
+        goto(base + `/package`);
+      }}
+    >
+      <Box />
+      Packages</HotkeyButton
+    >
+    <HotkeyButton
       title="Create Agent (Insert Key)"
       data-shortcut="ins"
       class="touraddagent mb-2 sm:mb-0"
@@ -486,19 +499,6 @@
     >
       <SquarePlus />
       Create Agent</HotkeyButton
-    >
-    <HotkeyButton
-      aria-label="Packages"
-      size="sm"
-      variant="base"
-      disabled={loading}
-      onclick={() => {
-        loading = true;
-        goto(base + `/package`);
-      }}
-    >
-      <Box />
-      Packages</HotkeyButton
     >
     <!-- <HotkeyButton
       aria-label="Reload"
