@@ -481,9 +481,11 @@
       schedules &&
       schedules.some((schedule) => schedule.packageid === copyData.packageid)
     ) {
-      toast.error("Error while adding package", {
-        description: "This schedule already exists.",
-      });
+      const duplicateSchedules = schedules.filter(
+        (schedule) => schedule.packageid === copyData.packageid,
+      );
+      copyData.name = copyData.name + " " + duplicateSchedules.length;
+      schedules = [...(schedules || []), copyData];
     } else {
       schedules = [...(schedules || []), copyData];
     }
