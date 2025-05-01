@@ -40,7 +40,7 @@
         User,
         UserRoundX,
         UsersRound,
-        Workflow
+        Workflow,
     } from "lucide-svelte";
     export let title: string;
     const iconClass = "h-4 w-4 me-1.5 text-bw600 dark:text-bw500";
@@ -84,6 +84,8 @@
     <SquareStack class={iconClass} />
 {:else if title == "lastrun"}
     <CalendarSearch class={iconClass} />
+{:else if title == "nextrun"}
+    <CalendarDays class={iconClass} />
 {:else if title == "runtime"}
     <Timer class={iconClass} />
 {:else if title == "role"}
