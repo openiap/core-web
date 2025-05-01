@@ -317,6 +317,9 @@
   bind:entities
   bind:this={ref}
   bind:loading
+  custom_reload={async () => {
+    await GetData();
+  }}
 >
   {#snippet wiq(item: any)}
     <HotkeyButton

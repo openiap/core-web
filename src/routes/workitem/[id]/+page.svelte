@@ -335,6 +335,9 @@
   bind:selected_items
   bind:entities
   bind:loading
+  custom_reload={async () => {
+    await GetData();
+  }}
 >
   {#snippet state(item: any)}
     {#if item != null && item.state != null && item.state != ""}
