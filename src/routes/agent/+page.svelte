@@ -39,6 +39,7 @@
     Wrench,
   } from "lucide-svelte";
   import { toast } from "svelte-sonner";
+  import { capitalizeFirstLetter } from "../../helper.js";
 
   let { data } = $props();
   let ref: any;
@@ -54,6 +55,8 @@
   // svelte-ignore non_reactive_update
   let filterby: "all" | "daemon" | "pods" | "docker" | "assistant" =
     usersettings.agentfilter;
+  let selectedFilter = $state(usersettings.agentfilter);
+
   let filter = $state(false);
   console.log(filterby);
   if (browser && filterby == "pods") {
@@ -337,13 +340,13 @@
   <div class="xl:flex xl:items-center xl:space-x-5 mb-2 xl:mb-0 w-full">
     <SearchInput bind:searchstring class="w-full xl:w-[284px] mb-2 xl:mb-0" />
     <div class="w-fit">
-      <Popover.Root open={filter}>
+      <Popover.Root open={filter} onOpenChange={() => (filter = true)}>
         <Popover.Trigger
           disabled={loading}
           class={buttonVariants({ variant: "base", size: "sm" }) +
             " border-dashed w-full"}
           ><Filter />
-          Filter</Popover.Trigger
+          Filter: {capitalizeFirstLetter(selectedFilter)}</Popover.Trigger
         >
         <Popover.Content class="w-fit bg-bw50 dark:bg-popover py-2 px-1">
           <RadioGroup.Root value={filterby} class="flex flex-col">
@@ -359,10 +362,12 @@
                 disabled={loading}
                 onclick={async () => {
                   filterby = "all";
+                  selectedFilter = "all";
                   usersettings.agentfilter = filterby;
                   usersettings.persist();
                   await GetData();
                   await getPods(false);
+                  filter = false;
                 }}
               />
             </div>
@@ -379,10 +384,12 @@
                 disabled={loading}
                 onclick={async () => {
                   filterby = "daemon";
+                  selectedFilter = "daemon";
                   usersettings.agentfilter = filterby;
                   usersettings.persist();
                   await GetData();
                   await getPods(false);
+                  filter = false;
                 }}
               />
             </div>
@@ -398,9 +405,11 @@
                 disabled={loading}
                 onclick={async () => {
                   filterby = "pods";
+                  selectedFilter = "pods";
                   usersettings.agentfilter = filterby;
                   usersettings.persist();
                   await GetData();
+                  filter = false;
                 }}
               />
             </div>
@@ -416,10 +425,12 @@
                 disabled={loading}
                 onclick={async () => {
                   filterby = "docker";
+                  selectedFilter = "docker";
                   usersettings.agentfilter = filterby;
                   usersettings.persist();
                   await GetData();
                   await getPods(false);
+                  filter = false;
                 }}
               />
             </div>
@@ -435,17 +446,18 @@
                 disabled={loading}
                 onclick={async () => {
                   filterby = "assistant";
+                  selectedFilter = "assistant";
                   usersettings.agentfilter = filterby;
                   usersettings.persist();
                   await GetData();
                   await getPods(false);
+                  filter = false;
                 }}
               />
             </div>
-            <Separator />
+            <!-- <Separator />
             <div class="flex items-center px-2">
               <div class="flex items-center space-x-2 w-full">
-                <!-- <Label for="r1" class="cursor-pointer">Apply filter</Label> -->
                 <Check class="h-4 w-4" />
                 <HotkeyButton
                   size="ghost"
@@ -462,7 +474,7 @@
                   Apply filter
                 </HotkeyButton>
               </div>
-            </div>
+            </div> -->
           </RadioGroup.Root>
         </Popover.Content>
       </Popover.Root>
