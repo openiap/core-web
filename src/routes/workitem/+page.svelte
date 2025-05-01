@@ -15,10 +15,10 @@
   import { SearchInput } from "$lib/searchinput/index.js";
   import { StatusCard } from "$lib/statuscard/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
+  import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import {
     Box,
-    Check,
     CloudLightning,
     Filter,
     HandHelping,
@@ -30,6 +30,7 @@
     VenetianMask,
   } from "lucide-svelte";
   import { toast } from "svelte-sonner";
+  import { capitalizeFirstLetter } from "../../helper.js";
 
   let query = $state({});
 
@@ -44,7 +45,10 @@
   let deleteData: any = $state({});
   let queue: any = $state("");
   let filter = $state(false);
-  let filterby: "all" | "new" | "successful" | "failed" | "processing" = "all";
+  let filterby: "all" | "new" | "successful" | "failed" | "processing" =
+    usersettings.workitemfilter;
+  let selectedFilter = $state(usersettings.workitemfilter);
+  console.log("filterby", filterby);
 
   function single_item_click(item: any) {
     goto(base + `/workitem/edit/${item._id}`);
@@ -64,6 +68,7 @@
         query,
         auth.access_token,
       );
+      console.log(entities)
     } catch (error: any) {
       toast.error("Error getting data", {
         description: error.message,
@@ -172,16 +177,16 @@
       </EntitySelector>
     </div>
     <div class="w-fit">
-      <Popover.Root open={filter}>
+      <Popover.Root open={filter} onOpenChange={() => (filter = true)}>
         <Popover.Trigger
           disabled={loading}
           class={buttonVariants({ variant: "base", size: "sm" }) +
             " border-dashed w-full"}
           ><Filter />
-          Filter</Popover.Trigger
+          Filter: {capitalizeFirstLetter(selectedFilter)}</Popover.Trigger
         >
         <Popover.Content class="w-fit bg-bw50 dark:bg-popover py-2 px-1">
-          <RadioGroup.Root value="All" class="flex flex-col">
+          <RadioGroup.Root value={selectedFilter} class="flex flex-col">
             <div class="flex items-center py-1 px-2">
               <div class="flex items-center space-x-2 w-full">
                 <Rows2 class="h-4 w-4" />
@@ -189,15 +194,20 @@
               </div>
               <RadioGroup.Item
                 class="dark:border-bw500 dark:text-bw100 dark:hover:bg-600"
-                value="All"
+                value="all"
                 id="r1"
                 disabled={loading}
                 onclick={async () => {
+                  selectedFilter = "all";
                   filterby = "all";
                   await GetData();
+                  filter = false;
+                  usersettings.workitemfilter = filterby;
+                  usersettings.persist();
                 }}
               />
             </div>
+            <Separator />
             <div class="flex items-center py-1 px-2">
               <div class="flex items-center space-x-2 w-full">
                 <VenetianMask class="h-4 w-4" />
@@ -210,8 +220,12 @@
                 id="r2"
                 disabled={loading}
                 onclick={async () => {
+                  selectedFilter = "new";
                   filterby = "new";
                   await GetData();
+                  filter = false;
+                  usersettings.workitemfilter = filterby;
+                  usersettings.persist();
                 }}
               />
             </div>
@@ -226,8 +240,12 @@
                 id="r3"
                 disabled={loading}
                 onclick={async () => {
+                  selectedFilter = "successful";
                   filterby = "successful";
                   await GetData();
+                  filter = false;
+                  usersettings.workitemfilter = filterby;
+                  usersettings.persist();
                 }}
               />
             </div>
@@ -242,8 +260,12 @@
                 id="r4"
                 disabled={loading}
                 onclick={async () => {
+                  selectedFilter = "failed";
                   filterby = "failed";
                   await GetData();
+                  filter = false;
+                  usersettings.workitemfilter = filterby;
+                  usersettings.persist();
                 }}
               />
             </div>
@@ -258,15 +280,18 @@
                 id="r5"
                 disabled={loading}
                 onclick={async () => {
+                  selectedFilter = "processing";
                   filterby = "processing";
                   await GetData();
+                  filter = false;
+                  usersettings.workitemfilter = filterby;
+                  usersettings.persist();
                 }}
               />
             </div>
-            <Separator />
+            <!-- <Separator />
             <div class="flex items-center px-2">
               <div class="flex items-center space-x-2 w-full">
-                <!-- <Label for="r1" class="cursor-pointer">Apply filter</Label> -->
                 <Check class="h-4 w-4" />
                 <HotkeyButton
                   size="ghost"
@@ -280,7 +305,7 @@
                   Apply filter
                 </HotkeyButton>
               </div>
-            </div>
+            </div> -->
           </RadioGroup.Root>
         </Popover.Content>
       </Popover.Root>

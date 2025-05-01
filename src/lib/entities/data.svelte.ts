@@ -257,7 +257,14 @@ class entitiesdata {
 					break;
 				case base + "/workitem":
 					collectionname = "workitems";
-					entities = await this.GetData(page, collectionname, {}, access_token);
+					let workitemQuery = {}
+					if (usersettings.workitemfilter != null && usersettings.workitemfilter != "all") {
+						workitemQuery = { state: usersettings.workitemfilter }
+					}
+					else {
+						workitemQuery = {}
+					}
+					entities = await this.GetData(page, collectionname, workitemQuery, access_token);
 					total_count = entities.length;
 					if (entities.length >= usersettings.pagesize) {
 						total_count = await this.GetCount(page, collectionname, {}, access_token);
@@ -265,7 +272,15 @@ class entitiesdata {
 					break;
 				case base + `/workitem/${id}`:
 					collectionname = "workitems";
-					entities = await this.GetData(page, collectionname, { wiqid: id }, access_token);
+					let workitemidQuery = { wiqid: id }
+					if (usersettings.workitemfilter != null && usersettings.workitemfilter != "all") {
+						// @ts-ignore
+						workitemidQuery = { wiqid: id, state: usersettings.workitemfilter }
+					}
+					else {
+						workitemidQuery = { wiqid: id }
+					}
+					entities = await this.GetData(page, collectionname, workitemidQuery, access_token);
 					total_count = entities.length;
 					if (entities.length >= usersettings.pagesize) {
 						total_count = await this.GetCount(page, collectionname, { wiqid: id }, access_token);

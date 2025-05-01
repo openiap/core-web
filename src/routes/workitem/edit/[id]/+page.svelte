@@ -240,7 +240,20 @@
     <div class="mb-10">
       <div class="mb-2">Priority</div>
       <div class="text-bw400">
-        {$formData.priority}
+        <Form.Field {form} name="priority">
+          <Form.Control>
+            {#snippet children({ props })}
+              <CustomInput
+                placeholder="Type name"
+                disabled={loading}
+                {...props}
+                bind:value={$formData.priority}
+                type="number"
+              />
+            {/snippet}
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
       </div>
     </div>
   </div>

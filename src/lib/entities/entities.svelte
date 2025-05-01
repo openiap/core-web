@@ -920,12 +920,6 @@
 															0
 													) {
 														ToggleSelect(item);
-													} else {
-														if (!loading) {
-															single_item_click(
-																item,
-															);
-														}
 													}
 												}}
 												>{@render rest[head.field](

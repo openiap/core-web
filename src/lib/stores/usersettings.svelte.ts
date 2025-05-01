@@ -25,6 +25,7 @@ export type userSettings = {
     currentpage: string;
     pagesize: number;
     agentfilter: "all" | "daemon" | "pods" | "docker" | "assistant";
+    workitemfilter: "all" | "new" | "successful" | "failed" | "processing";
 }
 export class pagesettings implements pageSettings {
     page: string;
@@ -52,6 +53,7 @@ class _usersettings implements userSettings {
     pagesize: number = $state(12);
     defaultpagesize: number = 12;
     agentfilter: "all" | "daemon" | "pods" | "docker" | "assistant" = "all";
+    workitemfilter: "all" | "new" | "successful" | "failed" | "processing";
     constructor() {
         this._id = "";
         this._type = "usersettings";
@@ -61,6 +63,7 @@ class _usersettings implements userSettings {
         this.currentworkspace = "";
         this.pagesize = this.defaultpagesize;
         this.agentfilter = "all";
+        this.workitemfilter = "all";
     }
     getpagesettings(page: string) {
         let settings = this.pagesettings.find(x => x.page == page);
@@ -87,6 +90,8 @@ class _usersettings implements userSettings {
         this.pagesettings = [];
         this.currentpage = "";
         this.agentfilter = "all";
+        this.workitemfilter = "all";
+
         if (auth.profile.sub == null || auth.profile.sub == "") {
             this.currentworkspace = "";
             return $state.snapshot(this);
@@ -112,6 +117,7 @@ class _usersettings implements userSettings {
         this.pagesettings = [];
         this.pagesize = this.defaultpagesize;
         this.agentfilter = "all";
+        this.workitemfilter = "all";
         this.dopersist();
     }
     loadpage(settings: pageSettings) {
@@ -135,9 +141,15 @@ class _usersettings implements userSettings {
         this.pagesettings = settings.pagesettings;
         this.pagesize;
         this.agentfilter = settings.agentfilter;
+        this.workitemfilter = settings.workitemfilter;
+
         // @ts-ignore
         if (this.agentfilter == null || this.agentfilter == "") {
             this.agentfilter = "all";
+        }
+        // @ts-ignore
+        if (this.workitemfilter == null || this.workitemfilter == "") {
+            this.workitemfilter = "all";
         }
         // @ts-ignore
         if (this.pagesize != null && this.pagesize != "") {
@@ -154,7 +166,7 @@ class _usersettings implements userSettings {
         }
         this.entities_collectionname = settings.entities_collectionname;
         this.currentworkspace = settings.currentworkspace;
-        if(this.currentworkspace != null && this.currentworkspace != "") {
+        if (this.currentworkspace != null && this.currentworkspace != "") {
             try {
                 posthog.group("workspace", this.currentworkspace);
             } catch (error) {
