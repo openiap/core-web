@@ -58,7 +58,6 @@
   let selectedFilter = $state(usersettings.agentfilter);
 
   let filter = $state(false);
-  console.log(filterby);
   if (browser && filterby == "pods") {
     GetData().catch((error: any) => {
       toast.error("Error while getting data", {

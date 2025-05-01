@@ -48,7 +48,6 @@
   let filterby: "all" | "new" | "successful" | "failed" | "processing" =
     usersettings.workitemfilter;
   let selectedFilter = $state(usersettings.workitemfilter);
-  console.log("filterby", filterby);
 
   function single_item_click(item: any) {
     goto(base + `/workitem/edit/${item._id}`);
@@ -68,7 +67,6 @@
         query,
         auth.access_token,
       );
-      console.log(entities)
     } catch (error: any) {
       toast.error("Error getting data", {
         description: error.message,
