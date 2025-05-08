@@ -220,6 +220,7 @@
       bind:this={ref}
       bind:loading
       show_reload={false}
+      single_item_click={single_item_click}
     >
       {#snippet action(item: any)}
         <HotkeyButton
