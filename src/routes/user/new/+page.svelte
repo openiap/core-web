@@ -92,7 +92,7 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  <Form.Field {form} name="password" class="mb-10">
+  <Form.Field {form} name="newpassword" class="mb-10">
     <Form.Control>
       {#snippet children({ props })}
         <Form.Label>Password</Form.Label>
@@ -101,7 +101,7 @@
           placeholder="Type password"
           disabled={loading}
           {...props}
-          bind:value={$formData.password}
+          bind:value={$formData.newpassword}
         />
       {/snippet}
     </Form.Control>

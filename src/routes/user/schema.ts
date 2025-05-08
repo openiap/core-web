@@ -4,7 +4,7 @@ export const newFormSchema = z.object({
   name: z.string().min(2),
   username: z.string().min(2),
   email: z.string().optional().default(""),
-  password: z.string(),
+  newpassword: z.string(),
   disabled: z.boolean(),
   dblocked: z.boolean(),
   validated: z.boolean().default(true),
