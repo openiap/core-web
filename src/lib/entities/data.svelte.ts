@@ -673,6 +673,10 @@ class entitiesdata {
 				return "NS";
 			case "op":
 				return "OP";
+			case "nextrun":
+				return "Next Run";
+			case "lastrun":
+				return "Last Run";
 			default:
 				if (header.name != null && header.name != "") {
 					return header.name;
@@ -708,7 +712,7 @@ class entitiesdata {
 				return ["_id", "name", "_created"];
 			case "/workitem":
 			case "/entities/workitems":
-				return ["name", "state", "errortype", "retries", "priority", "wiq", "lastrun", "_created"];
+				return ["name", "state", "errortype", "retries", "priority", "wiq", "nextrun", "lastrun", "_created"];
 			case "/entities/dbusage":
 				return ["username", "collection", "size", "timestamp"];
 			case "/entities/nodered":
