@@ -1148,6 +1148,11 @@
 							size="base"
 							disabled={loading}
 							onclick={() => {
+								if (usersettings.pagesize > 1000) {
+									return toast.error(
+										"Max 1000 rows per page allowed",
+									);
+								}
 								usersettings.persist();
 								GetData();
 								toggleSheet = false;
