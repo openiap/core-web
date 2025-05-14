@@ -15,6 +15,7 @@
         House,
         Layers2,
         ListTodo,
+        Lock,
         Mail,
         MessageSquare,
         Receipt,
@@ -93,6 +94,8 @@
     <GitMerge />
 {:else if title == "Entity Restrictions"}
     <ShieldBan />
+{:else if title == "OAuth Clients"}
+    <Lock />
 {:else}
     <MessageSquare />
 {/if}

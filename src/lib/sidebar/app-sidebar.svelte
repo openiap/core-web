@@ -185,6 +185,13 @@
 		`${base}/entities`,
 		false,
 	);
+	const oauthclients = new SidebarItem(
+		"OAuth Clients",
+		"",
+		"",
+		`${base}/oauthclient`,
+		false,
+	);
 	const clients = new SidebarItem(
 		"Clients",
 		"g c",
@@ -300,6 +307,7 @@
 	const management = new SidebarCategory("Management", false, [
 		entities,
 		clients,
+		oauthclients,
 		users,
 		roles,
 		forms,
