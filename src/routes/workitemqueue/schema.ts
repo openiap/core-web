@@ -35,7 +35,7 @@ export const editFormSchema = z.object({
   workflowid: z.string().nullable(),
   robotqueue: z.string().nullable(),
   amqpqueue: z.string().min(2).nullable(),
-  packageid: z.string().nullable(),
+  packageid: z.string().optional().nullable().transform((val) => val ?? ""),
 
   success_wiqid: z.string().nullable(),
   failed_wiqid: z.string().nullable(),

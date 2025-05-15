@@ -18,6 +18,11 @@
   let loading = $state(false);
 
   const { data } = $props();
+  
+  if (data.item != null) {
+    data.item = editFormSchema.parse(data.item);
+  }
+
   let agentdata = $state(data.agentdata);
   let amqpqueuedata = $state(data.amqpqueuedata);
 
