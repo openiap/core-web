@@ -25,6 +25,7 @@
 	} from "@opentelemetry/sdk-logs";
 	import * as logsAPI from "@opentelemetry/api-logs";
 	import HeaderValidate from "./HeaderValidate.svelte";
+	import { DateRangeField } from "bits-ui";
 
 	let { children, data } = $props();
 	datacomponent.parsesettings(data.settings);
@@ -214,12 +215,11 @@
 	async function update_currentworkspace(workspaceid: string) {
 		usersettings.currentworkspace = workspaceid;
 		currentworkspace = workspaceid;
-		if(workspaceid != null && workspaceid != "") {
-            try {
-                posthog.group("workspace", workspaceid);
-            } catch (error) {
-            }
-        }
+		if (workspaceid != null && workspaceid != "") {
+			try {
+				posthog.group("workspace", workspaceid);
+			} catch (error) {}
+		}
 		await loadWorkspaces();
 		await usersettings.dopersist();
 		if (workspaceid == null || workspaceid == "") {
@@ -251,27 +251,45 @@
 					);
 					await usersettings.dbload(access_token);
 					currentworkspace = usersettings.currentworkspace;
-					if(usersettings.currentworkspace != null && usersettings.currentworkspace != "") {
+					if (
+						usersettings.currentworkspace != null &&
+						usersettings.currentworkspace != ""
+					) {
 						try {
-							posthog.group("workspace", usersettings.currentworkspace);
-						} catch (error) {
-						}
+							posthog.group(
+								"workspace",
+								usersettings.currentworkspace,
+							);
+						} catch (error) {}
 					}
 					await loadWorkspaces();
 					auth.isAuthenticated = true;
-					if(validated() == false) {
+					if (validated() == false) {
 						// if ($page.url.pathname != base + "/validate") {
 						// 	goto(base + "/validate");
 						// }
 					} else {
-						const redirect = window.localStorage.getItem("redirect");
-						if(redirect != null && redirect != "") {
+						const redirect =
+							window.localStorage.getItem("redirect");
+						if (redirect != null && redirect != "") {
 							window.localStorage.removeItem("redirect");
 							goto(redirect || "/");
+						} else {
+							// remove code from url
+							if (window.location.href.includes("?code=")) {
+								const newUrl = window.location.href.split("?code=")[0];
+								window.history.replaceState({}, "", newUrl);
+							}
 						}
 					}
 				}
 			});
+		}
+	} else {
+		if (browser) {
+			if (data.access_token == null || data.access_token == "") {
+				auth.login();
+			}
 		}
 	}
 	if (browser && data.posthog_token != "") {
@@ -289,7 +307,7 @@
 				// if(workspaces.length == 0) {
 				// 	return false;
 				// }
-				if(auth.profile.validated == null) {
+				if (auth.profile.validated == null) {
 					return true;
 				}
 				return auth.profile.validated;
@@ -309,7 +327,7 @@
 		if (browser) {
 			if ($page.url.pathname != base + "/login") {
 				const redirect = window.localStorage.getItem("redirect");
-				if(redirect != null && redirect != "") {
+				if (redirect != null && redirect != "") {
 					window.localStorage.removeItem("redirect");
 					goto(redirect || "/");
 				}
