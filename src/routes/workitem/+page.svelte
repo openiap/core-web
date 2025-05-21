@@ -349,6 +349,7 @@
       class="hover:underline"
       variant="ghostfull"
       size="ghost"
+      title={item.wiq}
       onclick={() => goto(base + `/workitem/${item.wiqid}`)}
     >
       {item.wiq}
