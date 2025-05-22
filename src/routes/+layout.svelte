@@ -277,7 +277,8 @@
 						} else {
 							// remove code from url
 							if (window.location.href.includes("?code=")) {
-								const newUrl = window.location.href.split("?code=")[0];
+								const newUrl =
+									window.location.href.split("?code=")[0];
 								window.history.replaceState({}, "", newUrl);
 							}
 						}
@@ -287,8 +288,13 @@
 		}
 	} else {
 		if (browser) {
-			if (data.access_token == null || data.access_token == "") {
-				auth.login();
+			if (
+				$page.url.pathname != base + "/login" &&
+				$page.url.pathname != base + "/validate"
+			) {
+				if (data.access_token == null || data.access_token == "") {
+					auth.login();
+				}
 			}
 		}
 	}
