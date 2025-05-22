@@ -34,7 +34,19 @@
           } else {
             form.data.clientId = form.data.clientId.split(" ").join("");
           }
-
+          await auth.client
+            .FindOne({
+              collectionname: "config",
+              query: {
+                clientId: form.data.clientId,
+              },
+              jwt: auth.access_token,
+            })
+            .then((res) => {
+              if (res) {
+                throw new Error("Client Id already exists");
+              }
+            });
           await auth.client.UpdateOne({
             collectionname: "config",
             item: form.data,
