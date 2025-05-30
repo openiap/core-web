@@ -1,6 +1,6 @@
 <script lang="ts">
   import * as monaco from "monaco-editor";
-  import { onMount } from "svelte";
+  import { onMount, createEventDispatcher } from "svelte";
   import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
   import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
   import cssWorker from "monaco-editor/esm/vs/language/css/css.worker?worker";
@@ -8,8 +8,9 @@
   import tsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
 
   // accept code and language as props
-  export let code: string = '';
-  export let language: string = 'plaintext';
+  export let code: string = "";
+  export let language: string = "plaintext";
+  const dispatch = createEventDispatcher();
 
   let editorDiv: any;
   let editor: any;
@@ -36,6 +37,7 @@
         if (label === "typescript" || label === "javascript") {
           return new tsWorker();
         }
+        console.warn(`No worker for label: ${label}`);
         return new editorWorker();
       },
     };
@@ -43,13 +45,18 @@
     monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true);
 
     editor = monaco.editor.create(editorDiv, {
-      value: '',
+      value: "",
       language: language,
       theme: "vs-dark",
       automaticLayout: true,
     });
     // initial load from prop
     loadCode(code, language);
+    // dispatch code change events to parent
+    editor.onDidChangeModelContent(() => {
+      const value = model.getValue();
+      dispatch('change', { code: value });
+    });
 
     return () => {
       editor.dispose();
@@ -63,4 +70,4 @@
   }
 </script>
 
-<div bind:this={editorDiv} style="height: 400px;"></div>
+<div bind:this={editorDiv} class="h-full w-full"></div>

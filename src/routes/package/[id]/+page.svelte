@@ -238,6 +238,15 @@
     >
   </div>
 
+  <div class="mb-10">
+    <div class="text-sm mb-2">Edit Package file (Current)</div>
+    <HotkeyButton
+      disabled={loading || !$formData.fileid}
+      onclick={() => goto(base + `/package/${$formData._id}/editfiles/${$formData.fileid}`)}
+      aria-label="Download">Edit</HotkeyButton
+    >
+  </div>
+
   <Form.Field {form} name="fileid" class="mb-10">
     <Form.Control>
       {#snippet children({ props })}

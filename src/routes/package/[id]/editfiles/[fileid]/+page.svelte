@@ -1,25 +1,32 @@
-<!-- <script lang="ts">
-  import MonacoEditor from "$lib/monacoeditor/monacoeditor.svelte";
+<script lang="ts">
   import { auth } from "$lib/stores/auth.svelte";
   import * as pako from "pako";
   import { toast } from "svelte-sonner";
   import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
   // @ts-ignore
   import unpack from "js-untar";
+  import { goto } from "$app/navigation";
+  import { MonacoEditor } from "$lib/monacoeditor/index.js";
+  import { base } from "$app/paths";
 
-  const packageid = "6838522ad67669abdcc415ed"; // example package ID
+  const { data } = $props();
+
+  const fileid = data.fileid;
+  const originalPackageId = data.packageid;
+  const fileData = data.item || {};
+
   // store all unpacked entries
   let entriesLocal: any[] = [];
   // file list names
-  let fileList: string[] = [];
+  let fileList: string[] = $state([]);
   // code and language for editor
-  let code: string = "";
-  let language: string = "plaintext";
+  let code: string = $state("");
+  let language: string = $state("plaintext");
   // track current file and modifications
   let currentFileName: string = "";
   let modifiedFiles: Record<string, string> = {};
-  let showModifiedList: boolean = false;
-  $: modifiedList = Object.keys(modifiedFiles);
+  let showModifiedList: boolean = $state(false);
+  let modifiedList = $state(Object.keys(modifiedFiles));
   const textEncoder = new TextEncoder();
 
   // map file extension to monaco language
@@ -48,40 +55,34 @@
     }
   }
 
-  // load selected file into editor
   function loadFile(name: string) {
     const entry = entriesLocal.find((e: any) => e.name === name);
     if (!entry) return;
-    // assume entry.buffer is ArrayBuffer of file
     const bytes = new Uint8Array(entry.buffer);
     code = new TextDecoder().decode(bytes);
     const ext = name.split(".").pop() || "";
-    if (name === "dockerfile") {
+    if (name.endsWith("Dockerfile")) {
       language = "dockerfile";
     } else {
       language = getLanguageFromExt(ext);
     }
-    // set current file for tracking
     currentFileName = name;
   }
 
-  // handle content changes from editor
   function handleEditorChange(updatedCode: string) {
     if (!currentFileName) return;
-    // record updated content
     modifiedFiles[currentFileName] = updatedCode;
-    // update buffer in entriesLocal
     const entry = entriesLocal.find((e: any) => e.name === currentFileName);
     if (entry) {
       entry.buffer = textEncoder.encode(updatedCode).buffer;
     }
   }
 
-  async function getPackageFiles(packageid: string) {
+  async function unpackPackageFiles() {
     try {
       const item: any = await auth.client.FindOne({
         collectionname: "files",
-        query: { _id: packageid },
+        query: { _id: fileid },
         jwt: auth.access_token,
       });
 
@@ -91,22 +92,13 @@
       });
 
       const blob = new Blob([filecontent], { type: item.contentType });
-      // console.log("Blob created:", blob);
-
       const arrayBuffer = await blob.arrayBuffer();
-      // console.log("arrayBuffer created:", arrayBuffer);
-
       const binaryData = new Uint8Array(arrayBuffer);
-      // console.log("Binary data length:", binaryData.length);
-
       const decompressedTarData = pako.ungzip(binaryData);
-      // console.log("Decompressed Uint8Array:", decompressedTarData);
-
       const entries = await unpack(decompressedTarData.buffer);
 
       entriesLocal = entries;
       fileList = entries.map((e: any) => e.name);
-      console.log("File list:", fileList);
     } catch (error: any) {
       console.error("Error downloading or decompressing file:", error);
       toast.error("Error downloading file", {
@@ -115,91 +107,78 @@
       return [];
     }
   }
-  async function repackandUpload(packageid: string) {
-    // merge in any unsaved edits before repacking
+  async function repackandUpload() {
     Object.entries(modifiedFiles).forEach(([name, content]) => {
       const entry = entriesLocal.find((e) => e.name === name);
       if (entry) entry.buffer = textEncoder.encode(content).buffer;
     });
     showModifiedList = true;
     try {
-      // fetch original file metadata for name and type
-      const item: any = await auth.client.FindOne({
-        collectionname: "files",
-        query: { _id: packageid },
-        jwt: auth.access_token,
-      });
-      let name = item.filename;
-
-      // before packing the files we need to update the version in package.json file inside the original package and also update the let name to include the version
-      const packageJsonEntry = fileList.find(
+      let name = fileData.filename;
+       const packageJsonEntry = fileList.find(
         (filename: any) => filename == "package/package.json",
       );
-      console.log("Found package.json entry:", packageJsonEntry);
       if (packageJsonEntry) {
-        const entry = entriesLocal.find((e: any) => e.name === "package/package.json");
-        if (!entry) return;
-        const packageJson = JSON.parse(
-          new TextDecoder().decode(entry.buffer),
+        const entry = entriesLocal.find(
+          (e: any) => e.name === "package/package.json",
         );
-        // increment version
+        if (!entry) return;
+        const packageJson = JSON.parse(new TextDecoder().decode(entry.buffer));
         const versionParts = packageJson.version.split(".");
-        console.log("Original version:", packageJson.version);
         versionParts[versionParts.length - 1] = (
           parseInt(versionParts[versionParts.length - 1]) + 1
         ).toString();
-        console.log("New version parts:", versionParts);
         packageJson.version = versionParts.join(".");
-        console.log("Updated package.json version:", packageJson.version);
-        // update the entry buffer with new package.json content
         entry.buffer = textEncoder.encode(
           JSON.stringify(packageJson, null, 2),
         ).buffer;
-        // update name to include version
         name = `${name.split("-")[0]}-${packageJson.version}.tgz`;
       }
-      // use original file metadata for upload
-      console.log("Repacking files with updated entries...", name);
+      console.log("Packing files with name:", name);
 
-      const type = item.contentType;
-      // console.log("Original file name:", name);
-      // console.log("Original file type:", type);
-      // console.log("Original file item:", item);
+      let files = entriesLocal.map((entry: any) => {
+        return {
+          filename: entry.name,
+          content: new TextDecoder().decode(entry.buffer),
+        };
+      });
 
-      const compressed = pako.deflate(JSON.stringify(entriesLocal));
+      const body = {
+        filename: name,
+        files,
+        jwt: auth.access_token,
+      };
+      const res = await fetch(base + "/api/create-tgz", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const uploadfileid = (await res.text()).replace('"', "").replace('"', "");
 
-      // pack modified entries back into tar and gzip
-      // const tarData: Uint8Array = await pack(entriesLocal);
-      // console.log("Packed tar data length:", compressed);
-
-      const compressedData: Uint8Array = pako.gzip(compressed);
-      // console.log("Compressed data length:", compressedData.length);
-
-      // upload the new package using Uint8Array directly
-      const uploadResult: any = await auth.client.UploadFile(
-        name,
-        type,
-        compressedData,
-        auth.access_token,
-      );
-
-      // find all pacakages where fileid is packageid and update it with the new fileid
-      let oldPackage: object = await auth.client.FindOne({
+      let originalPackage = await auth.client.FindOne<any>({
         collectionname: "agents",
-        query: { fileid: packageid, _type: "package" },
+        query: { _id: originalPackageId, _type: "package" },
         jwt: auth.access_token,
       });
-      oldPackage.fileid = uploadResult;
+
+      const oldfileid = originalPackage.fileid;
+      // await auth.client.DeleteOne({
+      //   collectionname: "fs.files",
+      //   id: oldfileid,
+      //   jwt: auth.access_token,
+      // });
+
+      originalPackage.fileid = uploadfileid;
       await auth.client.UpdateOne({
-        item: oldPackage,
+        item: originalPackage,
         collectionname: "agents",
-        update: oldPackage,
         jwt: auth.access_token,
       });
 
       toast.success("Package uploaded successfully", {
-        description: `File ID: ${uploadResult}`,
-      })
+        description: `File ID: ${uploadfileid}`,
+      });
+      goto(base + `/package/${originalPackageId}`);
     } catch (error: any) {
       console.error("Error uploading package:", error);
       toast.error("Error uploading package", {
@@ -207,41 +186,48 @@
       });
     }
   }
-  getPackageFiles(packageid);
+  unpackPackageFiles();
 </script>
 
-{#if code}
-  <MonacoEditor
-    {code}
-    {language}
-    on:change={(e) => handleEditorChange(e.detail.code)}
-  />
-{:else}
-  <p class="text-gray-500 px-4">Select a file to edit</p>
-{/if}
+<div class="grid grid-cols-4 h-full">
+  <div class="p-4 bg-bw500 rounded col-span-1">
+    <ul class="space-y-1">
+      {#each fileList as name}
+        <li class="flex items-center text-sm text-gray-800">
+          <span class="flex-1">{name}</span>
+          <button
+            onclick={() => {
+              loadFile(name);
+              console.log("Loading file:", name);
+            }}
+            class="ml-2 px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Edit
+          </button>
+        </li>
+      {/each}
+    </ul>
+  </div>
 
-<div class="p-4 bg-bw500 rounded">
-  <ul class="space-y-1">
-    {#each fileList as name}
-      <li class="flex items-center text-sm text-gray-800">
-        <span class="flex-1">{name}</span>
-        <button
-          on:click={() => {
-            loadFile(name);
-            console.log("Loading file:", name);
-          }}
-          class="ml-2 px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          Edit
-        </button>
-      </li>
-    {/each}
-  </ul>
+  <div class="col-span-3">
+    {#if code}
+      <MonacoEditor
+        {code}
+        {language}
+        on:change={(e) => handleEditorChange(e.detail.code)}
+      />
+    {:else}
+      <p class="text-gray-500 px-4">Select a file to edit</p>
+    {/if}
+  </div>
 </div>
 
-<Hotkeybutton onclick={() => repackandUpload(packageid)}
-  >Pack and upload</Hotkeybutton
+<Hotkeybutton
+  variant="success"
+  class="w-fit mt-10"
+  onclick={() => repackandUpload()}>Pack and upload</Hotkeybutton
 >
+
 {#if showModifiedList && modifiedList.length}
   <div class="mt-4 p-4 bg-yellow-100 rounded">
     <p class="font-semibold text-gray-700">
@@ -253,4 +239,4 @@
       {/each}
     </ul>
   </div>
-{/if} -->
+{/if}
