@@ -2,6 +2,7 @@ const settings = [
     { "name": "license_key", "type": "string", "default": "" },
     { "name": "enable_openapi", "type": "boolean", "default": true },
     { "name": "enable_grafanaapi", "type": "boolean", "default": true },
+    { "name": "enable_serverless", "type": "boolean", "default": false },    
     { "name": "llmchat_queue", "type": "string", "default": "" },
     { "name": "log_with_colors", "type": "boolean", "default": true },
     { "name": "log_database_queries_to_collection", "type": "string", "default": "" },
