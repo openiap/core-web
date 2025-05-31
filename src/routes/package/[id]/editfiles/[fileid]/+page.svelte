@@ -8,6 +8,77 @@
   import { goto } from "$app/navigation";
   import { MonacoEditor } from "$lib/monacoeditor/index.js";
   import { base } from "$app/paths";
+    import { browser } from "$app/environment";
+
+  function stringToUint8Array(str: string): Uint8Array {
+    return new TextEncoder().encode(str);
+  }
+
+  async function createTgzFromPayload(payload: {
+    jwt: string; // (we won’t actually use this in the tar, but you could!)
+    filename: string;
+    files: { filename: string; content: string }[];
+  }): Promise<Uint8Array> {
+    if (!browser) {
+      throw new Error('createTgzFromPayload() can only run in the browser');
+    }
+
+    // ──────── 2a. Dynamically import tar-js (default export = Tar constructor) ────────
+    // At runtime in the browser, this yields:
+    //   TarModule.default === the Tar class constructor
+    // @ts-ignore
+    const TarModule: any = await import('tar-js');
+    const Tar: new (recordsPerBlock?: number) => {
+      append(
+        filepath: string,
+        input: string | Uint8Array,
+        opts?: any,
+        callback?: (out: Uint8Array) => any
+      ): Uint8Array;
+      clear(): void;
+      // After appending, `out` holds the complete raw .tar as a Uint8Array
+      out: Uint8Array;
+      written: number;
+    } = TarModule.default || TarModule;
+    // 
+
+    // ──────── 2b. Dynamically import gzip from fflate’s ESM/browser build ────────
+    // @ts-ignore
+    const fflateModule: any = await import('fflate');
+    const { gzip }: {
+      gzip: (
+        data: Uint8Array,
+        opts: { level: number },
+        cb: (err: Error | null, result: Uint8Array) => void
+      ) => void;
+    } = fflateModule;
+    // 
+
+    // ─────────────────── 3. Build the raw .tar with tar-js ───────────────────
+    const tarWriter = new Tar();
+    for (const { filename: name, content: textContent } of payload.files) {
+      // UTF-8 encode each string → Uint8Array
+      const dataBytes = stringToUint8Array(textContent);
+      // Append a file entry: path `name` + data `dataBytes`
+      tarWriter.append(name, dataBytes);
+    }
+    // After appending all files, tarWriter.out is a Uint8Array of the raw .tar archive
+    const tarBytes: Uint8Array = tarWriter.out;
+    // 
+
+    // ──────────────────── 4. Gzip the raw .tar → get a Uint8Array for .tgz ────────────────────
+    const tgzBytes: Uint8Array = await new Promise<Uint8Array>((resolve, reject) => {
+      gzip(tarBytes, { level: 6 }, (err: Error | null, compressed: Uint8Array) => {
+        if (err) reject(err);
+        else resolve(compressed);
+      });
+    });
+    // 
+
+    return tgzBytes;
+  }
+
+
 
   const { data } = $props();
 
@@ -151,12 +222,29 @@
       };
       let uploadfileid;
       try {
-        const res = await fetch(base + "/api/create-tgz", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        });
-        uploadfileid = (await res.text()).replace('"', "").replace('"', "");
+        console.log("Preparing files for upload:", base + "/api/create-tgz"); 
+        console.log("using body:", JSON.stringify(body)); 
+        // const res = await fetch(base + "/api/create-tgz", {
+        //   method: "POST",
+        //   headers: { "Content-Type": "application/json" },
+        //   body: JSON.stringify(body),
+        // });
+        // if (!res.ok) {
+        //   const errorText = await res.text();
+        //   throw new Error(`Failed to prepare files for upload: ${errorText}`);
+        // }
+        // uploadfileid = (await res.text()).replace('"', "").replace('"', "");
+
+
+        const filedata = await createTgzFromPayload(body);
+        uploadfileid = await auth.client.UploadFile(
+      name,
+      "application/gzip",
+      filedata,
+      data.access_token
+    )
+
+        console.log("Created tgz data:", data);
       } catch (error: any) {
         console.error("Error preparing files for upload:", error);
         toast.error("Error preparing files for upload", {

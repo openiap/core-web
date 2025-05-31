@@ -58,6 +58,10 @@
         "chromium": false
     },
     "dependencies": {
-        "tar": "^7.4.3"
+        "@gera2ld/tarjs": "^0.3.1",
+        "D": "^1.0.0",
+        "fflate": "^0.8.2",
+        "tar": "^7.4.3",
+        "tar-js": "^0.3.0"
     }
 }
