@@ -238,6 +238,7 @@
     >
   </div>
 
+  {#if auth.config.enable_serverless}
   <div class="mb-10">
     <div class="text-sm mb-2">Edit Package file (Current)</div>
     <HotkeyButton
@@ -246,6 +247,7 @@
       aria-label="Download">Edit</HotkeyButton
     >
   </div>
+  {/if}
 
   <Form.Field {form} name="fileid" class="mb-10">
     <Form.Control>
