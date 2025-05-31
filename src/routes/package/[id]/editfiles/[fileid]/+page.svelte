@@ -14,6 +14,7 @@
   const fileid = data.fileid;
   const originalPackageId = data.packageid;
   const fileData = data.item || {};
+  let result: string = $state("");
 
   // store all unpacked entries
   let entriesLocal: any[] = [];
@@ -146,14 +147,23 @@
       const body = {
         filename: name,
         files,
-        jwt: auth.access_token,
+        jwt: data.access_token
       };
-      const res = await fetch(base + "/api/create-tgz", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      const uploadfileid = (await res.text()).replace('"', "").replace('"', "");
+      let uploadfileid;
+      try {
+        const res = await fetch(base + "/api/create-tgz", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        uploadfileid = (await res.text()).replace('"', "").replace('"', "");
+      } catch (error: any) {
+        console.error("Error preparing files for upload:", error);
+        toast.error("Error preparing files for upload", {
+          description: error.message,
+        });
+        return;
+      }
 
       let originalPackage = await auth.client.FindOne<any>({
         collectionname: "agents",
@@ -162,16 +172,16 @@
       });
 
       const oldfileid = originalPackage.fileid;
-      // await auth.client.DeleteOne({
-      //   collectionname: "fs.files",
-      //   id: oldfileid,
-      //   jwt: auth.access_token,
-      // });
-
+      
       originalPackage.fileid = uploadfileid;
       await auth.client.UpdateOne({
         item: originalPackage,
         collectionname: "agents",
+        jwt: auth.access_token,
+      });
+      await auth.client.DeleteOne({
+        collectionname: "fs.files",
+        id: oldfileid,
         jwt: auth.access_token,
       });
 
@@ -184,6 +194,57 @@
       toast.error("Error uploading package", {
         description: error.message,
       });
+    }
+  }
+  async function buildpackage() {
+    let queuename = await auth.client.RegisterQueue(
+      { queuename: "", jwt: data.access_token },
+      (msg, payload, user, jwt) => {
+        console.log("Message received:", payload);
+        if(payload.logs != null) {
+          if(!payload.logs.endsWith("\n")) {
+            payload.logs += "\n";
+          }
+          result = payload.logs + result;
+        }
+        // const chatContainer = document.getElementById("chatcontainer");
+        // if (chatContainer) {
+        //   chatContainer.scrollTop = chatContainer.scrollHeight;
+        // }
+      },
+    );
+    console.log("RegisterQueue", queuename);
+    let correlation_id = Math.random().toString(36).substring(2, 11);
+    try {
+      const build_result = await auth.client.QueueMessage(
+        {
+          queuename: "fcbuilder",
+          data: {
+            command: "build",
+            packageid: originalPackageId,
+            correlation_id: correlation_id,
+            queuename,
+          },
+        },
+        true,
+      );
+      console.log("build_result", build_result);
+      if (build_result.success == false) {
+        result = "Error Building package: " + build_result.result + "\n" +
+          result;
+        throw new Error("Error Building package: " + build_result.result);
+      }
+      result =
+        "Image build successfully in " +
+        build_result.timetaken +
+        " seconds, starting agent\n" +
+        result;
+    } catch (error: any) {
+      console.error("Building package:", error.message);
+      throw new Error("Building package: " + error.message);
+    } finally {
+      console.log("Unregistering queue:", queuename);
+      auth.client.UnRegisterQueue({ queuename, jwt: auth.access_token });
     }
   }
   unpackPackageFiles();
@@ -221,12 +282,24 @@
   </div>
 </div>
 
-<Hotkeybutton
-  variant="success"
-  class="w-fit mt-10"
-  onclick={() => repackandUpload()}>Pack and upload</Hotkeybutton
->
-
+<div class="grid grid-cols-4 rounded">
+  <Hotkeybutton
+    variant="success"
+    class="w-fit mt-10"
+    onclick={() => repackandUpload()}>Pack and upload</Hotkeybutton
+  >
+  <Hotkeybutton
+    variant="success"
+    class="w-fit mt-10"
+    onclick={() => buildpackage()}>Build and deploy to serverless</Hotkeybutton
+  >
+  <textarea
+    class="w-full mt-4 p-2 border border-gray-300 rounded"
+    rows="3"
+    bind:value={result}
+    placeholder="Tool call result will be displayed here..."
+  ></textarea>
+</div>
 {#if showModifiedList && modifiedList.length}
   <div class="mt-4 p-4 bg-yellow-100 rounded">
     <p class="font-semibold text-gray-700">
