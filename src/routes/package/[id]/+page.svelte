@@ -243,7 +243,7 @@
     <div class="text-sm mb-2">Edit Package file (Current)</div>
     <HotkeyButton
       disabled={loading || !$formData.fileid}
-      onclick={() => goto(base + `/package/${$formData._id}/editfiles/${$formData.fileid}`)}
+      onclick={() => goto(base + `/package/${$formData._id}/editfiles`)}
       aria-label="Download">Edit</HotkeyButton
     >
   </div>

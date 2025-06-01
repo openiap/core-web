@@ -8,7 +8,7 @@
   import { goto } from "$app/navigation";
   import { MonacoEditor } from "$lib/monacoeditor/index.js";
   import { base } from "$app/paths";
-    import { browser } from "$app/environment";
+  import { browser } from "$app/environment";
 
   function stringToUint8Array(str: string): Uint8Array {
     return new TextEncoder().encode(str);
@@ -20,39 +20,41 @@
     files: { filename: string; content: string }[];
   }): Promise<Uint8Array> {
     if (!browser) {
-      throw new Error('createTgzFromPayload() can only run in the browser');
+      throw new Error("createTgzFromPayload() can only run in the browser");
     }
 
     // ──────── 2a. Dynamically import tar-js (default export = Tar constructor) ────────
     // At runtime in the browser, this yields:
     //   TarModule.default === the Tar class constructor
     // @ts-ignore
-    const TarModule: any = await import('tar-js');
+    const TarModule: any = await import("tar-js");
     const Tar: new (recordsPerBlock?: number) => {
       append(
         filepath: string,
         input: string | Uint8Array,
         opts?: any,
-        callback?: (out: Uint8Array) => any
+        callback?: (out: Uint8Array) => any,
       ): Uint8Array;
       clear(): void;
       // After appending, `out` holds the complete raw .tar as a Uint8Array
       out: Uint8Array;
       written: number;
     } = TarModule.default || TarModule;
-    // 
+    //
 
     // ──────── 2b. Dynamically import gzip from fflate’s ESM/browser build ────────
     // @ts-ignore
-    const fflateModule: any = await import('fflate');
-    const { gzip }: {
+    const fflateModule: any = await import("fflate");
+    const {
+      gzip,
+    }: {
       gzip: (
         data: Uint8Array,
         opts: { level: number },
-        cb: (err: Error | null, result: Uint8Array) => void
+        cb: (err: Error | null, result: Uint8Array) => void,
       ) => void;
     } = fflateModule;
-    // 
+    //
 
     // ─────────────────── 3. Build the raw .tar with tar-js ───────────────────
     const tarWriter = new Tar();
@@ -64,28 +66,34 @@
     }
     // After appending all files, tarWriter.out is a Uint8Array of the raw .tar archive
     const tarBytes: Uint8Array = tarWriter.out;
-    // 
+    //
 
     // ──────────────────── 4. Gzip the raw .tar → get a Uint8Array for .tgz ────────────────────
-    const tgzBytes: Uint8Array = await new Promise<Uint8Array>((resolve, reject) => {
-      gzip(tarBytes, { level: 6 }, (err: Error | null, compressed: Uint8Array) => {
-        if (err) reject(err);
-        else resolve(compressed);
-      });
-    });
-    // 
+    const tgzBytes: Uint8Array = await new Promise<Uint8Array>(
+      (resolve, reject) => {
+        gzip(
+          tarBytes,
+          { level: 6 },
+          (err: Error | null, compressed: Uint8Array) => {
+            if (err) reject(err);
+            else resolve(compressed);
+          },
+        );
+      },
+    );
+    //
 
     return tgzBytes;
   }
 
-
-
   const { data } = $props();
 
-  const fileid = data.fileid;
   const originalPackageId = data.packageid;
-  const fileData = data.item || {};
-  let result: string = $state("");
+  const packageData = data.packageData;
+  let result: string = $state("");``
+  let loading: boolean = $state(false);
+  // const fileid = data.fileid;
+  // const fileData = data.fileData || {};
 
   // store all unpacked entries
   let entriesLocal: any[] = [];
@@ -152,9 +160,14 @@
 
   async function unpackPackageFiles() {
     try {
+      let packageData = await auth.client.FindOne<any>({
+        collectionname: "agents",
+        query: { _id: originalPackageId, _type: "package" },
+        jwt: auth.access_token,
+      });
       const item: any = await auth.client.FindOne({
         collectionname: "files",
-        query: { _id: fileid },
+        query: { _id: packageData.fileid },
         jwt: auth.access_token,
       });
 
@@ -180,14 +193,25 @@
     }
   }
   async function repackandUpload() {
+    loading = true;
     Object.entries(modifiedFiles).forEach(([name, content]) => {
       const entry = entriesLocal.find((e) => e.name === name);
       if (entry) entry.buffer = textEncoder.encode(content).buffer;
     });
     showModifiedList = true;
     try {
-      let name = fileData.filename;
-       const packageJsonEntry = fileList.find(
+       let packageData = await auth.client.FindOne<any>({
+        collectionname: "agents",
+        query: { _id: originalPackageId, _type: "package" },
+        jwt: auth.access_token,
+      });
+      let item = await auth.client.FindOne<any>({
+        collectionname: "files",
+        query: { _id: packageData.fileid },
+        jwt: auth.access_token,
+      });
+      let name = item.filename;
+      const packageJsonEntry = fileList.find(
         (filename: any) => filename == "package/package.json",
       );
       if (packageJsonEntry) {
@@ -218,12 +242,12 @@
       const body = {
         filename: name,
         files,
-        jwt: data.access_token
+        jwt: data.access_token,
       };
       let uploadfileid;
       try {
-        console.log("Preparing files for upload:", base + "/api/create-tgz"); 
-        console.log("using body:", JSON.stringify(body)); 
+        console.log("Preparing files for upload:", base + "/api/create-tgz");
+        console.log("using body:", JSON.stringify(body));
         // const res = await fetch(base + "/api/create-tgz", {
         //   method: "POST",
         //   headers: { "Content-Type": "application/json" },
@@ -235,14 +259,13 @@
         // }
         // uploadfileid = (await res.text()).replace('"', "").replace('"', "");
 
-
         const filedata = await createTgzFromPayload(body);
         uploadfileid = await auth.client.UploadFile(
-      name,
-      "application/gzip",
-      filedata,
-      data.access_token
-    )
+          name,
+          "application/gzip",
+          filedata,
+          data.access_token,
+        );
 
         console.log("Created tgz data:", data);
       } catch (error: any) {
@@ -260,7 +283,7 @@
       });
 
       const oldfileid = originalPackage.fileid;
-      
+
       originalPackage.fileid = uploadfileid;
       await auth.client.UpdateOne({
         item: originalPackage,
@@ -276,21 +299,23 @@
       toast.success("Package uploaded successfully", {
         description: `File ID: ${uploadfileid}`,
       });
-      goto(base + `/package/${originalPackageId}`);
+      // goto(base + `/package/${originalPackageId}`);
     } catch (error: any) {
       console.error("Error uploading package:", error);
       toast.error("Error uploading package", {
         description: error.message,
       });
     }
+    loading = false;
   }
   async function buildpackage() {
+    loading = true;
     let queuename = await auth.client.RegisterQueue(
       { queuename: "", jwt: data.access_token },
       (msg, payload, user, jwt) => {
         console.log("Message received:", payload);
-        if(payload.logs != null) {
-          if(!payload.logs.endsWith("\n")) {
+        if (payload.logs != null) {
+          if (!payload.logs.endsWith("\n")) {
             payload.logs += "\n";
           }
           result = payload.logs + result;
@@ -318,8 +343,8 @@
       );
       console.log("build_result", build_result);
       if (build_result.success == false) {
-        result = "Error Building package: " + build_result.result + "\n" +
-          result;
+        result =
+          "Error Building package: " + build_result.result + "\n" + result;
         throw new Error("Error Building package: " + build_result.result);
       }
       result =
@@ -334,6 +359,7 @@
       console.log("Unregistering queue:", queuename);
       auth.client.UnRegisterQueue({ queuename, jwt: auth.access_token });
     }
+    loading = false;
   }
   unpackPackageFiles();
 </script>
@@ -372,11 +398,13 @@
 
 <div class="grid grid-cols-4 rounded">
   <Hotkeybutton
+    disabled={loading}
     variant="success"
     class="w-fit mt-10"
     onclick={() => repackandUpload()}>Pack and upload</Hotkeybutton
   >
   <Hotkeybutton
+    disabled={loading}
     variant="success"
     class="w-fit mt-10"
     onclick={() => buildpackage()}>Build and deploy to serverless</Hotkeybutton
@@ -387,6 +415,14 @@
     bind:value={result}
     placeholder="Tool call result will be displayed here..."
   ></textarea>
+  <Hotkeybutton
+    disabled={loading}
+    variant="success"
+    class="w-fit mt-10"
+    onclick={() => {
+      window.open(`http://${packageData.name}.localhost.openiap.io`, "_blank");
+    }}>Show output</Hotkeybutton
+  >
 </div>
 {#if showModifiedList && modifiedList.length}
   <div class="mt-4 p-4 bg-yellow-100 rounded">
