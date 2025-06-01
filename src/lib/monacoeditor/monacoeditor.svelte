@@ -58,8 +58,10 @@
     init();
   });
   let fakeit = null;
+  let fakecode = null;
   $effect(() => {
-    fakeit = language;
+    fakeit = language;  
+    fakecode = code;
     if (browser && model && code) {
       model.setValue(code);
       Monaco.editor.setModelLanguage(model, language);
