@@ -92,7 +92,7 @@
   const { data } = $props();
 
   const originalPackageId = data.packageid;
-  const packageData = data.packageData;
+  // const packageData = data.packageData;
   let result: string = $state("");
   ``;
   let loading: boolean = $state(false);
@@ -291,11 +291,12 @@
       const oldfileid = originalPackage.fileid;
 
       originalPackage.fileid = uploadfileid;
-      await auth.client.UpdateOne({
+      originalPackage = await auth.client.UpdateOne({
         item: originalPackage,
         collectionname: "agents",
         jwt: auth.access_token,
       });
+      data.packageData = originalPackage;
       await auth.client.DeleteOne({
         collectionname: "fs.files",
         id: oldfileid,
@@ -436,7 +437,7 @@
     variant="success"
     class="w-fit mt-10"
     onclick={() => {
-      window.open(`http://${packageData.name}.localhost.openiap.io`, "_blank");
+      window.open(auth.fnurl(data.packageData.slug || data.packageData.name), "_blank")
     }}>Open in browser</Hotkeybutton
   >
 </div>
@@ -507,10 +508,7 @@
         variant="success"
         class="w-fit mt-10"
         onclick={() => {
-          window.open(
-            `http://${packageData.name}.localhost.openiap.io`,
-            "_blank",
-          );
+          window.open(auth.fnurl(data.packageData.slug || data.packageData.name), "_blank")
         }}>Open in browser</Hotkeybutton
       >
       <HotkeyButton

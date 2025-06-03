@@ -3,6 +3,7 @@ const settings = [
     { "name": "enable_openapi", "type": "boolean", "default": true },
     { "name": "enable_grafanaapi", "type": "boolean", "default": true },
     { "name": "enable_serverless", "type": "boolean", "default": false },
+    { "name": "serverless_domain_schema", "type": "string", "default": "" },
     { "name": "llmchat_queue", "type": "string", "default": "" },
     { "name": "log_with_colors", "type": "boolean", "default": true },
     { "name": "log_database_queries_to_collection", "type": "string", "default": "" },

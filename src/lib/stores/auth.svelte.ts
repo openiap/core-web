@@ -22,6 +22,7 @@ class Config {
     namespace: string = "";
     ofid: string = "";
     agent_domain_schema: string = "";
+    serverless_domain_schema: string = "";
     websocket_package_size: number = 0;
     version: string = "";
     stripe_api_key: string = "";
@@ -308,6 +309,12 @@ class authState {
     }
     weburl(slug: string) {
         return "//" + this.config.agent_domain_schema.replace("$slug$", slug)
+    }
+    fnurl(slug: string) {
+        if(this.config.serverless_domain_schema.indexOf(".fc.") > -1 || this.config.serverless_domain_schema.indexOf(".localhost.") > -1) {
+            return "http://" + this.config.serverless_domain_schema.replace("$slug$", slug);
+        }
+        return "//" + this.config.serverless_domain_schema.replace("$slug$", slug)
     }
 }
 
