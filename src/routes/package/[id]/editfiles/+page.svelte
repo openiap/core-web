@@ -1,17 +1,16 @@
 <script lang="ts">
-  import Hotkeybutton, {
-    buttonVariants,
-  } from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
+  import { browser } from "$app/environment";
+  import { base } from "$app/paths";
+  import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
+  import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
+  import { MonacoEditor } from "$lib/monacoeditor/index.js";
   import { auth } from "$lib/stores/auth.svelte";
   import * as pako from "pako";
   import { toast } from "svelte-sonner";
-  import { browser } from "$app/environment";
-  import { base } from "$app/paths";
-  import { MonacoEditor } from "$lib/monacoeditor/index.js";
+
   // @ts-ignore
   import unpack from "js-untar";
-  import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
 
   function stringToUint8Array(str: string): Uint8Array {
     return new TextEncoder().encode(str);
@@ -96,23 +95,17 @@
   let result: string = $state("");
   ``;
   let loading: boolean = $state(false);
-  // const fileid = data.fileid;
-  // const fileData = data.fileData || {};
   let openDialog = $state(false);
   let loadingDialog = $state(false);
 
-  // store all unpacked entries
   let entriesLocal: any[] = [];
-  // file list names
   let fileList: string[] = $state([]);
-  // code and language for editor
   let code: string = $state("");
   let language: string = $state("plaintext");
   // track current file and modifications
   let currentFileName: string = "";
   let modifiedFiles: Record<string, string> = {};
-  let showModifiedList: boolean = $state(false);
-  let modifiedList = $state(Object.keys(modifiedFiles));
+  let modifiedList = $derived(() => Object.keys(modifiedFiles));
   const textEncoder = new TextEncoder();
 
   // map file extension to monaco language
@@ -204,7 +197,6 @@
       const entry = entriesLocal.find((e) => e.name === name);
       if (entry) entry.buffer = textEncoder.encode(content).buffer;
     });
-    showModifiedList = true;
     try {
       let packageData = await auth.client.FindOne<any>({
         collectionname: "agents",
@@ -379,21 +371,26 @@
 </script>
 
 <div class="grid grid-cols-4 h-[calc(100vh-4rem)] gap-4">
-  <div class="p-4 bg-bw500 rounded col-span-1">
-    <ul class="space-y-1">
-      {#each fileList as name}
-        <li class="flex items-center text-sm text-gray-800">
-          <span class="flex-1">{name}</span>
-          <button
-            onclick={() => {
-              loadFile(name);
-            }}
-            class="ml-2 px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            Edit
-          </button>
-        </li>
-      {/each}
+  <div
+    class="p-4 bg-bw200 dark:bg-bw850 border dark:border-bw600 rounded-[10px] col-span-1"
+  >
+    <ul class="space-y-2">
+        {#each fileList as name}
+          <li class="flex items-center text-sm">
+            <span class="flex-1"
+              >{name} {modifiedList().includes(name) ? "*" : "-"}</span
+            >
+            <HotkeyButton
+              size="sm"
+              variant="success"
+              onclick={() => {
+                loadFile(name);
+              }}
+            >
+              Edit</HotkeyButton
+            >
+          </li>
+        {/each}
     </ul>
   </div>
 
@@ -441,42 +438,7 @@
   >
 </div>
 
-<!-- <div>
-  {#if loading}
-    <div class="mt-4 p-4 bg-gray-100 rounded dark:bg-bw500">
-      <p class="text-gray-700">Processing...</p>
-    </div>
-  {/if}
-
-  {#if result}
-    <div class="mt-4 p-4 bg-gray-100 rounded dark:bg-bw500">
-      <pre class="text-sm text-gray-800 whitespace-pre-wrap">{result}</pre>
-    </div>
-  {/if}
-</div> -->
-<!-- <textarea
-    class="w-full mt-4 p-2 border border-gray-300 rounded"
-    rows="3"
-    bind:value={result}
-    placeholder="Tool call result will be displayed here..."
-  ></textarea> -->
-{#if showModifiedList && modifiedList.length}
-  <div class="mt-4 p-4 bg-yellow-100 rounded">
-    <p class="font-semibold text-gray-700">
-      Modified files ({modifiedList.length}):
-    </p>
-    <ul class="list-disc list-inside text-gray-800">
-      {#each modifiedList as fname}
-        <li>{fname}</li>
-      {/each}
-    </ul>
-  </div>
-{/if}
-
 <AlertDialog.Root bind:open={openDialog}>
-  <!-- <AlertDialog.Trigger class={buttonVariants({ variant: "base" })}>
-    Show Dialog
-  </AlertDialog.Trigger> -->
   <AlertDialog.Content>
     <AlertDialog.Header>
       <AlertDialog.Title>Server logs</AlertDialog.Title>
@@ -519,14 +481,8 @@
         class="w-fit mt-10"
         onclick={() => {
           openDialog = false;
-          // result = "";
         }}>Close</HotkeyButton
       >
-      <!-- <AlertDialog.Cancel
-        class={buttonVariants({ variant: "danger" })}
-        disabled={loadingDialog}>Close</AlertDialog.Cancel
-      > -->
-      <!-- <AlertDialog.Action>Continue</AlertDialog.Action> -->
     </AlertDialog.Footer>
   </AlertDialog.Content>
 </AlertDialog.Root>
