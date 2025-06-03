@@ -1,14 +1,17 @@
 <script lang="ts">
+  import Hotkeybutton, {
+    buttonVariants,
+  } from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
   import { auth } from "$lib/stores/auth.svelte";
   import * as pako from "pako";
   import { toast } from "svelte-sonner";
-  import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
+  import { browser } from "$app/environment";
+  import { base } from "$app/paths";
+  import { MonacoEditor } from "$lib/monacoeditor/index.js";
   // @ts-ignore
   import unpack from "js-untar";
-  import { goto } from "$app/navigation";
-  import { MonacoEditor } from "$lib/monacoeditor/index.js";
-  import { base } from "$app/paths";
-  import { browser } from "$app/environment";
+  import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
+  import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
 
   function stringToUint8Array(str: string): Uint8Array {
     return new TextEncoder().encode(str);
@@ -90,10 +93,13 @@
 
   const originalPackageId = data.packageid;
   const packageData = data.packageData;
-  let result: string = $state("");``
+  let result: string = $state("");
+  ``;
   let loading: boolean = $state(false);
   // const fileid = data.fileid;
   // const fileData = data.fileData || {};
+  let openDialog = $state(false);
+  let loadingDialog = $state(false);
 
   // store all unpacked entries
   let entriesLocal: any[] = [];
@@ -200,7 +206,7 @@
     });
     showModifiedList = true;
     try {
-       let packageData = await auth.client.FindOne<any>({
+      let packageData = await auth.client.FindOne<any>({
         collectionname: "agents",
         query: { _id: originalPackageId, _type: "package" },
         jwt: auth.access_token,
@@ -310,6 +316,9 @@
   }
   async function buildpackage() {
     loading = true;
+    openDialog = true;
+    loadingDialog = true;
+    result = "";
     let queuename = await auth.client.RegisterQueue(
       { queuename: "", jwt: data.access_token },
       (msg, payload, user, jwt) => {
@@ -360,11 +369,12 @@
       auth.client.UnRegisterQueue({ queuename, jwt: auth.access_token });
     }
     loading = false;
+    loadingDialog = false;
   }
   unpackPackageFiles();
 </script>
 
-<div class="grid grid-cols-4 h-full">
+<div class="grid grid-cols-4 h-[calc(100vh-4rem)] gap-4">
   <div class="p-4 bg-bw500 rounded col-span-1">
     <ul class="space-y-1">
       {#each fileList as name}
@@ -409,12 +419,13 @@
     class="w-fit mt-10"
     onclick={() => buildpackage()}>Build and deploy to serverless</Hotkeybutton
   >
-  <textarea
-    class="w-full mt-4 p-2 border border-gray-300 rounded"
-    rows="3"
-    bind:value={result}
-    placeholder="Tool call result will be displayed here..."
-  ></textarea>
+  <Hotkeybutton
+    variant="success"
+    class="w-fit mt-10"
+    onclick={() => {
+      openDialog = true;
+    }}>Show logs</Hotkeybutton
+  >
   <Hotkeybutton
     disabled={loading}
     variant="success"
@@ -424,6 +435,26 @@
     }}>Show output</Hotkeybutton
   >
 </div>
+
+<!-- <div>
+  {#if loading}
+    <div class="mt-4 p-4 bg-gray-100 rounded dark:bg-bw500">
+      <p class="text-gray-700">Processing...</p>
+    </div>
+  {/if}
+
+  {#if result}
+    <div class="mt-4 p-4 bg-gray-100 rounded dark:bg-bw500">
+      <pre class="text-sm text-gray-800 whitespace-pre-wrap">{result}</pre>
+    </div>
+  {/if}
+</div> -->
+<!-- <textarea
+    class="w-full mt-4 p-2 border border-gray-300 rounded"
+    rows="3"
+    bind:value={result}
+    placeholder="Tool call result will be displayed here..."
+  ></textarea> -->
 {#if showModifiedList && modifiedList.length}
   <div class="mt-4 p-4 bg-yellow-100 rounded">
     <p class="font-semibold text-gray-700">
@@ -436,3 +467,61 @@
     </ul>
   </div>
 {/if}
+
+<AlertDialog.Root bind:open={openDialog}>
+  <!-- <AlertDialog.Trigger class={buttonVariants({ variant: "base" })}>
+    Show Dialog
+  </AlertDialog.Trigger> -->
+  <AlertDialog.Content>
+    <AlertDialog.Header>
+      <AlertDialog.Title>Server logs</AlertDialog.Title>
+      <AlertDialog.Description class="h-fit w-full">
+        <div class="overflow-y-auto max-h-[60vh] max-w-[100vh]">
+          {#if loading}
+            <div class="mt-4 p-4 rounded dark:bg-bw500">
+              <p class="text-bw900">Processing...</p>
+            </div>
+          {:else}
+            <div class="mt-4 p-4 bg-gray-100 rounded dark:bg-bw500">
+              <p class="text-bw900">Completed</p>
+              <p></p>
+            </div>
+          {/if}
+
+          {#if result}
+            <div class="mt-4 p-4 bg-gray-100 rounded dark:bg-bw500">
+              <pre class="text-sm text-bw900 whitespace-pre-wrap">{result}</pre>
+            </div>
+          {/if}
+        </div>
+      </AlertDialog.Description>
+    </AlertDialog.Header>
+    <AlertDialog.Footer>
+      <Hotkeybutton
+        disabled={loadingDialog}
+        variant="success"
+        class="w-fit mt-10"
+        onclick={() => {
+          window.open(
+            `http://${packageData.name}.localhost.openiap.io`,
+            "_blank",
+          );
+        }}>Show output</Hotkeybutton
+      >
+      <HotkeyButton
+        disabled={loadingDialog}
+        variant="danger"
+        class="w-fit mt-10"
+        onclick={() => {
+          openDialog = false;
+          // result = "";
+        }}>Close</HotkeyButton
+      >
+      <!-- <AlertDialog.Cancel
+        class={buttonVariants({ variant: "danger" })}
+        disabled={loadingDialog}>Close</AlertDialog.Cancel
+      > -->
+      <!-- <AlertDialog.Action>Continue</AlertDialog.Action> -->
+    </AlertDialog.Footer>
+  </AlertDialog.Content>
+</AlertDialog.Root>
