@@ -362,9 +362,13 @@
         " seconds, starting agent\n" +
         result;
     } catch (error: any) {
+      loading = false;
+      loadingDialog = false;
       console.error("Building package:", error.message);
       throw new Error("Building package: " + error.message);
     } finally {
+      loading = false;
+      loadingDialog = false;
       console.log("Unregistering queue:", queuename);
       auth.client.UnRegisterQueue({ queuename, jwt: auth.access_token });
     }
@@ -420,6 +424,7 @@
     onclick={() => buildpackage()}>Build and deploy to serverless</Hotkeybutton
   >
   <Hotkeybutton
+    disabled={!result}
     variant="success"
     class="w-fit mt-10"
     onclick={() => {
@@ -432,7 +437,7 @@
     class="w-fit mt-10"
     onclick={() => {
       window.open(`http://${packageData.name}.localhost.openiap.io`, "_blank");
-    }}>Show output</Hotkeybutton
+    }}>Open in browser</Hotkeybutton
   >
 </div>
 
@@ -506,7 +511,7 @@
             `http://${packageData.name}.localhost.openiap.io`,
             "_blank",
           );
-        }}>Show output</Hotkeybutton
+        }}>Open in browser</Hotkeybutton
       >
       <HotkeyButton
         disabled={loadingDialog}
