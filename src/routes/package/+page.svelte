@@ -7,7 +7,13 @@
   import { SearchInput } from "$lib/searchinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
-  import { FilePen, Pencil, SquarePlus, Trash2 } from "lucide-svelte";
+  import {
+      FilePen,
+      FolderDown,
+      Pencil,
+      SquarePlus,
+      Trash2
+  } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
@@ -82,6 +88,29 @@
       loading = false;
     }
   }
+
+  async function downloadFile(fileid: string) {
+    try {
+      const item: any = await auth.client.FindOne({
+        collectionname: "files",
+        query: { _id: fileid },
+        jwt: auth.access_token,
+      });
+      var filecontent: any = await auth.client.DownloadFile({
+        id: item._id,
+        jwt: auth.access_token,
+      });
+      var blob = new Blob([filecontent], { type: item.contentType });
+      var link = document.createElement("a");
+      link.href = window.URL.createObjectURL(blob);
+      link.download = item.name || item.metadata.name;
+      link.click();
+    } catch (error: any) {
+      toast.error("Error downloading file", {
+        description: error.message,
+      });
+    }
+  }
 </script>
 
 <div class="lg:flex space-y-4 lg:space-y-0 justify-between mb-4 lg:space-x-5">
@@ -116,7 +145,16 @@
 >
   {#snippet action(item: any)}
     <HotkeyButton
-      aria-label="Edit"
+      aria-label="Download files"
+      disabled={loading}
+      onclick={() => downloadFile(item.fileid)}
+      size="tableicon"
+      variant="icon"
+    >
+      <FolderDown />
+    </HotkeyButton>
+    <HotkeyButton
+      aria-label="Edit files"
       disabled={loading}
       onclick={() => goto(base + `/package/${item._id}/editfiles`)}
       size="tableicon"
@@ -125,7 +163,7 @@
       <FilePen />
     </HotkeyButton>
     <HotkeyButton
-      aria-label="Edit"
+      aria-label="Edit package"
       disabled={loading}
       onclick={() => single_item_click(item)}
       size="tableicon"
