@@ -11,6 +11,9 @@
 
   // @ts-ignore
   import unpack from "js-untar";
+  import { PencilIcon, PlusIcon, Trash2 } from "lucide-svelte";
+  import Custominput from "$lib/custominput/custominput.svelte";
+  import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
 
   function stringToUint8Array(str: string): Uint8Array {
     return new TextEncoder().encode(str);
@@ -103,10 +106,12 @@
   let code: string = $state("");
   let language: string = $state("plaintext");
   // track current file and modifications
-  let currentFileName: string = "";
+  let currentFileName: string = $state("");
   let modifiedFiles: Record<string, string> = {};
   let modifiedList = $derived(() => Object.keys(modifiedFiles));
   const textEncoder = new TextEncoder();
+  let openAddFileDialog: boolean = $state(false);
+  let showDeleteFileWarning: boolean = $state(false);
 
   // map file extension to monaco language
   function getLanguageFromExt(ext: string) {
@@ -369,6 +374,20 @@
     loadingDialog = false;
   }
   unpackPackageFiles();
+  function handleAcceptDeleteFile() {
+    let name = currentFileName;
+    // Handle the deletion of the file
+    // Delete the file from entriesLocal and fileList
+    entriesLocal = entriesLocal.filter((e: any) => e.name !== name);
+    fileList = fileList.filter((f) => f !== name);
+    // If the current file is deleted, reset code and language
+    // if (currentFileName === name) {
+    code = "";
+    language = "plaintext";
+    currentFileName = "";
+    // }
+    toast.success(`File ${name} deleted successfully`);
+  }
 </script>
 
 <div class="grid grid-cols-4 h-[calc(100vh-4rem)] gap-4">
@@ -376,22 +395,45 @@
     class="p-4 bg-bw200 dark:bg-bw850 border dark:border-bw600 rounded-[10px] col-span-1"
   >
     <ul class="space-y-2">
-        {#each fileList as name}
-          <li class="flex items-center text-sm">
-            <span class="flex-1"
-              >{name} {modifiedList().includes(name) ? "*" : "-"}</span
-            >
-            <HotkeyButton
-              size="sm"
-              variant="success"
-              onclick={() => {
-                loadFile(name);
-              }}
-            >
-              Edit</HotkeyButton
-            >
-          </li>
-        {/each}
+      {#each fileList as name}
+        <li class="flex items-center text-sm">
+          <span class="flex-1"
+            >{name} {modifiedList().includes(name) ? "*" : "-"}</span
+          >
+          <HotkeyButton
+            class="mr-2"
+            size="icon"
+            variant="danger"
+            onclick={() => {
+              showDeleteFileWarning = true;
+              currentFileName = name;
+            }}
+          >
+            <Trash2 /></HotkeyButton
+          >
+          <HotkeyButton
+            size="icon"
+            onclick={() => {
+              loadFile(name);
+            }}
+          >
+            <PencilIcon /></HotkeyButton
+          >
+        </li>
+      {/each}
+      <HotkeyButton
+        class="w-full"
+        size="sm"
+        variant="success"
+        onclick={() => {
+          currentFileName = "";
+          code = "";
+          openAddFileDialog = true;
+        }}
+      >
+        <PlusIcon class="inline mr-1" />
+        Create New file</HotkeyButton
+      >
     </ul>
   </div>
 
@@ -434,10 +476,79 @@
     variant="success"
     class="w-fit mt-10"
     onclick={() => {
-      window.open(auth.fnurl(data.packageData.slug || data.packageData.name), "_blank")
+      window.open(
+        auth.fnurl(data.packageData.slug || data.packageData.name),
+        "_blank",
+      );
     }}>Open in browser</Hotkeybutton
   >
 </div>
+
+<AlertDialog.Root bind:open={openAddFileDialog}>
+  <AlertDialog.Content>
+    <AlertDialog.Header>
+      <AlertDialog.Title>Create new file</AlertDialog.Title>
+      <AlertDialog.Description class="h-fit w-full">
+        <div class="">
+          <Custominput
+            size="md"
+            label="File name"
+            placeholder="Enter file name (e.g., newfile.js)"
+            bind:value={currentFileName}
+            class="my-4"
+            width="w-full"
+          />
+        </div>
+        <div>
+          *Note: For the creation of a file inside a folder, please use the
+          format <code>foldername/filename.ext</code>. <br />
+          If the folder does not exist, it will be created automatically.
+          <br />
+        </div>
+      </AlertDialog.Description>
+    </AlertDialog.Header>
+    <AlertDialog.Footer>
+      <HotkeyButton
+        data-shortcut="enter"
+        disabled={!currentFileName}
+        variant="success"
+        class="w-fit mt-6"
+        onclick={() => {
+          if (!currentFileName) {
+            toast.error("Please enter a file name");
+            return;
+          }
+          if (fileList.includes(currentFileName)) {
+            toast.error("File already exists");
+            return;
+          }
+          // create folders
+          // // check to see if file has extension
+          // if (!currentFileName.includes(".")) {
+          //   toast.error("Please include a file extension (e.g., .js)");
+          //   return;
+          // }
+          const newEntry = {
+            name: currentFileName,
+            buffer: textEncoder.encode(" ").buffer,
+          };
+          entriesLocal.push(newEntry);
+          fileList.push(currentFileName);
+          loadFile(currentFileName);
+          openAddFileDialog = false;
+        }}>Create File</HotkeyButton
+      >
+      <HotkeyButton
+        disabled={loadingDialog}
+        variant="danger"
+        class="w-fit mt-6"
+        onclick={() => {
+          openAddFileDialog = false;
+        }}>Close</HotkeyButton
+      >
+    </AlertDialog.Footer>
+  </AlertDialog.Content>
+</AlertDialog.Root>
 
 <AlertDialog.Root bind:open={openDialog}>
   <AlertDialog.Content>
@@ -470,7 +581,10 @@
         variant="success"
         class="w-fit mt-10"
         onclick={() => {
-          window.open(auth.fnurl(data.packageData.slug || data.packageData.name), "_blank")
+          window.open(
+            auth.fnurl(data.packageData.slug || data.packageData.name),
+            "_blank",
+          );
         }}>Open in browser</Hotkeybutton
       >
       <HotkeyButton
@@ -484,3 +598,9 @@
     </AlertDialog.Footer>
   </AlertDialog.Content>
 </AlertDialog.Root>
+
+<Warningdialogue
+  bind:showWarning={showDeleteFileWarning}
+  type="delete"
+  onaccept={handleAcceptDeleteFile}
+></Warningdialogue>
