@@ -85,5 +85,5 @@
 
 <div
   bind:this={editorDiv}
-  class="h-full w-full bg-bw200 dark:bg-bw850 border dark:border-bw600 rounded-[10px] overflow-hidden"
+  class="h-screen md:h-full w-full bg-bw200 dark:bg-bw850 border dark:border-bw600 rounded-[10px] overflow-hidden"
 ></div>

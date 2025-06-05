@@ -108,7 +108,7 @@
   // track current file and modifications
   let currentFileName: string = $state("");
   let modifiedFiles: Record<string, string> = {};
-  let modifiedList = $derived(() => Object.keys(modifiedFiles));
+  // let modifiedList = $derived(() => Object.keys(modifiedFiles));
   const textEncoder = new TextEncoder();
   let openAddFileDialog: boolean = $state(false);
   let showDeleteFileWarning: boolean = $state(false);
@@ -134,6 +134,8 @@
         return "markdown";
       case "py":
         return "python";
+      case "php":
+        return "php";
       default:
         return "plaintext";
     }
@@ -390,18 +392,16 @@
   }
 </script>
 
-<div class="grid grid-cols-4 h-[calc(100vh-4rem)] gap-4">
+<div class="grid grid-cols-1 lg:grid-cols-4 lg:h-[calc(100vh-4rem)] gap-4">
   <div
-    class="p-4 bg-bw200 dark:bg-bw850 border dark:border-bw600 rounded-[10px] col-span-1"
+    class="p-4 bg-bw200 dark:bg-bw850 border dark:border-bw600 rounded-[10px] lg:col-span-1 overflow-auto"
   >
-    <ul class="space-y-2">
+    <div class="space-y-2 w-full">
       {#each fileList as name}
-        <li class="flex items-center text-sm">
-          <span class="flex-1"
-            >{name} {modifiedList().includes(name) ? "*" : "-"}</span
-          >
+        <div class="flex items-center justify-between w-full text-sm">
+          <span class="flex-1">{name}</span>
           <HotkeyButton
-            class="mr-2"
+            class="mx-2"
             size="icon"
             variant="danger"
             onclick={() => {
@@ -419,12 +419,11 @@
           >
             <PencilIcon /></HotkeyButton
           >
-        </li>
+        </div>
       {/each}
       <HotkeyButton
         class="w-full"
         size="sm"
-        variant="success"
         onclick={() => {
           currentFileName = "";
           code = "";
@@ -434,10 +433,10 @@
         <PlusIcon class="inline mr-1" />
         Create New file</HotkeyButton
       >
-    </ul>
+    </div>
   </div>
 
-  <div class="col-span-3">
+  <div class="lg:col-span-3">
     {#if code}
       <MonacoEditor
         {code}
@@ -445,12 +444,18 @@
         on:change={(e) => handleEditorChange(e.detail.code)}
       />
     {:else}
-      <p class="text-gray-500 px-4">Select a file to edit</p>
+      <div
+        class="h-screen md:h-full w-full bg-bw200 dark:bg-bw850 border dark:border-bw600 rounded-[10px] overflow-hidden"
+      >
+        <p class="text-gray-500 p-4">Select a file to edit</p>
+      </div>
     {/if}
   </div>
 </div>
 
-<div class="grid grid-cols-4 rounded">
+<div
+  class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 rounded"
+>
   <Hotkeybutton
     disabled={loading}
     variant="success"
