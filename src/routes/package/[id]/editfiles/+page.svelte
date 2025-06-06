@@ -456,37 +456,41 @@
 <div
   class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 rounded"
 >
-  <Hotkeybutton
-    disabled={loading}
-    variant="success"
-    class="w-fit mt-10"
-    onclick={() => repackandUpload()}>Pack and upload</Hotkeybutton
-  >
-  <Hotkeybutton
-    disabled={loading}
-    variant="success"
-    class="w-fit mt-10"
-    onclick={() => buildpackage()}>Build and deploy to serverless</Hotkeybutton
-  >
-  <Hotkeybutton
-    disabled={!result}
-    variant="success"
-    class="w-fit mt-10"
-    onclick={() => {
-      openDialog = true;
-    }}>Show logs</Hotkeybutton
-  >
-  <Hotkeybutton
-    disabled={loading}
-    variant="success"
-    class="w-fit mt-10"
-    onclick={() => {
-      window.open(
-        auth.fnurl(data.packageData.slug || data.packageData.name),
-        "_blank",
-      );
-    }}>Open in browser</Hotkeybutton
-  >
+  <div class="col-span-1 flex justify-end items-end me-4">
+    <Hotkeybutton
+      disabled={loading}
+      variant="success"
+      class="w-fit mt-10"
+      onclick={() => repackandUpload()}>Pack and upload</Hotkeybutton
+    >
+  </div>
+  <div class="col-span-3 flex justify-end items-end gap-4">
+    <Hotkeybutton
+      disabled={loading}
+      class="w-fit mt-10"
+      onclick={() => {
+        window.open(
+          auth.fnurl(data.packageData.slug || data.packageData.name),
+          "_blank",
+        );
+      }}>Open in browser</Hotkeybutton
+    >
+    <Hotkeybutton
+      disabled={!result}
+      class="w-fit mt-10"
+      onclick={() => {
+        openDialog = true;
+      }}>Show logs</Hotkeybutton
+    >
+    <Hotkeybutton
+      disabled={loading}
+      variant="success"
+      class="w-fit mt-10"
+      onclick={() => buildpackage()}
+      >Build and deploy to serverless</Hotkeybutton
+    >
+    
+  </div>
 </div>
 
 <AlertDialog.Root bind:open={openAddFileDialog}>
