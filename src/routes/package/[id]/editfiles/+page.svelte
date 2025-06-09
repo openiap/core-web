@@ -435,7 +435,14 @@
       >
     </div>
   </div>
-
+  <div class="flex justify-end items-end me-4 block lg:hidden">
+    <Hotkeybutton
+      disabled={loading}
+      variant="success"
+      class="w-fit mt-10"
+      onclick={() => repackandUpload()}>Pack and upload</Hotkeybutton
+    >
+  </div>
   <div class="lg:col-span-3">
     {#if code}
       <MonacoEditor
@@ -445,7 +452,7 @@
       />
     {:else}
       <div
-        class="h-screen md:h-full w-full bg-bw200 dark:bg-bw850 border dark:border-bw600 rounded-[10px] overflow-hidden"
+        class="h-[50vh] lg:h-full w-full bg-bw200 dark:bg-bw850 border dark:border-bw600 rounded-[10px] overflow-hidden"
       >
         <p class="text-gray-500 p-4">Select a file to edit</p>
       </div>
@@ -456,7 +463,7 @@
 <div
   class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 rounded"
 >
-  <div class="col-span-1 flex justify-end items-end me-4">
+  <div class="col-span-1 flex justify-end items-end me-4 hidden lg:block">
     <Hotkeybutton
       disabled={loading}
       variant="success"
@@ -464,7 +471,9 @@
       onclick={() => repackandUpload()}>Pack and upload</Hotkeybutton
     >
   </div>
-  <div class="col-span-3 flex justify-end items-end gap-4">
+  <div
+    class="col-span-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:flex xl:justify-end xl:items-end xl:gap-4"
+  >
     <Hotkeybutton
       disabled={loading}
       class="w-fit mt-10"
@@ -489,7 +498,6 @@
       onclick={() => buildpackage()}
       >Build and deploy to serverless</Hotkeybutton
     >
-    
   </div>
 </div>
 
