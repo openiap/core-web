@@ -21,6 +21,8 @@
       if (form.valid) {
         loading = true;
         try {
+          // @ts-ignore
+          form.data["_encrypt"] = ["password"];
           await auth.client.InsertOne({
             collectionname: "openrpa",
             item: form.data,
