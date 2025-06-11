@@ -71,6 +71,9 @@
             });
             form.data.failed_wiq = item.name;
           }
+          else{
+            form.data.failed_wiq = ""; 
+          }
           if (form.data.success_wiqid) {
             const item: any = await auth.client.FindOne({
               collectionname: "mq",
@@ -80,6 +83,9 @@
             form.data.success_wiq = item.name;
             console.log(item);
             if (item == null) throw new Error("Workitemqueue not found");
+          }
+          else{
+            form.data.success_wiq = "";
           }
           if (!form.data.amqpqueue) {
             form.data.amqpqueue = form.data.name;
