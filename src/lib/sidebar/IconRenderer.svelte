@@ -18,6 +18,7 @@
         Lock,
         Mail,
         MessageSquare,
+        MessageSquareCode,
         Receipt,
         Rocket,
         ScanFace,
@@ -96,6 +97,8 @@
     <ShieldBan />
 {:else if title == "OAuth Clients"}
     <Lock />
+{:else if title == "Prompt Fn"}
+    <MessageSquareCode />
 {:else}
     <MessageSquare />
 {/if}

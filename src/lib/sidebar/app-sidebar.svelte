@@ -133,9 +133,17 @@
 		true,
 		true,
 	);
+	const promptfn = new SidebarItem(
+		"Prompt Fn",
+		"",
+		"",
+		`${base}/promptfn`,
+		false,
+	);
 	const homeCat = new SidebarCategory("", false, [home]);
 	const actions = new SidebarCategory("", false, [
 		chat,
+		promptfn,
 		agent,
 		workitem,
 		workitemqueue,

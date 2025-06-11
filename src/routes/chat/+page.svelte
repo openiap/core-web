@@ -290,43 +290,43 @@
         {/if}
       {/each}
     </div>
-    <div class="flex justify-center">
-      <form
-        class="flex flex-col items-center space-x-2 mb-4 p-5 border border-bw600 rounded-[10px] dark:boder-bw600 bg-bw200 dark:bg-bw900 w-[700px]"
-      >
-        <CustomInput
-          bind:value={chatmessage}
-          bind:this={chatInput}
-          placeholder="Chat with OpenCore about your data or tell it to do something with your data "
-          width="w-full"
-          class="mb-4 border-hidden bg-bw200 dark:bg-bw900"
-        />
-        <div class="flex w-full items-center justify-between space-x-2">
-          <div class="flex space-x-5">
-            <HotkeyButton
-              class="dark:text-bw400"
-              aria-label="New conversation"
-              type="button"
-              onclick={async () => {
-                if (data.id == null || data.id == "") return location.reload();
-                goto(base + "/chat");
-              }}
-            >
-              <History />
-              New conversation</HotkeyButton
-            >
+
+    {#if messages.length == 0}
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-2 mb-2">
+        {#each starterQuestions as question}
+          <div class="mb-2">
             <HotkeyButton
               class="dark:text-bw400"
               aria-label="Old chat threads"
               type="button"
               onclick={async () => {
-                goto(base + "/chat/hist");
+                chatmessage = question.replace(
+                  "%username%",
+                  auth.profile?.name ?? "anything",
+                );
+                sendChat();
               }}
             >
-              <History />
-              History</HotkeyButton
-            >
+              <CircleHelp class="h-4 w-4" />
+              {question.replace("%username%", auth.profile?.name ?? "anything")}
+            </HotkeyButton>
           </div>
+        {/each}
+      </div>
+    {/if}
+
+    <div class="flex justify-center">
+      <form
+        class="flex flex-col items-center space-x-2 mb-4 p-5 border border-bw600 rounded-[10px] dark:boder-bw600 bg-bw200 dark:bg-bw900 w-[700px]"
+      >
+        <div class="flex w-full items-center justify-center space-x-2">
+          <CustomInput
+            bind:value={chatmessage}
+            bind:this={chatInput}
+            placeholder="Chat with OpenCore about your data or tell it to do something with your data "
+            width="w-full"
+            class="border-hidden bg-bw200 dark:bg-bw900"
+          />
           <HotkeyButton
             class=""
             variant="sendchat"
@@ -342,32 +342,34 @@
         </div>
       </form>
     </div>
+    <div class="flex items-center justify-center gap-4">
+      <HotkeyButton
+        class="dark:text-bw400"
+        aria-label="New conversation"
+        type="button"
+        onclick={async () => {
+          if (data.id == null || data.id == "") return location.reload();
+          goto(base + "/chat");
+        }}
+      >
+        <History />
+        New conversation</HotkeyButton
+      >
+      <HotkeyButton
+        class="dark:text-bw400"
+        aria-label="Old chat threads"
+        type="button"
+        onclick={async () => {
+          goto(base + "/chat/hist");
+        }}
+      >
+        <History />
+        History</HotkeyButton
+      >
+    </div>
   {/if}
 </div>
 
-{#if messages.length == 0}
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-2 mb-2">
-    {#each starterQuestions as question}
-      <div class="mb-2">
-        <HotkeyButton
-          class="dark:text-bw400"
-          aria-label="Old chat threads"
-          type="button"
-          onclick={async () => {
-            chatmessage = question.replace(
-              "%username%",
-              auth.profile?.name ?? "anything",
-            );
-            sendChat();
-          }}
-        >
-          <CircleHelp class="h-4 w-4" />
-          {question.replace("%username%", auth.profile?.name ?? "anything")}
-        </HotkeyButton>
-      </div>
-    {/each}
-  </div>
-{/if}
 
 {#if messages.length > 0}
   <div class="mb-6">
