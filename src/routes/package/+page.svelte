@@ -144,7 +144,7 @@
   bind:loading
 >
   {#snippet action(item: any)}
-    <HotkeyButton
+    <!-- <HotkeyButton
       aria-label="Download files"
       disabled={loading}
       onclick={() => downloadFile(item.fileid)}
@@ -152,7 +152,7 @@
       variant="icon"
     >
       <FolderDown />
-    </HotkeyButton>
+    </HotkeyButton> -->
     <HotkeyButton
       aria-label="Edit files"
       disabled={loading}

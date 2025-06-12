@@ -4,17 +4,16 @@
   import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
   import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
+  import Custominput from "$lib/custominput/custominput.svelte";
   import { MonacoEditor } from "$lib/monacoeditor/index.js";
-  import FileTreeNode from "./FileTreeNode.svelte";
   import { auth } from "$lib/stores/auth.svelte";
+  import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
+  import { PlusIcon } from "lucide-svelte";
   import * as pako from "pako";
   import { toast } from "svelte-sonner";
-
+  import FileTreeNode from "./FileTreeNode.svelte";
   // @ts-ignore
   import unpack from "js-untar";
-  import { PencilIcon, PlusIcon, Trash2 } from "lucide-svelte";
-  import Custominput from "$lib/custominput/custominput.svelte";
-  import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
 
   function stringToUint8Array(str: string): Uint8Array {
     return new TextEncoder().encode(str);
@@ -110,14 +109,12 @@
   $effect(() => {
     const tree: TreeNode[] = [];
     for (const path of fileList) {
-      const parts = path.split('/');
+      const parts = path.split("/");
       let nodes = tree;
-      for (let i = 0; i < parts.length; i++) {
-        const part = parts[i];
-        // find or create node, tracking full path
-        let node = nodes.find(n => n.name === part);
+      parts.forEach((part, i) => {
+        let node = nodes.find((n) => n.name === part);
         if (!node) {
-          const nodePath = parts.slice(0, i + 1).join('/');
+          const nodePath = parts.slice(0, i + 1).join("/");
           node = { name: part, path: nodePath, level: i } as TreeNode;
           if (i === parts.length - 1) {
             node.fullName = path;
@@ -129,7 +126,7 @@
         if (node.children) {
           nodes = node.children;
         }
-      }
+      });
     }
     fileTree = tree;
   });
@@ -144,7 +141,13 @@
   let showDeleteFileWarning: boolean = $state(false);
 
   // Type for file tree nodes
-  type TreeNode = { name: string; path: string; fullName?: string; children?: TreeNode[]; level: number };
+  type TreeNode = {
+    name: string;
+    path: string;
+    fullName?: string;
+    children?: TreeNode[];
+    level: number;
+  };
 
   // map file extension to monaco language
   function getLanguageFromExt(ext: string) {
@@ -416,12 +419,28 @@
     entriesLocal = entriesLocal.filter((e: any) => e.name !== name);
     fileList = fileList.filter((f) => f !== name);
     // If the current file is deleted, reset code and language
-    // if (currentFileName === name) {
     code = "";
     language = "plaintext";
     currentFileName = "";
-    // }
     toast.success(`File ${name} deleted successfully`);
+  }
+
+  // Rename a file or folder
+  function handleRename(oldPath: string, newName: string) {
+    const segments = oldPath.split("/");
+    segments[segments.length - 1] = newName;
+    const newPath = segments.join("/");
+    // update the underlying entries
+    entriesLocal = entriesLocal.map((e: any) =>
+      e.name === oldPath ? { ...e, name: newPath } : e,
+    );
+    // update file list to reflect entriesLocal
+    fileList = entriesLocal.map((e: any) => e.name);
+    // if currently opened file was renamed, update selection
+    if (currentFileName === oldPath) {
+      currentFileName = newPath;
+    }
+    toast.success(`Renamed ${oldPath} to ${newPath}`);
   }
 </script>
 
@@ -431,7 +450,15 @@
   >
     <div class="space-y-2 w-full">
       <!-- Use recursive component to render nested file/folder tree -->
-      <FileTreeNode nodes={fileTree} onDelete={(path) => { showDeleteFileWarning = true; currentFileName = path; }} onEdit={(path) => loadFile(path)} />
+      <FileTreeNode
+        nodes={fileTree}
+        onDelete={(path) => {
+          showDeleteFileWarning = true;
+          currentFileName = path;
+        }}
+        onEdit={(path) => loadFile(path)}
+        onRename={handleRename}
+      />
 
       <HotkeyButton
         class="w-full"
@@ -443,30 +470,20 @@
         }}
       >
         <PlusIcon class="inline mr-1" />
-        Create New file</HotkeyButton>
+        Create New file</HotkeyButton
+      >
     </div>
   </div>
-  <div class="flex justify-end items-end me-4 block lg:hidden">
-    <Hotkeybutton
-      disabled={loading}
-      variant="success"
-      class="w-fit mt-10"
-      onclick={() => repackandUpload()}>Pack and upload</Hotkeybutton>
-  </div>
   <div class="lg:col-span-3">
-    {#if code}
+    <div
+      class="p-4 bg-bw200 dark:bg-bw850 border dark:border-bw600 rounded-[10px] h-full"
+    >
       <MonacoEditor
         {code}
         {language}
         on:change={(e) => handleEditorChange(e.detail.code)}
       />
-    {:else}
-      <div
-        class="h-[50vh] lg:h-full w-full bg-bw200 dark:bg-bw850 border dark:border-bw600 rounded-[10px] overflow-hidden"
-      >
-        <p class="text-gray-500 p-4">Select a file to edit</p>
-      </div>
-    {/if}
+    </div>
   </div>
 </div>
 
@@ -478,7 +495,8 @@
       disabled={loading}
       variant="success"
       class="w-fit mt-10"
-      onclick={() => repackandUpload()}>Pack and upload</Hotkeybutton>
+      onclick={() => repackandUpload()}>Pack and upload</Hotkeybutton
+    >
   </div>
   <div
     class="col-span-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:flex xl:justify-end xl:items-end xl:gap-4"
@@ -491,19 +509,22 @@
           auth.fnurl(data.packageData.slug || data.packageData.name),
           "_blank",
         );
-      }}>Open in browser</Hotkeybutton>
+      }}>Open in browser</Hotkeybutton
+    >
     <Hotkeybutton
       disabled={!result}
       class="w-fit mt-10"
       onclick={() => {
         openDialog = true;
-      }}>Show logs</Hotkeybutton>
+      }}>Show logs</Hotkeybutton
+    >
     <Hotkeybutton
       disabled={loading}
       variant="success"
       class="w-fit mt-10"
       onclick={() => buildpackage()}
-      >Build and deploy to serverless</Hotkeybutton>
+      >Build and deploy to serverless</Hotkeybutton
+    >
   </div>
 </div>
 
@@ -559,14 +580,16 @@
           fileList.push(currentFileName);
           loadFile(currentFileName);
           openAddFileDialog = false;
-        }}>Create File</HotkeyButton>
+        }}>Create File</HotkeyButton
+      >
       <HotkeyButton
         disabled={loadingDialog}
         variant="danger"
         class="w-fit mt-6"
         onclick={() => {
           openAddFileDialog = false;
-        }}>Close</HotkeyButton>
+        }}>Close</HotkeyButton
+      >
     </AlertDialog.Footer>
   </AlertDialog.Content>
 </AlertDialog.Root>
@@ -606,14 +629,16 @@
             auth.fnurl(data.packageData.slug || data.packageData.name),
             "_blank",
           );
-        }}>Open in browser</Hotkeybutton>
+        }}>Open in browser</Hotkeybutton
+      >
       <HotkeyButton
         disabled={loadingDialog}
         variant="danger"
         class="w-fit mt-10"
         onclick={() => {
           openDialog = false;
-        }}>Close</HotkeyButton>
+        }}>Close</HotkeyButton
+      >
     </AlertDialog.Footer>
   </AlertDialog.Content>
 </AlertDialog.Root>
