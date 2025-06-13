@@ -754,7 +754,7 @@
 											>
 												{item.members?.length}
 											</Table.Cell>
-										{:else if head.field == "created" || head.field == "_created" || head.field == "_modified" || head.field == "lastrun" || head.field == "nextrun" || head.field == "lastseen" || head.field == "metadata._created" || head.field == "metadata._modified" || head.field == "dt" || head.field == "ts"}
+										{:else if head.field == "created" || head.field == "_created" || head.field == "_modified" || head.field == "lastrun" || head.field == "nextrun" || head.field == "lastseen" || head.field == "_deleted" || head.field == "metadata._created" || head.field == "metadata._modified" || head.field == "dt" || head.field == "ts"}
 											<Table.Cell
 												class={head.cellclass}
 												onclick={(event) => {
