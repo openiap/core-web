@@ -81,6 +81,7 @@ You are an expert assistant for OpenIAP's FaaS platform.
 - The webserver MUST respond to HTTP requests at the path \`/\` (root path).
 - The response at \`/\` should be a simple message (e.g. "Hello from Node.js!").
 - Do NOT use any other path for the main response.
+- **CORS must be enabled for all origins and for GET and POST methods.**
 
 ## Output format
 
@@ -98,11 +99,11 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
     },
     {
       "filename": "package.json",
-      "content": "{\\n  \\"name\\": \\"hello-world-nodejs\\",\\n  \\"version\\": \\"1.0.0\\",\\n  \\"main\\": \\"main.js\\",\\n  \\"dependencies\\": {\\n    \\"express\\": \\"^4.17.1\\"\\n  }\\n}\\n"
+      "content": "{\\n  \\"name\\": \\"hello-world-nodejs\\",\\n  \\"version\\": \\"1.0.0\\",\\n  \\"main\\": \\"main.js\\",\\n  \\"dependencies\\": {\\n    \\"express\\": \\"^4.17.1\\",\\n    \\"cors\\": \\"^2.8.5\\"\\n  }\\n}\\n"
     },
     {
       "filename": "main.js",
-      "content": "const express = require('express');\\nconst app = express();\\napp.get('/', (req, res) => res.send('Hello from Node.js!'));\\napp.listen(3000, () => console.log('Server running on port 3000'));\\n"
+      "content": "const express = require('express');\\nconst cors = require('cors');\\nconst app = express();\\napp.use(cors({ origin: '*', methods: ['GET', 'POST'] }));\\napp.use(express.json());\\napp.get('/', (req, res) => res.send('Hello from Node.js!'));\\napp.post('/', (req, res) => res.send('Hello from Node.js!'));\\napp.listen(3000, () => console.log('Server running on port 3000'));\\n"
     }
   ]
 }
@@ -149,6 +150,7 @@ You are an expert assistant for OpenIAP's FaaS platform.
 - The webserver MUST respond to HTTP requests at the path \`/\` (root path).
 - The response at \`/\` should be a simple message (e.g. "Hello from Python!").
 - Do NOT use any other path for the main response.
+- **CORS must be enabled for all origins and for GET and POST methods.**
 
 ## Output format
 
@@ -165,11 +167,11 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
     },
     {
       "filename": "requirements.txt",
-      "content": "flask\\n"
+      "content": "flask\\nflask-cors\\n"
     },
     {
       "filename": "main.py",
-      "content": "from flask import Flask\\napp = Flask(__name__)\\n@app.route('/')\\ndef hello():\\n    return 'Hello from Python!'\\nif __name__ == '__main__':\\n    app.run(host='0.0.0.0', port=3000)\\n"
+      "content": "from flask import Flask, request\\nfrom flask_cors import CORS\\napp = Flask(__name__)\\nCORS(app, resources={r'/*': {'origins': '*'}}, methods=['GET', 'POST'])\\n@app.route('/', methods=['GET', 'POST'])\\ndef hello():\\n    return 'Hello from Python!'\\nif __name__ == '__main__':\\n    app.run(host='0.0.0.0', port=3000)\\n"
     }
   ]
 }
@@ -216,6 +218,7 @@ You are an expert assistant for OpenIAP's FaaS platform.
 - The webserver MUST respond to HTTP requests at the path \`/\` (root path).
 - The response at \`/\` should be a simple message (e.g. "Hello from PHP!") or the result of an API call, **but only if the user prompt asks for it**.
 - Do NOT use any other path for the main response.
+- **CORS must be enabled for all origins and for GET and POST methods.**
 
 ## Output format
 
@@ -238,7 +241,7 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
     },
     {
       "filename": "public/index.php",
-      "content": "<?php\\nrequire __DIR__ . '/../vendor/autoload.php';\\nuse Psr\\\\Http\\\\Message\\\\ResponseInterface as Response;\\nuse Psr\\\\Http\\\\Message\\\\ServerRequestInterface as Request;\\nuse Slim\\\\Factory\\\\AppFactory;\\nuse Symfony\\\\Component\\\\HttpClient\\\\HttpClient;\\n\\n\$app = AppFactory::create();\\n\\n\$app->get('/', function (Request \$request, Response \$response, array \$args) {\\n    \$client = HttpClient::create();\\n    \$apiResponse = \$client->request('GET', 'https://api.chucknorris.io/jokes/random');\\n    \$data = \$apiResponse->toArray();\\n    \$joke = \$data['value'] ?? 'No joke found.';\\n    \$response->getBody()->write(\$joke);\\n    return \$response;\\n});\\n\\n\$app->run();\\n"
+      "content": "<?php\\nrequire __DIR__ . '/../vendor/autoload.php';\\nuse Psr\\\\Http\\\\Message\\\\ResponseInterface as Response;\\nuse Psr\\\\Http\\\\Message\\\\ServerRequestInterface as Request;\\nuse Slim\\\\Factory\\\\AppFactory;\\nuse Symfony\\\\Component\\\\HttpClient\\\\HttpClient;\\n\\n$app = AppFactory::create();\\n\\n// CORS Middleware\\n$app->add(function (Request $request, Response $response, callable $next) {\\n    $response = $response->withHeader('Access-Control-Allow-Origin', '*')\\n                         ->withHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')\\n                         ->withHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');\\n    if ($request->getMethod() === 'OPTIONS') {\\n        return $response;\\n    }\\n    return $next($request, $response);\\n});\\n\\n$app->any('/', function (Request $request, Response $response, array $args) {\\n    $response->getBody()->write('Hello from PHP!');\\n    return $response;\\n});\\n\\n$app->run();\\n"
     }
   ]
 }
@@ -1115,12 +1118,13 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
               if (method.toLowerCase() == "get") {
                 body = null;
               }
+              url = "http://" + url;
               console.log("Calling fetch function:", url, method, body);
               const res = await fetch(url, {
                 method: method,
                 headers: { "Content-Type": "application/json" },
                 body: body,
-                mode: "no-cors",
+                // mode: "no-cors",
               });
               if (!res.ok) {
                 let body = "";
