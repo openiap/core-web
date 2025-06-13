@@ -138,7 +138,8 @@
 		"",
 		"",
 		`${base}/promptfn`,
-		false,
+		true,
+		false
 	);
 	const homeCat = new SidebarCategory("", false, [home]);
 	const actions = new SidebarCategory("", false, [
@@ -395,6 +396,9 @@
 		}
 		let profileroles = auth.profile?.roles || [];
 		const isAdmin = profileroles.includes("admins");
+		if(auth.config.enable_serverless && isAdmin) {
+			promptfn.hidden = false;
+		}
 		const isWorkspaceAdmin =
 			profileroles == null
 				? false

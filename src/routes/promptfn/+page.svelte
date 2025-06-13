@@ -352,6 +352,7 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
             correlation_id: correlation_id,
             queuename,
           },
+          jwt: auth.access_token,
         },
         true,
       );
