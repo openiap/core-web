@@ -769,7 +769,7 @@ class entitiesdata {
 			case "/credential":
 				return ["name", "username", "_created", "_modified"];
 			case "/client":
-				return ["id", "name", "clientagent", "clientversion", "_created", "remoteip"];
+				return ["id", "name", "clientagent", "clientversion", "created", "remoteip"];
 			case "/package":
 				return ["name", "language", "_createdby", "_created"];
 			case "/workspace":
