@@ -320,7 +320,7 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
 
   async function buildpackage(toolCall: ToolCall, pack: any) {
     let queuename = await auth.client.RegisterQueue(
-      { queuename: "", jwt: data.jwt },
+      { queuename: "", jwt: auth.access_token },
       (msg, payload, user, jwt) => {
         console.log("Message received:", payload);
         if (payload.logs != null) {
@@ -374,7 +374,7 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
       throw new Error("Building package: " + error.message);
     } finally {
       console.log("Unregistering queue:", queuename);
-      auth.client.UnRegisterQueue({ queuename, jwt: data.jwt });
+      auth.client.UnRegisterQueue({ queuename, jwt: auth.access_token });
     }
   }
 
@@ -998,7 +998,7 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
 
         const body = {
           files,
-          jwt: data.jwt,
+          jwt: auth.access_token,
         };
         const res = await fetch(base + "/api/create-tgz", {
           method: "POST",
@@ -1016,7 +1016,7 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
         let llmpackage = await auth.client.FindOne<any>({
           collectionname: "agents",
           query: { name: prefix + slug, _type: "package" },
-          jwt: data.jwt,
+          jwt: auth.access_token,
         });
         if (llmpackage == null) {
           llmpackage = {
@@ -1043,7 +1043,7 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
           llmpackage = await await auth.client.InsertOne({
             collectionname: "agents",
             item: llmpackage,
-            jwt: data.jwt,
+            jwt: auth.access_token,
           });
         } else {
           const oldfileid = llmpackage.fileid;
@@ -1051,13 +1051,13 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
           await auth.client.UpdateOne({
             collectionname: "agents",
             item: llmpackage,
-            jwt: data.jwt,
+            jwt: auth.access_token,
           });
           try {
             await auth.client.DeleteOne({
               collectionname: "fs.files",
               id: oldfileid,
-              jwt: data.jwt,
+              jwt: auth.access_token,
             });
           } catch (error: any) {
             // console.error("Error removing old package file:", error.message);
@@ -1083,7 +1083,7 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
         let llmpackage = await auth.client.FindOne<any>({
           collectionname: "agents",
           query: { name: prefix + slug, _type: "package" },
-          jwt: data.jwt,
+          jwt: auth.access_token,
         });
         let _slug = llmpackage.slug || llmpackage.name.replace(prefix, "");
         console.log("Found package:", llmpackage, "slug:", _slug);
@@ -1242,7 +1242,7 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
     let llmpackage = await auth.client.FindOne<any>({
       collectionname: "agents",
       query: { name: prefix + slug, _type: "package" },
-      jwt: data.jwt,
+      jwt: auth.access_token,
     });
     let _slug = llmpackage.slug || llmpackage.name.replace(prefix, "");
     window.open(auth.fnurl(_slug), "_blank");
@@ -1452,7 +1452,7 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
   
       <form
         onsubmit={handleSubmit}
-        class="flex flex-col items-center space-x-2 mb-4 p-5 rounded-[20px] dark:boder-bw600 bg-bw50 dark:bg-bw700 w-[700px] w-full"
+        class="flex flex-col items-center space-x-2 mb-4 p-5 rounded-[20px] dark:boder-bw600 bg-bw50 dark:bg-bw700 w-[700px]"
       >
         <div class="flex w-full space-x-2">
           <CustomInput
