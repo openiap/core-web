@@ -59,6 +59,25 @@
     }
     return "w-6 h-6 mr-2";
   }
+
+  // svelte-ignore non_reactive_update
+    let loginproviders = auth.config?.loginproviders;
+  if (loginproviders == null) {
+    loginproviders = [];
+  }
+  loginproviders.sort((a: any, b: any) => {
+    if (a.order == null) return 1;
+    if (b.order == null) return -1;
+    return a.order - b.order;
+  });
+  if (loginproviders.length === 0) {
+    loginproviders.push({
+      id: "local",
+      name: "Local",
+      provider: "local",
+    });
+  }
+
 </script>
 
 <div
@@ -123,13 +142,13 @@
               aria-label="login"
               disabled={loading}>Login</HotkeyButton
             >
-            {#if auth.config?.loginproviders != null}
+            {#if loginproviders != null}
               <div class="flex items-center justify-center">
                 <Separator class="w-2/5" />
                 <span class="mx-4"> OR </span>
                 <Separator class="w-2/5" />
               </div>
-              {#each auth.config?.loginproviders.filter((x: any) => x.provider != "local") as lp}
+              {#each loginproviders.filter((x: any) => x.provider != "local") as lp}
                 <HotkeyButton
                   disabled={loading}
                   aria-label={lp.name}

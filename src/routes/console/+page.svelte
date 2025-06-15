@@ -9,6 +9,7 @@
   import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label/index.js";
   import { Switch } from "$lib/components/ui/switch/index.js";
+  import { toast } from "svelte-sonner";
   import { CustomSuperDebug } from "$lib/customsuperdebug";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { auth } from "$lib/stores/auth.svelte.js";
@@ -285,6 +286,8 @@
 
       <div class="divide-y dark:divide-gray-700">
         {#each messages as msg}
+          <!-- svelte-ignore a11y_click_events_have_key_events -->
+          <!-- svelte-ignore a11y_no_static_element_interactions -->
           <div
             class="grid grid-cols-[auto_4rem_12rem_10rem_10rem_1fr] gap-2 p-2 font-mono text-sm hover:bg-gray-50 dark:hover:bg-gray-800"
             class:bg-red-50={msg.lvl === "err"}
@@ -297,6 +300,19 @@
             class:dark:bg-blue-900={msg.lvl === "inf"}
             class:bg-purple-50={msg.lvl === "ver"}
             class:dark:bg-purple-900={msg.lvl === "ver"}
+            onclick={(event) => {
+              if (event.shiftKey) {
+                const json = JSON.stringify(msg, null, 2);
+                navigator.clipboard.writeText(
+                  json,
+														);
+														toast.success(
+															"Copied log entry to clipboard",
+														);
+														event.stopPropagation();
+
+              }
+            }}
           >
             <div class="uppercase font-bold">{msg.lvl}</div>
             <div class="truncate">{msg.host}</div>
