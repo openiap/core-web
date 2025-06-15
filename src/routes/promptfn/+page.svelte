@@ -1437,10 +1437,16 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
                                   class="ml-2"
                                   size="sm"
                                   onclick={() => {
-                                    goto(
+                                    // open in a new tab
+                                    window.open(
                                       base +
                                         `/package/${currentPackageId}/editfiles`,
+                                      "_blank",
                                     );
+                                    // goto(
+                                    //   base +
+                                    //     `/package/${currentPackageId}/editfiles`,
+                                    // );
                                   }}>Edit package files</HotkeyButton
                                 >
                               </div>
