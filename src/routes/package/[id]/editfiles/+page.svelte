@@ -395,7 +395,7 @@
       result =
         "Image build successfully in " +
         build_result.timetaken +
-        " seconds, starting agent\n" +
+        " seconds\n" +
         result;
     } catch (error: any) {
       loading = false;
@@ -492,7 +492,7 @@
 <div
   class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 rounded"
 >
-  <div class="col-span-1 flex justify-end items-end me-4 hidden lg:block">
+  <div class="col-span-1 flex justify-end items-end me-4">
     <Hotkeybutton
       disabled={loading}
       variant="success"
@@ -503,6 +503,13 @@
   <div
     class="col-span-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:flex xl:justify-end xl:items-end xl:gap-4"
   >
+    <Hotkeybutton
+      disabled={loading}
+      variant="success"
+      class="w-fit mt-10"
+      onclick={() => buildpackage()}
+      >Build and deploy to serverless</Hotkeybutton
+    >
     <Hotkeybutton
       disabled={loading}
       class="w-fit mt-10"
@@ -519,13 +526,6 @@
       onclick={() => {
         openDialog = true;
       }}>Show logs</Hotkeybutton
-    >
-    <Hotkeybutton
-      disabled={loading}
-      variant="success"
-      class="w-fit mt-10"
-      onclick={() => buildpackage()}
-      >Build and deploy to serverless</Hotkeybutton
     >
   </div>
 </div>
