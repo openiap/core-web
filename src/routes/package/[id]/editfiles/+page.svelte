@@ -461,6 +461,8 @@
       />
 
       <HotkeyButton
+        title="Create new file"
+        aria-label="Create new file"
         class="w-full"
         size="sm"
         onclick={() => {
