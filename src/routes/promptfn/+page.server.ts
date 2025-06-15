@@ -1,3 +1,5 @@
+export const ssr = false;
+export const prerender = false;
 import { OPENAI_API_KEY } from '$env/static/private';
 
 import type { PageServerLoad } from "./$types.js";

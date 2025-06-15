@@ -1000,15 +1000,29 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
         }
         // --- END ADDITION ---
 
+
         const body = {
-          files,
+          files: $state.snapshot(files),
           jwt: auth.access_token,
         };
+        console.log("create-tgz", base + "/api/create-tgz", body);
         const res = await fetch(base + "/api/create-tgz", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
         });
+        if (!res.ok) {
+          const errorText = await res.text();
+          toolCall.status = "failed";
+          toolCall.result = `Error creating package: ${errorText}`;
+          messages = [...messages];
+          isProcessing = false;
+          return {
+            error: toolCall.result,
+          };
+        }
+
+        
         const fileid = (await res.text()).replace('"', "").replace('"', "");
         console.log("Package upload with fileid:", fileid);
         // const filedata = await res.blob()
