@@ -287,7 +287,7 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
   ];
 
   // svelte-ignore non_reactive_update
-  let selectedLanguage: LanguageKey = "nodejs";
+  let selectedLanguage: LanguageKey = $state("nodejs");
   // svelte-ignore non_reactive_update
   let starter_suggestions: string[] = starter_suggestions_all[selectedLanguage];
 
