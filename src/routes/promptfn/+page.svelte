@@ -1161,6 +1161,11 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
               };
             }
             console.log("Calling proxy function:", url, method, body);
+            if(auth.config.serverless_domain_schema.indexOf(".localhost.") > -1) {
+              domain = "http://" + domain;
+            } else {
+              domain = "https://" + domain;
+            }
             const res = await fetch(base + `/api/proxy-function`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
