@@ -387,7 +387,7 @@
 {:else}
 	{@render children()}
 {/if}
-<Toaster closeButton={true} />
+<Toaster />
 
 <style>
 	:global(body) {
