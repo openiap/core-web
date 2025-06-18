@@ -444,11 +444,12 @@
   }
 </script>
 
-<div class="grid grid-cols-1 lg:grid-cols-4 lg:h-[calc(100vh-4rem)] gap-4">
+<div class="flex items-start justify-between h-full overflow-auto">
   <div
-    class="p-4 bg-bw200 dark:bg-bw850 border dark:border-bw600 rounded-[10px] lg:col-span-1 overflow-auto"
+    class="h-full max-w-max flex-shrink-0 p-4 rounded-[10px] bg-bw200 dark:bg-bw850 border dark:border-bw600 rounded-[10px] pb-10"
   >
-    <div class="space-y-2 w-full">
+   
+    <div class="space-y-2 h-full overflow-auto w-[340px]">
       <!-- Use recursive component to render nested file/folder tree -->
       <FileTreeNode
         nodes={fileTree}
@@ -459,24 +460,23 @@
         onEdit={(path) => loadFile(path)}
         onRename={handleRename}
       />
-
       <HotkeyButton
-        title="Create new file"
-        aria-label="Create new file"
-        class="w-full"
-        size="sm"
-        onclick={() => {
-          currentFileName = "";
-          code = "";
-          openAddFileDialog = true;
-        }}
-      >
-        <PlusIcon class="inline mr-1" />
-        Create New file</HotkeyButton
-      >
+       title="Create new file"
+       aria-label="Create new file"
+       class="w-full"
+       size="sm"
+       onclick={() => {
+         currentFileName = "";
+         code = "";
+         openAddFileDialog = true;
+       }}
+     >
+       <PlusIcon class="inline mr-1" />
+       Create New file</HotkeyButton
+     >
     </div>
   </div>
-  <div class="lg:col-span-3">
+  <div class="page overflow-auto xl:ms-2 ps-2 pe-1">
     <div
       class="p-4 bg-bw200 dark:bg-bw850 border dark:border-bw600 rounded-[10px] h-full"
     >
@@ -490,29 +490,29 @@
 </div>
 
 <div
-  class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 rounded"
+  class="flex items-end justify-between mt-4"
 >
-  <div class="col-span-1 flex justify-end items-end me-4">
+  <div class="flex justify-end items-end w-[370px]">
     <Hotkeybutton
       disabled={loading}
       variant="success"
-      class="w-fit mt-10"
+      class="w-fit"
       onclick={() => repackandUpload()}>Pack and upload</Hotkeybutton
     >
   </div>
   <div
-    class="col-span-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:flex xl:justify-end xl:items-end xl:gap-4"
+    class="xl:flex xl:justify-end xl:items-end xl:gap-4"
   >
     <Hotkeybutton
       disabled={loading}
       variant="success"
-      class="w-fit mt-10"
+      class="w-fit"
       onclick={() => buildpackage()}
       >Build and deploy to serverless</Hotkeybutton
     >
     <Hotkeybutton
       disabled={loading}
-      class="w-fit mt-10"
+      class="w-fit"
       onclick={() => {
         window.open(
           auth.fnurl(data.packageData.slug || data.packageData.name),
@@ -522,7 +522,7 @@
     >
     <Hotkeybutton
       disabled={!result}
-      class="w-fit mt-10"
+      class="w-fit"
       onclick={() => {
         openDialog = true;
       }}>Show logs</Hotkeybutton
@@ -650,3 +650,14 @@
   type="delete"
   onaccept={handleAcceptDeleteFile}
 ></Warningdialogue>
+
+<style>
+  .page {
+    /* background-color: aqua; */
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    /* This ensures it fills the entire window height */
+  }
+</style>

@@ -56,7 +56,7 @@
 
 {#each nodes as node (node.path)}
     <div
-        class="flex items-center justify-between w-full text-sm"
+        class="flex items-center justify-between w-fit text-sm"
         style="padding-left: {node.level * 1}rem"
     >
         {#if node.children}
@@ -106,7 +106,7 @@
             <div class="flex items-center justify-between w-full">
                 <div class="flex items-center gap-2">
                     {#if !node.children}
-                        <span class="flex-1">{node.name}</span>
+                        <span class="flex-1 whitespace-nowrap">{node.name}</span>
                         <HotkeyButton
                             aria-label="Rename file"
                             title="Rename file"
@@ -124,7 +124,7 @@
                             class="p-0"
                             onclick={() => toggleFolder(node.path)}
                         >
-                            <span class="flex-1"
+                            <span class="flex-1 whitespace-nowrap"
                                 >{node.fullName || node.name}</span
                             >
                             {#if openPaths.has(node.path)}
