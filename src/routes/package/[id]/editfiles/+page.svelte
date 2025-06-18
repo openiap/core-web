@@ -459,6 +459,7 @@
         }}
         onEdit={(path) => loadFile(path)}
         onRename={handleRename}
+        currentPath={currentFileName}
       />
       <HotkeyButton
        title="Create new file"
