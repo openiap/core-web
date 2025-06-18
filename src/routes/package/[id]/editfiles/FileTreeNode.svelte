@@ -108,10 +108,12 @@
                 >
             </div>
         {:else}
-            <div class={`flex items-center justify-between w-full `}>
+            <div class="flex items-center justify-between w-full">
                 <div class="flex items-center gap-2">
                     {#if !node.children}
-                        <span class={`flex-1 whitespace-nowrap `}>{node.name}</span>
+                        <span class="flex-1 whitespace-nowrap"
+                            >{node.name}</span
+                        >
                         <HotkeyButton
                             aria-label="Rename file"
                             title="Rename file"
@@ -163,6 +165,12 @@
         {/if}
     </div>
     {#if node.children && openPaths.has(node.path)}
-        <FileTreeNode nodes={node.children} {onDelete} {onEdit} {onRename} {currentPath} />
+        <FileTreeNode
+            nodes={node.children}
+            {onDelete}
+            {onEdit}
+            {onRename}
+            {currentPath}
+        />
     {/if}
 {/each}
