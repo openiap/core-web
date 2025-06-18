@@ -646,10 +646,10 @@
     );
   }
   async function runpackage() {
-    if (instances.length == 0)
-      return toast.error("Error while running", {
-        description: "No instances available",
-      });
+    // if (instances.length == 0)
+    //   return toast.error("Error while running", {
+    //     description: "No instances available",
+    //   });
     if (packageId == "")
       return toast.error("Error while running", {
         description: "No package selected",
