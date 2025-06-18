@@ -16,6 +16,11 @@
     export let onDelete: (path: string) => void;
     export let onEdit: (path: string) => void;
     export let onRename: (oldPath: string, newName: string) => void;
+    // the path of the file currently being edited, for highlighting
+    export let currentPath: string | null = null;
+
+    // Reference currentPath in script so Svelte recognizes usage
+    $: _usedCurrentPath = currentPath;
 
     import {
         Check,
@@ -56,7 +61,7 @@
 
 {#each nodes as node (node.path)}
     <div
-        class="flex items-center justify-between w-full text-sm"
+        class={`flex items-center justify-between w-full text-sm ${node.path === currentPath && "p-1.5 bg-bw100 dark:bg-bw600 rounded"}`}
         style="padding-left: {node.level * 1}rem"
     >
         {#if node.children}
@@ -73,9 +78,9 @@
                 {/if}
             </button>
         {:else if node.level != 0}
-            - <File class="mr-2 h-5 w-5" />
+            - <File class="mr-1 h-5 w-5" />
         {:else}
-            <File class="mr-2 h-5 w-5" />
+            <File class="mr-1 h-5 w-5" />
         {/if}
 
         {#if renamingPath === node.path}
@@ -106,7 +111,9 @@
             <div class="flex items-center justify-between w-full">
                 <div class="flex items-center gap-2">
                     {#if !node.children}
-                        <span class="flex-1">{node.name}</span>
+                        <span class="flex-1 whitespace-nowrap"
+                            >{node.name}</span
+                        >
                         <HotkeyButton
                             aria-label="Rename file"
                             title="Rename file"
@@ -124,9 +131,9 @@
                             class="p-0"
                             onclick={() => toggleFolder(node.path)}
                         >
-                            <span class="flex-1"
-                                >{node.fullName || node.name}</span
-                            >
+                            <span class="flex-1 whitespace-nowrap">
+                                {node.fullName || node.name}
+                            </span>
                             {#if openPaths.has(node.path)}
                                 <Minus class="h-5 w-5" />
                             {:else}
@@ -158,6 +165,12 @@
         {/if}
     </div>
     {#if node.children && openPaths.has(node.path)}
-        <FileTreeNode nodes={node.children} {onDelete} {onEdit} {onRename} />
+        <FileTreeNode
+            nodes={node.children}
+            {onDelete}
+            {onEdit}
+            {onRename}
+            {currentPath}
+        />
     {/if}
 {/each}
