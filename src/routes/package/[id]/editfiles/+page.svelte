@@ -448,7 +448,6 @@
   <div
     class="h-full max-w-max flex-shrink-0 p-4 rounded-[10px] bg-bw200 dark:bg-bw850 border dark:border-bw600 rounded-[10px] pb-10"
   >
-   
     <div class="space-y-2 h-full overflow-auto w-[340px]">
       <!-- Use recursive component to render nested file/folder tree -->
       <FileTreeNode
@@ -462,37 +461,41 @@
         currentPath={currentFileName}
       />
       <HotkeyButton
-       title="Create new file"
-       aria-label="Create new file"
-       class="w-full"
-       size="sm"
-       onclick={() => {
-         currentFileName = "";
-         code = "";
-         openAddFileDialog = true;
-       }}
-     >
-       <PlusIcon class="inline mr-1" />
-       Create New file</HotkeyButton
-     >
+        title="Create new file"
+        aria-label="Create new file"
+        class="w-full"
+        size="sm"
+        onclick={() => {
+          currentFileName = "";
+          code = "";
+          openAddFileDialog = true;
+        }}
+      >
+        <PlusIcon class="inline mr-1" />
+        Create New file</HotkeyButton
+      >
     </div>
   </div>
   <div class="page overflow-auto xl:ms-2 ps-2 pe-1">
     <div
-      class="p-4 bg-bw200 dark:bg-bw850 border dark:border-bw600 rounded-[10px] h-full"
+      class="p-4 bg-bw200 dark:bg-bw850 border dark:border-bw600 rounded-[10px] h-full overflow-auto"
     >
-      <MonacoEditor
-        {code}
-        {language}
-        on:change={(e) => handleEditorChange(e.detail.code)}
-      />
+      <!-- file name with path of the file we are editing -->
+      <h3 class="text-lg font-semibold text-bw900 dark:text-bw100 mb-2">
+        {currentFileName || "No file selected"}
+      </h3>
+      {#if currentFileName}
+        <MonacoEditor
+          {code}
+          {language}
+          on:change={(e) => handleEditorChange(e.detail.code)}
+        />
+      {/if}
     </div>
   </div>
 </div>
 
-<div
-  class="flex items-end justify-between mt-4"
->
+<div class="flex items-end justify-between mt-4">
   <div class="flex justify-end items-end w-[370px]">
     <Hotkeybutton
       disabled={loading}
@@ -501,9 +504,7 @@
       onclick={() => repackandUpload()}>Pack and upload</Hotkeybutton
     >
   </div>
-  <div
-    class="xl:flex xl:justify-end xl:items-end xl:gap-4"
-  >
+  <div class="xl:flex xl:justify-end xl:items-end xl:gap-4">
     <Hotkeybutton
       disabled={loading}
       variant="success"
