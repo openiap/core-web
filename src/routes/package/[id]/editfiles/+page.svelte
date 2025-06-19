@@ -444,11 +444,15 @@
   }
 </script>
 
-<div class="flex items-start justify-between h-full overflow-auto">
+<div
+  class="md:flex md:items-start md:justify-between md:h-full md:overflow-auto"
+>
   <div
-    class="h-full max-w-max flex-shrink-0 p-4 rounded-[10px] bg-bw200 dark:bg-bw850 border dark:border-bw600 rounded-[10px] pb-10"
+    class="md:h-full flex-shrink-0 p-4 rounded-[10px] bg-bw200 dark:bg-bw850 border dark:border-bw600 rounded-[10px]"
   >
-    <div class="space-y-2 h-full overflow-auto w-[340px]">
+    <div
+      class="space-y-2 max-h-[500px] md:max-h-full md:h-full overflow-auto md:w-[240px] xl:w-[340px]"
+    >
       <!-- Use recursive component to render nested file/folder tree -->
       <FileTreeNode
         nodes={fileTree}
@@ -476,9 +480,19 @@
       >
     </div>
   </div>
-  <div class="page overflow-auto xl:ms-2 ps-2 pe-1">
+  <div class="block md:hidden my-10">
+    <Hotkeybutton
+      disabled={loading}
+      variant="success"
+      class="w-fit"
+      onclick={() => repackandUpload()}>Pack and upload</Hotkeybutton
+    >
+  </div>
+  <div
+    class="md:flex md:flex-col md:h-full md:w-full md:overflow-auto xl:ms-2 md:ps-2 md:pe-1 bg-red-500 h-fit"
+  >
     <div
-      class="p-4 bg-bw200 dark:bg-bw850 border dark:border-bw600 rounded-[10px] h-full overflow-auto"
+      class="p-4 bg-bw200 dark:bg-bw850 border dark:border-bw600 rounded-[10px] md:h-full md:overflow-auto"
     >
       <!-- file name with path of the file we are editing -->
       <h3 class="text-lg font-semibold text-bw900 dark:text-bw100 mb-2">
@@ -493,10 +507,38 @@
       {/if}
     </div>
   </div>
+  <div class="block md:hidden my-10 pb-10 gap-4 grid grid-cols-2">
+    <Hotkeybutton
+      disabled={loading}
+      variant="success"
+      class="w-fit col-span-2"
+      onclick={() => buildpackage()}
+      >Build and deploy to serverless</Hotkeybutton
+    >
+    <Hotkeybutton
+      disabled={loading}
+      class="w-fit"
+      onclick={() => {
+        window.open(
+          auth.fnurl(data.packageData.slug || data.packageData.name),
+          "_blank",
+        );
+      }}>Open in browser</Hotkeybutton
+    >
+    <Hotkeybutton
+      disabled={!result}
+      class="w-fit"
+      onclick={() => {
+        openDialog = true;
+      }}>Show logs</Hotkeybutton
+    >
+  </div>
 </div>
 
-<div class="flex items-end justify-between mt-4">
-  <div class="flex justify-end items-end w-[370px]">
+<div
+  class="grid grid-cols-1 gap-4 md:grid-cols-3 lg:flex lg:items-end lg:justify-between mt-4 hidden md:block"
+>
+  <div class="lg:flex lg:justify-end lg:items-end lg:w-[240px] xl:w-[370px]">
     <Hotkeybutton
       disabled={loading}
       variant="success"
@@ -504,7 +546,9 @@
       onclick={() => repackandUpload()}>Pack and upload</Hotkeybutton
     >
   </div>
-  <div class="xl:flex xl:justify-end xl:items-end xl:gap-4">
+  <div
+    class="grid grid-cols-1 mt-4 lg:mt-0 lg:flex justify-end items-end gap-4 auto-rows-max bg-red-500"
+  >
     <Hotkeybutton
       disabled={loading}
       variant="success"
@@ -652,14 +696,3 @@
   type="delete"
   onaccept={handleAcceptDeleteFile}
 ></Warningdialogue>
-
-<style>
-  .page {
-    /* background-color: aqua; */
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    width: 100%;
-    /* This ensures it fills the entire window height */
-  }
-</style>
