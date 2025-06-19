@@ -1294,7 +1294,7 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
 
   <div class="h-full container max-w-4xl dark:bg-transparent rounded-[10px]">
     <div class="h-full">
-      <div class=" h-[calc(100vh-15rem)] px-2 mb-2" id="chatcontainer">
+      <div class="overflow-y-auto h-[calc(100vh-15rem)] px-2 mb-2" id="chatcontainer">
         {#if messages.length <= 1}
           <div class="flex flex-col items-center justify-center h-full">
             <div class="text-center text-muted-foreground mb-6">
