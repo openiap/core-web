@@ -183,6 +183,14 @@ class entitiesdata {
 						total_count = await this.GetCount(page, collectionname, { _type: "resource" }, access_token, false);
 					}
 					break;
+				case base + "/git":
+					collectionname = "git";
+					entities = await this.GetData(page, collectionname, { ref: "HEAD" }, access_token, false);
+					total_count = entities.length;
+					if (entities.length >= usersettings.pagesize) {
+						total_count = await this.GetCount(page, collectionname, { ref: "HEAD" }, access_token, false);
+					}
+					break;
 				case base + "/hdrobot":
 					collectionname = "openrpa"
 					entities = await this.GetData(page, collectionname, { _type: "unattendedclient" }, access_token, false);

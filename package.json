@@ -59,8 +59,11 @@
     },
     "dependencies": {
         "@gera2ld/tarjs": "^0.3.1",
+        "@isomorphic-git/lightning-fs": "^4.6.2",
+        "buffer": "^6.0.3",
         "D": "^1.0.0",
         "fflate": "^0.8.2",
+        "isomorphic-git": "^1.31.0",
         "openai": "^5.1.1",
         "tar": "^7.4.3",
         "tar-js": "^0.3.0"
