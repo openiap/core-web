@@ -489,7 +489,7 @@
     >
   </div>
   <div
-    class="md:flex md:flex-col md:h-full md:w-full md:overflow-auto xl:ms-2 md:ps-2 md:pe-1 bg-red-500 h-fit"
+    class="md:flex md:flex-col md:h-full md:w-full md:overflow-auto xl:ms-2 md:ps-2 md:pe-1 h-fit"
   >
     <div
       class="p-4 bg-bw200 dark:bg-bw850 border dark:border-bw600 rounded-[10px] md:h-full md:overflow-auto"
@@ -547,7 +547,7 @@
     >
   </div>
   <div
-    class="grid grid-cols-1 mt-4 lg:mt-0 lg:flex justify-end items-end gap-4 auto-rows-max bg-red-500"
+    class="grid grid-cols-1 mt-4 lg:mt-0 lg:flex justify-end items-end gap-4 auto-rows-max"
   >
     <Hotkeybutton
       disabled={loading}
