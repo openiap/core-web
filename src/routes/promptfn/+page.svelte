@@ -1315,19 +1315,12 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
                 selectitems={languageOptions}
                 class="border rounded px-2 py-1"
               />
-              <!-- <select
-                id="language-select"
-                bind:value={selectedLanguage}
-                class="border rounded px-2 py-1"
-              >
-                {#each languageOptions as opt}
-                  <option value={opt.value}>{opt.label}</option>
-                {/each}
-              </select> -->
             </div>
-            <div class="grid gap-2 w-full max-w-md">
+            <div class="grid gap-2 w-full lg:max-w-md">
               {#each starter_suggestions as suggestion}
                 <HotkeyButton
+                  aria-label="Suggestion"
+                  title="Click to use this suggestion"
                   class="justify-start text-left h-auto py-3 px-4"
                   onclick={() => {
                     userInput = suggestion;
@@ -1391,6 +1384,8 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
                                   {toolCall.status}
                                 </span>
                                 <HotkeyButton
+                                  aria-label="Run Tool"
+                                  title="Run this tool call"
                                   size="sm"
                                   onclick={() => runTool(message.id, toolCall.id)}
                                   disabled={toolCall.status === "running"}
@@ -1400,6 +1395,8 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
                                     : "Re-run"}
                                 </HotkeyButton>
                                 <HotkeyButton
+                                  aria-label="Send to AI"
+                                  title="Send this tool call to AI for further processing"
                                   size="sm"
                                   class="ml-2"
                                   onclick={() => {
@@ -1430,8 +1427,9 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
                             {/if}
                             {#if toolCall.name == "callpackagefunction"}
                               <div class="mt-2">
-                                <!-- <div class="text-sm font-medium py-2">URL:</div> -->
                                 <HotkeyButton
+                                aria-label="Open URL"
+                                  title="Open the URL in a new tab"
                                   size="sm"
                                   onclick={() => {
                                     openurl(toolCall);
@@ -1439,19 +1437,16 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
                                   >Open URL</HotkeyButton
                                 >
                                 <HotkeyButton
+                                  aria-label="Edit package files"
+                                  title="Edit package files in a new tab"
                                   class="ml-2"
                                   size="sm"
                                   onclick={() => {
-                                    // open in a new tab
                                     window.open(
                                       base +
                                         `/package/${currentPackageId}/editfiles`,
                                       "_blank",
                                     );
-                                    // goto(
-                                    //   base +
-                                    //     `/package/${currentPackageId}/editfiles`,
-                                    // );
                                   }}>Edit package files</HotkeyButton
                                 >
                               </div>
