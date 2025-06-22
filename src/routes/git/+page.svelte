@@ -21,7 +21,7 @@
   let deleteData: any = $state({});
 
   function single_item_click(item: any) {
-    goto(base + `/git/${item._id}/commit/${item.sha}`);
+    goto(base + `/git/${item._id}/${item.sha}`);
   }
 </script>
 
