@@ -482,6 +482,8 @@
   </div>
   <div class="block md:hidden my-10">
     <Hotkeybutton
+      aria-label="Pack and upload"
+      title="Pack and upload"
       disabled={loading}
       variant="success"
       class="w-fit"
@@ -509,6 +511,8 @@
   </div>
   <div class="block md:hidden my-10 pb-10 gap-4 grid grid-cols-2">
     <Hotkeybutton
+      aria-label="Pack and upload"
+      title="Pack and upload"
       disabled={loading}
       variant="success"
       class="w-fit col-span-2"
@@ -516,6 +520,8 @@
       >Build and deploy to serverless</Hotkeybutton
     >
     <Hotkeybutton
+      aria-label="Open in browser"
+      title="Open in browser"
       disabled={loading}
       class="w-fit"
       onclick={() => {
@@ -526,6 +532,8 @@
       }}>Open in browser</Hotkeybutton
     >
     <Hotkeybutton
+      aria-label="Show logs"
+      title="Show logs"
       disabled={!result}
       class="w-fit"
       onclick={() => {
@@ -540,6 +548,8 @@
 >
   <div class="lg:flex lg:justify-end lg:items-end lg:w-[240px] xl:w-[370px]">
     <Hotkeybutton
+      aria-label="Pack and upload"
+      title="Pack and upload"
       disabled={loading}
       variant="success"
       class="w-fit"
@@ -550,6 +560,8 @@
     class="grid grid-cols-1 mt-4 lg:mt-0 lg:flex justify-end items-end gap-4 auto-rows-max"
   >
     <Hotkeybutton
+      aria-label="Build and deploy to serverless"
+      title="Build and deploy to serverless"
       disabled={loading}
       variant="success"
       class="w-fit"
@@ -557,6 +569,8 @@
       >Build and deploy to serverless</Hotkeybutton
     >
     <Hotkeybutton
+      aria-label="Open in browser"
+      title="Open in browser"
       disabled={loading}
       class="w-fit"
       onclick={() => {
@@ -567,6 +581,8 @@
       }}>Open in browser</Hotkeybutton
     >
     <Hotkeybutton
+      aria-label="Show logs"
+      title="Show logs"
       disabled={!result}
       class="w-fit"
       onclick={() => {
@@ -601,6 +617,8 @@
     </AlertDialog.Header>
     <AlertDialog.Footer>
       <HotkeyButton
+        aria-label="Create file"
+        title="Create file"
         data-shortcut="enter"
         disabled={!currentFileName}
         variant="success"
@@ -631,6 +649,8 @@
         }}>Create File</HotkeyButton
       >
       <HotkeyButton
+        aria-label="Close dialog"
+        title="Close dialog"
         disabled={loadingDialog}
         variant="danger"
         class="w-fit mt-6"
@@ -669,6 +689,8 @@
     </AlertDialog.Header>
     <AlertDialog.Footer>
       <Hotkeybutton
+        aria-label="Pack and upload"
+        title="Pack and upload"
         disabled={loadingDialog}
         variant="success"
         class="w-fit mt-10"
@@ -680,6 +702,8 @@
         }}>Open in browser</Hotkeybutton
       >
       <HotkeyButton
+        aria-label="Close dialog"
+        title="Close dialog"
         disabled={loadingDialog}
         variant="danger"
         class="w-fit mt-10"
