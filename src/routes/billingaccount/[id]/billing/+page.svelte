@@ -196,8 +196,8 @@
       }
       if (
         confirmprice == false &&
-        auth.config.stripe_api_key != null &&
-        auth.config.stripe_api_key != ""
+        auth.config?.stripe_api_key != null &&
+        auth.config?.stripe_api_key != ""
       ) {
         try {
           confirmpriceresource = resource;

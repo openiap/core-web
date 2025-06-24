@@ -32,7 +32,7 @@
 	const { wsurl, protocol, domain, client_id, profile, origin } = data;
 	let { access_token } = data;
 
-	if (browser && auth.config != null && auth.config.otel_log_url) {
+	if (browser && auth.config?.otel_log_url != null && auth.config?.otel_log_url != "") {
 		let url = auth.config.otel_log_url
 			.replace("https://otel.", "https://otelhttp.")
 			.replace("http://otel.", "http://otelhttp.");
@@ -233,6 +233,7 @@
 			update_currentworkspace(usersettings.currentworkspace);
 		}
 	});
+	let signinRedirected = false;
 
 	if (data.code != null && data.code != "") {
 		if (browser) {
@@ -288,12 +289,17 @@
 		}
 	} else {
 		if (browser) {
+			let url = $page.url.pathname;
 			if (
-				$page.url.pathname != base + "/login" &&
-				$page.url.pathname != base + "/validate"
+				url != base + "/login" && url != base + "/loginverify" &&
+				url != base + "/validate" && url.indexOf("/accept/") == -1
 			) {
-				if (data.access_token == null || data.access_token == "") {
-					auth.login();
+				if (auth.config?.web_auto_login == true) {
+					if (data.access_token == null || data.access_token == "") {
+						window.localStorage.setItem("redirect", window.location.pathname);
+						signinRedirected = true;
+						auth.login();
+					}
 				}
 			}
 		}
@@ -307,8 +313,8 @@
 	const validated = $derived(() => {
 		if (auth.profile != null && Object.keys(auth.profile).length > 0) {
 			if (
-				auth.config.validate_user_form != null &&
-				auth.config.validate_user_form != ""
+				auth.config?.validate_user_form != null &&
+				auth.config?.validate_user_form != ""
 			) {
 				// if(workspaces.length == 0) {
 				// 	return false;
@@ -324,6 +330,9 @@
 		return auth.isConnected;
 	});
 	function validatedCheck() {
+		if (signinRedirected == true) {
+			return;
+		}
 		if (browser && validated() == false && auth.isAuthenticated == true) {
 			if ($page.url.pathname != base + "/validate") {
 				goto(base + "/validate");

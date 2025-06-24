@@ -396,7 +396,7 @@
 		}
 		let profileroles = auth.profile?.roles || [];
 		const isAdmin = profileroles.includes("admins");
-		if(auth.config.enable_serverless && isAdmin) {
+		if(auth.config?.enable_serverless && isAdmin) {
 			promptfn.hidden = false;
 		}
 		const isWorkspaceAdmin =

@@ -238,7 +238,7 @@
     >
   </div>
 
-  {#if auth.config.enable_serverless}
+  {#if auth.config?.enable_serverless}
   <div class="mb-10">
     <div class="text-sm mb-2">Edit Package file (Current)</div>
     <HotkeyButton

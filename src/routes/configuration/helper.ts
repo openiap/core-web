@@ -116,6 +116,7 @@ const settings = [
     { "name": "cleanup_on_delete_customer", "type": "boolean", "default": false },
     { "name": "cleanup_on_delete_user", "type": "boolean", "default": false },
     { "name": "api_bypass_perm_check", "type": "boolean", "default": false },
+    { "name": "web_auto_login", "type": "boolean", "default": false },    
     { "name": "allow_signin_with_expired_jwt", "type": "boolean", "default": false },
     { "name": "force_audit_ts", "type": "boolean", "default": false },
     { "name": "force_dbusage_ts", "type": "boolean", "default": false },
