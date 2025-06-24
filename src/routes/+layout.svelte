@@ -288,14 +288,14 @@
 		}
 	} else {
 		if (browser) {
-			if (
-				$page.url.pathname != base + "/login" &&
-				$page.url.pathname != base + "/validate"
-			) {
-				if (data.access_token == null || data.access_token == "") {
-					auth.login();
-				}
-			}
+			// if (
+			// 	$page.url.pathname != base + "/login" &&
+			// 	$page.url.pathname != base + "/validate"
+			// ) {
+			// 	if (data.access_token == null || data.access_token == "") {
+			// 		auth.login();
+			// 	}
+			// }
 		}
 	}
 	if (browser && data.posthog_token != "") {
