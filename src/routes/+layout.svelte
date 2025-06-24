@@ -288,14 +288,18 @@
 		}
 	} else {
 		if (browser) {
-			// if (
-			// 	$page.url.pathname != base + "/login" &&
-			// 	$page.url.pathname != base + "/validate"
-			// ) {
-			// 	if (data.access_token == null || data.access_token == "") {
-			// 		auth.login();
-			// 	}
-			// }
+			let url = $page.url.pathname;
+			if (
+				url != base + "/login" && url != base + "/loginverify" &&
+				url != base + "/validate" && url.indexOf("/accept/") == -1
+			) {
+				if (auth.config.web_auto_login == true) {
+					if (data.access_token == null || data.access_token == "") {
+						window.localStorage.setItem("redirect", window.location.pathname);
+						auth.login();
+					}
+				}
+			}
 		}
 	}
 	if (browser && data.posthog_token != "") {

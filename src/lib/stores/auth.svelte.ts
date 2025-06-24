@@ -35,6 +35,7 @@ class Config {
     agent_images: any[] = [];
     amqp_enabled_exchange: string = "";
     multi_tenant: boolean = false;
+    web_auto_login: boolean = false;
     workspace_enabled: boolean = false;
     enable_entity_restriction: boolean = false;
     enable_web_tours: boolean = false;
