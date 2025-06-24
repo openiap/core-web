@@ -186,8 +186,8 @@
               form.data._stripeprice != data.item._stripeprice
             ) {
               if (
-                auth.config.stripe_api_key != null &&
-                auth.config.stripe_api_key != ""
+                auth.config?.stripe_api_key != null &&
+                auth.config?.stripe_api_key != ""
               ) {
                 cancel();
                 loading = false;
@@ -779,8 +779,8 @@
   async function GetNextInvoice() {
     if (
       confirmprice == false &&
-      auth.config.stripe_api_key != null &&
-      auth.config.stripe_api_key != ""
+      auth.config?.stripe_api_key != null &&
+      auth.config?.stripe_api_key != ""
     ) {
       try {
         let _workspaceid = usersettings.currentworkspace;

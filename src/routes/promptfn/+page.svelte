@@ -1106,7 +1106,7 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
         let _slug = llmpackage.slug || llmpackage.name.replace(prefix, "");
         console.log("Found package:", llmpackage, "slug:", _slug);
 
-        let domain = auth.config.serverless_domain_schema.replace(
+        let domain = auth.config?.serverless_domain_schema.replace(
           "$slug$",
           _slug,
         );
@@ -1127,7 +1127,7 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
             }
 
             if (
-              auth.config.serverless_domain_schema.indexOf(".localhost.") > -1
+              auth.config?.serverless_domain_schema.indexOf(".localhost.") > -1
             ) {
               if (method.toLowerCase() == "get") {
                 body = null;
@@ -1161,7 +1161,7 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
               };
             }
             console.log("Calling proxy function:", url, method, body);
-            if(auth.config.serverless_domain_schema.indexOf(".localhost.") > -1) {
+            if(auth.config?.serverless_domain_schema.indexOf(".localhost.") > -1) {
               domain = "http://" + domain;
             } else {
               domain = "https://" + domain;

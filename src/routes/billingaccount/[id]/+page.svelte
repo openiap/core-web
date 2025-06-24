@@ -120,7 +120,7 @@
     </div>
   </div>
 {/if}
-{#if auth.config.domain.indexOf("openiap.io") > -1 && auth.config.domain != "localhost.openiap.io"}
+{#if auth.config?.domain.indexOf("openiap.io") > -1 && auth.config?.domain != "localhost.openiap.io"}
   <div class="mb-10">
     <div>Manage OpenCore Licenses</div>
     <div class="dark:text-bw500 mb-2">Manage all of your OpenCore Licenses</div>

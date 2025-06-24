@@ -120,7 +120,7 @@
   async function createfrom() {
     try {
       if (data.form == null) {
-        message = "Form not found (" + auth.config.validate_user_form + ")";
+        message = "Form not found (" + auth.config?.validate_user_form + ")";
         return;
       }
       // @ts-ignore
@@ -204,17 +204,25 @@
         step = "email";
       } else if (
         data.workspace == null &&
-        auth.config.workspace_enabled == true
+        auth.config?.workspace_enabled == true
       ) {
-        console.log("data.workspace", data.workspace);
-        console.log(
-          "auth.config.workspace_enabled",
-          auth.config.workspace_enabled,
-        );
+        const redirect = window.localStorage.getItem("redirect");
+        if (redirect != null && redirect != "") {
+          window.localStorage.removeItem("redirect");
+          goto(redirect || "/");
+          return;
+        }
         step = "workspace";
       } else {
         step = "done";
-        goto(base + "/");
+        const redirect = window.localStorage.getItem("redirect");
+        if (redirect != null && redirect != "") {
+          window.localStorage.removeItem("redirect");
+          goto(redirect || "/");
+          return;
+        } else {
+          goto(base + "/");
+        }
       }
     } catch (error: any) {
       console.error(error);
@@ -226,9 +234,9 @@
   getstep();
   if (
     browser &&
-    auth.profile.formvalidated != true &&
-    auth.config.validate_user_form != null &&
-    auth.config.validate_user_form != ""
+    auth.profile?.formvalidated != true &&
+    auth.config?.validate_user_form != null &&
+    auth.config?.validate_user_form != ""
   ) {
     $effect(() => {
       if (_mode != $mode) {
@@ -261,190 +269,197 @@
     ></div>
   {/if}
   <form>
-  {#if step == "email"}
-    <div class="font-bold mb-4">Validate User</div>
-    <div>
-      <Card.Card class="mb-10">
-        <Card.Header>Email validation</Card.Header>
-        <Card.Content>
-          <div class="grid gap-2">
-            <Label for="email">Email Code</Label>
-            <Input
-              type="text"
-              bind:value={emailcode}
-              placeholder="Email code"
-              autofocus
-              required
-              autocomplete="off"
-            />
-          </div>
-          <div class="grid grid-cols-2 gap-4 md:flex md:space-x-5 my-6">
-            <HotkeyButton
-              onclick={async () => {
-                try {
-                  await auth.client.CustomCommand({
-                    command: "validateuseremail",
-                    data: JSON.stringify({ code: $state.snapshot(emailcode) }),
-                    jwt: auth.access_token,
-                  });
-                  toast.success("Email validated", {
-                    description: "Email has been validated",
-                  });
-                  await getstep();
-                } catch (error: any) {
-                  console.error(error);
-                  toast.error("Error validating email", {
-                    description: error.message,
-                  });
-                }
-              }}
-              variant="success"
-              size="base"
-              aria-label="Validate email"
-              type="submit"
-              data-shortcut="enter"
-              >Validate Code
-            </HotkeyButton>
-            <HotkeyButton
-              onclick={async () => {
-                try {
-                  await auth.client.CustomCommand({
-                    command: "resendvalidateuseremail",
-                    jwt: auth.access_token,
-                  });
-                  toast.success("Email sent", {
-                    description: "Email has been sent",
-                  });
-                  await getstep();
-                } catch (error: any) {
-                  console.error(error);
-                  toast.error("Error sending email", {
-                    description: error.message,
-                  });
-                }
-              }}
-              variant="base"
-              size="base"
-              aria-label="Resend Code"
-              >Resend Code
-            </HotkeyButton>
-            <HotkeyButton
-              variant="base"
-              size="base"
-              aria-label="Update Email"
-              onclick={() => {
-                step = "form";
-              }}
-              >Update Email
-            </HotkeyButton>
-          </div>
-          <div>
-            <small>
-              Please check your inbox for an email with a validation code. Some
-              times it can take up to several minutes for the email to arrive.
-              If you did not receive an email, please check your spam folder. To
-              resend the email, click the "Resend Code" button. If you need to
-              update your email address, please click the "Update Email" button.
-            </small>
-          </div>
-        </Card.Content>
-      </Card.Card>
-    </div>
-  {/if}
-  {#if step == "workspace"}
-    <div class="font-bold mb-4">Validate User</div>
-    <div>
-      <Card.Card class="mb-10">
-        <Card.Header>Create your first workspace</Card.Header>
-        <Card.Content>
-          <div class="grid gap-2 mb-4">
-            <Label for="workspace">Workspace Name</Label>
-            <Input
-              type="text"
-              autofocus
-              bind:value={data.workspace}
-              placeholder="Workspace name"
-              required
-              autocomplete="off"
-            />
-          </div>
-          <div class="">
-            <HotkeyButton
-              onclick={async () => {
-                try {
-                  data.workspace = JSON.parse(
+    {#if step == "email"}
+      <div class="font-bold mb-4">Validate User</div>
+      <div>
+        <Card.Card class="mb-10">
+          <Card.Header>Email validation</Card.Header>
+          <Card.Content>
+            <div class="grid gap-2">
+              <Label for="email">Email Code</Label>
+              <Input
+                type="text"
+                bind:value={emailcode}
+                placeholder="Email code"
+                autofocus
+                required
+                autocomplete="off"
+              />
+            </div>
+            <div class="grid grid-cols-2 gap-4 md:flex md:space-x-5 my-6">
+              <HotkeyButton
+                onclick={async () => {
+                  try {
                     await auth.client.CustomCommand({
-                      command: "ensureworkspace",
+                      command: "validateuseremail",
                       data: JSON.stringify({
-                        name: $state.snapshot(data.workspace),
+                        code: $state.snapshot(emailcode),
                       }),
                       jwt: auth.access_token,
-                    }),
-                  );
-                  console.log("ensureworkspace", data.workspace);
-                  if (data.workspace != null) {
-                    usersettings.currentworkspace = data.workspace._id;
-                    if(usersettings.currentworkspace != null && usersettings.currentworkspace != "") {
-                      try {
-                        posthog.group("workspace", usersettings.currentworkspace);
-                      } catch (error) {
-                      }
-                    }
-                    usersettings.persist();
-                    // goto(
-                    //   base +
-                    //     "/workspace/" +
-                    //     data.workspace._id
-                    // );
-                    // return;
-                  } else {
-                    console.error("Error data.workspace is null");
+                    });
+                    toast.success("Email validated", {
+                      description: "Email has been validated",
+                    });
+                    await getstep();
+                  } catch (error: any) {
+                    console.error(error);
+                    toast.error("Error validating email", {
+                      description: error.message,
+                    });
                   }
-                  toast.success("Workspace created", {
-                    description: "Workspace has been created",
-                  });
-                  await getstep();
-                } catch (error: any) {
-                  console.error(error);
-                  toast.error("Error creating workspace", {
-                    description: error.message,
-                  });
-                }
-              }}
-              variant="success"
-              size="base"
-              type="submit"
-              aria-label="Create workspace"
-              data-shortcut="enter"
-              >Create Workspace
-            </HotkeyButton>
-          </div>
-          <div>
-            <small>
-              Please enter a name for your first workspace. This couold be your
-              company name, a project you are working on, a department, or any
-              other name that makes sense to you. You can create additional
-              workspaces later.
-            </small>
-          </div>
-        </Card.Content>
-      </Card.Card>
-    </div>
-  {/if}
-  {#if step == "done"}
-    <div class="font-bold mb-4">Validate User</div>
-    <div>
-      <Card.Card class="mb-10">
-        <Card.Header>Validation Complete</Card.Header>
-        <Card.Content>
-          <div class="grid gap-2">
-            <div class="font-bold">User has been validated</div>
-          </div>
-        </Card.Content>
-      </Card.Card>
-    </div>
-  {/if}
-</form>
+                }}
+                variant="success"
+                size="base"
+                aria-label="Validate email"
+                type="submit"
+                data-shortcut="enter"
+                >Validate Code
+              </HotkeyButton>
+              <HotkeyButton
+                onclick={async () => {
+                  try {
+                    await auth.client.CustomCommand({
+                      command: "resendvalidateuseremail",
+                      jwt: auth.access_token,
+                    });
+                    toast.success("Email sent", {
+                      description: "Email has been sent",
+                    });
+                    await getstep();
+                  } catch (error: any) {
+                    console.error(error);
+                    toast.error("Error sending email", {
+                      description: error.message,
+                    });
+                  }
+                }}
+                variant="base"
+                size="base"
+                aria-label="Resend Code"
+                >Resend Code
+              </HotkeyButton>
+              <HotkeyButton
+                variant="base"
+                size="base"
+                aria-label="Update Email"
+                onclick={() => {
+                  step = "form";
+                }}
+                >Update Email
+              </HotkeyButton>
+            </div>
+            <div>
+              <small>
+                Please check your inbox for an email with a validation code.
+                Some times it can take up to several minutes for the email to
+                arrive. If you did not receive an email, please check your spam
+                folder. To resend the email, click the "Resend Code" button. If
+                you need to update your email address, please click the "Update
+                Email" button.
+              </small>
+            </div>
+          </Card.Content>
+        </Card.Card>
+      </div>
+    {/if}
+    {#if step == "workspace"}
+      <div class="font-bold mb-4">Validate User</div>
+      <div>
+        <Card.Card class="mb-10">
+          <Card.Header>Create your first workspace</Card.Header>
+          <Card.Content>
+            <div class="grid gap-2 mb-4">
+              <Label for="workspace">Workspace Name</Label>
+              <Input
+                type="text"
+                autofocus
+                bind:value={data.workspace}
+                placeholder="Workspace name"
+                required
+                autocomplete="off"
+              />
+            </div>
+            <div class="">
+              <HotkeyButton
+                onclick={async () => {
+                  try {
+                    data.workspace = JSON.parse(
+                      await auth.client.CustomCommand({
+                        command: "ensureworkspace",
+                        data: JSON.stringify({
+                          name: $state.snapshot(data.workspace),
+                        }),
+                        jwt: auth.access_token,
+                      }),
+                    );
+                    if (data.workspace != null) {
+                      usersettings.currentworkspace = data.workspace._id;
+                      if (
+                        usersettings.currentworkspace != null &&
+                        usersettings.currentworkspace != ""
+                      ) {
+                        try {
+                          posthog.group(
+                            "workspace",
+                            usersettings.currentworkspace,
+                          );
+                        } catch (error) {}
+                      }
+                      usersettings.persist();
+                      // goto(
+                      //   base +
+                      //     "/workspace/" +
+                      //     data.workspace._id
+                      // );
+                      // return;
+                    } else {
+                      console.error("Error data.workspace is null");
+                    }
+                    toast.success("Workspace created", {
+                      description: "Workspace has been created",
+                    });
+                    await getstep();
+                  } catch (error: any) {
+                    console.error(error);
+                    toast.error("Error creating workspace", {
+                      description: error.message,
+                    });
+                  }
+                }}
+                variant="success"
+                size="base"
+                type="submit"
+                aria-label="Create workspace"
+                data-shortcut="enter"
+                >Create Workspace
+              </HotkeyButton>
+            </div>
+            <div>
+              <small>
+                Please enter a name for your first workspace. This couold be
+                your company name, a project you are working on, a department,
+                or any other name that makes sense to you. You can create
+                additional workspaces later.
+              </small>
+            </div>
+          </Card.Content>
+        </Card.Card>
+      </div>
+    {/if}
+    {#if step == "done"}
+      <div class="font-bold mb-4">Validate User</div>
+      <div>
+        <Card.Card class="mb-10">
+          <Card.Header>Validation Complete</Card.Header>
+          <Card.Content>
+            <div class="grid gap-2">
+              <div class="font-bold">User has been validated</div>
+            </div>
+          </Card.Content>
+        </Card.Card>
+      </div>
+    {/if}
+  </form>
 </div>
 
 <style>

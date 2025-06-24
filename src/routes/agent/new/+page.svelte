@@ -84,8 +84,8 @@
               return;
             } else if (confirmprice == false) {
               if (
-                auth.config.stripe_api_key != null &&
-                auth.config.stripe_api_key != ""
+                auth.config?.stripe_api_key != null &&
+                auth.config?.stripe_api_key != ""
               ) {
                 cancel();
                 loading = false;
@@ -421,8 +421,8 @@
   async function GetNextInvoice() {
     if (
       confirmprice == false &&
-      auth.config.stripe_api_key != null &&
-      auth.config.stripe_api_key != ""
+      auth.config?.stripe_api_key != null &&
+      auth.config?.stripe_api_key != ""
     ) {
       try {
         let _workspaceid = usersettings.currentworkspace;
