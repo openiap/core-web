@@ -4,9 +4,15 @@
     import http from "isomorphic-git/http/web";
     import { goto, invalidateAll } from "$app/navigation";
     import { base } from "$app/paths";
+    import { File, Folder, SquarePen, Trash2 } from "lucide-svelte";
+    import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
+    import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
+    import { toast } from "svelte-sonner";
     const { children, data } = $props();
 
     let files: any[] = $state([]);
+    let showDeleteFileWarning: boolean = $state(false);
+    let selectedFile: any = $state(null);
 
     async function cloneRepo() {
         const author = {
@@ -16,19 +22,28 @@
         const url = `https://dev.openiap.io/git/${data.item.repo}`;
         const fs = new FS(data.item._id);
         const dir = "/test-clone";
-        await git.clone({ fs, http, dir, url });
-        await git.pull({
-            fs,
-            http,
-            dir,
-            url,
-            author,
-        });
-        await git.checkout({
-            fs,
-            dir,
-            ref: data.item.sha, // Checkout the specific commit SHA
-        });
+
+        // Check if repo already exists locally
+        let dirExists = false;
+        try {
+            await fs.promises.stat(dir);
+            dirExists = true;
+        } catch {
+            // directory not found
+        }
+
+        if (!dirExists) {
+            // Remove any stale clone and set up fresh
+            try {
+                await fs.promises.rmdir(dir, { recursive: true } as any);
+            } catch {}
+            await git.clone({ fs, http, dir, url });
+            await git.pull({ fs, http, dir, url, author });
+            await git.checkout({ fs, dir, ref: data.item.sha });
+        } else {
+            // Repo exists: fetch new refs without checkout to preserve local changes
+            await git.fetch({ fs, http, dir, url });
+        }
 
         const div = document.getElementById("gitstatus");
         if (div) {
@@ -78,38 +93,105 @@
         }
         return results;
     }
+    async function handleDeleteFile() {
+        if (!selectedFile) return;
+
+        const fs = new FS(data.item._id);
+        const dir = "/test-clone";
+        const filePath = dir + "/" + selectedFile.path;
+
+        try {
+            await fs.promises.unlink(filePath);
+            files.splice(selectedFile.index, 1); // Remove from local state
+            showDeleteFileWarning = false;
+            selectedFile = null;
+            toast.success("File deleted successfully!");
+            invalidateAll(); // Refresh the page to reflect changes
+        } catch (err) {
+            console.error("Failed to delete file:", err);
+            toast.error("Failed to delete file: " + err);
+        }
+    }
 </script>
 
 <div id="gitstatus" class="hidden">unknown</div>
 
-<div class="flex flex-row gap-4">
-    <ul>
-        {#each files as file}
-            {#if file.type === "tree"}
-                {file.path}
-                <br />
-            {:else if file.type === "blob"}
-                <button
-                    onclick={async () => {
-                        goto(
-                            base +
-                                `/git/${data.item._id}/${file.oid}/${file.path}`,
-                        );
-                    }}
-                >
-                    {file.path}
-                </button>
-                <br />
-                <br />
-            {:else}
-                <li>
-                    {file.path} ({file.type})
-                </li>
-            {/if}
-        {/each}
-    </ul>
+<div class="flex flex-row w-full gap-4 h-full">
+    <div
+        class="md:h-full flex-shrink-0 p-4 rounded-[10px] bg-bw200 dark:bg-bw850 border dark:border-bw600 rounded-[10px]"
+    >
+        <ul
+            class="space-y-2 max-h-[500px] md:max-h-full md:h-full overflow-auto md:w-[240px] xl:w-[340px]"
+        >
+            {#each files as file, index}
+                {#if file.type === "tree"}
+                    <br />
+                    <div class="flex items-center gap-1">
+                        <Folder class="h-4 w-4" />
+                        {file.path}
+                    </div>
+                {:else if file.type === "blob"}
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-1">
+                            <File class="h-4 w-4" />
+                            <button
+                                onclick={async () => {
+                                    goto(
+                                        base +
+                                            `/git/${data.item._id}/${file.oid}/${file.path}`,
+                                    );
+                                }}
+                            >
+                                {file.path}
+                            </button>
+                        </div>
+                        <!-- delete file -->
+                        <div class="flex gap-2">
+                            <HotkeyButton
+                                variant="danger"
+                                aria-label="Delete file"
+                                title="Delete file"
+                                size="icon"
+                                onclick={() => {
+                                    selectedFile = {
+                                        path: file.path,
+                                        index: index,
+                                    };
+                                    showDeleteFileWarning = true;
+                                }}><Trash2 /></HotkeyButton
+                            >
+                            <!-- edit file -->
+                            <HotkeyButton
+                                aria-label="Edit file"
+                                title="Edit file"
+                                size="icon"
+                                onclick={async () => {
+                                    goto(
+                                        base +
+                                            `/git/${data.item._id}/${file.oid}/${file.path}`,
+                                    );
+                                }}><SquarePen /></HotkeyButton
+                            >
+                        </div>
+                    </div>
+                {:else}
+                    <li>
+                        {file.path} ({file.type})
+                    </li>
+                {/if}
+            {/each}
+        </ul>
+    </div>
 
-    <div>
+    <div
+        class="h-full w-full overflow-auto p-4 bg-bw200 dark:bg-bw850 border dark:border-bw600 rounded-[10px] md:h-full md:overflow-auto"
+    >
         {@render children()}
     </div>
 </div>
+
+<Warningdialogue
+    bind:showWarning={showDeleteFileWarning}
+    type="delete"
+    onaccept={handleDeleteFile}
+></Warningdialogue>

@@ -1,9 +1,12 @@
 <script lang="ts">
   import { browser } from "$app/environment";
+  import { page } from "$app/stores";
+  import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
   import { CustomSuperDebug } from "$lib/customsuperdebug";
+  import Monacoeditor from "$lib/monacoeditor/monacoeditor.svelte";
   import FS from "@isomorphic-git/lightning-fs";
   import { Buffer } from "buffer";
-  import {page} from "$app/stores";
+  import { toast } from "svelte-sonner";
 
   const { data } = $props();
   const { id, gittype, sha, access_token, path } = data;
@@ -16,10 +19,65 @@
     const dir = "/test-clone";
 
     if (pathto() != null && pathto() != "") {
-      commit = await fs.promises.readFile(dir + "/" + pathto(), "utf8");
-      await fs.promises.writeFile(dir + "/" + pathto(), commit + `\n # nabeel`);
+      // Read raw bytes and decode to string
+      const raw = await fs.promises.readFile(dir + "/" + pathto());
+      commit = new TextDecoder().decode(raw);
     }
   }
+
+  function getLanguageFromExt(name: string) {
+    const ext = name.split(".").pop() || "";
+    console.log("getLanguageFromExt", name, ext);
+    if (name.endsWith("Dockerfile")) {
+      return "dockerfile";
+    } else {
+      switch (ext.toLowerCase()) {
+        case "js":
+        case "jsx":
+          return "javascript";
+        case "ts":
+        case "tsx":
+          return "typescript";
+        case "json":
+          return "json";
+        case "html":
+          return "html";
+        case "css":
+          return "css";
+        case "scss":
+          return "scss";
+        case "md":
+          return "markdown";
+        case "py":
+          return "python";
+        case "php":
+          return "php";
+        default:
+          return "plaintext";
+      }
+    }
+  }
+
+  // Add a function to save editor changes to the browser DB
+  async function saveFile() {
+    const fs = new FS(data.item._id);
+    const dir = "/test-clone";
+    if (pathto() != null && pathto() != "") {
+      // Write only the content string (cloneable) to avoid DataCloneError
+      try {
+        // Encode string into Uint8Array for structured cloning
+        const encoder = new TextEncoder();
+        const dataBuf = encoder.encode(commit);
+        await fs.promises.writeFile(dir + "/" + pathto(), dataBuf);
+        toast.success("File saved successfully!");
+        console.log("File saved to browser DB");
+      } catch (err) {
+        toast.error("Failed to save file: " + err);
+        console.error("Failed to save file:", err);
+      }
+    }
+  }
+
   if (browser) {
     getbranches();
     if (!window.Buffer) {
@@ -33,10 +91,20 @@
   });
 </script>
 
-{#key $page.url.pathname}
-  <div>
-    {commit}
+<div class="flex flex-col w-100vh h-full">
+  <!-- Save button to persist edits -->
+  <div class="mb-2 flex items-center justify-between">
+    <!-- current file name with path -->
+    <span class="">{pathto()}</span>
+    <Hotkeybutton onclick={saveFile} variant="success">Save</Hotkeybutton>
   </div>
-{/key}
+  {#key $page.url.pathname}
+    <Monacoeditor
+      code={commit}
+      language={getLanguageFromExt(pathto())}
+      on:change={(e) => (commit = e.detail.code)}
+    />
+  {/key}
+</div>
 
 <CustomSuperDebug formData={commit} />
