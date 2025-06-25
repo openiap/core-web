@@ -30,13 +30,18 @@
             dirExists = true;
         } catch {
             // directory not found
+            console.error("Directory does not exist, cloning fresh repo");
+            toast.error("Directory does not exist, cloning fresh repo");
         }
 
         if (!dirExists) {
             // Remove any stale clone and set up fresh
             try {
                 await fs.promises.rmdir(dir, { recursive: true } as any);
-            } catch {}
+            } catch {
+                console.error("Failed to remove stale clone, trying to clone fresh");
+                toast.error("Failed to remove stale clone, trying to clone fresh");
+            }
             await git.clone({ fs, http, dir, url });
             await git.pull({ fs, http, dir, url, author });
             await git.checkout({ fs, dir, ref: data.item.sha });
