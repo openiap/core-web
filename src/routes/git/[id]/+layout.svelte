@@ -4,16 +4,51 @@
     import http from "isomorphic-git/http/web";
     import { goto, invalidateAll } from "$app/navigation";
     import { base } from "$app/paths";
-    import { File, Folder, SquarePen, Trash2 } from "lucide-svelte";
+    import {
+        File,
+        Folder,
+        FolderClosed,
+        FolderOpen,
+        Minus,
+        Plus,
+        SquarePen,
+        Trash2,
+    } from "lucide-svelte";
     import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
     import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
     import { toast } from "svelte-sonner";
     import { auth } from "$lib/stores/auth.svelte.js";
+    import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
     const { children, data } = $props();
 
     let files: any[] = $state([]);
+    // Track collapsed folder paths
+    let collapsedFolders: Set<string> = $state(new Set());
     let showDeleteFileWarning: boolean = $state(false);
     let selectedFile: any = $state(null);
+
+    /**
+     * Returns the list of files that are not hidden by collapsed folders
+     */
+    function visibleFiles() {
+        return files.filter((f) => {
+            const segments = f.path.split("/");
+            let prefix = "";
+            for (let i = 0; i < segments.length - 1; i++) {
+                prefix = prefix ? `${prefix}/${segments[i]}` : segments[i];
+                if (collapsedFolders.has(prefix)) return false;
+            }
+            return true;
+        });
+    }
+
+    // Toggle collapse state for a folder
+    function toggleFold(path: string) {
+        const newSet = new Set(collapsedFolders);
+        if (newSet.has(path)) newSet.delete(path);
+        else newSet.add(path);
+        collapsedFolders = newSet;
+    }
 
     async function cloneRepo() {
         try {
@@ -43,8 +78,6 @@
             //     db = DBOpenRequest.result;
             //     db.deleteDatabase();
             // };
-
-            
 
             const url = `https://${auth.config.domain}/git/${data.item.repo}`;
             const fs = new FS(data.item._id);
@@ -108,7 +141,16 @@
             console.log("Commit OID:", commit);
             const treeOid = commit.tree;
             console.log("call listTreeRecursive, Commit tree OID:", treeOid);
-            files = await listTreeRecursive({ fs, dir, oid: treeOid });
+            const rawFiles = await listTreeRecursive({ fs, dir, oid: treeOid });
+            // Compute depth for VSCode-like indentation (segments - 1)
+            files = rawFiles.map((f) => {
+                const segments = f.path.split("/");
+                return {
+                    ...f,
+                    depth: segments.length - 1,
+                    name: segments[segments.length - 1],
+                };
+            });
         } catch (error: any) {
             console.error("cloneRepo" + error.message);
             toast.error("cloneRepo" + error.message);
@@ -183,15 +225,31 @@
         <ul
             class="space-y-2 max-h-[500px] md:max-h-full md:h-full overflow-auto md:w-[240px] xl:w-[340px]"
         >
-            {#each files as file, index}
+            {#each visibleFiles() as file, index}
                 {#if file.type === "tree"}
-                    <br />
-                    <div class="flex items-center gap-1">
-                        <Folder class="h-4 w-4" />
-                        {file.path}
-                    </div>
+                    <Hotkeybutton
+                        variant="ghostfull"
+                        class="flex items-center gap-1 cursor-pointer"
+                        style="padding-left: {file.depth}rem"
+                        onclick={() => toggleFold(file.path)}
+                    >
+                        {#if collapsedFolders.has(file.path)}
+                            <FolderClosed class="h-4 w-4" />
+                        {:else}
+                            <FolderOpen class="h-4 w-4" />
+                        {/if}
+                        {file.name}
+                        {#if collapsedFolders.has(file.path)}
+                            <Plus class="h-4 w-4" />
+                        {:else}
+                            <Minus class="h-4 w-4" />
+                        {/if}
+                    </Hotkeybutton>
                 {:else if file.type === "blob"}
-                    <div class="flex items-center justify-between">
+                    <div
+                        class="flex items-center justify-between"
+                        style="padding-left: {file.depth}rem"
+                    >
                         <div class="flex items-center gap-1">
                             <File class="h-4 w-4" />
                             <button
@@ -202,7 +260,7 @@
                                     );
                                 }}
                             >
-                                {file.path}
+                                {file.name}
                             </button>
                         </div>
                         <!-- delete file -->
@@ -213,25 +271,10 @@
                                 title="Delete file"
                                 size="icon"
                                 onclick={() => {
-                                    selectedFile = {
-                                        path: file.path,
-                                        index: index,
-                                    };
+                                    selectedFile = { path: file.path, index };
                                     showDeleteFileWarning = true;
                                 }}><Trash2 /></HotkeyButton
                             >
-                            <!-- edit file -->
-                            <!-- <HotkeyButton
-                                aria-label="Edit file"
-                                title="Edit file"
-                                size="icon"
-                                onclick={async () => {
-                                    goto(
-                                        base +
-                                            `/git/${data.item._id}/${file.oid}/${file.path}`,
-                                    );
-                                }}><SquarePen /></HotkeyButton
-                            > -->
                         </div>
                     </div>
                 {:else}

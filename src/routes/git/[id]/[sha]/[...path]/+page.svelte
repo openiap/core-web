@@ -27,7 +27,6 @@
 
   function getLanguageFromExt(name: string) {
     const ext = name.split(".").pop() || "";
-    console.log("getLanguageFromExt", name, ext);
     if (name.endsWith("Dockerfile")) {
       return "dockerfile";
     } else {
