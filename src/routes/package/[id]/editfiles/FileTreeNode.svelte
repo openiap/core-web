@@ -90,6 +90,7 @@
             />
             <div class="flex items-center gap-2">
                 <HotkeyButton
+                    data-shortcut="enter"
                     aria-label="Rename file"
                     title="Rename file"
                     size="icon"
@@ -99,6 +100,7 @@
                     }}><Check /></HotkeyButton
                 >
                 <HotkeyButton
+                    data-shortcut="esc"
                     aria-label="Cancel"
                     title="Cancel"
                     size="icon"
