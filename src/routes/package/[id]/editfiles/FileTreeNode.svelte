@@ -111,18 +111,20 @@
             <div class="flex items-center justify-between w-full">
                 <div class="flex items-center gap-2">
                     {#if !node.children}
-                        <span class="flex-1 whitespace-nowrap"
+                    <HotkeyButton
+                        variant="ghostfull"
+                        aria-label="Edit file"
+                        title="Edit file"
+                        class="p-0"
+                        onclick={() => onEdit(node.path)}
+                        >{node.name}</HotkeyButton
+                    >
+                        <!-- <span class="flex-1 whitespace-nowrap"
+                        onclick={() => onEdit(node.path)}
+                        title="Edit file"
                             >{node.name}</span
-                        >
-                        <HotkeyButton
-                            aria-label="Rename file"
-                            title="Rename file"
-                            size="icon"
-                            onclick={() => {
-                                renamingPath = node.path;
-                                renameValue = node.name;
-                            }}><Edit2 /></HotkeyButton
-                        >
+                        > -->
+                       
                     {:else}
                         <Hotkeybutton
                             variant="ghostfull"
@@ -152,12 +154,21 @@
                             onclick={() => onDelete(node.path)}
                             ><Trash2 /></HotkeyButton
                         >
-                        <HotkeyButton
+                        <!-- <HotkeyButton
                             aria-label="Edit file"
                             title="Edit file"
                             size="icon"
                             onclick={() => onEdit(node.path)}
                             ><SquarePen /></HotkeyButton
+                        > -->
+                             <HotkeyButton
+                            aria-label="Rename file"
+                            title="Rename file"
+                            size="icon"
+                            onclick={() => {
+                                renamingPath = node.path;
+                                renameValue = node.name;
+                            }}><Edit2 /></HotkeyButton
                         >
                     </div>
                 {/if}
