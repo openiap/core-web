@@ -221,7 +221,7 @@
                                 }}><Trash2 /></HotkeyButton
                             >
                             <!-- edit file -->
-                            <HotkeyButton
+                            <!-- <HotkeyButton
                                 aria-label="Edit file"
                                 title="Edit file"
                                 size="icon"
@@ -231,7 +231,7 @@
                                             `/git/${data.item._id}/${file.oid}/${file.path}`,
                                     );
                                 }}><SquarePen /></HotkeyButton
-                            >
+                            > -->
                         </div>
                     </div>
                 {:else}

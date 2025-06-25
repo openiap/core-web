@@ -24,7 +24,6 @@
       Monaco = await import("monaco-editor");
       self.MonacoEnvironment = {
         getWorker: function (_: any, label: string) {
-          console.log("getWorker", label, "test");
           if (label === "json") {
             return new jsonWorker();
           }
@@ -37,11 +36,9 @@
           if (label === "typescript" || label === "javascript") {
             return new tsWorker();
           }
-          console.warn(`No worker for label: ${label}`);
           return new editorWorker();
         },
       };
-      console.log("Monaco editor loaded", language);
       editor = Monaco.editor.create(editorDiv, {
         theme: $currentTheme,
         value: code,
