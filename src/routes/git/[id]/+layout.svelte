@@ -8,6 +8,7 @@
     import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
     import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
     import { toast } from "svelte-sonner";
+    import { auth } from "$lib/stores/auth.svelte.js";
     const { children, data } = $props();
 
     let files: any[] = $state([]);
@@ -15,56 +16,103 @@
     let selectedFile: any = $state(null);
 
     async function cloneRepo() {
-        const author = {
-            name: "Your Name",
-            email: "you@example.com",
-        };
-        const url = `https://dev.openiap.io/git/${data.item.repo}`;
-        const fs = new FS(data.item._id);
-        const dir = "/test-clone";
-
-        // Check if repo already exists locally
-        let dirExists = false;
         try {
-            await fs.promises.stat(dir);
-            dirExists = true;
-        } catch {
-            // directory not found
-            console.error("Directory does not exist, cloning fresh repo");
-            toast.error("Directory does not exist, cloning fresh repo");
-        }
+            const author = {
+                name: "Your Name",
+                email: "you@example.com",
+            };
 
-        if (!dirExists) {
-            // Remove any stale clone and set up fresh
+            // const DBDeleteRequest = window.indexedDB.deleteDatabase(data.item._id);
+            // DBDeleteRequest.onerror = (event) => {
+            // console.error("Error deleting database.");
+            // };
+
+            // DBDeleteRequest.onsuccess = (event) => {
+            //     console.log("Database deleted successfully");
+            //     // @ts-ignore
+            //     console.log(event.result); // should be undefined
+            // };
+
+            // Initialize the IndexedDB database
+            // let db: IDBDatabase | null = null;
+            // const DBOpenRequest = window.indexedDB.open(data.item._id, 4);
+            // DBOpenRequest.onsuccess = (event) => {
+            //     console.info("Database initialized.");
+
+            //     // store the result of opening the database in the db variable. This is used a lot later on, for opening transactions and suchlike.
+            //     db = DBOpenRequest.result;
+            //     db.deleteDatabase();
+            // };
+
+            
+
+            const url = `https://${auth.config.domain}/git/${data.item.repo}`;
+            const fs = new FS(data.item._id);
+            const dir = "/test-clone";
+
+            // // Remove any stale clone and set up fresh
+            // try {
+            //     console.log("Removing clone at:", dir);
+            //     await fs.promises.rmdir("/", { recursive: true } as any);
+            //     console.log("Removed clone successfully");
+            // } catch (error: any) {
+            //     console.error("Failed to remove " + error.message);
+            //     toast.error("Failed to remove " + error.message);
+            // }
+
+            // Check if repo already exists locally
+            let dirExists = false;
             try {
-                await fs.promises.rmdir(dir, { recursive: true } as any);
-            } catch {
-                console.error("Failed to remove stale clone, trying to clone fresh");
-                toast.error("Failed to remove stale clone, trying to clone fresh");
+                console.log("Checking if directory exists:", dir);
+                const result = await fs.promises.stat(dir);
+                dirExists = true;
+                console.log("dirExists:", dirExists, result);
+            } catch (error: any) {
+                console.log("Directory does not exist:", dir, error.message);
+                dirExists = false;
             }
-            await git.clone({ fs, http, dir, url });
-            await git.pull({ fs, http, dir, url, author });
-            await git.checkout({ fs, dir, ref: data.item.sha });
-        } else {
-            // Repo exists: fetch new refs without checkout to preserve local changes
-            await git.fetch({ fs, http, dir, url });
-        }
 
-        const div = document.getElementById("gitstatus");
-        if (div) {
-            div.textContent = "ready";
-        }
-        // files = (await git.listFiles({ fs, dir })) as string[];
-        // files = ((await git.readTree({ fs, dir, oid: data.item.sha })) as any)
-        // .tree
+            if (!dirExists) {
+                console.log("Cloning repo");
+                await git.clone({ fs, http, dir, url });
+                // const result = await fs.promises.stat(dir);
+                let files = await fs.promises.readdir(dir);
+                let files2 = await fs.promises.readdir(dir + "/" + files[0]);
+                let files3 = await fs.promises.readdir(
+                    dir + "/" + files[0] + "/objects",
+                );
 
-        const { commit } = await git.readCommit({
-            fs,
-            dir,
-            oid: data.item.sha,
-        });
-        const treeOid = commit.tree;
-        files = await listTreeRecursive({ fs, dir, oid: treeOid });
+                console.log("Clone result:", files, files2, files3);
+                // await git.pull({ fs, http, dir, url, author });
+                console.log("Pulled latest changes");
+                await git.checkout({ fs, dir, ref: data.item.sha });
+            } else {
+                // Repo exists: fetch new refs without checkout to preserve local changes
+                console.log("Repo exists, fetching latest changes");
+                await git.fetch({ fs, http, dir, url });
+            }
+
+            const div = document.getElementById("gitstatus");
+            if (div) {
+                div.textContent = "ready";
+            }
+            // files = (await git.listFiles({ fs, dir })) as string[];
+            // files = ((await git.readTree({ fs, dir, oid: data.item.sha })) as any)
+            // .tree
+            console.log("Reading commit for files", data.item.sha);
+            const { commit } = await git.readCommit({
+                fs,
+                dir,
+                oid: data.item.sha,
+            });
+            console.log("Commit OID:", commit);
+            const treeOid = commit.tree;
+            console.log("call listTreeRecursive, Commit tree OID:", treeOid);
+            files = await listTreeRecursive({ fs, dir, oid: treeOid });
+        } catch (error: any) {
+            console.error("cloneRepo" + error.message);
+            toast.error("cloneRepo" + error.message);
+        }
     }
     cloneRepo();
 
@@ -76,6 +124,12 @@
         prefix?: string;
     }): Promise<any[]> {
         const { fs, dir, oid, prefix = "" } = params;
+        console.log(
+            "listTreeRecursive called with OID:",
+            oid,
+            "and prefix:",
+            prefix,
+        );
         const { tree } = await git.readTree({ fs, dir, oid });
         let results: any[] = [];
         for (const entry of tree) {
@@ -87,6 +141,7 @@
                 oid: entry.oid,
             });
             if (entry.type === "tree") {
+                console.log("Found sub-tree:", fullPath);
                 const subEntries = await listTreeRecursive({
                     fs,
                     dir,
@@ -123,7 +178,7 @@
 
 <div class="flex flex-row w-full gap-4 h-full">
     <div
-        class="md:h-full flex-shrink-0 p-4 rounded-[10px] bg-bw200 dark:bg-bw850 border dark:border-bw600 rounded-[10px]"
+        class="md:h-full flex-shrink-0 p-4 rounded-[10px] bg-bw200 dark:bg-bw850 border dark:border-bw600"
     >
         <ul
             class="space-y-2 max-h-[500px] md:max-h-full md:h-full overflow-auto md:w-[240px] xl:w-[340px]"
