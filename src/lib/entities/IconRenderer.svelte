@@ -48,7 +48,7 @@
 
 {#if title == "Action"}
     <Clapperboard class={iconClass} />
-{:else if title == "name"}
+{:else if title == "name" || title == "repo"}
     <IdCard class={iconClass} />
 {:else if title == "_created"}
     <CalendarDays class={iconClass} />

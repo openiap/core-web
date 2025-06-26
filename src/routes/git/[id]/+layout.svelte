@@ -79,7 +79,7 @@
             // };
 
             const url = `https://${auth.config.domain}/git/${data.item.repo}`;
-            const fs = new FS(data.item._id);
+            const fs = new FS(data.item.repo.split("/").join("_"));
             const dir = "/test-clone";
 
             // // Remove any stale clone and set up fresh
@@ -110,27 +110,28 @@
                 );
 
                 // await git.pull({ fs, http, dir, url, author });
-                await git.checkout({ fs, dir, ref: data.item.sha });
+                await git.checkout({ fs, dir, ref: "HEAD" });
             } else {
                 console.info(
                     "Repository already exists, fetching latest changes...",
                 );
                 // Repo exists: fetch new refs without checkout to preserve local changes
                 await git.fetch({ fs, http, dir, url, headers, corsProxy });
+                // get the sha that we are currently working on
             }
+            const sha = await git.resolveRef({ fs, dir, ref: "HEAD" });
+            console.info("Current HEAD OID:", sha);
             console.info("Repository ready at", dir);
 
             const div = document.getElementById("gitstatus");
             if (div) {
                 div.textContent = "ready";
             }
-            // files = (await git.listFiles({ fs, dir })) as string[];
-            // files = ((await git.readTree({ fs, dir, oid: data.item.sha })) as any)
-            // .tree
+          
             const { commit } = await git.readCommit({
                 fs,
                 dir,
-                oid: data.item.sha,
+                oid: sha,
             });
             const rawFiles = await listMatrixRecursive({
                 fs,
@@ -301,7 +302,7 @@
                                 onclick={async () => {
                                     goto(
                                         base +
-                                            `/git/${data.item._id}/${file.oid}/${file.path}`,
+                                            `/git/${data.item._id}/${file.path}`,
                                     );
                                 }}
                             >

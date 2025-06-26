@@ -9,13 +9,13 @@
   import { toast } from "svelte-sonner";
 
   const { data } = $props();
-  const { id, gittype, sha, access_token, path } = data;
+  const { id, gittype, access_token, path } = data;
   let commit = $state() as any;
   const pathto = $derived(() => (data.path ? data.path : ""));
 
   async function getfilecontent() {
     // const url = `https://dev.openiap.io/git/${data.item.repo}`;
-    const fs = new FS(data.item._id);
+    const fs = new FS(data.item.repo.split("/").join("_"));
     const dir = "/test-clone";
     console.log("Before reading file:", dir + "/" + pathto());
     try {

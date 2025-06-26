@@ -185,10 +185,10 @@ class entitiesdata {
 					break;
 				case base + "/git":
 					collectionname = "git";
-					entities = await this.GetData(page, collectionname, {  }, access_token, false);
+					entities = await this.GetData(page, collectionname, { ref: "HEAD" }, access_token, false);
 					total_count = entities.length;
 					if (entities.length >= usersettings.pagesize) {
-						total_count = await this.GetCount(page, collectionname, {  }, access_token, false);
+						total_count = await this.GetCount(page, collectionname, { ref: "HEAD" }, access_token, false);
 					}
 					break;
 				case base + "/hdrobot":
@@ -693,6 +693,8 @@ class entitiesdata {
 				return "Next Run";
 			case "lastrun":
 				return "Last Run";
+			case "repo":
+				return "Repository";
 			default:
 				if (header.name != null && header.name != "") {
 					return header.name;
@@ -794,11 +796,16 @@ class entitiesdata {
 				return ["name", "_createdby", "_modified"];
 			case "/entities/cvr":
 				return ["name", "cvr", "virksomhedsformkort", "sidstOpdateret", "stiftelsesDato", "ophoersDato", "cvrstatus"];
+			case "/entities/git":
+				return ["_id", "name", "repo", "_createdby", "_created", "_modified"];
+
 			default:
 				if (_page.startsWith("/chat/hist/")) {
 					return ["_id", "name", "_type", "_createdby", "_created", "_modified"];
 				} else if (_page.startsWith("/workitem/")) {
 					return ["name", "state", "errortype", "retries", "priority", "wiq", "lastrun", "_created"];
+				} else if (_page.endsWith("/git") || _page.indexOf("/git/") > -1) {
+					return ["repo", "_created", "_modified"];
 				} else if (page.endsWith("/deleted")) {
 					console.debug("Unknown deleted page", page);
 					return ["_id", "name", "_type", "_deleted", "_deletedby", "_created", "_version"];
