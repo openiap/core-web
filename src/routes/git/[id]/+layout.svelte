@@ -60,14 +60,10 @@
                 email: "you@example.com",
             };
             const headers = { 'Authorization': 'Bearer ' + auth.access_token };
+            const corsProxy = base + "/api/git-proxy";
+            console.info("Using CORS proxy:", corsProxy);
+            // corsProxy: 'https://yourdomain.com/api/git-proxy?target=https://github.com'
 
-            // const DBDeleteRequest = window.indexedDB.deleteDatabase(data.item._id);
-            // DBDeleteRequest.onerror = (event) => {
-            // console.error("Error deleting database.");
-            // };
-
-            // DBDeleteRequest.onsuccess = (event) => {
-            // };
 
             // Initialize the IndexedDB database
             // let db: IDBDatabase | null = null;
@@ -102,7 +98,8 @@
             }
 
             if (!dirExists) {
-                await git.clone({ fs, http, dir, url, headers });
+                console.info("Cloning repository...");
+                await git.clone({ fs, http, dir, url, headers, corsProxy });
                 // const result = await fs.promises.stat(dir);
                 let files = await fs.promises.readdir(dir);
                 let files2 = await fs.promises.readdir(dir + "/" + files[0]);
@@ -113,10 +110,11 @@
                 // await git.pull({ fs, http, dir, url, author });
                 await git.checkout({ fs, dir, ref: data.item.sha });
             } else {
-                debugger;
+                console.info("Repository already exists, fetching latest changes...");
                 // Repo exists: fetch new refs without checkout to preserve local changes
-                await git.fetch({ fs, http, dir, url, headers });
+                await git.fetch({ fs, http, dir, url, headers, corsProxy });
             }
+            console.info("Repository ready at", dir);
 
             const div = document.getElementById("gitstatus");
             if (div) {
@@ -248,6 +246,30 @@
         <ul
             class="space-y-2 max-h-[500px] md:max-h-full md:h-full overflow-auto md:w-[240px] xl:w-[340px]"
         >
+            <Hotkeybutton
+                variant="ghostfull"
+                class="w-full mb-2"
+                onclick={() => {
+            indexedDB.databases().then(r => {
+                for (const db of r) {
+                    let dbname = db.name as any;
+
+                    const DBDeleteRequest = window.indexedDB.deleteDatabase(dbname);
+                    DBDeleteRequest.onerror = (event) => {
+                        console.error("Error deleting database: ", event);
+                    };
+                    DBDeleteRequest.onsuccess = (event) => {
+                        console.info("Database deleted successfully.");
+                    };
+                }
+                    }).catch(error => {
+                    console.error("Error listing databases: ", error);
+                    });
+
+                }}
+            >
+                Clean DBS
+            </Hotkeybutton>
             {#each visibleFiles() as file, index}
                 {#if file.type === "tree"}
                     <Hotkeybutton

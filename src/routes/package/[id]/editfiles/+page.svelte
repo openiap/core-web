@@ -439,7 +439,7 @@
   class="md:flex md:items-start md:justify-between md:h-full md:overflow-auto"
 >
   <div
-    class="md:h-full flex-shrink-0 p-4 rounded-[10px] bg-bw200 dark:bg-bw850 border dark:border-bw600 rounded-[10px]"
+    class="md:h-full flex-shrink-0 p-4 bg-bw200 dark:bg-bw850 border dark:border-bw600 rounded-[10px]"
   >
     <div
       class="space-y-2 max-h-[500px] md:max-h-full md:h-full overflow-auto md:w-[240px] xl:w-[340px]"
