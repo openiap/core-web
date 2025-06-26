@@ -56,7 +56,6 @@
     getData();
     // usersettings.entities_collectionname = name;
     // datacomponent.persist();
-    console.log(collectionname);
     sveltepage.url.pathname = base + `/entities/${collectionname}/duplicates`;
     replaceState(sveltepage.url, sveltepage.state);
   }

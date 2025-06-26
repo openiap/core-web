@@ -49,7 +49,6 @@
     replaceState(sveltepage.url, sveltepage.state);
   }
   function single_item_click(item: any) {
-    console.log("item", item);
     goto(base + `/entities/${collectionname}/history/${item.id}`);
   }
   async function getCollections() {

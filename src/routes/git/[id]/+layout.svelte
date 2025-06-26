@@ -29,7 +29,6 @@
      * Returns the list of files that are not hidden by collapsed folders
      */
     function visibleFiles() {
-        console.log("visibleFiles called with files:", $state.snapshot(files));      
         return files.filter((f) => {
             const segments = f.path.split("/");
             let prefix = "";
@@ -50,11 +49,17 @@
     }
 
     async function cloneRepo() {
+        if (auth.access_token === "" || auth.access_token == null) {
+            console.error("No access token found");
+            toast.error("No access token found");
+            return;
+        }
         try {
             const author = {
                 name: "Your Name",
                 email: "you@example.com",
             };
+            const headers = { 'Authorization': 'Bearer ' + auth.access_token };
 
             // const DBDeleteRequest = window.indexedDB.deleteDatabase(data.item._id);
             // DBDeleteRequest.onerror = (event) => {
@@ -62,9 +67,6 @@
             // };
 
             // DBDeleteRequest.onsuccess = (event) => {
-            //     console.log("Database deleted successfully");
-            //     // @ts-ignore
-            //     console.log(event.result); // should be undefined
             // };
 
             // Initialize the IndexedDB database
@@ -84,9 +86,7 @@
 
             // // Remove any stale clone and set up fresh
             // try {
-            //     console.log("Removing clone at:", dir);
             //     await fs.promises.rmdir("/", { recursive: true } as any);
-            //     console.log("Removed clone successfully");
             // } catch (error: any) {
             //     console.error("Failed to remove " + error.message);
             //     toast.error("Failed to remove " + error.message);
@@ -95,18 +95,14 @@
             // Check if repo already exists locally
             let dirExists = false;
             try {
-                // console.log("Checking if directory exists:", dir);
                 const result = await fs.promises.stat(dir);
                 dirExists = true;
-                // console.log("dirExists:", dirExists, result);
             } catch (error: any) {
-                console.log("Directory does not exist:", dir, error.message);
                 dirExists = false;
             }
 
             if (!dirExists) {
-                console.log("Cloning repo");
-                await git.clone({ fs, http, dir, url });
+                await git.clone({ fs, http, dir, url, headers });
                 // const result = await fs.promises.stat(dir);
                 let files = await fs.promises.readdir(dir);
                 let files2 = await fs.promises.readdir(dir + "/" + files[0]);
@@ -114,14 +110,12 @@
                     dir + "/" + files[0] + "/objects",
                 );
 
-                // console.log("Clone result:", files, files2, files3);
                 // await git.pull({ fs, http, dir, url, author });
-                // console.log("Pulled latest changes");
                 await git.checkout({ fs, dir, ref: data.item.sha });
             } else {
+                debugger;
                 // Repo exists: fetch new refs without checkout to preserve local changes
-                console.log("Repo exists, fetching latest changes");
-                await git.fetch({ fs, http, dir, url });
+                await git.fetch({ fs, http, dir, url, headers });
             }
 
             const div = document.getElementById("gitstatus");
@@ -131,17 +125,13 @@
             // files = (await git.listFiles({ fs, dir })) as string[];
             // files = ((await git.readTree({ fs, dir, oid: data.item.sha })) as any)
             // .tree
-            // console.log("Reading commit for files", data.item.sha);
             const { commit } = await git.readCommit({
                 fs,
                 dir,
                 oid: data.item.sha,
             });
-            // console.log("Commit OID:", commit);
             const treeOid = commit.tree;
-            // console.log("call listTreeRecursive, Commit tree OID:", treeOid);
             const rawFiles = await listTreeRecursive({ fs, dir, oid: treeOid });
-            console.log("Raw files:", $state.snapshot(rawFiles));
             // Compute depth for VSCode-like indentation (segments - 1)
             files = rawFiles.map((f) => {
                 const segments = f.path.split("/");
@@ -166,14 +156,7 @@
         prefix?: string;
     }): Promise<any[]> {
         const { fs, dir, oid, prefix = "" } = params;
-        // console.log(
-        //     "listTreeRecursive called with OID:",
-        //     oid,
-        //     "and prefix:",
-        //     prefix,
-        // );
         const { tree } = await git.readTree({ fs, dir, oid });
-        console.log("tree", $state.snapshot(tree));
         let results: any[] = [];
         for (const entry of tree) {
             const fullPath = prefix + entry.path;
@@ -184,7 +167,6 @@
                 oid: entry.oid,
             });
             if (entry.type === "tree") {
-                // console.log("Found sub-tree:", fullPath);
                 const subEntries = await listTreeRecursive({
                     fs,
                     dir,
@@ -208,7 +190,6 @@
 
         try {
             await fs.promises.stat(filePath);
-            console.log("File found");
         } catch (statErr) {
             console.error("File not found:", filePath, statErr);
             toast.error(`File not found: ${selectedFile.path}`);
@@ -221,7 +202,6 @@
             await fs.promises.unlink(filePath);
             files.splice(selectedFile.index, 1); // Remove from local state
             files = [...files]; // Trigger reactivity
-            console.log("File deleted from filesystem:", $state.snapshot(files));
             const fileKey = selectedFile.path; // capture path before clearing
             // also remove from the local IndexedDB
             const dbRequest = window.indexedDB.open(data.item._id, 4);
@@ -246,13 +226,11 @@
                 console.error("Error accessing IndexedDB:", event);
                 toast.error("Error deleting file from IndexedDB");
             };
-            console.log("File deleted successfully:", filePath);
             toast.success(`File deleted successfully: ${selectedFile.path}`);
             showDeleteFileWarning = false;
             selectedFile = null; // safe: db callbacks use fileKey
             toast.success("File deleted successfully!");
             invalidateAll(); // Refresh the page to reflect changes
-            console.log("File deleted from filesystem:", $state.snapshot(files));
 
         } catch (err) {
             console.error("Failed to delete file:", err);

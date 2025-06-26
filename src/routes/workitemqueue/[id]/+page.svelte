@@ -81,7 +81,6 @@
               jwt: auth.access_token,
             });
             form.data.success_wiq = item.name;
-            console.log(item);
             if (item == null) throw new Error("Workitemqueue not found");
           }
           else{
@@ -98,7 +97,6 @@
           let data: any = { ...form.data };
           delete data._created;
           delete data._modified;
-          // console.log("data", data);
           // return;
           await auth.client.UpdateWorkItemQueue({
             workitemqueue: data,

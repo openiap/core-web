@@ -1507,7 +1507,6 @@
             width="w-full md:w-[400px]"
             collectionname="agents"
             handleChangeFunction={() => {
-              // console.log("packageData", packageData);
               if (packageData?.daemon == false) {
                 packageData.cron = "* * * * *";
               } else {
@@ -1524,7 +1523,6 @@
               {item.name}
             {/snippet}
             {#snippet rendercontent(item: any)}
-              {console.log("item", item)}
               {#if item == null}
                 Select a package
               {:else}

@@ -271,8 +271,6 @@
         ).buffer;
         name = `${name.split("-")[0]}-${packageJson.version}.tgz`;
       }
-      console.log("Packing files with name:", name);
-
       let files = entriesLocal.map((entry: any) => {
         return {
           filename: entry.name,
@@ -287,8 +285,6 @@
       };
       let uploadfileid;
       try {
-        console.log("Preparing files for upload:", base + "/api/create-tgz");
-        console.log("using body:", JSON.stringify(body));
         // const res = await fetch(base + "/api/create-tgz", {
         //   method: "POST",
         //   headers: { "Content-Type": "application/json" },
@@ -308,7 +304,6 @@
           data.access_token,
         );
 
-        console.log("Created tgz data:", data);
       } catch (error: any) {
         console.error("Error preparing files for upload:", error);
         toast.error("Error preparing files for upload", {
@@ -358,7 +353,6 @@
     let queuename = await auth.client.RegisterQueue(
       { queuename: "", jwt: data.access_token },
       (msg, payload, user, jwt) => {
-        console.log("Message received:", payload);
         if (payload.logs != null) {
           if (!payload.logs.endsWith("\n")) {
             payload.logs += "\n";
@@ -371,7 +365,6 @@
         // }
       },
     );
-    console.log("RegisterQueue", queuename);
     let correlation_id = Math.random().toString(36).substring(2, 11);
     try {
       const build_result = await auth.client.QueueMessage(
@@ -386,7 +379,6 @@
         },
         true,
       );
-      console.log("build_result", build_result);
       if (build_result.success == false) {
         result =
           "Error Building package: " + build_result.result + "\n" + result;
@@ -405,7 +397,6 @@
     } finally {
       loading = false;
       loadingDialog = false;
-      console.log("Unregistering queue:", queuename);
       auth.client.UnRegisterQueue({ queuename, jwt: auth.access_token });
     }
     loading = false;

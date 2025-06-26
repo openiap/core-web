@@ -69,7 +69,6 @@
         const dataBuf = encoder.encode(commit);
         await fs.promises.writeFile(dir + "/" + pathto(), dataBuf);
         toast.success("File saved successfully!");
-        console.log("File saved to browser DB");
       } catch (err) {
         toast.error("Failed to save file: " + err);
         console.error("Failed to save file:", err);

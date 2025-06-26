@@ -91,22 +91,17 @@
       });
 
       const blob = new Blob([filecontent], { type: item.contentType });
-      // console.log("Blob created:", blob);
 
       const arrayBuffer = await blob.arrayBuffer();
-      // console.log("arrayBuffer created:", arrayBuffer);
 
       const binaryData = new Uint8Array(arrayBuffer);
-      // console.log("Binary data length:", binaryData.length);
 
       const decompressedTarData = pako.ungzip(binaryData);
-      // console.log("Decompressed Uint8Array:", decompressedTarData);
 
       const entries = await unpack(decompressedTarData.buffer);
 
       entriesLocal = entries;
       fileList = entries.map((e: any) => e.name);
-      console.log("File list:", fileList);
     } catch (error: any) {
       console.error("Error downloading or decompressing file:", error);
       toast.error("Error downloading file", {
@@ -135,7 +130,6 @@
       const packageJsonEntry = fileList.find(
         (filename: any) => filename == "package/package.json",
       );
-      console.log("Found package.json entry:", packageJsonEntry);
       if (packageJsonEntry) {
         const entry = entriesLocal.find((e: any) => e.name === "package/package.json");
         if (!entry) return;
@@ -144,13 +138,10 @@
         );
         // increment version
         const versionParts = packageJson.version.split(".");
-        console.log("Original version:", packageJson.version);
         versionParts[versionParts.length - 1] = (
           parseInt(versionParts[versionParts.length - 1]) + 1
         ).toString();
-        console.log("New version parts:", versionParts);
         packageJson.version = versionParts.join(".");
-        console.log("Updated package.json version:", packageJson.version);
         // update the entry buffer with new package.json content
         entry.buffer = textEncoder.encode(
           JSON.stringify(packageJson, null, 2),
@@ -159,21 +150,15 @@
         name = `${name.split("-")[0]}-${packageJson.version}.tgz`;
       }
       // use original file metadata for upload
-      console.log("Repacking files with updated entries...", name);
-
+      
       const type = item.contentType;
-      // console.log("Original file name:", name);
-      // console.log("Original file type:", type);
-      // console.log("Original file item:", item);
-
+      
       const compressed = pako.deflate(JSON.stringify(entriesLocal));
 
       // pack modified entries back into tar and gzip
       // const tarData: Uint8Array = await pack(entriesLocal);
-      // console.log("Packed tar data length:", compressed);
 
       const compressedData: Uint8Array = pako.gzip(compressed);
-      // console.log("Compressed data length:", compressedData.length);
 
       // upload the new package using Uint8Array directly
       const uploadResult: any = await auth.client.UploadFile(
@@ -228,7 +213,6 @@
         <button
           on:click={() => {
             loadFile(name);
-            console.log("Loading file:", name);
           }}
           class="ml-2 px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
         >

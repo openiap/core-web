@@ -4,7 +4,6 @@ export const load: PageLoad = async ({ parent, params }) => {
   const { access_token } = await parent();
   try {
     let item = await auth.client.FindOne<any>({ collectionname: "config", query: { _id: params.id, _type: "oauthclient" }, jwt: access_token });
-    console.log("item", item);
     return { item };
   } catch (error) {
     return { item: null };

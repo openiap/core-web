@@ -325,7 +325,6 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
     let queuename = await auth.client.RegisterQueue(
       { queuename: "", jwt: auth.access_token },
       (msg, payload, user, jwt) => {
-        console.log("Message received:", payload);
         if (payload.logs != null) {
           if (!payload.logs.endsWith("\n")) {
             payload.logs += "\n";
@@ -338,7 +337,6 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
         // }
       },
     );
-    console.log("RegisterQueue", queuename);
     let correlation_id = Math.random().toString(36).substring(2, 11);
     if (toolCall != null && toolCall.id != null) {
       correlation_id = toolCall.id;
@@ -359,7 +357,6 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
         },
         true,
       );
-      console.log("build_result", build_result);
       if (build_result.success == false) {
         toolCall.result =
           "Error Building package: " +
@@ -377,7 +374,6 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
       console.error("Building package:", error.message);
       throw new Error("Building package: " + error.message);
     } finally {
-      console.log("Unregistering queue:", queuename);
       auth.client.UnRegisterQueue({ queuename, jwt: auth.access_token });
     }
   }
@@ -678,11 +674,6 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
       }
     }
 
-    // console.log(
-    //   "Formatted messages for OpenAI:",
-    //   JSON.stringify(formattedMessages),
-    // );
-
     try {
       const chatCompletion = await client.chat.completions.create({
         messages: formattedMessages as any,
@@ -716,7 +707,6 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
         for (let i = 0; i < newMessage.toolCalls.length; i++) {
           const toolCall = newMessage.toolCalls[i];
           if (haderror == true) {
-            console.log("Error in previous tool call, skipping");
             toolCall.result =
               "Error in previous tool call, skipping\n" + toolCall.result;
             toolCall.status = "failed";
@@ -753,7 +743,6 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
           }
         }
         // allToolsSuccessful = true;
-        // console.log("raw", JSON.stringify(messages));
         // If all tools executed successfully, send the results back to OpenAI
         // This creates a more natural conversation flow where the AI responds to tool results
         if (allToolsSuccessful) {
@@ -983,7 +972,6 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
       messages = [...messages];
 
       if (toolCall.name === "deploypackage") {
-        console.log("Running tool:", toolCall.name);
 
         let files = toolCall.arguments.files;
         files = fixDockerfile(files); // <-- Fix Dockerfile before upload
@@ -1005,7 +993,6 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
           files: $state.snapshot(files),
           jwt: auth.access_token,
         };
-        console.log("create-tgz", base + "/api/create-tgz", body);
         const res = await fetch(base + "/api/create-tgz", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -1057,7 +1044,6 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
               },
             ],
           };
-          console.log("Creating new package:", llmpackage);
           llmpackage = await await auth.client.InsertOne({
             collectionname: "agents",
             item: llmpackage,
@@ -1081,13 +1067,6 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
             // console.error("Error removing old package file:", error.message);
           }
         }
-        console.log(
-          "File uploaded successfully as",
-          fileid,
-          "package",
-          llmpackage._id,
-          "updated",
-        );
         currentPackageId = llmpackage._id;
         await buildpackage(toolCall, llmpackage);
 
@@ -1097,14 +1076,12 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
           packageid: llmpackage._id,
         };
       } else if (toolCall.name === "callpackagefunction") {
-        console.log("Running tool:", toolCall.name);
         let llmpackage = await auth.client.FindOne<any>({
           collectionname: "agents",
           query: { name: prefix + slug, _type: "package" },
           jwt: auth.access_token,
         });
         let _slug = llmpackage.slug || llmpackage.name.replace(prefix, "");
-        console.log("Found package:", llmpackage, "slug:", _slug);
 
         let domain = auth.config?.serverless_domain_schema.replace(
           "$slug$",
@@ -1115,7 +1092,6 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
           const urlParameters = toolCall.arguments.urlParameters;
           const method = toolCall.arguments.Method || "GET";
           let body = toolCall.arguments.Body;
-          console.log();
           try {
             let url = domain;
             if (urlParameters != null && urlParameters != "") {
@@ -1133,7 +1109,6 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
                 body = null;
               }
               url = "http://" + url;
-              console.log("Calling fetch function:", url, method, body);
               const res = await fetch(url, {
                 method: method,
                 headers: { "Content-Type": "application/json" },
@@ -1152,7 +1127,6 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
                 throw new Error(`HTTP error! status: ${res.status}  ${body}`);
               }
               const proxyResponse = await res.json();
-              console.log("Proxy response:", proxyResponse);
               toolCall.result = JSON.stringify(proxyResponse, null, 2);
               toolCall.status = "completed";
               messages = [...messages];
@@ -1160,7 +1134,6 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
                 result: proxyResponse,
               };
             }
-            console.log("Calling proxy function:", url, method, body);
             if(auth.config?.serverless_domain_schema.indexOf(".localhost.") > -1) {
               domain = "http://" + domain;
             } else {
@@ -1193,7 +1166,6 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
             }
 
             const proxyResponse = await res.json();
-            console.log("Proxy response:", proxyResponse);
             toolCall.result = JSON.stringify(proxyResponse, null, 2);
             toolCall.status = "completed";
             messages = [...messages];

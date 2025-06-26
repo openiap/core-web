@@ -26,7 +26,6 @@
   <Searchinput bind:searchstring />
   <EntitySelector
     handleChangeFunction={async (value: any) => {
-      console.log(value, project);
       if (value == "") {
         return (searchstring = "");
       }
