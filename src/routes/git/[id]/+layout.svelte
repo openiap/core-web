@@ -14,9 +14,12 @@
         FolderOpen,
         Minus,
         Plus,
-        Trash2
+        Trash2,
     } from "lucide-svelte";
     import { toast } from "svelte-sonner";
+    import * as path from "path";
+    import * as fsPromises from "fs/promises";
+
     const { children, data } = $props();
 
     let files: any[] = $state([]);
@@ -59,11 +62,10 @@
                 name: "Your Name",
                 email: "you@example.com",
             };
-            const headers = { 'Authorization': 'Bearer ' + auth.access_token };
+            const headers = { Authorization: "Bearer " + auth.access_token };
             const corsProxy = base + "/api/git-proxy";
             console.info("Using CORS proxy:", corsProxy);
             // corsProxy: 'https://yourdomain.com/api/git-proxy?target=https://github.com'
-
 
             // Initialize the IndexedDB database
             // let db: IDBDatabase | null = null;
@@ -110,7 +112,9 @@
                 // await git.pull({ fs, http, dir, url, author });
                 await git.checkout({ fs, dir, ref: data.item.sha });
             } else {
-                console.info("Repository already exists, fetching latest changes...");
+                console.info(
+                    "Repository already exists, fetching latest changes...",
+                );
                 // Repo exists: fetch new refs without checkout to preserve local changes
                 await git.fetch({ fs, http, dir, url, headers, corsProxy });
             }
@@ -128,8 +132,10 @@
                 dir,
                 oid: data.item.sha,
             });
-            const treeOid = commit.tree;
-            const rawFiles = await listTreeRecursive({ fs, dir, oid: treeOid });
+            const rawFiles = await listMatrixRecursive({
+                fs,
+                dir,
+            });
             // Compute depth for VSCode-like indentation (segments - 1)
             files = rawFiles.map((f) => {
                 const segments = f.path.split("/");
@@ -140,38 +146,49 @@
                 };
             });
         } catch (error: any) {
-            console.error("cloneRepo" + error.message);
-            toast.error("cloneRepo" + error.message);
+            console.error("cloneRepo " + error.message);
+            toast.error("cloneRepo " + error.message);
         }
     }
     cloneRepo();
 
     // Full recursive function to walk a tree
-    async function listTreeRecursive(params: {
+    async function listMatrixRecursive(params: {
         fs: any;
         dir: string;
-        oid: string;
         prefix?: string;
     }): Promise<any[]> {
-        const { fs, dir, oid, prefix = "" } = params;
-        const { tree } = await git.readTree({ fs, dir, oid });
-        let results: any[] = [];
-        for (const entry of tree) {
-            const fullPath = prefix + entry.path;
-            results.push({
-                path: fullPath,
-                mode: entry.mode,
-                type: entry.type,
-                oid: entry.oid,
-            });
-            if (entry.type === "tree") {
-                const subEntries = await listTreeRecursive({
-                    fs,
-                    dir,
-                    oid: entry.oid,
-                    prefix: fullPath + "/",
+        const { fs, dir, prefix = "" } = params;
+        const matrix = await git.statusMatrix({
+            fs,
+            dir,
+            filter: (filepath) => filepath.startsWith(prefix),
+        });
+        const results: any[] = [];
+        for (const [filepath, head, workdir, stage] of matrix) {
+            let mode: number | null = null;
+            // Check if file exists in workdir and get mode (if supported)
+            if (workdir === 1) {
+                try {
+                    const stat = await fs.promises.stat(`${dir}/${filepath}`);
+                    mode = stat.mode;
+                } catch {
+                    mode = null;
+                }
+                results.push({
+                    path: filepath,
+                    mode,
+                    type: "blob",
+                    oid: null,
                 });
-                results = results.concat(subEntries);
+            } else if (workdir === 0 && head === 1) {
+                // File deleted in workdir, still in HEAD
+                results.push({
+                    path: filepath,
+                    mode: null,
+                    type: "deleted",
+                    oid: null,
+                });
             }
         }
         return results;
@@ -200,36 +217,11 @@
             await fs.promises.unlink(filePath);
             files.splice(selectedFile.index, 1); // Remove from local state
             files = [...files]; // Trigger reactivity
-            const fileKey = selectedFile.path; // capture path before clearing
-            // also remove from the local IndexedDB
-            const dbRequest = window.indexedDB.open(data.item._id, 4);
-            dbRequest.onupgradeneeded = (event) => {
-                const dbInst = (event.target as IDBOpenDBRequest).result;
-                if (!dbInst.objectStoreNames.contains("files")) {
-                    dbInst.createObjectStore("files", { keyPath: "path" });
-                }
-            };
-            dbRequest.onsuccess = (event) => {
-                const dbInstance = (event.target as IDBOpenDBRequest).result;
-                if (dbInstance.objectStoreNames.contains("files")) {
-                    const tx = dbInstance.transaction("files", "readwrite");
-                    tx.objectStore("files").delete(fileKey);
-                } else {
-                    console.warn(
-                        "IndexedDB store 'files' not found, skipping deletion",
-                    );
-                }
-            };
-            dbRequest.onerror = (event) => {
-                console.error("Error accessing IndexedDB:", event);
-                toast.error("Error deleting file from IndexedDB");
-            };
             toast.success(`File deleted successfully: ${selectedFile.path}`);
             showDeleteFileWarning = false;
             selectedFile = null; // safe: db callbacks use fileKey
             toast.success("File deleted successfully!");
             invalidateAll(); // Refresh the page to reflect changes
-
         } catch (err) {
             console.error("Failed to delete file:", err);
             toast.error("Failed to delete file: " + err);
@@ -250,22 +242,30 @@
                 variant="ghostfull"
                 class="w-full mb-2"
                 onclick={() => {
-            indexedDB.databases().then(r => {
-                for (const db of r) {
-                    let dbname = db.name as any;
+                    indexedDB
+                        .databases()
+                        .then((r) => {
+                            for (const db of r) {
+                                let dbname = db.name as any;
 
-                    const DBDeleteRequest = window.indexedDB.deleteDatabase(dbname);
-                    DBDeleteRequest.onerror = (event) => {
-                        console.error("Error deleting database: ", event);
-                    };
-                    DBDeleteRequest.onsuccess = (event) => {
-                        console.info("Database deleted successfully.");
-                    };
-                }
-                    }).catch(error => {
-                    console.error("Error listing databases: ", error);
-                    });
-
+                                const DBDeleteRequest =
+                                    window.indexedDB.deleteDatabase(dbname);
+                                DBDeleteRequest.onerror = (event) => {
+                                    console.error(
+                                        "Error deleting database: ",
+                                        event,
+                                    );
+                                };
+                                DBDeleteRequest.onsuccess = (event) => {
+                                    console.info(
+                                        "Database deleted successfully.",
+                                    );
+                                };
+                            }
+                        })
+                        .catch((error) => {
+                            console.error("Error listing databases: ", error);
+                        });
                 }}
             >
                 Clean DBS

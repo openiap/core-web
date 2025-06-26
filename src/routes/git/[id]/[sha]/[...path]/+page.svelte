@@ -13,16 +13,22 @@
   let commit = $state() as any;
   const pathto = $derived(() => (data.path ? data.path : ""));
 
-  async function getbranches() {
-    const url = `https://dev.openiap.io/git/${data.item.repo}`;
+  async function getfilecontent() {
+    // const url = `https://dev.openiap.io/git/${data.item.repo}`;
     const fs = new FS(data.item._id);
     const dir = "/test-clone";
-
-    if (pathto() != null && pathto() != "") {
-      // Read raw bytes and decode to string
-      const raw = await fs.promises.readFile(dir + "/" + pathto());
-      commit = new TextDecoder().decode(raw);
+    console.log("Before reading file:", dir + "/" + pathto());
+    try {
+      // Ensure the directory exists
+      if (pathto() != null && pathto() != "") {
+        // Read raw bytes and decode to string
+        const raw = await fs.promises.readFile(dir + "/" + pathto());
+        commit = new TextDecoder().decode(raw);
+      }
+    } catch (error) {
+      console.error("Failed to read file:", error);
     }
+    console.log("After reading file:", dir + "/" + pathto());
   }
 
   function getLanguageFromExt(name: string) {
@@ -77,14 +83,14 @@
   }
 
   if (browser) {
-    getbranches();
+    getfilecontent();
     if (!window.Buffer) {
       window.Buffer = Buffer;
     }
   }
   $effect(() => {
     if (pathto() != null && pathto() != "") {
-      getbranches();
+      getfilecontent();
     }
   });
 </script>
