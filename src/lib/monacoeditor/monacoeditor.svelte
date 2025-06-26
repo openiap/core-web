@@ -13,7 +13,7 @@
   import htmlWorker from "monaco-editor/esm/vs/language/html/html.worker?worker&inline";
   import tsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker&inline";
   import { mode } from "mode-watcher";
-  import { derived } from "svelte/store";
+  import { derived, get } from "svelte/store";
 
   const currentTheme = derived(mode, (m) =>
     m === "dark" ? "vs-dark" : "vs-light",
@@ -40,12 +40,12 @@
         },
       };
       editor = Monaco.editor.create(editorDiv, {
-        theme: $currentTheme,
-        value: code,
+        theme: get(currentTheme) || "vs-light",
+        value: code ?? "",
         language: language,
         automaticLayout: true,
       });
-      model = Monaco.editor.createModel(code, language);
+      model = Monaco.editor.createModel(code ?? "", language);
       editor.setModel(model);
       // dispatch code change events to parent
       editor.onDidChangeModelContent(() => {
@@ -73,9 +73,9 @@
     fakeit = language;
     fakecode = code;
     if (browser && Monaco) {
-      Monaco.editor.setTheme($currentTheme);
+      Monaco.editor.setTheme(get(currentTheme) || "vs-light");
       if (model) {
-        model.setValue(code);
+        model.setValue(code ?? "");
         Monaco.editor.setModelLanguage(model, language);
       }
     }
