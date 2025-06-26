@@ -65,7 +65,7 @@
 
   // Add a function to save editor changes to the browser DB
   async function saveFile() {
-    const fs = new FS(data.item._id);
+    const fs = new FS(data.item.repo.split("/").join("_"));
     const dir = "/test-clone";
     if (pathto() != null && pathto() != "") {
       // Write only the content string (cloneable) to avoid DataCloneError
@@ -97,17 +97,24 @@
 
 <div class="flex flex-col w-100vh h-full">
   <!-- Save button to persist edits -->
-  <div class="mb-2 flex items-center justify-between">
-    <!-- current file name with path -->
-    <span class="">{pathto()}</span>
-    <Hotkeybutton onclick={saveFile} variant="success">Save</Hotkeybutton>
-  </div>
+  {#if pathto() != null && pathto() != ""}
+    <div class="mb-2 flex items-center justify-between">
+      <!-- current file name with path -->
+      <span class="">{pathto()}</span>
+      <Hotkeybutton onclick={saveFile} variant="success">Save</Hotkeybutton>
+    </div>
+  {/if}
+
   {#key $page.url.pathname}
-    <Monacoeditor
-      code={commit}
-      language={getLanguageFromExt(pathto())}
-      on:change={(e) => (commit = e.detail.code)}
-    />
+    {#if pathto() != null && pathto() != ""}
+      <Monacoeditor
+        code={commit}
+        language={getLanguageFromExt(pathto())}
+        on:change={(e) => (commit = e.detail.code)}
+      />
+    {:else}
+      <div class="text-center text-gray-500">No file selected</div>
+    {/if}
   {/key}
 </div>
 

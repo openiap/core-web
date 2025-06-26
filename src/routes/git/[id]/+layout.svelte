@@ -3,6 +3,7 @@
     import { base } from "$app/paths";
     import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
     import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
+    import Customselect from "$lib/customselect/customselect.svelte";
     import { auth } from "$lib/stores/auth.svelte.js";
     import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
     import FS from "@isomorphic-git/lightning-fs";
@@ -17,12 +18,12 @@
         Trash2,
     } from "lucide-svelte";
     import { toast } from "svelte-sonner";
-    import * as path from "path";
-    import * as fsPromises from "fs/promises";
 
     const { children, data } = $props();
 
     let files: any[] = $state([]);
+    let branches: any[] = $state([]);
+    let selectedSha: string = $state("");
     // Track collapsed folder paths
     let collapsedFolders: Set<string> = $state(new Set());
     let showDeleteFileWarning: boolean = $state(false);
@@ -53,10 +54,15 @@
 
     async function cloneRepo() {
         if (auth.access_token === "" || auth.access_token == null) {
-            console.error("No access token found");
             toast.error("No access token found");
             return;
         }
+        if (data.item.repo == null || data.item.repo === "") {
+            toast.error("Empty repository ");
+            // redirect to new page showing cloning instructions
+            return;
+        }
+
         try {
             const author = {
                 name: "Your Name",
@@ -64,33 +70,11 @@
             };
             const headers = { Authorization: "Bearer " + auth.access_token };
             const corsProxy = base + "/api/git-proxy";
-            console.info("Using CORS proxy:", corsProxy);
-            // corsProxy: 'https://yourdomain.com/api/git-proxy?target=https://github.com'
-
-            // Initialize the IndexedDB database
-            // let db: IDBDatabase | null = null;
-            // const DBOpenRequest = window.indexedDB.open(data.item._id, 4);
-            // DBOpenRequest.onsuccess = (event) => {
-            //     console.info("Database initialized.");
-
-            //     // store the result of opening the database in the db variable. This is used a lot later on, for opening transactions and suchlike.
-            //     db = DBOpenRequest.result;
-            //     db.deleteDatabase();
-            // };
 
             const url = `https://${auth.config.domain}/git/${data.item.repo}`;
             const fs = new FS(data.item.repo.split("/").join("_"));
             const dir = "/test-clone";
 
-            // // Remove any stale clone and set up fresh
-            // try {
-            //     await fs.promises.rmdir("/", { recursive: true } as any);
-            // } catch (error: any) {
-            //     console.error("Failed to remove " + error.message);
-            //     toast.error("Failed to remove " + error.message);
-            // }
-
-            // Check if repo already exists locally
             let dirExists = false;
             try {
                 const result = await fs.promises.stat(dir);
@@ -100,44 +84,87 @@
             }
 
             if (!dirExists) {
-                console.info("Cloning repository...");
-                await git.clone({ fs, http, dir, url, headers, corsProxy });
-                // const result = await fs.promises.stat(dir);
-                let files = await fs.promises.readdir(dir);
-                let files2 = await fs.promises.readdir(dir + "/" + files[0]);
-                let files3 = await fs.promises.readdir(
-                    dir + "/" + files[0] + "/objects",
-                );
+                await git.clone({
+                    fs,
+                    http,
+                    dir,
+                    url,
+                    headers,
+                    corsProxy,
+                    singleBranch: false,
+                });
 
-                // await git.pull({ fs, http, dir, url, author });
                 await git.checkout({ fs, dir, ref: "HEAD" });
             } else {
-                console.info(
-                    "Repository already exists, fetching latest changes...",
-                );
-                // Repo exists: fetch new refs without checkout to preserve local changes
                 await git.fetch({ fs, http, dir, url, headers, corsProxy });
-                // get the sha that we are currently working on
             }
-            const sha = await git.resolveRef({ fs, dir, ref: "HEAD" });
-            console.info("Current HEAD OID:", sha);
-            console.info("Repository ready at", dir);
+
+            const headSha = await git.resolveRef({ fs, dir, ref: "HEAD" });
+            const branches1 = await git.listBranches({ fs, dir });
+            for (const b of branches1) {
+                const branchSha = await git.resolveRef({
+                    fs,
+                    dir,
+                    ref: `refs/heads/${b}`,
+                });
+                if (branchSha === headSha) {
+                    selectedSha = b;  
+
+                    break;
+                }
+            }
+
+            branches = await git.listBranches({ fs, dir, remote: "origin" });
+            const result = await Promise.all(
+                branches.map(async (name) => {
+                    const sha = await git.resolveRef({
+                        fs,
+                        dir,
+                        ref: `refs/remotes/origin/${name}`,
+                    });
+                    return { name, sha };
+                }),
+            );
+            branches = result.filter((b) => {
+                return b.name != "HEAD";
+            });
+
+            selectedSha = await git.resolveRef({ fs, dir, ref: "HEAD" });
+
+            if (selectedSha != data.sha) {
+                const matrix = await git.statusMatrix({ fs, dir });
+                const hasPendingChanges = matrix.some(
+                    ([filepath, head, workdir, stage]) => {
+                        // If any file differs in HEAD vs workdir vs index
+                        return head !== workdir || head !== stage;
+                    },
+                );
+
+                if (hasPendingChanges == false) {
+                    selectedSha = data.sha as any; 
+                    await git.checkout({
+                        fs,
+                        dir,
+                        ref: data.sha,
+                        remote: "origin",
+                        force: true,
+                    });
+                } else {
+                    toast.error(
+                        "You have pending changes in your local repository. Please commit or stash them before switching branches.",
+                    );
+                }
+            }
+
 
             const div = document.getElementById("gitstatus");
             if (div) {
                 div.textContent = "ready";
             }
-          
-            const { commit } = await git.readCommit({
-                fs,
-                dir,
-                oid: sha,
-            });
             const rawFiles = await listMatrixRecursive({
                 fs,
                 dir,
             });
-            // Compute depth for VSCode-like indentation (segments - 1)
             files = rawFiles.map((f) => {
                 const segments = f.path.split("/");
                 return {
@@ -147,13 +174,11 @@
                 };
             });
         } catch (error: any) {
-            console.error("cloneRepo " + error.message);
             toast.error("cloneRepo " + error.message);
         }
     }
     cloneRepo();
 
-    // Full recursive function to walk a tree
     async function listMatrixRecursive(params: {
         fs: any;
         dir: string;
@@ -207,7 +232,6 @@
         try {
             await fs.promises.stat(filePath);
         } catch (statErr) {
-            console.error("File not found:", filePath, statErr);
             toast.error(`File not found: ${selectedFile.path}`);
             showDeleteFileWarning = false;
             selectedFile = null;
@@ -224,7 +248,6 @@
             toast.success("File deleted successfully!");
             invalidateAll(); // Refresh the page to reflect changes
         } catch (err) {
-            console.error("Failed to delete file:", err);
             toast.error("Failed to delete file: " + err);
         }
     }
@@ -252,25 +275,85 @@
                                 const DBDeleteRequest =
                                     window.indexedDB.deleteDatabase(dbname);
                                 DBDeleteRequest.onerror = (event) => {
-                                    console.error(
-                                        "Error deleting database: ",
-                                        event,
-                                    );
+                                    
                                 };
                                 DBDeleteRequest.onsuccess = (event) => {
-                                    console.info(
-                                        "Database deleted successfully.",
-                                    );
+                                  
                                 };
                             }
                         })
                         .catch((error) => {
-                            console.error("Error listing databases: ", error);
+                            toast.error("Error cleaning DBS: " + error.message);
                         });
                 }}
             >
                 Clean DBS
             </Hotkeybutton>
+            <Customselect
+                selectitems={branches}
+                value={selectedSha}
+                type="single"
+                width="w-full"
+                class="mb-2"
+                triggerContent={() => {
+                    return branches.length > 0
+                        ? branches.find((b) => b.sha === selectedSha)?.name ||
+                              "Select Branch"
+                        : "No branches available";
+                }}
+                onValueChangeFunction={async (value) => {
+                    const _selectedSha = selectedSha;
+                    selectedSha = "";
+
+                    const fs = new FS(data.item.repo.split("/").join("_"));
+                    const dir = "/test-clone";
+                    const matrix = await git.statusMatrix({ fs, dir });
+                    const hasPendingChanges = matrix.some(
+                        ([filepath, head, workdir, stage]) => {
+                            // If any file differs in HEAD vs workdir vs index
+                            return head !== workdir || head !== stage;
+                        },
+                    );
+
+                    if (hasPendingChanges == false) {
+                        const fs = new FS(data.item.repo.split("/").join("_"));
+                        const dir = "/test-clone";
+                        git.checkout({
+                            fs,
+                            dir,
+                            ref: value,
+                            remote: "origin",
+                            force: true,
+                        })
+                            .then(() => {
+                                // Refresh files after checkout
+                                return listMatrixRecursive({ fs, dir });
+                            })
+                            .then((rawFiles) => {
+                                files = rawFiles.map((f) => {
+                                    const segments = f.path.split("/");
+                                    return {
+                                        ...f,
+                                        depth: segments.length - 1,
+                                        name: segments[segments.length - 1],
+                                    };
+                                });
+                            })
+                            .catch((error) => {
+                                toast.error(
+                                    "Checkout failed: " + error.message,
+                                );
+                            });
+                        selectedSha = value;
+                        goto(base + `/git/${data.item._id}/${value}`);
+                    } else {
+                        selectedSha = _selectedSha;
+                        toast.error(
+                            "You have pending changes in your local repository. Please commit or stash them before switching branches.",
+                        );
+                    }
+                }}
+            ></Customselect>
             {#each visibleFiles() as file, index}
                 {#if file.type === "tree"}
                     <Hotkeybutton
@@ -302,7 +385,7 @@
                                 onclick={async () => {
                                     goto(
                                         base +
-                                            `/git/${data.item._id}/${file.path}`,
+                                            `/git/${data.item._id}/${data.sha}/${file.path}`,
                                     );
                                 }}
                             >

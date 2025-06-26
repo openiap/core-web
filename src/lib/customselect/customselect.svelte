@@ -19,8 +19,9 @@
 		if (item.image != null) return item.image;
 		if (item.stripeprice != null) return item.stripeprice;
 		if (item.value != null) return item.value;
+		if (item.sha != null) return item.sha;
 		if (item.name != null) return item.name;
-		return "";
+		return item;
 	}
 </script>
 
@@ -51,7 +52,7 @@
 				<!-- {#if value === (item?._id || item?.image || item?.stripeprice || item?.name || item?.value)}
 					<Check />
 				{/if} -->
-				{item?.name || item?.label}</Select.Item
+				{item?.name || item?.label || item}</Select.Item
 			>
 		{/each}
 	</Select.Content>
