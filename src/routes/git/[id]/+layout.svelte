@@ -165,14 +165,7 @@
                 fs,
                 dir,
             });
-            files = rawFiles.map((f) => {
-                const segments = f.path.split("/");
-                return {
-                    ...f,
-                    depth: segments.length - 1,
-                    name: segments[segments.length - 1],
-                };
-            });
+            files = buildFileList(rawFiles);
         } catch (error: any) {
             toast.error("cloneRepo " + error.message);
         }
@@ -218,6 +211,30 @@
             }
         }
         return results;
+    }
+    // Insert helper to build files list with folder (tree) entries
+    function buildFileList(rawFiles: any[]): any[] {
+        const items = rawFiles.map((f) => {
+            const segments = f.path.split("/");
+            return {
+                ...f,
+                depth: segments.length - 1,
+                name: segments[segments.length - 1],
+            };
+        });
+        const dirPaths = new Set<string>();
+        items.forEach((item) => {
+            const segments = item.path.split("/");
+            let prefix = "";
+            for (let i = 0; i < segments.length - 1; i++) {
+                prefix = prefix ? `${prefix}/${segments[i]}` : segments[i];
+                dirPaths.add(prefix);
+            }
+        });
+        const dirs = Array.from(dirPaths).map((path) => ({ path, type: "tree", depth: path.split("/").length - 1, name: path.split("/").pop() }));
+        const all = [...dirs, ...items];
+        all.sort((a, b) => a.path.localeCompare(b.path) || a.type.localeCompare(b.type));
+        return all;
     }
     async function handleDeleteFile() {
         if (!selectedFile) return;
@@ -330,14 +347,7 @@
                                 return listMatrixRecursive({ fs, dir });
                             })
                             .then((rawFiles) => {
-                                files = rawFiles.map((f) => {
-                                    const segments = f.path.split("/");
-                                    return {
-                                        ...f,
-                                        depth: segments.length - 1,
-                                        name: segments[segments.length - 1],
-                                    };
-                                });
+                                files = buildFileList(rawFiles);
                             })
                             .catch((error) => {
                                 toast.error(
