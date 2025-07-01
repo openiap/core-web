@@ -21,9 +21,12 @@
   function renderIcon(name: string, provider: string) {
     if (name == null) return Saml;
     if (provider == null) return Saml;
-    if (name.toLowerCase().indexOf("google") > -1) {
+    
+    // Check for Google first in both name and provider
+    if (name.toLowerCase().indexOf("google") > -1 || provider.toLowerCase().indexOf("google") > -1) {
       return Google;
     }
+    
     if (name.toLowerCase().indexOf("hotmail") > -1) {
       return Hotmail;
     }
@@ -38,9 +41,6 @@
     }
     if (provider.toLowerCase().indexOf("saml") > -1) {
       return Saml;
-    }
-    if (provider.toLowerCase().indexOf("google") > -1) {
-      return Google;
     }
     return Saml;
   }
