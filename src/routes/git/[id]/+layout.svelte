@@ -34,6 +34,8 @@
     let showRenameInput: boolean = $state(false);
     let renameInputText: string = $state("");
     let renameFile: any = $state(null);
+    let showNewFileInput: boolean = $state(false);
+    let newFileName: string = $state("");
 
     /**
      * Returns the list of files that are not hidden by collapsed folders
@@ -308,6 +310,58 @@
         }
     }
 
+    async function ensureDir(fs: any, dirPath: string) {
+        const parts = dirPath.split("/").filter(Boolean);
+        let current = "";
+        for (const part of parts) {
+            current += "/" + part;
+            try {
+                await fs.promises.stat(current);
+            } catch {
+                try {
+                    await fs.promises.mkdir(current);
+                } catch {}
+            }
+        }
+    }
+
+    async function handleCreateFile() {
+        if (!newFileName.trim()) {
+            toast.error("File name cannot be empty");
+            return;
+        }
+        const fs = new FS(data.item.repo.split("/").join("_"));
+        const dir = "/test-clone";
+        // Sanitize path to remove any leading slashes
+        const relPath = newFileName.replace(/^\/+/, "");
+        const filePath = `${dir}/${relPath}`;
+        const parentDir = filePath.substring(0, filePath.lastIndexOf("/"));
+        try {
+            // Check if file already exists
+            await fs.promises.stat(filePath);
+            toast.error("File already exists");
+            return;
+        } catch {
+            // File does not exist, proceed
+        }
+        try {
+            if (parentDir && parentDir !== dir) {
+                await ensureDir(fs, parentDir);
+            }
+            await fs.promises.writeFile(filePath, ""); // Create empty file
+            await git.add({ fs, dir, filepath: relPath });
+            const rawFiles = await listMatrixRecursive({ fs, dir });
+            files = buildFileList(rawFiles);
+            files = [...files]; // Trigger reactivity
+            toast.success(`File created: ${newFileName}`);
+            showNewFileInput = false;
+            newFileName = "";
+            invalidateAll();
+        } catch (err: any) {
+            toast.error("Failed to create file: " + err.message);
+        }
+    }
+
     function handleCancelRename() {
         showRenameInput = false;
         renameFile = null;
@@ -321,6 +375,35 @@
     <div
         class="md:h-full flex-shrink-0 p-4 rounded-[10px] bg-bw200 dark:bg-bw850 border dark:border-bw600"
     >
+        <button
+            class="w-full mb-2 px-2 py-1 rounded bg-bw300 dark:bg-bw700 hover:bg-bw400 dark:hover:bg-bw600 border dark:border-bw500"
+            onclick={() => { showNewFileInput = true; }}
+        >
+            + New File
+        </button>
+        {#if showNewFileInput}
+            <div class="flex items-center gap-2 mb-2">
+                <input
+                    class="border rounded px-1"
+                    bind:value={newFileName}
+                    placeholder="Enter new file name"
+                    onkeydown={e => e.key === 'Enter' && handleCreateFile()}
+                    autofocus
+                />
+                <HotkeyButton
+                    aria-label="Create file"
+                    title="Create"
+                    size="icon"
+                    onclick={handleCreateFile}
+                ><Check /></HotkeyButton>
+                <HotkeyButton
+                    aria-label="Cancel"
+                    title="Cancel"
+                    size="icon"
+                    onclick={() => { showNewFileInput = false; newFileName = ""; }}
+                ><X /></HotkeyButton>
+            </div>
+        {/if}
         <ul
             class="space-y-2 max-h-[500px] md:max-h-full md:h-full overflow-auto md:w-[240px] xl:w-[340px]"
         >
