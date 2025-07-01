@@ -69,8 +69,8 @@
       buttons: {
         example: "https://github.com/skadefro/ctest",
         package: {
-          title: "conan",
-          link: "https://conan.io/center/recipes/openiap",
+          title: "make",
+          link: "https://raw.githubusercontent.com/openiap/rustapi/refs/heads/main/c/Makefile",
         },
       },
     },
