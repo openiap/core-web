@@ -3,6 +3,7 @@
     import { base } from "$app/paths";
     import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
     import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
+    import { CustomInput } from "$lib/custominput/index.js";
     import Customselect from "$lib/customselect/customselect.svelte";
     import { auth } from "$lib/stores/auth.svelte.js";
     import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
@@ -326,7 +327,9 @@
             renameInputText = "";
             // If the current file was renamed, switch to the new URL
             if (shouldGotoNewUrl) {
-                await goto(base + `/git/${data.item._id}/${data.sha}/${relNewPath}`);
+                await goto(
+                    base + `/git/${data.item._id}/${data.sha}/${relNewPath}`,
+                );
             }
             invalidateAll();
         } catch (err: any) {
@@ -399,40 +402,6 @@
     <div
         class="md:h-full flex-shrink-0 p-4 rounded-[10px] bg-bw200 dark:bg-bw850 border dark:border-bw600"
     >
-        <button
-            class="w-full mb-2 px-2 py-1 rounded bg-bw300 dark:bg-bw700 hover:bg-bw400 dark:hover:bg-bw600 border dark:border-bw500"
-            onclick={() => {
-                showNewFileInput = true;
-            }}
-        >
-            + New File
-        </button>
-        {#if showNewFileInput}
-            <div class="flex items-center gap-2 mb-2">
-                <input
-                    class="border rounded px-1"
-                    bind:value={newFileName}
-                    placeholder="Enter new file name"
-                    onkeydown={(e) => e.key === "Enter" && handleCreateFile()}
-                    autofocus
-                />
-                <HotkeyButton
-                    aria-label="Create file"
-                    title="Create"
-                    size="icon"
-                    onclick={handleCreateFile}><Check /></HotkeyButton
-                >
-                <HotkeyButton
-                    aria-label="Cancel"
-                    title="Cancel"
-                    size="icon"
-                    onclick={() => {
-                        showNewFileInput = false;
-                        newFileName = "";
-                    }}><X /></HotkeyButton
-                >
-            </div>
-        {/if}
         <ul
             class="space-y-2 max-h-[500px] md:max-h-full md:h-full overflow-auto md:w-[240px] xl:w-[340px]"
         >
@@ -553,7 +522,6 @@
                                         onkeydown={(e) =>
                                             e.key === "Enter" &&
                                             handleRenameFile()}
-                                        autofocus
                                     />
                                     <HotkeyButton
                                         aria-label="Confirm rename"
@@ -616,6 +584,38 @@
                     </li>
                 {/if}
             {/each}
+            {#if showNewFileInput}
+                <div class="flex items-center gap-2 mb-2 mt-4">
+                    <CustomInput
+                        width="w-full"
+                        bind:value={newFileName}
+                        placeholder="Enter new file name"
+                    />
+                    <HotkeyButton
+                        aria-label="Create file"
+                        title="Create"
+                        size="icon"
+                        onclick={handleCreateFile}><Check /></HotkeyButton
+                    >
+                    <HotkeyButton
+                        aria-label="Cancel"
+                        title="Cancel"
+                        size="icon"
+                        onclick={() => {
+                            showNewFileInput = false;
+                            newFileName = "";
+                        }}><X /></HotkeyButton
+                    >
+                </div>
+            {/if}
+            <HotkeyButton
+                class="w-full mt-2"
+                onclick={() => {
+                    showNewFileInput = true;
+                }}
+            >
+                + New File
+            </HotkeyButton>
         </ul>
     </div>
 
