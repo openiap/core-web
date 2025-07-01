@@ -16,6 +16,9 @@
         Minus,
         Plus,
         Trash2,
+        Edit2,
+        Check,
+        X
     } from "lucide-svelte";
     import { toast } from "svelte-sonner";
 
@@ -28,6 +31,9 @@
     let collapsedFolders: Set<string> = $state(new Set());
     let showDeleteFileWarning: boolean = $state(false);
     let selectedFile: any = $state(null);
+    let showRenameInput: boolean = $state(false);
+    let renameInputText: string = $state("");
+    let renameFile: any = $state(null);
 
     /**
      * Returns the list of files that are not hidden by collapsed folders
@@ -186,8 +192,8 @@
         const results: any[] = [];
         for (const [filepath, head, workdir, stage] of matrix) {
             let mode: number | null = null;
-            // Check if file exists in workdir and get mode (if supported)
-            if (workdir === 1) {
+            // Show file if it exists in workdir or is staged (including new files)
+            if (workdir > 0 || stage > 0) {
                 try {
                     const stat = await fs.promises.stat(`${dir}/${filepath}`);
                     mode = stat.mode;
@@ -239,7 +245,7 @@
     async function handleDeleteFile() {
         if (!selectedFile) return;
 
-        const fs = new FS(data.item._id);
+        const fs = new FS(data.item.repo.split("/").join("_"));
         const dir = "/test-clone";
         // Sanitize path to remove any leading slashes
         const relPath = selectedFile.path.replace(/^\/+/, "");
@@ -267,6 +273,45 @@
         } catch (err) {
             toast.error("Failed to delete file: " + err);
         }
+    }
+    async function handleRenameFile() {
+        if (!renameFile) return;
+        const fs = new FS(data.item.repo.split("/").join("_"));
+        const dir = "/test-clone";
+        const oldRel = renameFile.path.replace(/^\/+/ , "");
+        // preserve directory when renaming
+        const dirName = oldRel.includes('/') ? oldRel.substring(0, oldRel.lastIndexOf('/')) : '';
+        const newRel = dirName ? `${dirName}/${renameInputText}` : renameInputText;
+        const oldPath = `${dir}/${oldRel}`;
+        const newPath = `${dir}/${newRel}`;
+        const relOldPath = oldRel; // always relative, no leading slash
+        const relNewPath = newRel; // always relative, no leading slash
+        try {
+            await fs.promises.rename(oldPath, newPath);
+            // Stage the removal of the old file
+            await git.remove({ fs, dir, filepath: relOldPath });
+            // Stage the addition of the new file
+            await git.add({ fs, dir, filepath: relNewPath });
+            // Debug: log the status matrix
+            const matrix = await git.statusMatrix({ fs, dir });
+            console.log('Status matrix after rename:', matrix);
+            const rawFiles = await listMatrixRecursive({ fs, dir });
+            files = buildFileList(rawFiles);
+            files = [...files]; // Force Svelte reactivity
+            toast.success(`File renamed to ${newRel}`);
+            showRenameInput = false;
+            renameFile = null;
+            renameInputText = "";
+            invalidateAll();
+        } catch (err: any) {
+            toast.error("Failed to rename file: " + err.message);
+        }
+    }
+
+    function handleCancelRename() {
+        showRenameInput = false;
+        renameFile = null;
+        renameInputText = "";
     }
 </script>
 
@@ -298,6 +343,7 @@
                                   
                                 };
                             }
+                            toast.success("All DBS cleaned successfully!");
                         })
                         .catch((error) => {
                             toast.error("Error cleaning DBS: " + error.message);
@@ -385,24 +431,41 @@
                         {/if}
                     </Hotkeybutton>
                 {:else if file.type === "blob"}
-                    <div
-                        class="flex items-center justify-between"
-                        style="padding-left: {file.depth}rem"
-                    >
+                    <div class="flex items-center justify-between" style="padding-left: {file.depth}rem">
                         <div class="flex items-center gap-1">
                             <File class="h-4 w-4" />
-                            <button
-                                onclick={async () => {
-                                    goto(
-                                        base +
-                                            `/git/${data.item._id}/${data.sha}/${file.path}`,
-                                    );
-                                }}
-                            >
-                                {file.name}
-                            </button>
+                            {#if showRenameInput && renameFile.index === index}
+                                <div class="flex items-center gap-1">
+                                    <input
+                                        class="border rounded px-1"
+                                        bind:value={renameInputText}
+                                        onkeydown={e => e.key === 'Enter' && handleRenameFile()}
+                                        autofocus
+                                    />
+                                    <HotkeyButton
+                                        aria-label="Confirm rename"
+                                        title="Confirm"
+                                        size="icon"
+                                        onclick={handleRenameFile}
+                                    ><Check /></HotkeyButton>
+                                    <HotkeyButton
+                                        aria-label="Cancel rename"
+                                        title="Cancel"
+                                        size="icon"
+                                        onclick={handleCancelRename}
+                                    ><X /></HotkeyButton>
+                                </div>
+                            {:else}
+                                <button
+                                    onclick={() => goto(
+                                        base + `/git/${data.item._id}/${data.sha}/${file.path}`
+                                    )}
+                                >
+                                    {file.name}
+                                </button>
+                            {/if}
                         </div>
-                        <!-- delete file -->
+                        {#if !(showRenameInput && renameFile.index === index)}
                         <div class="flex gap-2">
                             <HotkeyButton
                                 variant="danger"
@@ -412,9 +475,20 @@
                                 onclick={() => {
                                     selectedFile = { path: file.path, index };
                                     showDeleteFileWarning = true;
-                                }}><Trash2 /></HotkeyButton
-                            >
+                                }}
+                            ><Trash2 /></HotkeyButton>
+                            <HotkeyButton
+                                aria-label="Rename file"
+                                title="Rename file"
+                                size="icon"
+                                onclick={() => {
+                                    renameFile = { path: file.path, index };
+                                    renameInputText = file.name;
+                                    showRenameInput = true;
+                                }}
+                            ><Edit2 /></HotkeyButton>
                         </div>
+                        {/if}
                     </div>
                 {:else}
                     <li>
