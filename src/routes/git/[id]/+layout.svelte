@@ -286,21 +286,28 @@
     }
     async function handleRenameFile() {
         if (!renameFile) return;
+        if (!renameInputText.trim()) {
+            toast.error("File name cannot be empty");
+            return;
+        }
         const fs = new FS(data.item.repo.split("/").join("_"));
         const dir = "/test-clone";
         const oldRel = renameFile.path.replace(/^\/+/, "");
-        // preserve directory when renaming
-        const dirName = oldRel.includes("/")
-            ? oldRel.substring(0, oldRel.lastIndexOf("/"))
-            : "";
-        const newRel = dirName
-            ? `${dirName}/${renameInputText}`
-            : renameInputText;
+        // preserve directory when renaming, allow slashes in new name
+        const newRel = renameInputText.replace(/^\/+/, "");
         const oldPath = `${dir}/${oldRel}`;
         const newPath = `${dir}/${newRel}`;
-        const relOldPath = oldRel; // always relative, no leading slash
-        const relNewPath = newRel; // always relative, no leading slash
-        // Simplified: check if the last segment of the URL matches the old file name
+        // Check if new file already exists
+        try {
+            await fs.promises.stat(newPath);
+            toast.error("A file or folder with that name already exists");
+            return;
+        } catch {}
+        // Ensure parent directory exists for new path
+        const parentDir = newPath.substring(0, newPath.lastIndexOf("/"));
+        if (parentDir && parentDir !== dir) {
+            await ensureDir(fs, parentDir);
+        }
         let shouldGotoNewUrl = false;
         if (typeof window !== "undefined") {
             const urlParts = window.location.pathname.split("/");
@@ -312,23 +319,18 @@
         }
         try {
             await fs.promises.rename(oldPath, newPath);
-            // Stage the removal of the old file
-            await git.remove({ fs, dir, filepath: relOldPath });
-            // Stage the addition of the new file
-            await git.add({ fs, dir, filepath: relNewPath });
-            // Debug: log the status matrix
-            const matrix = await git.statusMatrix({ fs, dir });
+            await git.remove({ fs, dir, filepath: oldRel });
+            await git.add({ fs, dir, filepath: newRel });
             const rawFiles = await listMatrixRecursive({ fs, dir });
             files = buildFileList(rawFiles);
-            files = [...files]; // Force Svelte reactivity
+            files = [...files];
             toast.success(`File renamed to ${newRel}`);
             showRenameInput = false;
             renameFile = null;
             renameInputText = "";
-            // If the current file was renamed, switch to the new URL
             if (shouldGotoNewUrl) {
                 await goto(
-                    base + `/git/${data.item._id}/${data.sha}/${relNewPath}`,
+                    base + `/git/${data.item._id}/${data.sha}/${newRel}`,
                 );
             }
             invalidateAll();
