@@ -80,6 +80,10 @@
     }
   }
 
+  function onEditorChange(e: CustomEvent) {
+    commit = e.detail.code;
+  }
+
   if (browser) {
     getfilecontent();
     if (!window.Buffer) {
@@ -103,17 +107,15 @@
     </div>
   {/if}
 
-  {#key $page.url.pathname}
-    {#if pathto() != null && pathto() != ""}
-      <Monacoeditor
-        code={commit}
-        language={getLanguageFromExt(pathto())}
-        on:change={(e) => (commit = e.detail.code)}
-      />
-    {:else}
-      <div class="text-center text-gray-500">No file selected</div>
-    {/if}
-  {/key}
+  {#if pathto() != null && pathto() != ""}
+    <Monacoeditor
+      code={commit}
+      language={getLanguageFromExt(pathto())}
+      on:change={onEditorChange}
+    />
+  {:else}
+    <div class="text-center text-gray-500">No file selected</div>
+  {/if}
 </div>
 
 <CustomSuperDebug formData={commit} />

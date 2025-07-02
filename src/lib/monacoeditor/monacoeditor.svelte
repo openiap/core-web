@@ -75,7 +75,10 @@
     if (browser && Monaco) {
       Monaco.editor.setTheme(get(currentTheme) || "vs-light");
       if (model) {
-        model.setValue(code ?? "");
+        // Only update if the value is different to avoid resetting cursor
+        if (model.getValue() !== (code ?? "")) {
+          model.setValue(code ?? "");
+        }
         Monaco.editor.setModelLanguage(model, language);
       }
     }
