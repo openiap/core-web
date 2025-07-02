@@ -17,7 +17,6 @@
     // const url = `https://dev.openiap.io/git/${data.item.repo}`;
     const fs = new FS(data.item.repo.split("/").join("_"));
     const dir = "/test-clone";
-    console.log("Before reading file:", dir + "/" + pathto());
     try {
       // Ensure the directory exists
       if (pathto() != null && pathto() != "") {
@@ -28,7 +27,6 @@
     } catch (error) {
       console.error("Failed to read file:", error);
     }
-    console.log("After reading file:", dir + "/" + pathto());
   }
 
   function getLanguageFromExt(name: string) {

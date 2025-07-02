@@ -22,6 +22,7 @@
         X,
     } from "lucide-svelte";
     import { toast } from "svelte-sonner";
+    import { page } from "$app/stores";
 
     const { children, data } = $props();
 
@@ -37,6 +38,15 @@
     let renameFile: any = $state(null);
     let showNewFileInput: boolean = $state(false);
     let newFileName: string = $state("");
+
+    const currentFilePath = $derived(() => {
+        const urlParts = $page.url.pathname.split("/");
+        const shaIndex = urlParts.findIndex((p) => p === data.sha);
+        if (shaIndex !== -1 && shaIndex + 1 < urlParts.length) {
+            return urlParts.slice(shaIndex + 1).join("/");
+        }
+        return "";
+    });
 
     /**
      * Returns the list of files that are not hidden by collapsed folders
@@ -498,34 +508,32 @@
                         onclick={() => toggleFold(file.path)}
                     >
                         {#if collapsedFolders.has(file.path)}
-                            <FolderClosed class="h-4 w-4" />
+                            <FolderClosed class="h-5 w-5" />
                         {:else}
-                            <FolderOpen class="h-4 w-4" />
+                            <FolderOpen class="h-5 w-5" />
                         {/if}
                         {file.name}
                         {#if collapsedFolders.has(file.path)}
-                            <Plus class="h-4 w-4" />
+                            <Plus class="h-5 w-5" />
                         {:else}
-                            <Minus class="h-4 w-4" />
+                            <Minus class="h-5 w-5" />
                         {/if}
                     </Hotkeybutton>
                 {:else if file.type === "blob"}
                     <div
-                        class="flex items-center justify-between"
+                        class={`flex items-center justify-between w-full ${currentFilePath() === file.path && "p-1.5 bg-bw100 dark:bg-bw600 rounded"}`}
                         style="padding-left: {file.depth}rem"
                     >
-                        <div class="flex items-center gap-1">
-                            <File class="h-4 w-4" />
+                        <div class="flex items-center w-full gap-1">
+                            <File class="h-5 w-5" />
                             {#if showRenameInput && renameFile.index === index}
-                                <div class="flex items-center gap-1">
-                                    <input
-                                        class="border rounded px-1"
+                                <div class="flex items-center w-full gap-2">
+                                    <CustomInput
+                                        width="w-full"
                                         bind:value={renameInputText}
-                                        onkeydown={(e) =>
-                                            e.key === "Enter" &&
-                                            handleRenameFile()}
                                     />
                                     <HotkeyButton
+                                        variant="success"
                                         aria-label="Confirm rename"
                                         title="Confirm"
                                         size="icon"
@@ -533,6 +541,7 @@
                                         ><Check /></HotkeyButton
                                     >
                                     <HotkeyButton
+                                        variant="danger"
                                         aria-label="Cancel rename"
                                         title="Cancel"
                                         size="icon"
@@ -587,19 +596,21 @@
                 {/if}
             {/each}
             {#if showNewFileInput}
-                <div class="flex items-center gap-2 mb-2 mt-4">
+                <div class="flex items-center gap-2">
                     <CustomInput
                         width="w-full"
                         bind:value={newFileName}
                         placeholder="Enter new file name"
                     />
                     <HotkeyButton
+                        variant="success"
                         aria-label="Create file"
                         title="Create"
                         size="icon"
                         onclick={handleCreateFile}><Check /></HotkeyButton
                     >
                     <HotkeyButton
+                        variant="danger"
                         aria-label="Cancel"
                         title="Cancel"
                         size="icon"
@@ -611,6 +622,8 @@
                 </div>
             {/if}
             <HotkeyButton
+                aria-label="Create new file"
+                title="Create new file"
                 class="w-full mt-2"
                 onclick={() => {
                     showNewFileInput = true;
