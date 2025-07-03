@@ -3,6 +3,7 @@
     import { base } from "$app/paths";
     import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
     import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
+    import { CustomInput } from "$lib/custominput/index.js";
     import Customselect from "$lib/customselect/customselect.svelte";
     import { auth } from "$lib/stores/auth.svelte.js";
     import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
@@ -21,6 +22,7 @@
         X,
     } from "lucide-svelte";
     import { toast } from "svelte-sonner";
+    import { page } from "$app/stores";
 
     const { children, data } = $props();
 
@@ -36,6 +38,15 @@
     let renameFile: any = $state(null);
     let showNewFileInput: boolean = $state(false);
     let newFileName: string = $state("");
+
+    const currentFilePath = $derived(() => {
+        const urlParts = $page.url.pathname.split("/");
+        const shaIndex = urlParts.findIndex((p) => p === data.sha);
+        if (shaIndex !== -1 && shaIndex + 1 < urlParts.length) {
+            return urlParts.slice(shaIndex + 1).join("/");
+        }
+        return "";
+    });
 
     /**
      * Returns the list of files that are not hidden by collapsed folders
@@ -285,21 +296,28 @@
     }
     async function handleRenameFile() {
         if (!renameFile) return;
+        if (!renameInputText.trim()) {
+            toast.error("File name cannot be empty");
+            return;
+        }
         const fs = new FS(data.item.repo.split("/").join("_"));
         const dir = "/test-clone";
         const oldRel = renameFile.path.replace(/^\/+/, "");
-        // preserve directory when renaming
-        const dirName = oldRel.includes("/")
-            ? oldRel.substring(0, oldRel.lastIndexOf("/"))
-            : "";
-        const newRel = dirName
-            ? `${dirName}/${renameInputText}`
-            : renameInputText;
+        // preserve directory when renaming, allow slashes in new name
+        const newRel = renameInputText.replace(/^\/+/, "");
         const oldPath = `${dir}/${oldRel}`;
         const newPath = `${dir}/${newRel}`;
-        const relOldPath = oldRel; // always relative, no leading slash
-        const relNewPath = newRel; // always relative, no leading slash
-        // Simplified: check if the last segment of the URL matches the old file name
+        // Check if new file already exists
+        try {
+            await fs.promises.stat(newPath);
+            toast.error("A file or folder with that name already exists");
+            return;
+        } catch {}
+        // Ensure parent directory exists for new path
+        const parentDir = newPath.substring(0, newPath.lastIndexOf("/"));
+        if (parentDir && parentDir !== dir) {
+            await ensureDir(fs, parentDir);
+        }
         let shouldGotoNewUrl = false;
         if (typeof window !== "undefined") {
             const urlParts = window.location.pathname.split("/");
@@ -311,22 +329,19 @@
         }
         try {
             await fs.promises.rename(oldPath, newPath);
-            // Stage the removal of the old file
-            await git.remove({ fs, dir, filepath: relOldPath });
-            // Stage the addition of the new file
-            await git.add({ fs, dir, filepath: relNewPath });
-            // Debug: log the status matrix
-            const matrix = await git.statusMatrix({ fs, dir });
+            await git.remove({ fs, dir, filepath: oldRel });
+            await git.add({ fs, dir, filepath: newRel });
             const rawFiles = await listMatrixRecursive({ fs, dir });
             files = buildFileList(rawFiles);
-            files = [...files]; // Force Svelte reactivity
+            files = [...files];
             toast.success(`File renamed to ${newRel}`);
             showRenameInput = false;
             renameFile = null;
             renameInputText = "";
-            // If the current file was renamed, switch to the new URL
             if (shouldGotoNewUrl) {
-                await goto(base + `/git/${data.item._id}/${data.sha}/${relNewPath}`);
+                await goto(
+                    base + `/git/${data.item._id}/${data.sha}/${newRel}`,
+                );
             }
             invalidateAll();
         } catch (err: any) {
@@ -399,40 +414,6 @@
     <div
         class="md:h-full flex-shrink-0 p-4 rounded-[10px] bg-bw200 dark:bg-bw850 border dark:border-bw600"
     >
-        <button
-            class="w-full mb-2 px-2 py-1 rounded bg-bw300 dark:bg-bw700 hover:bg-bw400 dark:hover:bg-bw600 border dark:border-bw500"
-            onclick={() => {
-                showNewFileInput = true;
-            }}
-        >
-            + New File
-        </button>
-        {#if showNewFileInput}
-            <div class="flex items-center gap-2 mb-2">
-                <input
-                    class="border rounded px-1"
-                    bind:value={newFileName}
-                    placeholder="Enter new file name"
-                    onkeydown={(e) => e.key === "Enter" && handleCreateFile()}
-                    autofocus
-                />
-                <HotkeyButton
-                    aria-label="Create file"
-                    title="Create"
-                    size="icon"
-                    onclick={handleCreateFile}><Check /></HotkeyButton
-                >
-                <HotkeyButton
-                    aria-label="Cancel"
-                    title="Cancel"
-                    size="icon"
-                    onclick={() => {
-                        showNewFileInput = false;
-                        newFileName = "";
-                    }}><X /></HotkeyButton
-                >
-            </div>
-        {/if}
         <ul
             class="space-y-2 max-h-[500px] md:max-h-full md:h-full overflow-auto md:w-[240px] xl:w-[340px]"
         >
@@ -527,35 +508,32 @@
                         onclick={() => toggleFold(file.path)}
                     >
                         {#if collapsedFolders.has(file.path)}
-                            <FolderClosed class="h-4 w-4" />
+                            <FolderClosed class="h-5 w-5" />
                         {:else}
-                            <FolderOpen class="h-4 w-4" />
+                            <FolderOpen class="h-5 w-5" />
                         {/if}
                         {file.name}
                         {#if collapsedFolders.has(file.path)}
-                            <Plus class="h-4 w-4" />
+                            <Plus class="h-5 w-5" />
                         {:else}
-                            <Minus class="h-4 w-4" />
+                            <Minus class="h-5 w-5" />
                         {/if}
                     </Hotkeybutton>
                 {:else if file.type === "blob"}
                     <div
-                        class="flex items-center justify-between"
+                        class={`flex items-center justify-between w-full ${currentFilePath() === file.path && "p-1.5 bg-bw100 dark:bg-bw600 rounded"}`}
                         style="padding-left: {file.depth}rem"
                     >
-                        <div class="flex items-center gap-1">
-                            <File class="h-4 w-4" />
+                        <div class="flex items-center w-full gap-1">
+                            <File class="h-5 w-5" />
                             {#if showRenameInput && renameFile.index === index}
-                                <div class="flex items-center gap-1">
-                                    <input
-                                        class="border rounded px-1"
+                                <div class="flex items-center w-full gap-2">
+                                    <CustomInput
+                                        width="w-full"
                                         bind:value={renameInputText}
-                                        onkeydown={(e) =>
-                                            e.key === "Enter" &&
-                                            handleRenameFile()}
-                                        autofocus
                                     />
                                     <HotkeyButton
+                                        variant="success"
                                         aria-label="Confirm rename"
                                         title="Confirm"
                                         size="icon"
@@ -563,6 +541,7 @@
                                         ><Check /></HotkeyButton
                                     >
                                     <HotkeyButton
+                                        variant="danger"
                                         aria-label="Cancel rename"
                                         title="Cancel"
                                         size="icon"
@@ -616,6 +595,42 @@
                     </li>
                 {/if}
             {/each}
+            {#if showNewFileInput}
+                <div class="flex items-center gap-2">
+                    <CustomInput
+                        width="w-full"
+                        bind:value={newFileName}
+                        placeholder="Enter new file name"
+                    />
+                    <HotkeyButton
+                        variant="success"
+                        aria-label="Create file"
+                        title="Create"
+                        size="icon"
+                        onclick={handleCreateFile}><Check /></HotkeyButton
+                    >
+                    <HotkeyButton
+                        variant="danger"
+                        aria-label="Cancel"
+                        title="Cancel"
+                        size="icon"
+                        onclick={() => {
+                            showNewFileInput = false;
+                            newFileName = "";
+                        }}><X /></HotkeyButton
+                    >
+                </div>
+            {/if}
+            <HotkeyButton
+                aria-label="Create new file"
+                title="Create new file"
+                class="w-full mt-2"
+                onclick={() => {
+                    showNewFileInput = true;
+                }}
+            >
+                + New File
+            </HotkeyButton>
         </ul>
     </div>
 

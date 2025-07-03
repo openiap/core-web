@@ -17,7 +17,6 @@
     // const url = `https://dev.openiap.io/git/${data.item.repo}`;
     const fs = new FS(data.item.repo.split("/").join("_"));
     const dir = "/test-clone";
-    console.log("Before reading file:", dir + "/" + pathto());
     try {
       // Ensure the directory exists
       if (pathto() != null && pathto() != "") {
@@ -28,7 +27,6 @@
     } catch (error) {
       console.error("Failed to read file:", error);
     }
-    console.log("After reading file:", dir + "/" + pathto());
   }
 
   function getLanguageFromExt(name: string) {
@@ -82,6 +80,10 @@
     }
   }
 
+  function onEditorChange(e: CustomEvent) {
+    commit = e.detail.code;
+  }
+
   if (browser) {
     getfilecontent();
     if (!window.Buffer) {
@@ -105,17 +107,15 @@
     </div>
   {/if}
 
-  {#key $page.url.pathname}
-    {#if pathto() != null && pathto() != ""}
-      <Monacoeditor
-        code={commit}
-        language={getLanguageFromExt(pathto())}
-        on:change={(e) => (commit = e.detail.code)}
-      />
-    {:else}
-      <div class="text-center text-gray-500">No file selected</div>
-    {/if}
-  {/key}
+  {#if pathto() != null && pathto() != ""}
+    <Monacoeditor
+      code={commit}
+      language={getLanguageFromExt(pathto())}
+      on:change={onEditorChange}
+    />
+  {:else}
+    <div class="text-center text-gray-500">No file selected</div>
+  {/if}
 </div>
 
 <CustomSuperDebug formData={commit} />

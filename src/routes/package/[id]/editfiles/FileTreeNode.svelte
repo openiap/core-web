@@ -38,6 +38,7 @@
     import FileTreeNode from "./FileTreeNode.svelte";
     import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
     import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
+    import { CustomInput } from "$lib/custominput";
 
     let renamingPath: string | null = null;
     let renameValue = "";
@@ -65,8 +66,9 @@
         style="padding-left: {node.level * 1}rem"
     >
         {#if node.children}
-            <button
-                class="mr-2 w-5 text-center cursor-pointer"
+            <HotkeyButton
+                variant="ghostfull"
+                class="text-center cursor-pointer"
                 onclick={() => toggleFolder(node.path)}
                 title="Toggle folder"
                 aria-label="Toggle folder"
@@ -76,7 +78,7 @@
                 {:else}
                     <FolderClosed class="mr-2 h-5 w-5" />
                 {/if}
-            </button>
+            </HotkeyButton>
         {:else if node.level != 0}
             - <File class="mr-1 h-5 w-5" />
         {:else}
@@ -84,12 +86,14 @@
         {/if}
 
         {#if renamingPath === node.path}
-            <input
-                class="flex-1 mr-2 border rounded px-1"
+            <CustomInput
+                width="w-full"
+                class="mr-2"
                 bind:value={renameValue}
             />
             <div class="flex items-center gap-2">
                 <HotkeyButton
+                    variant="success"
                     data-shortcut="enter"
                     aria-label="Rename file"
                     title="Rename file"
@@ -100,6 +104,7 @@
                     }}><Check /></HotkeyButton
                 >
                 <HotkeyButton
+                    variant="danger"
                     data-shortcut="esc"
                     aria-label="Cancel"
                     title="Cancel"
@@ -113,20 +118,19 @@
             <div class="flex items-center justify-between w-full">
                 <div class="flex items-center gap-2">
                     {#if !node.children}
-                    <HotkeyButton
-                        variant="ghostfull"
-                        aria-label="Edit file"
-                        title="Edit file"
-                        class="p-0"
-                        onclick={() => onEdit(node.path)}
-                        >{node.name}</HotkeyButton
-                    >
+                        <HotkeyButton
+                            variant="ghostfull"
+                            aria-label="Edit file"
+                            title="Edit file"
+                            class="p-0"
+                            onclick={() => onEdit(node.path)}
+                            >{node.name}</HotkeyButton
+                        >
                         <!-- <span class="flex-1 whitespace-nowrap"
                         onclick={() => onEdit(node.path)}
                         title="Edit file"
                             >{node.name}</span
                         > -->
-                       
                     {:else}
                         <Hotkeybutton
                             variant="ghostfull"
@@ -163,7 +167,7 @@
                             onclick={() => onEdit(node.path)}
                             ><SquarePen /></HotkeyButton
                         > -->
-                             <HotkeyButton
+                        <HotkeyButton
                             aria-label="Rename file"
                             title="Rename file"
                             size="icon"
