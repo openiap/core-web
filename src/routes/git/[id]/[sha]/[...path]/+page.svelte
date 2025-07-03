@@ -103,7 +103,7 @@
     <div class="mb-2 flex items-center justify-between">
       <!-- current file name with path -->
       <span class="">{pathto()}</span>
-      <Hotkeybutton onclick={saveFile} variant="success">Save</Hotkeybutton>
+      <Hotkeybutton onclick={saveFile} variant="success" data-shortcut="ctrl+s">Save</Hotkeybutton>
     </div>
   {/if}
 
