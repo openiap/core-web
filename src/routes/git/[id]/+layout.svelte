@@ -1,8 +1,9 @@
 <script lang="ts">
     import { goto, invalidateAll } from "$app/navigation";
     import { base } from "$app/paths";
+    import { page } from "$app/stores";
+    import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
     import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
-    import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
     import { CustomInput } from "$lib/custominput/index.js";
     import Customselect from "$lib/customselect/customselect.svelte";
     import { auth } from "$lib/stores/auth.svelte.js";
@@ -11,18 +12,17 @@
     import git from "isomorphic-git";
     import http from "isomorphic-git/http/web";
     import {
+        Check,
+        Edit2,
         File,
         FolderClosed,
         FolderOpen,
         Minus,
         Plus,
         Trash2,
-        Edit2,
-        Check,
         X,
     } from "lucide-svelte";
     import { toast } from "svelte-sonner";
-    import { page } from "$app/stores";
 
     const { children, data } = $props();
 
@@ -38,6 +38,8 @@
     let renameFile: any = $state(null);
     let showNewFileInput: boolean = $state(false);
     let newFileName: string = $state("");
+    let openAddFileDialog: boolean = $state(false);
+    let commitmessage: string = $state("");
 
     const currentFilePath = $derived(() => {
         const urlParts = $page.url.pathname.split("/");
@@ -71,6 +73,19 @@
         collapsedFolders = newSet;
     }
 
+    async function hasPendingChanges() {
+        const fs = new FS(data.item.repo.split("/").join("_"));
+        const dir = "/test-clone";
+        const matrix = await git.statusMatrix({ fs, dir });
+        const hasPendingChanges = matrix.some(
+            ([filepath, head, workdir, stage]) => {
+                // If any file differs in HEAD vs workdir vs index
+                return head !== workdir || head !== stage;
+            },
+        );
+        return hasPendingChanges;
+    }
+
     async function cloneRepo() {
         if (auth.access_token === "" || auth.access_token == null) {
             toast.error("No access token found");
@@ -94,6 +109,30 @@
             const fs = new FS(data.item.repo.split("/").join("_"));
             const dir = "/test-clone";
 
+            // check for git status in the directory
+            // try {
+            //     // List all files in the repo to check their status
+            //     const matrix = await git.statusMatrix({ fs, dir });
+            //     const statusList = await Promise.all(
+            //         matrix.map(async ([filepath]) => {
+            //             const status = await git.status({ fs, dir, filepath });
+            //             return `${filepath}: ${status}`;
+            //         }),
+            //     );
+            //     const headSha = await git.resolveRef({ fs, dir, ref: "HEAD" });
+            //     const commits = await git.log({ fs, dir, depth: 2 }); // show last 10 commits
+
+            //     for (const commit of commits) {
+            //         console.log(
+            //             `Commit: ${commit.oid}\nMessage: ${commit.commit.message}`,
+            //         );
+            //     }
+
+            //     console.log("Git status:", statusList, "HEAD SHA:", headSha);
+            // } catch (error: any) {
+            //     console.error("Error checking git status:", error.message);
+            // }
+
             let dirExists = false;
             try {
                 const result = await fs.promises.stat(dir);
@@ -112,12 +151,30 @@
                     corsProxy,
                     singleBranch: false,
                 });
-
-                await git.checkout({ fs, dir, ref: "HEAD" });
             } else {
                 await git.fetch({ fs, http, dir, url, headers, corsProxy });
             }
+            // await git.checkout({ fs, dir, ref: "HEAD" });
+            const pendingChanges = await hasPendingChanges();
+            if (pendingChanges === false) {
+                const dbbranch = await auth.client.FindOne<any>({
+                    collectionname: "git",
+                    query: { sha: data.sha, ref: { "$ne": "HEAD"} },
+                    jwt: auth.access_token,
+                });
 
+                if (dbbranch == null) {
+                    await git.checkout({ fs, dir, ref: data.sha });
+                } else {
+                    await git.checkout({
+                        fs,
+                        dir,
+                        ref: dbbranch.ref.split("/").pop(),
+                        remote: "origin",
+                        force: true,
+                    });
+                }
+            }
             const headSha = await git.resolveRef({ fs, dir, ref: "HEAD" });
             const branches1 = await git.listBranches({ fs, dir });
             for (const b of branches1) {
@@ -150,30 +207,30 @@
 
             selectedSha = await git.resolveRef({ fs, dir, ref: "HEAD" });
 
-            if (selectedSha != data.sha) {
-                const matrix = await git.statusMatrix({ fs, dir });
-                const hasPendingChanges = matrix.some(
-                    ([filepath, head, workdir, stage]) => {
-                        // If any file differs in HEAD vs workdir vs index
-                        return head !== workdir || head !== stage;
-                    },
-                );
+            // if (selectedSha != data.sha) {
+            //     const matrix = await git.statusMatrix({ fs, dir });
+            //     const hasPendingChanges = matrix.some(
+            //         ([filepath, head, workdir, stage]) => {
+            //             // If any file differs in HEAD vs workdir vs index
+            //             return head !== workdir || head !== stage;
+            //         },
+            //     );
 
-                if (hasPendingChanges == false) {
-                    selectedSha = data.sha as any;
-                    await git.checkout({
-                        fs,
-                        dir,
-                        ref: data.sha,
-                        remote: "origin",
-                        force: true,
-                    });
-                } else {
-                    toast.error(
-                        "You have pending changes in your local repository. Please commit or stash them before switching branches.",
-                    );
-                }
-            }
+            //     if (hasPendingChanges == false) {
+            //         selectedSha = data.sha as any;
+            //         await git.checkout({
+            //             fs,
+            //             dir,
+            //             ref: data.sha,
+            //             remote: "origin",
+            //             force: true,
+            //         });
+            //     } else {
+            //         toast.error(
+            //             "You have pending changes in your local repository. Please commit or stash them before switching branches.",
+            //         );
+            //     }
+            // }
 
             const div = document.getElementById("gitstatus");
             if (div) {
@@ -406,6 +463,124 @@
         renameFile = null;
         renameInputText = "";
     }
+
+    async function handleCommitChanges() {
+        const fs = new FS(data.item.repo.split("/").join("_"));
+        const dir = "/test-clone";
+
+        if (!commitmessage.trim()) {
+            toast.error("Commit message cannot be empty");
+            return;
+        }
+
+        // STEP 1: Stage all modified or untracked files
+        const statusMatrix = await git.statusMatrix({ fs, dir });
+        let anyStaged = false;
+
+        for (const [filepath, head, workdir, stage] of statusMatrix) {
+            if (workdir !== stage) {
+                // File is changed (or untracked) => stage it
+                await git.add({ fs, dir, filepath });
+                anyStaged = true;
+            } else if (workdir === 0 && (head > 0 || stage > 0)) {
+                // File was deleted => remove it from index
+                await git.remove({ fs, dir, filepath });
+                anyStaged = true;
+            }
+        }
+
+        // STEP 2: Show file statuses for debugging
+        const debugStatus = await Promise.all(
+            statusMatrix.map(async ([filepath]) => {
+                const status = await git.status({ fs, dir, filepath });
+                return `${filepath}: ${status}`;
+            }),
+        );
+
+        // STEP 3: Check if anything is staged
+        const postStageMatrix = await git.statusMatrix({ fs, dir });
+        const hasStagedChanges = postStageMatrix.some(
+            ([filepath, head, workdir, stage]) => stage !== head,
+        );
+
+        if (!hasStagedChanges) {
+            toast.error("No changes to commit.");
+            return;
+        }
+
+        // STEP 4: Commit the staged changes
+        let commitOid = null;
+        try {
+            commitOid = await git.commit({
+                fs,
+                dir,
+                message: commitmessage,
+                author: {
+                    name: auth.profile?.name || "Anonymous",
+                    email: auth.profile?.email || "anon@example.com",
+                },
+            });
+        } catch (error: any) {
+            toast.error("❌ Commit failed: " + error.message);
+            return;
+        }
+
+        if (commitOid) {
+            toast.success(`✅ Commit successful! OID: ${commitOid}`);
+        } else {
+            toast.error("❌ Commit failed: No commit OID returned");
+        }
+
+        // STEP 5: Reset UI
+        commitmessage = "";
+        openAddFileDialog = false;
+    }
+
+    async function handlePushChanges() {
+        const fs = new FS(data.item.repo.split("/").join("_"));
+        const dir = "/test-clone";
+        try {
+            // Try to get current branch, fallback to HEAD if needed
+            const headSha = await git.resolveRef({ fs, dir, ref: "HEAD" });
+            if (!headSha) {
+                toast.error("Push failed: Could not determine current branch");
+            } else {
+                const dbbranch = await auth.client.FindOne<any>({
+                    collectionname: "git",
+                    query: { sha: data.sha, ref: { "$ne": "HEAD" } },
+                    jwt: auth.access_token,
+                });
+                if (dbbranch == null) {
+                    await git.push({
+                        fs,
+                        http,
+                        dir,
+                        remote: "origin",
+                        ref: headSha,
+                        onAuth: () => ({
+                            username: auth.profile?.name || "",
+                            password: auth.access_token || "",
+                        }),
+                    });
+                } else {
+                    await git.push({
+                        fs,
+                        http,
+                        dir,
+                        remote: "origin",
+                        ref: dbbranch.ref.split("/").pop(),
+                        onAuth: () => ({
+                            username: auth.profile?.name || "",
+                            password: auth.access_token || "",
+                        }),
+                    });
+                }
+                toast.success("Pushed to remote successfully");
+            }
+        } catch (pushErr: any) {
+            toast.error("Push failed: " + (pushErr?.message || pushErr));
+        }
+    }
 </script>
 
 <div id="gitstatus" class="hidden">unknown</div>
@@ -417,7 +592,7 @@
         <ul
             class="space-y-2 max-h-[500px] md:max-h-full md:h-full overflow-auto md:w-[240px] xl:w-[340px]"
         >
-            <Hotkeybutton
+            <HotkeyButton
                 variant="ghostfull"
                 class="w-full mb-2"
                 onclick={() => {
@@ -440,7 +615,7 @@
                 }}
             >
                 Clean DBS
-            </Hotkeybutton>
+            </HotkeyButton>
             <Customselect
                 selectitems={branches}
                 value={selectedSha}
@@ -470,10 +645,21 @@
                     if (hasPendingChanges == false) {
                         const fs = new FS(data.item.repo.split("/").join("_"));
                         const dir = "/test-clone";
+                        const dbbranch = await auth.client.FindOne<any>({
+                            collectionname: "git",
+                            query: { sha: value, ref: { "$ne": "HEAD"} },
+                            jwt: auth.access_token,
+                        });
+                        let ref;
+                        if (dbbranch == null) {
+                            ref = value;
+                        } else {
+                            ref = dbbranch.ref.split("/").pop();
+                        }
                         git.checkout({
                             fs,
                             dir,
-                            ref: value,
+                            ref: ref,
                             remote: "origin",
                             force: true,
                         })
@@ -501,7 +687,7 @@
             ></Customselect>
             {#each visibleFiles() as file, index}
                 {#if file.type === "tree"}
-                    <Hotkeybutton
+                    <HotkeyButton
                         variant="ghostfull"
                         class="flex items-center gap-1 cursor-pointer"
                         style="padding-left: {file.depth}rem"
@@ -518,7 +704,7 @@
                         {:else}
                             <Minus class="h-5 w-5" />
                         {/if}
-                    </Hotkeybutton>
+                    </HotkeyButton>
                 {:else if file.type === "blob"}
                     <div
                         class={`flex items-center justify-between w-full ${currentFilePath() === file.path && "p-1.5 bg-bw100 dark:bg-bw600 rounded"}`}
@@ -638,6 +824,22 @@
         class="h-full w-full overflow-auto p-4 bg-bw200 dark:bg-bw850 border dark:border-bw600 rounded-[10px] md:h-full md:overflow-auto"
     >
         {@render children()}
+
+        <HotkeyButton
+            aria-label="Commit changes"
+            title="Commit changes"
+            onclick={() => (openAddFileDialog = true)}
+        >
+            Commit changes
+        </HotkeyButton>
+        <HotkeyButton
+            aria-label="Push changes"
+            title="Push changes"
+            class="ml-2"
+            onclick={handlePushChanges}
+        >
+            Push changes
+        </HotkeyButton>
     </div>
 </div>
 
@@ -646,3 +848,42 @@
     type="delete"
     onaccept={handleDeleteFile}
 ></Warningdialogue>
+
+<AlertDialog.Root bind:open={openAddFileDialog}>
+    <AlertDialog.Content>
+        <AlertDialog.Header>
+            <AlertDialog.Title>Commit changes</AlertDialog.Title>
+            <AlertDialog.Description class="h-fit w-full">
+                <div class="">
+                    <CustomInput
+                        size="md"
+                        label="File name"
+                        placeholder="Enter commit message"
+                        bind:value={commitmessage}
+                        class="my-4"
+                        width="w-full"
+                    />
+                </div>
+            </AlertDialog.Description>
+        </AlertDialog.Header>
+        <AlertDialog.Footer>
+            <HotkeyButton
+                aria-label="Commit changes"
+                title="Commit changes"
+                data-shortcut="enter"
+                disabled={!commitmessage}
+                variant="success"
+                onclick={() => handleCommitChanges()}
+                >Commit Changes</HotkeyButton
+            >
+            <HotkeyButton
+                aria-label="Close dialog"
+                title="Close dialog"
+                variant="danger"
+                onclick={() => {
+                    openAddFileDialog = false;
+                }}>Close</HotkeyButton
+            >
+        </AlertDialog.Footer>
+    </AlertDialog.Content>
+</AlertDialog.Root>
