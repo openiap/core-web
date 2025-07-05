@@ -1,15 +1,11 @@
 <script lang="ts">
+  import { base } from "$app/paths";
   import * as Card from "$lib/components/ui/card/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
   import { Label } from "$lib/components/ui/label/index.js";
   import Separator from "$lib/components/ui/separator/separator.svelte";
   import { CustomInput } from "$lib/custominput";
   import LeftImage from "$lib/images/login/cover.svg";
-  import Google from "$lib/images/login/google.svg";
-  import Hotmail from "$lib/images/login/hotmail.svg";
-  import Office365 from "$lib/images/login/office365.svg";
-  import Openid from "$lib/images/login/openid.svg";
-  import Saml from "$lib/images/login/saml.svg";
   import { auth } from "$lib/stores/auth.svelte";
 
   let loading = $state(false);
@@ -19,54 +15,43 @@
   }
 
   function renderIcon(name: string, provider: string) {
-    if (name == null) return Saml;
-    if (provider == null) return Saml;
+    if (name == null) return `${base}/saml.svg`;
+    if (provider == null) return `${base}/saml.svg`;
     
     const nameLower = name.toLowerCase();
     const providerLower = provider.toLowerCase();
     
-    // DEBUG: Log what we're checking
-    console.log(`DEBUG renderIcon: name="${name}", provider="${provider}"`);
-    console.log(`DEBUG renderIcon: nameLower="${nameLower}", providerLower="${providerLower}"`);
-    
-    // PERMANENT FIX: Check for Google ANYWHERE in name or provider - this takes absolute priority
+    // Check for Google ANYWHERE in name or provider - this takes absolute priority
     if (nameLower.includes("google") || providerLower.includes("google")) {
-      console.log("DEBUG: Returning Google icon");
-      return Google;
+      return `${base}/google.svg`;
     }
     
     // Check for Hotmail/Outlook
     if (nameLower.includes("hotmail") || nameLower.includes("outlook")) {
-      console.log("DEBUG: Returning Hotmail icon");
-      return Hotmail;
+      return `${base}/hotmail.svg`;
     }
     
     // Check for Office 365 (be specific to avoid conflicts)
     if (nameLower.includes("office 365") || nameLower.includes("office365")) {
-      console.log("DEBUG: Returning Office365 icon for office 365");
-      return Office365;
+      return `${base}/office365.svg`;
     }
     
     // Check for Microsoft (but not if it's clearly Google)
     if (nameLower.includes("microsoft") && !nameLower.includes("google")) {
-      console.log("DEBUG: Returning Office365 icon for microsoft");
-      return Office365;
+      return `${base}/office365.svg`;
     }
     
     // Check provider types
     if (providerLower.includes("oidc") || providerLower.includes("openid")) {
-      console.log("DEBUG: Returning Openid icon");
-      return Openid;
+      return `${base}/openid.svg`;
     }
     
     if (providerLower.includes("saml")) {
-      console.log("DEBUG: Returning Saml icon");
-      return Saml;
+      return `${base}/saml.svg`;
     }
     
     // Default fallback
-    console.log("DEBUG: Returning default Saml icon");
-    return Saml;
+    return `${base}/saml.svg`;
   }
   function renderClass(name: string, provider: string) {
     if (name == null) return "w-4 h-4 mr-2";
