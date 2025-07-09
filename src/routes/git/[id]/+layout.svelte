@@ -50,9 +50,6 @@
         return "";
     });
 
-    /**
-     * Returns the list of files that are not hidden by collapsed folders
-     */
     function visibleFiles() {
         return files.filter((f) => {
             const segments = f.path.split("/");
@@ -65,7 +62,6 @@
         });
     }
 
-    // Toggle collapse state for a folder
     function toggleFold(path: string) {
         const newSet = new Set(collapsedFolders);
         if (newSet.has(path)) newSet.delete(path);
