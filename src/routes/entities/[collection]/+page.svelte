@@ -176,7 +176,9 @@
                       {/if}
                     </div>
                     <div>
-                      {collection.name}
+                      {collection.name.length > 22
+                        ? collection.name.slice(0, 22) + "..."
+                        : collection.name}
                     </div>
                   </div>
                 </div>
