@@ -21,37 +21,92 @@
     const nameLower = name.toLowerCase();
     const providerLower = provider.toLowerCase();
     
-    // Check for Google ANYWHERE in name or provider - this takes absolute priority
-    if (nameLower.includes("google") || providerLower.includes("google")) {
-      return `${base}/google.svg`;
-    }
+    // ULTIMATE DEBUG: Log EVERYTHING with UNIQUE identifier
+    const debugId = `${name}-${provider}-${Date.now()}`;
+    console.log(`🔍 RENDERICON DEBUG [${debugId}]:`);
+    console.log(`   📝 ORIGINAL name: "${name}"`);
+    console.log(`   📝 ORIGINAL provider: "${provider}"`);
+    console.log(`   🔤 nameLower: "${nameLower}"`);
+    console.log(`   🔤 providerLower: "${providerLower}"`);
+    console.log(`   🌐 base: "${base}"`);
     
-    // Check for Hotmail/Outlook
-    if (nameLower.includes("hotmail") || nameLower.includes("outlook")) {
-      return `${base}/hotmail.svg`;
-    }
+    // TEST ALL CONDITIONS AND LOG WHAT MATCHES
+    const tests = {
+      googleInName: nameLower.includes("google"),
+      googleInProvider: providerLower.includes("google"),
+      office365InName: nameLower.includes("office 365"),
+      office365AltInName: nameLower.includes("office365"),
+      officeInName: nameLower.includes("office"),
+      microsoftInName: nameLower.includes("microsoft"),
+      hotmailInName: nameLower.includes("hotmail"),
+      outlookInName: nameLower.includes("outlook"),
+      oidcInProvider: providerLower.includes("oidc"),
+      openidInProvider: providerLower.includes("openid"),
+      samlInProvider: providerLower.includes("saml")
+    };
     
-    // Check for Office 365 (be specific to avoid conflicts)
-    if (nameLower.includes("office 365") || nameLower.includes("office365")) {
-      return `${base}/office365.svg`;
-    }
+    console.log(`   🧪 TEST RESULTS for [${debugId}]:`, tests);
     
-    // Check for Microsoft (but not if it's clearly Google)
-    if (nameLower.includes("microsoft") && !nameLower.includes("google")) {
-      return `${base}/office365.svg`;
-    }
+    let result;
+    let reason;
+    let matchedCondition;
     
-    // Check provider types
-    if (providerLower.includes("oidc") || providerLower.includes("openid")) {
-      return `${base}/openid.svg`;
+    // ABSOLUTE PRIORITY: Google detection - check BOTH name AND provider
+    if (tests.googleInName || tests.googleInProvider) {
+      result = `${base}/google.svg`;
+      reason = `GOOGLE detected: nameHasGoogle=${tests.googleInName}, providerHasGoogle=${tests.googleInProvider}`;
+      matchedCondition = "GOOGLE_PRIORITY";
     }
-    
-    if (providerLower.includes("saml")) {
-      return `${base}/saml.svg`;
+    // Office 365 - specific match
+    else if (tests.office365InName || tests.office365AltInName) {
+      result = `${base}/office365.svg`;
+      reason = `OFFICE 365 specific: office365InName=${tests.office365InName}, office365AltInName=${tests.office365AltInName}`;
+      matchedCondition = "OFFICE365_SPECIFIC";
     }
-    
+    // Generic Office - but only if not Google
+    else if (tests.officeInName && !tests.googleInName && !tests.googleInProvider) {
+      result = `${base}/office365.svg`;
+      reason = `OFFICE generic: officeInName=${tests.officeInName}, noGoogleAnywhere`;
+      matchedCondition = "OFFICE_GENERIC";
+    }
+    // Microsoft - but only if not Google
+    else if (tests.microsoftInName && !tests.googleInName && !tests.googleInProvider) {
+      result = `${base}/office365.svg`;
+      reason = `MICROSOFT: microsoftInName=${tests.microsoftInName}, noGoogleAnywhere`;
+      matchedCondition = "MICROSOFT";
+    }
+    // Hotmail/Outlook
+    else if (tests.hotmailInName || tests.outlookInName) {
+      result = `${base}/hotmail.svg`;
+      reason = `HOTMAIL/OUTLOOK: hotmail=${tests.hotmailInName}, outlook=${tests.outlookInName}`;
+      matchedCondition = "HOTMAIL_OUTLOOK";
+    }
+    // OIDC/OpenID
+    else if (tests.oidcInProvider || tests.openidInProvider) {
+      result = `${base}/openid.svg`;
+      reason = `OIDC/OPENID: oidc=${tests.oidcInProvider}, openid=${tests.openidInProvider}`;
+      matchedCondition = "OIDC_OPENID";
+    }
+    // SAML
+    else if (tests.samlInProvider) {
+      result = `${base}/saml.svg`;
+      reason = `SAML: saml=${tests.samlInProvider}`;
+      matchedCondition = "SAML";
+    }
     // Default fallback
-    return `${base}/saml.svg`;
+    else {
+      result = `${base}/saml.svg`;
+      reason = "NO CONDITIONS MATCHED - using default";
+      matchedCondition = "DEFAULT_FALLBACK";
+    }
+    
+    console.log(`   ✅ FINAL RESULT for [${debugId}]:`);
+    console.log(`      🎯 Condition: ${matchedCondition}`);
+    console.log(`      📄 Reason: ${reason}`);
+    console.log(`      🔗 URL: ${result}`);
+    console.log(`   ═══════════════════════════════════════════════════════════════`);
+    
+    return result;
   }
   function renderClass(name: string, provider: string) {
     if (name == null) return "w-4 h-4 mr-2";
@@ -80,7 +135,7 @@
   }
 
   // svelte-ignore non_reactive_update
-    let loginproviders = auth.config?.loginproviders;
+  let loginproviders = auth.config?.loginproviders;
   if (loginproviders == null) {
     loginproviders = [];
   }
@@ -96,6 +151,7 @@
       provider: "local",
     });
   }
+  console.log("Login providers:", $state.snapshot(loginproviders));
 
 </script>
 
