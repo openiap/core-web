@@ -21,16 +21,8 @@
     const nameLower = name.toLowerCase();
     const providerLower = provider.toLowerCase();
     
-    // ULTIMATE DEBUG: Log EVERYTHING with UNIQUE identifier
     const debugId = `${name}-${provider}-${Date.now()}`;
-    console.log(`🔍 RENDERICON DEBUG [${debugId}]:`);
-    console.log(`   📝 ORIGINAL name: "${name}"`);
-    console.log(`   📝 ORIGINAL provider: "${provider}"`);
-    console.log(`   🔤 nameLower: "${nameLower}"`);
-    console.log(`   🔤 providerLower: "${providerLower}"`);
-    console.log(`   🌐 base: "${base}"`);
     
-    // TEST ALL CONDITIONS AND LOG WHAT MATCHES
     const tests = {
       googleInName: nameLower.includes("google"),
       googleInProvider: providerLower.includes("google"),
@@ -99,12 +91,6 @@
       reason = "NO CONDITIONS MATCHED - using default";
       matchedCondition = "DEFAULT_FALLBACK";
     }
-    
-    console.log(`   ✅ FINAL RESULT for [${debugId}]:`);
-    console.log(`      🎯 Condition: ${matchedCondition}`);
-    console.log(`      📄 Reason: ${reason}`);
-    console.log(`      🔗 URL: ${result}`);
-    console.log(`   ═══════════════════════════════════════════════════════════════`);
     
     return result;
   }
