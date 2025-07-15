@@ -18,6 +18,7 @@
     export let onRename: (oldPath: string, newName: string) => void;
     // the path of the file currently being edited, for highlighting
     export let currentPath: string | null = null;
+    export let isRoot: boolean = true;
 
     // Reference currentPath in script so Svelte recognizes usage
     $: _usedCurrentPath = currentPath;
@@ -34,7 +35,6 @@
         Trash2,
         X,
     } from "lucide-svelte";
-    import { onMount } from "svelte";
     import FileTreeNode from "./FileTreeNode.svelte";
     import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
     import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
@@ -44,20 +44,20 @@
     let renameValue = "";
     // tracks open/collapsed folder paths
     let openPaths: Set<string> = new Set();
-    // on mount, open all folders by default
-    onMount(() => {
-        const collectPaths = (arr: TreeNode[]): string[] =>
-            arr.flatMap((n) =>
-                n.children ? [n.path, ...collectPaths(n.children)] : [],
-            );
-        openPaths = new Set(collectPaths(nodes));
-    });
+
+    // Reactively open the first two nodes (if they have children) at the root level when nodes change
+    $: if (isRoot && nodes && nodes.length > 0) {
+        const openFirstTwo = nodes.slice(0, 1).filter(n => n.children).map(n => n.path);
+        openPaths = new Set(openFirstTwo);
+    }
+
     function toggleFolder(path: string) {
         const newSet = new Set(openPaths);
         if (newSet.has(path)) newSet.delete(path);
         else newSet.add(path);
         openPaths = newSet;
     }
+    console.log("FileTreeNode mounted with nodes:");
 </script>
 
 {#each nodes as node (node.path)}
@@ -188,6 +188,7 @@
             {onEdit}
             {onRename}
             {currentPath}
+            isRoot={false}
         />
     {/if}
 {/each}
