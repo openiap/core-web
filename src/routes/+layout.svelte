@@ -93,32 +93,36 @@
 			severityText: string,
 			...args: unknown[]
 		): void {
-			const callerInfo = getCallerInfo();
-			originalConsoleFn.apply(console, args);
-
-			// Convert log arguments into a single message
-			const message = args
-				.map((arg) =>
-					typeof arg === "object" ? JSON.stringify(arg) : String(arg),
-				)
-				.join(" ");
-
-			let attributes: any = {
-				filename: callerInfo.filename,
-				line: callerInfo.line,
-				// full_stack: new Error().stack
-			};
-			if (auth.profile != null && Object.keys(auth.profile).length > 0) {
-				attributes.userid = $state.snapshot(auth.profile.sub);
-				attributes.email = $state.snapshot(auth.profile.email);
+			try {
+				const callerInfo = getCallerInfo();
+				originalConsoleFn.apply(console, args);
+	
+				// Convert log arguments into a single message
+				const message = args
+					.map((arg) =>
+						typeof arg === "object" ? JSON.stringify(arg) : String(arg),
+					)
+					.join(" ");
+	
+				let attributes: any = {
+					filename: callerInfo.filename,
+					line: callerInfo.line,
+					// full_stack: new Error().stack
+				};
+				if (auth.profile != null && Object.keys(auth.profile).length > 0) {
+					attributes.userid = $state.snapshot(auth.profile.sub);
+					attributes.email = $state.snapshot(auth.profile.email);
+				}
+				// Emit to OpenTelemetry
+				logger.emit({
+					severityNumber,
+					severityText,
+					body: message.trim(),
+					attributes: attributes,
+				});
+			} catch (error) {
+				console.error("Error emitting log:", error);
 			}
-			// Emit to OpenTelemetry
-			logger.emit({
-				severityNumber,
-				severityText,
-				body: message.trim(),
-				attributes: attributes,
-			});
 		}
 
 		// Override console methods
