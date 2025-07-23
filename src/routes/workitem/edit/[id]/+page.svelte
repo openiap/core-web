@@ -258,6 +258,13 @@
     </div>
   </div>
 
+  {#if $formData.errormessage}
+    <div class="mb-10">
+      <div>Error Message</div>
+      <div class="mb-2 text-red-500">{$formData.errormessage}</div>
+    </div>
+  {/if}
+
   {#if $formData.files.length > 0}
     <div class="mb-2">Current files:</div>
     {#each $formData.files as file, index}
