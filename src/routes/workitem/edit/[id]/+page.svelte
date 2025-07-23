@@ -259,7 +259,7 @@
   </div>
 
   {#if $formData.errormessage}
-    <div class="mb-10">
+    <div class="mb-10 text-sm">
       <div>Error Message</div>
       <div class="mb-2 text-red-500">{$formData.errormessage}</div>
     </div>
