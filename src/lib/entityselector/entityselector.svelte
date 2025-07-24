@@ -2,7 +2,7 @@
     import * as Command from "$lib/components/ui/command/index.js";
     import * as Popover from "$lib/components/ui/popover/index.js";
     import { auth } from "$lib/stores/auth.svelte";
-    import { ChevronDown, ChevronUp } from "lucide-svelte";
+    import { ChevronDown, ChevronUp, Check, X } from "lucide-svelte";
     import { toast } from "svelte-sonner";
 
     let {
@@ -21,14 +21,70 @@
         propertyname = "",
         rendername = null,
         rendercontent = null,
+        selectiontype = "single",
+        maxselections = 1,
         ...restProps
     } = $props();
 
     let placeholder = `Search ${name}`;
     let entities: any[] = $state([]);
     let isOpen = $state(false);
+    let selectedItems: any[] = $state([]);
+
+    // Initialize selectedItems based on value
+    $effect(() => {
+        if (selectiontype === "multiple" && Array.isArray(value)) {
+            initializeSelectedItems();
+        }
+    });
+
+    async function initializeSelectedItems() {
+        if (!Array.isArray(value) || value.length === 0) {
+            selectedItems = [];
+            return;
+        }
+
+        let _basefilter = $state.snapshot(basefilter);
+        var query: any = { ..._basefilter };
+        let _value = $state.snapshot(value);
+
+        if (propertyname === "") {
+            // If value contains full objects
+            selectedItems = _value.map(v => v).filter(v => v !== null && v !== undefined);
+        } else {
+            // If value contains property values, we need to fetch the full objects
+            const ids = _value.filter(v => v !== null && v !== undefined);
+            if (ids.length === 0) {
+                selectedItems = [];
+                return;
+            }
+
+            try {
+                const items = await auth.client.Query({
+                    collectionname,
+                    query: {
+                        ..._basefilter,
+                        [propertyname]: { $in: ids }
+                    },
+                    jwt: auth.access_token,
+                    projection,
+                    queryas,
+                });
+                selectedItems = items;
+            } catch (error: any) {
+                toast.error("Error loading selected items", {
+                    description: error.message,
+                });
+                selectedItems = [];
+            }
+        }
+    }
 
     async function getCurrentItem() {
+        if (selectiontype === "multiple") {
+            return selectedItems;
+        }
+
         let _basefilter = $state.snapshot(basefilter);
         var query: any = { ..._basefilter };
         let _value = $state.snapshot(value);
@@ -63,9 +119,10 @@
     }
 
     const triggerContent = $derived(async () => {
-        let item = await getCurrentItem();
-        return item;
+        let result = await getCurrentItem();
+        return result;
     });
+
     async function loadSearchResult(search: string) {
         let query = { ...basefilter };
         if (search != null && search != "") {
@@ -105,8 +162,51 @@
             entities = [];
         }
     }
+
     function closeAndRefocusTrigger() {
         isOpen = false;
+    }
+
+    function isItemSelected(item: any) {
+        if (selectiontype !== "multiple") {
+            return false;
+        }
+        return selectedItems.some(selected => selected._id === item._id);
+    }
+
+    function toggleItem(item: any) {
+        if (isItemSelected(item)) {
+            selectedItems = selectedItems.filter(selected => selected._id !== item._id);
+        } else {
+            if (selectedItems.length >= maxselections) {
+                // If reached max selections, remove the first one
+                selectedItems = [...selectedItems.slice(1), item];
+            } else {
+                selectedItems = [...selectedItems, item];
+            }
+        }
+
+        // Update the value based on selection type
+        if (propertyname === "") {
+            value = selectedItems;
+        } else {
+            value = selectedItems.map(item => item[propertyname]);
+        }
+        
+        handleChangeFunction(value, selectedItems);
+    }
+
+    function removeSelectedItem(item: any) {
+        selectedItems = selectedItems.filter(selected => selected._id !== item._id);
+        
+        // Update the value based on selection type
+        if (propertyname === "") {
+            value = selectedItems;
+        } else {
+            value = selectedItems.map(item => item[propertyname]);
+        }
+        
+        handleChangeFunction(value, selectedItems);
     }
 </script>
 
@@ -124,10 +224,33 @@
         {#await triggerContent()}
             Loading...
         {:then triggerContent}
-            {#if rendercontent == null}
-                {triggerContent}
+            {#if selectiontype === "multiple"}
+                <div class="flex flex-wrap gap-1 overflow-hidden items-center mr-2 max-w-[calc(100%-24px)]">
+                    {#if selectedItems.length === 0}
+                        <span class="text-bw500">Select {name}</span>
+                    {:else}
+                        {#each selectedItems as item, i (item._id)}
+                            <div class="flex items-center bg-bw200 dark:bg-bw800 px-2 py-0.5 rounded-md">
+                                {#if rendername}
+                                    {@render rendername(item)}
+                                {:else}
+                                    {item.name}
+                                {/if}
+                                <button type="button" class="ml-1" on:click|stopPropagation={() => removeSelectedItem(item)}>
+                                    <X class="h-3 w-3" />
+                                </button>
+                            </div>
+                        {/each}
+                    {/if}
+                </div>
             {:else}
-                {@render rendercontent(triggerContent)}
+                <div class="mr-2 max-w-[calc(100%-24px)] overflow-hidden text-ellipsis">
+                    {#if rendercontent == null}
+                        {triggerContent}
+                    {:else}
+                        {@render rendercontent(triggerContent)}
+                    {/if}
+                </div>
             {/if}
         {:catch error}
             {error.message}
@@ -156,7 +279,12 @@
                     <Command.Item
                         title={"No " + name}
                         onSelect={() => {
-                            value = "";
+                            if (selectiontype === "multiple") {
+                                selectedItems = [];
+                                value = [];
+                            } else {
+                                value = "";
+                            }
                             handleChangeFunction(value, null);
                             closeAndRefocusTrigger();
                         }}
@@ -169,26 +297,46 @@
                 {#each entities as item}
                     <Command.Item
                         onSelect={() => {
-                            if (propertyname == "") {
-                                // new thing removed _id to return object instead of the id for workitemqueue (agent and mq req obj) and agent schedule (req obj)
-                                value = item;
+                            if (selectiontype === "multiple") {
+                                toggleItem(item);
+                                // Keep the popover open for multiple selections
                             } else {
-                                value = item[propertyname];
+                                // Single selection logic
+                                if (propertyname == "") {
+                                    value = item;
+                                } else {
+                                    value = item[propertyname];
+                                }
+                                handleChangeFunction(value, item);
+                                closeAndRefocusTrigger();
                             }
-                            handleChangeFunction(value, item);
-                            closeAndRefocusTrigger();
                         }}
                         value={item._id}
-                        class="text-sm cursor-pointer mx-2 rounded-[10px]"
+                        class="text-sm cursor-pointer mx-2 rounded-[10px] flex items-center justify-between"
                     >
-                        {#if rendername}
-                            {@render rendername(item)}
-                        {:else}
-                            {item.name}
+                        <span>
+                            {#if rendername}
+                                {@render rendername(item)}
+                            {:else}
+                                {item.name}
+                            {/if}
+                        </span>
+                        {#if selectiontype === "multiple" && isItemSelected(item)}
+                            <Check class="h-4 w-4 ml-2" />
                         {/if}
                     </Command.Item>
                 {/each}
             </Command.List>
+            {#if selectiontype === "multiple"}
+                <div class="border-t border-bw300 dark:border-bw700 p-2 flex justify-end">
+                    <button 
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-sm"
+                        on:click={closeAndRefocusTrigger}
+                    >
+                        Apply ({selectedItems.length}/{maxselections})
+                    </button>
+                </div>
+            {/if}
         </Command.Root>
     </Popover.Content>
 </Popover.Root>

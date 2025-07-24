@@ -141,10 +141,37 @@
 		true,
 		false
 	);
+	const volume = new SidebarItem(
+		"Volumes",
+		"",
+		"",
+		`${base}/volume`,
+		true,
+		false
+	);
+	const sfunc = new SidebarItem(
+		"SF Functions",
+		"",
+		"",
+		`${base}/sfunc`,
+		true,
+		false
+	);
+	const distribution = new SidebarItem(
+		"Distributions",
+		"",
+		"",
+		`${base}/distribution`,
+		true,
+		false
+	);
 	const homeCat = new SidebarCategory("", false, [home]);
 	const actions = new SidebarCategory("", false, [
 		chat,
 		promptfn,
+		volume,
+		sfunc,
+		distribution,
 		agent,
 		workitem,
 		workitemqueue,
@@ -398,6 +425,9 @@
 		const isAdmin = profileroles.includes("admins");
 		if(auth.config?.enable_serverless && isAdmin) {
 			promptfn.hidden = false;
+			volume.hidden = false;
+			sfunc.hidden = false;
+			distribution.hidden = false;
 		}
 		const isWorkspaceAdmin =
 			profileroles == null

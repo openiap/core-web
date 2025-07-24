@@ -120,6 +120,14 @@ class entitiesdata {
 					entities = JSON.parse(await auth.client.CustomCommand({ id: id, command: "getcustomerresources", jwt: access_token }));
 					total_count = entities.length
 					break;
+				case base + "/distribution":
+					collectionname = "fc";
+					entities = await this.GetData(page, collectionname, { _type: "distro" }, access_token);
+					total_count = entities.length;
+					if (entities.length >= usersettings.pagesize) {
+						total_count = await this.GetCount(page, collectionname, { _type: "distro" }, access_token);
+					}
+					break;
 				case base + "/entities":
 					collectionname = "openrpa"
 					entities = await this.GetData(page, collectionname, { _type: "credential" }, access_token, false);
@@ -165,6 +173,14 @@ class entitiesdata {
 					total_count = entities.length;
 					if (entities.length >= usersettings.pagesize) {
 						total_count = await this.GetCount(page, collectionname, { _type: "form" }, access_token, false);
+					}
+					break;
+				case base + "/sfunc":
+					collectionname = "fc";
+					entities = await this.GetData(page, collectionname, { _type: "package" }, access_token);
+					total_count = entities.length;
+					if (entities.length >= usersettings.pagesize) {
+						total_count = await this.GetCount(page, collectionname, { _type: "package" }, access_token);
 					}
 					break;
 				case base + "/formworkflow":
@@ -263,6 +279,15 @@ class entitiesdata {
 						total_count = await this.GetCount(page, collectionname, { _type: "user" }, access_token);
 					}
 					break;
+				case base + "/volume":
+					collectionname = "fc";
+					entities = await this.GetData(page, collectionname, { _type: "volume" }, access_token);
+					total_count = entities.length;
+					if (entities.length >= usersettings.pagesize) {
+						total_count = await this.GetCount(page, collectionname, { _type: "volume" }, access_token);
+					}
+					break;
+
 				case base + "/workitem":
 					collectionname = "workitems";
 					let workitemQuery = {}
