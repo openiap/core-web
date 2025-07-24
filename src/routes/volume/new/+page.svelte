@@ -4,7 +4,6 @@
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { CustomInput } from "$lib/custominput/index.js";
-  import { CustomSelect } from "$lib/customselect/index.js";
   import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { usersettings } from "$lib/stores/usersettings.svelte";
@@ -25,8 +24,6 @@
         loading = true;
         try {
           const workspaceid = usersettings.currentworkspace;
-          form.data._workspaceid = workspaceid;
-
           if (workspaceid == "" || workspaceid == null) {
             toast.error("Error", {
               description: "Please select a workspace",
@@ -35,6 +32,7 @@
             loading = false;
             return;
           }
+          form.data._workspaceid = workspaceid;
           form.data.provider = "image"
           const res = await auth.client.CustomCommand({
             command: "ensuresfvolume",

@@ -1,22 +1,18 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
-  import { Acl } from "$lib/acl";
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
-  import { CustomCheckbox } from "$lib/customcheckbox/index.js";
   import { CustomInput } from "$lib/custominput/index.js";
   import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
+  import Entityselector from "$lib/entityselector/entityselector.svelte";
   import { auth } from "$lib/stores/auth.svelte.js";
-  import { Check, Trash2 } from "lucide-svelte";
+  import { usersettings } from "$lib/stores/usersettings.svelte.js";
+  import { Check } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../schema.js";
-  import { CustomSelect } from "$lib/customselect/index.js";
-  import Entityselector from "$lib/entityselector/entityselector.svelte";
-  import { usersettings } from "$lib/stores/usersettings.svelte.js";
-  import { CustomSwitch } from "$lib/customswitch/index.js";
 
   let loading = $state(false);
 
@@ -33,8 +29,47 @@
     onUpdate: async ({ form, cancel }) => {
       if (form.valid) {
         loading = true;
-        // @ts-ignore
-        form.repo = form.name;
+        try {
+          const workspaceid = usersettings.currentworkspace;
+          if (workspaceid == "" || workspaceid == null) {
+            toast.error("Error", {
+              description: "Please select a workspace",
+            });
+            cancel();
+            loading = false;
+            return;
+          }
+          form.data._workspaceid = workspaceid;
+
+          await auth.client.CustomCommand({
+            command: "ensuresfunc",
+            // @ts-ignore
+            data: form.data,
+            jwt: auth.access_token,
+          });
+
+          toast.success("FS Function updated");
+          goto(base + `/sfunc`);
+        } catch (error: any) {
+          toast.error("Error", {
+            description: error.message,
+          });
+          cancel();
+          loading = false;
+        }
+      } else {
+        let errors = Object.keys(form.errors).map(
+          (key) => key + " is " + form.errors[key],
+        );
+        if (errors.length > 0) {
+          toast.error("Error", {
+            description: errors.join(", "),
+          });
+        } else {
+          toast.error("Error", {
+            description: "Form is invalid",
+          });
+        }
         cancel();
         loading = false;
       }
@@ -121,6 +156,7 @@
                 $formData.distro = item.repo + ":" + item.tag;
               }
             }}
+            searchby="name"
           >
             {#snippet rendername(item: any)}
               {item.name}

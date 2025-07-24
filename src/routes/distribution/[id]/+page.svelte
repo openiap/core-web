@@ -33,8 +33,47 @@
     onUpdate: async ({ form, cancel }) => {
       if (form.valid) {
         loading = true;
-        // @ts-ignore
-        form.repo = form.name;
+        try {
+          const workspaceid = usersettings.currentworkspace;
+          if (workspaceid == "" || workspaceid == null) {
+            toast.error("Error", {
+              description: "Please select a workspace",
+            });
+            cancel();
+            loading = false;
+            return;
+          }
+          form.data._workspaceid = workspaceid;
+
+          await auth.client.CustomCommand({
+            command: "ensuredistro",
+            // @ts-ignore
+            data: form.data,
+            jwt: auth.access_token,
+          });
+
+          toast.success("Distribution updated");
+          goto(base + `/distribution`);
+        } catch (error: any) {
+          toast.error("Error", {
+            description: error.message,
+          });
+          cancel();
+          loading = false;
+        }
+      } else {
+        let errors = Object.keys(form.errors).map(
+          (key) => key + " is " + form.errors[key],
+        );
+        if (errors.length > 0) {
+          toast.error("Error", {
+            description: errors.join(", "),
+          });
+        } else {
+          toast.error("Error", {
+            description: "Form is invalid",
+          });
+        }
         cancel();
         loading = false;
       }
@@ -72,7 +111,7 @@
       <Form.FieldErrors />
     </Form.Field>
 
-     <Form.Field {form} name="kernel" class="mb-10">
+    <Form.Field {form} name="kernel" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Kernel</Form.Label>
@@ -166,7 +205,7 @@
       <Form.FieldErrors />
     </Form.Field>
 
-     <Form.Field {form} name="repo" class="mb-10">
+    <Form.Field {form} name="repo" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Repo</Form.Label>
@@ -203,7 +242,7 @@
       <Form.Control>
         {#snippet children({ props })}
           <Form.Label>Distro</Form.Label>
-           <CustomInput
+          <CustomInput
             placeholder="Type repo"
             disabled={true}
             {...props}

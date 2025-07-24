@@ -23,6 +23,7 @@
         rendercontent = null,
         selectiontype = "single",
         maxselections = 1,
+        searchby = "_id",
         ...restProps
     } = $props();
 
@@ -50,10 +51,12 @@
 
         if (propertyname === "") {
             // If value contains full objects
-            selectedItems = _value.map(v => v).filter(v => v !== null && v !== undefined);
+            selectedItems = _value
+                .map((v) => v)
+                .filter((v) => v !== null && v !== undefined);
         } else {
             // If value contains property values, we need to fetch the full objects
-            const ids = _value.filter(v => v !== null && v !== undefined);
+            const ids = _value.filter((v) => v !== null && v !== undefined);
             if (ids.length === 0) {
                 selectedItems = [];
                 return;
@@ -64,7 +67,7 @@
                     collectionname,
                     query: {
                         ..._basefilter,
-                        [propertyname]: { $in: ids }
+                        [propertyname]: { $in: ids },
                     },
                     jwt: auth.access_token,
                     projection,
@@ -171,12 +174,14 @@
         if (selectiontype !== "multiple") {
             return false;
         }
-        return selectedItems.some(selected => selected._id === item._id);
+        return selectedItems.some((selected) => selected._id === item._id);
     }
 
     function toggleItem(item: any) {
         if (isItemSelected(item)) {
-            selectedItems = selectedItems.filter(selected => selected._id !== item._id);
+            selectedItems = selectedItems.filter(
+                (selected) => selected._id !== item._id,
+            );
         } else {
             if (selectedItems.length >= maxselections) {
                 // If reached max selections, remove the first one
@@ -190,22 +195,24 @@
         if (propertyname === "") {
             value = selectedItems;
         } else {
-            value = selectedItems.map(item => item[propertyname]);
+            value = selectedItems.map((item) => item[propertyname]);
         }
-        
+
         handleChangeFunction(value, selectedItems);
     }
 
     function removeSelectedItem(item: any) {
-        selectedItems = selectedItems.filter(selected => selected._id !== item._id);
-        
+        selectedItems = selectedItems.filter(
+            (selected) => selected._id !== item._id,
+        );
+
         // Update the value based on selection type
         if (propertyname === "") {
             value = selectedItems;
         } else {
-            value = selectedItems.map(item => item[propertyname]);
+            value = selectedItems.map((item) => item[propertyname]);
         }
-        
+
         handleChangeFunction(value, selectedItems);
     }
 </script>
@@ -225,18 +232,27 @@
             Loading...
         {:then triggerContent}
             {#if selectiontype === "multiple"}
-                <div class="flex flex-wrap gap-1 overflow-hidden items-center mr-2 max-w-[calc(100%-24px)]">
+                <div
+                    class="flex flex-wrap gap-1 overflow-hidden items-center mr-2 max-w-[calc(100%-24px)]"
+                >
                     {#if selectedItems.length === 0}
                         <span class="text-bw500">Select {name}</span>
                     {:else}
                         {#each selectedItems as item, i (item._id)}
-                            <div class="flex items-center bg-bw200 dark:bg-bw800 px-2 py-0.5 rounded-md">
+                            <div
+                                class="flex items-center bg-bw200 dark:bg-bw800 px-2 py-0.5 rounded-md"
+                            >
                                 {#if rendername}
                                     {@render rendername(item)}
                                 {:else}
                                     {item.name}
                                 {/if}
-                                <button type="button" class="ml-1" on:click|stopPropagation={() => removeSelectedItem(item)}>
+                                <button
+                                    type="button"
+                                    class="ml-1"
+                                    on:click|stopPropagation={() =>
+                                        removeSelectedItem(item)}
+                                >
                                     <X class="h-3 w-3" />
                                 </button>
                             </div>
@@ -244,7 +260,9 @@
                     {/if}
                 </div>
             {:else}
-                <div class="mr-2 max-w-[calc(100%-24px)] overflow-hidden text-ellipsis">
+                <div
+                    class="mr-2 max-w-[calc(100%-24px)] overflow-hidden text-ellipsis"
+                >
                     {#if rendercontent == null}
                         {triggerContent}
                     {:else}
@@ -328,8 +346,10 @@
                 {/each}
             </Command.List>
             {#if selectiontype === "multiple"}
-                <div class="border-t border-bw300 dark:border-bw700 p-2 flex justify-end">
-                    <button 
+                <div
+                    class="border-t border-bw300 dark:border-bw700 p-2 flex justify-end"
+                >
+                    <button
                         class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-sm"
                         on:click={closeAndRefocusTrigger}
                     >

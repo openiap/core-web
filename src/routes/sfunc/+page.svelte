@@ -7,7 +7,7 @@
   import { SearchInput } from "$lib/searchinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
-  import { Pencil, SquarePlus, Trash2 } from "lucide-svelte";
+  import { Pencil, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
@@ -28,7 +28,7 @@
         id: item._id,
         jwt: auth.access_token,
       });
-      // selected_items = selected_items.filter((i) => i !== item._id);
+      toast.success("SF Function deleted");
       ref.reload();
     } catch (error: any) {
       toast.error("Error", {
@@ -53,22 +53,6 @@
 
 <div class="sm:flex space-y-4 sm:space-y-0 justify-between mb-4 sm:space-x-5">
   <SearchInput bind:searchstring />
-
-  <HotkeyButton
-    title="Create SF Function (Insert Key)"
-    data-shortcut="ins"
-    size="sm"
-    variant="base"
-    disabled={loading}
-    aria-label="Create SF Function"
-    onclick={() => {
-      loading = true;
-      goto(base + `/sfunc/new`);
-    }}
-  >
-    <SquarePlus />
-    Create SF Function</HotkeyButton
-  >
 </div>
 
 <Entities

@@ -28,7 +28,7 @@
         id: item._id,
         jwt: auth.access_token,
       });
-      // selected_items = selected_items.filter((i) => i !== item._id);
+      toast.success("Volume deleted");
       ref.reload();
     } catch (error: any) {
       toast.error("Error", {
