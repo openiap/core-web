@@ -169,8 +169,8 @@
 	const actions = new SidebarCategory("", false, [
 		chat,
 		promptfn,
-		volume,
 		sfunc,
+		volume,
 		distribution,
 		agent,
 		workitem,
