@@ -10,6 +10,7 @@ export const newFormSchema = z.object({
 export type NewFormSchema = typeof newFormSchema;
 
 export const editFormSchema = z.object({
+    path: z.string().optional().nullable().transform((val) => val ?? ""),
     access_key: z.string().optional().nullable().transform((val) => val ?? ""),
     secret_key: z.string().optional().nullable().transform((val) => val ?? ""),
 }).passthrough();
