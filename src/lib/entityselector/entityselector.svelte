@@ -23,7 +23,7 @@
         rendercontent = null,
         selectiontype = "single",
         maxselections = 1,
-        searchby = "_id",
+        returnobject = false,
         ...restProps
     } = $props();
 
@@ -191,8 +191,10 @@
             }
         }
 
-        // Update the value based on selection type
-        if (propertyname === "") {
+        // Update the value based on selection type and returnobject flag
+        if (returnobject) {
+            value = selectedItems;
+        } else if (propertyname === "") {
             value = selectedItems;
         } else {
             value = selectedItems.map((item) => item[propertyname]);
@@ -206,8 +208,10 @@
             (selected) => selected._id !== item._id,
         );
 
-        // Update the value based on selection type
-        if (propertyname === "") {
+        // Update the value based on selection type and returnobject flag
+        if (returnobject) {
+            value = selectedItems;
+        } else if (propertyname === "") {
             value = selectedItems;
         } else {
             value = selectedItems.map((item) => item[propertyname]);
@@ -320,7 +324,9 @@
                                 // Keep the popover open for multiple selections
                             } else {
                                 // Single selection logic
-                                if (propertyname == "") {
+                                if (returnobject) {
+                                    value = item;
+                                } else if (propertyname == "") {
                                     value = item;
                                 } else {
                                     value = item[propertyname];

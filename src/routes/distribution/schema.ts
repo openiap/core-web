@@ -14,7 +14,7 @@ export const editFormSchema = z.object({
   max_warm_instances: z.number().optional().nullable().transform((val) => val ?? 0),
   predownload: z.boolean().optional().nullable().transform((val) => val ?? true),
   volume: z.string().optional().nullable().transform((val) => val ?? ""),
-  distros: z.string().optional().nullable().transform((val) => val ?? ""),
+  distro: z.string().optional().nullable().transform((val) => val ?? ""),
   repo: z.string().optional().nullable().transform((val) => val ?? ""),
   name: z.string().optional().nullable().transform((val) => val ?? ""),
 

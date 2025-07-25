@@ -142,6 +142,7 @@
         {#snippet children({ props })}
           <Form.Label>Distro</Form.Label>
           <Entityselector
+            propertyname="distro"
             queryas={usersettings.currentworkspace}
             width="md:w-fit w-64"
             class="mb-4 md:mb-0"
@@ -156,7 +157,7 @@
                 $formData.distro = item.repo + ":" + item.tag;
               }
             }}
-            searchby="name"
+            returnobject={true}
           >
             {#snippet rendername(item: any)}
               {item.name}
