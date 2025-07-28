@@ -12,7 +12,7 @@ export const editFormSchema = z.object({
   max_instances: z.number().min(1).max(3).default(1),
   always_parse_http: z.boolean().optional().nullable().transform((val) => val ?? true),
   volume: z.string().optional().nullable().transform((val) => val ?? ""),
-  distros: z.string().optional().nullable().transform((val) => val ?? ""),
+  distro: z.string().optional().nullable().transform((val) => val ?? ""),
   repo: z.string().optional().nullable().transform((val) => val ?? ""),
   name: z.string().optional().nullable().transform((val) => val ?? ""),
   minimum_response_time: z.number().min(0).default(0),

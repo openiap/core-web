@@ -44,6 +44,7 @@
             return;
           }
           form.data._workspaceid = workspaceid;
+          form.data.kernel = data.item.kernel;
 
           await auth.client.CustomCommand({
             command: "ensuredistro",
@@ -227,7 +228,7 @@
             <Form.Label>Pre Download</Form.Label>
             <CustomSwitch
               label="Pre Download"
-              description="If enabled, the function will always parse HTTP requests."
+              description="If enabled, the function will always pre download."
               loading={true}
               {...props}
               bind:checked={$formData.predownload}
