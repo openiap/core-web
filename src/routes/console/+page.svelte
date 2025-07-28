@@ -78,7 +78,7 @@
     );
     auth.client
       .Watch(
-        { collectionname: "config", paths: ["$.[?(@ && @._type == 'config')"] },
+        { collectionname: "config", paths: ["$.[?(@ && @._type == 'config')"],jwt: auth.access_token },
         (operation: any, document: any) => {
           if (document != null && document._type == "config") {
             config = document;

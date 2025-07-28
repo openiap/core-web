@@ -376,6 +376,7 @@
             correlation_id: correlation_id,
             queuename,
           },
+          jwt: auth.access_token
         },
         true,
       );
