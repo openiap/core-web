@@ -410,9 +410,9 @@
 <AlertDialog.Root bind:open={showcreatetoken}>
   <AlertDialog.Content>
     <AlertDialog.Header>
-      <AlertDialog.Title>Create Token</AlertDialog.Title>
+      <AlertDialog.Title>Create Access Token</AlertDialog.Title>
       <AlertDialog.Description>
-        Create a new token for the user.
+        Create a new token for your user.
       </AlertDialog.Description>
       <div class="font-medium">Name</div>
       <CustomInput
@@ -445,13 +445,13 @@
         onclick={handleCreateToken}
         type="submit"
         disabled={loading}
-        aria-label="Create Token"
+        aria-label="Create"
         variant="success"
         size="base"
         data-shortcut="ctrl+s"
       >
         <Check />
-        Create Token
+        Create
       </HotkeyButton>
     </AlertDialog.Footer>
   </AlertDialog.Content>
