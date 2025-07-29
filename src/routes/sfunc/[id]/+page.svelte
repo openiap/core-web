@@ -13,6 +13,7 @@
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../schema.js";
+    import { ObjectInput } from "$lib/objectinput/index.js";
 
   let loading = $state(false);
 
@@ -174,6 +175,20 @@
       </Form.Control>
       <Form.FieldErrors />
     </Form.Field>
+
+    <Form.Field {form} name="environment" class="w-full">
+          <Form.Control>
+            {#snippet children({ props })}
+              <Form.Label>Environment</Form.Label>
+              <ObjectInput
+                disabled={loading}
+                {...props}
+                bind:value={$formData.environment}
+              />
+            {/snippet}
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
 
     <Form.Field {form} name="min_instances" class="mb-10">
       <Form.Control>

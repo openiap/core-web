@@ -177,10 +177,10 @@ class entitiesdata {
 					break;
 				case base + "/sfunc":
 					collectionname = "fc";
-					entities = await this.GetData(page, collectionname, { _type: "package" }, access_token);
+					entities = await this.GetData(page, collectionname, { _type: "app" }, access_token);
 					total_count = entities.length;
 					if (entities.length >= usersettings.pagesize) {
-						total_count = await this.GetCount(page, collectionname, { _type: "package" }, access_token);
+						total_count = await this.GetCount(page, collectionname, { _type: "app" }, access_token);
 					}
 					break;
 				case base + "/formworkflow":

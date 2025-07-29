@@ -3,7 +3,7 @@ import { z } from 'zod';
 export const newFormSchema = z.object({
   _workspaceid: z.string(),
   name: z.string().min(1, "Name is required"),
-  _type: z.string().default("package"),
+  _type: z.string().default("app"),
 });
 export type NewFormSchema = typeof newFormSchema;
 
@@ -15,6 +15,7 @@ export const editFormSchema = z.object({
   distro: z.string().optional().nullable().transform((val) => val ?? ""),
   repo: z.string().optional().nullable().transform((val) => val ?? ""),
   name: z.string().optional().nullable().transform((val) => val ?? ""),
+  env: z.any(),
   minimum_response_time: z.number().min(0).default(0),
 }).passthrough();
 export type EditFormSchema = typeof editFormSchema;

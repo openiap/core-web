@@ -191,10 +191,8 @@
             }
         }
 
-        // Update the value based on selection type and returnobject flag
-        if (returnobject) {
-            value = selectedItems;
-        } else if (propertyname === "") {
+        // Update the value based on selection type
+        if (propertyname === "") {
             value = selectedItems;
         } else {
             value = selectedItems.map((item) => item[propertyname]);
@@ -208,10 +206,8 @@
             (selected) => selected._id !== item._id,
         );
 
-        // Update the value based on selection type and returnobject flag
-        if (returnobject) {
-            value = selectedItems;
-        } else if (propertyname === "") {
+        // Update the value based on selection type
+        if (propertyname === "") {
             value = selectedItems;
         } else {
             value = selectedItems.map((item) => item[propertyname]);
@@ -324,9 +320,7 @@
                                 // Keep the popover open for multiple selections
                             } else {
                                 // Single selection logic
-                                if (returnobject) {
-                                    value = item;
-                                } else if (propertyname == "") {
+                                if (propertyname == "") {
                                     value = item;
                                 } else {
                                     value = item[propertyname];

@@ -87,6 +87,11 @@
               const name = file.name;
               // @ts-ignore
               const type = file.type;
+              // Need to add theses fields to the file data
+              // file = wi._id;
+              // wiq = wiq.name;
+              // wiqid = wiq._id;
+              // uniquename = Util.GetUniqueIdentifier() + "-" + path.basename(file.filename);
               const id = await auth.client.UploadFile(
                 name,
                 type,
