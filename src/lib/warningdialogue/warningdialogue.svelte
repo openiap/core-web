@@ -56,7 +56,12 @@
                 "Plase type in the name of the collection to confirm.";
             buttonaname = "Delete";
             break;
-
+        case "usertoken":
+            title = "Revoke Token";
+            description =
+                "Are you sure you want to revoke this token? This action cannot be undone.";
+            buttonaname = "Revoke";
+            break;
         case "default":
             title = "Are you sure?";
             description = "This action cannot be undone.";
@@ -94,6 +99,7 @@
         </AlertDialog.Header>
         <AlertDialog.Footer>
             <HotkeyButton
+                title="Cancel"
                 tabindex={0}
                 variant="base"
                 {disabled}
@@ -103,6 +109,7 @@
                 }}>Cancel</HotkeyButton
             >
             <HotkeyButton
+                title={buttonaname}
                 tabindex={1}
                 variant="danger"
                 {disabled}

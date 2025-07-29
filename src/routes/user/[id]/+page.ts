@@ -5,8 +5,10 @@ export const load: PageLoad = async ({ parent, params }) => {
   const { access_token } = await parent();
   try {
     let item = await auth.client.FindOne<any>({ collectionname: "users", query: { _id: params.id, _type: "user" }, jwt: access_token });
-    return { item };
+    let tokens = await auth.client.Query<any>({ collectionname: "usertokens", query: {  _type: "usertoken", revoked: false }, jwt: access_token });
+    console.log("User tokens:", tokens);
+    return { item, tokens };
   } catch (error) {
-    return { item: null };
+    return { item: null, tokens: null };
   }
 };
