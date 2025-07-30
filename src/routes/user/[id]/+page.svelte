@@ -16,6 +16,7 @@
   import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import Customswitch from "$lib/customswitch/customswitch.svelte";
+  import { usersettings } from "$lib/stores/usersettings.svelte.js";
 
   let loading = $state(false);
 
@@ -27,7 +28,11 @@
   // here exp should be dynamically 1 year in the future
   let oneYearFromNow = new Date();
   oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
-  let newtokendata = $state({ name: "", exp: oneYearFromNow.toISOString().slice(0, 10), neverexpire: false });
+  let newtokendata = $state({
+    name: "",
+    exp: oneYearFromNow.toISOString().slice(0, 10),
+    neverexpire: false,
+  });
   let newaccesstoken = $state<any>("");
   let shownewaccesstoken = $state(false);
   let disablecloseaccesstokenbutton = $state(true);
@@ -128,7 +133,7 @@
         // @ts-ignore
         data: {
           name: newtokendata.name,
-          // exp: "1d",
+          workspaceid: usersettings.currentworkspace,
           exp: expString,
         },
         jwt: auth.access_token,
@@ -149,7 +154,11 @@
       setTimeout(() => {
         disablecloseaccesstokenbutton = false;
       }, 5000);
-      newtokendata = { name: "", exp: oneYearFromNow.toISOString().slice(0, 10), neverexpire: false }
+      newtokendata = {
+        name: "",
+        exp: oneYearFromNow.toISOString().slice(0, 10),
+        neverexpire: false,
+      };
       toast.success("Token created");
     } catch (error: any) {
       toast.error("Error", {
@@ -396,6 +405,9 @@
             <div class="flex items-center justify-start my-4">
               {index + 1}.
               <span class="text-sm">{token.name}</span>
+              {#if auth.config.workspace_enabled}
+                <span class="ms-1 text-sm">for {token._workspacename}</span>
+              {/if}
               <HotkeyButton
                 class="ml-2 dark:bg-darkbgred"
                 aria-label="Delete"
@@ -471,7 +483,11 @@
         onclick={() => {
           showcreatetoken = false;
           loading = false;
-          newtokendata = { name: "", exp: oneYearFromNow.toISOString().slice(0, 10), neverexpire: false }
+          newtokendata = {
+            name: "",
+            exp: oneYearFromNow.toISOString().slice(0, 10),
+            neverexpire: false,
+          };
         }}>Cancel</HotkeyButton
       >
       <HotkeyButton
