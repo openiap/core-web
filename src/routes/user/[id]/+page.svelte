@@ -84,9 +84,6 @@
   }
 
   async function handleCreateToken() {
-    console.log("handleCreateToken:", newtokendata.name);
-    console.log("handleCreateToken:", newtokendata.exp);
-
     // newtokendata.exp has this format in it 2025-07-17 i want to convert it to a string with days from now till that date like 1d, 2d, 3d, etc.
     if (newtokendata.name === "") {
       toast.error("Error", {
