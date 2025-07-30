@@ -8,13 +8,14 @@
   import { CustomInput } from "$lib/custominput/index.js";
   import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
-  import { Check, Plus, Trash2 } from "lucide-svelte";
+  import { Check, Copy, Plus, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../schema.js";
   import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
+  import Customswitch from "$lib/customswitch/customswitch.svelte";
 
   let loading = $state(false);
 
@@ -23,7 +24,10 @@
   let showcreatetoken = $state(false);
   let showRevokeWarning = $state(false);
   let revoketokenid = $state("");
-  let newtokendata = $state({ name: "", exp: "" });
+  let newtokendata = $state({ name: "", exp: "", oneyearvalid: false });
+  let newaccesstoken = $state<any>("");
+  let shownewaccesstoken = $state(false);
+  let disablecloseaccesstokenbutton = $state(true);
 
   if (data.item != null) {
     data.item = editFormSchema.parse(data.item);
@@ -91,51 +95,65 @@
       });
       return;
     }
-    if (newtokendata.exp === "") {
+    if (newtokendata.exp === "" && !newtokendata.oneyearvalid) {
       toast.error("Error", {
         description: "Expiration date is required",
       });
       return;
     }
-    const expDate = new Date(newtokendata.exp);
-    const today = new Date();
-    const diffTime = expDate.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    if (diffDays <= 0) {
-      toast.error("Error", {
-        description: "Expiration date must be in the future",
-      });
-      return;
-    }
-    let expString = diffDays + "d"; // convert to string like 1d, 2d, etc.
-    if (showcreatetoken) {
-      try {
-        loading = true;
-        await auth.client.CustomCommand({
-          command: "issueusertoken",
-          // @ts-ignore
-          data: {
-            name: newtokendata.name,
-            // exp: "1d",
-            exp: expString,
-          },
-          jwt: auth.access_token,
-        });
-        tokens = await auth.client.Query<any>({
-          collectionname: "usertokens",
-          query: { _type: "usertoken", revoked: false },
-          jwt: auth.access_token,
-        });
-        showcreatetoken = false;
-        newtokendata = { name: "", exp: "" };
-        toast.success("Token created");
-      } catch (error: any) {
+    let expString = "";
+    if (newtokendata.oneyearvalid) {
+      expString = "365d";
+    } else {
+      const expDate = new Date(newtokendata.exp);
+      const today = new Date();
+      const diffTime = expDate.getTime() - today.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      if (diffDays <= 0) {
         toast.error("Error", {
-          description: error.message,
+          description: "Expiration date must be in the future",
         });
-      } finally {
-        loading = false;
+        return;
       }
+      expString = diffDays + "d"; // convert to string like 1d, 2d, etc.
+    }
+    try {
+      loading = true;
+      // get the token from the response
+      const newtoken: any = await auth.client.CustomCommand({
+        command: "issueusertoken",
+        // @ts-ignore
+        data: {
+          name: newtokendata.name,
+          // exp: "1d",
+          exp: expString,
+        },
+        jwt: auth.access_token,
+      });
+      newaccesstoken = JSON.parse(newtoken).access_token;
+
+      // need this to update the tokens array becasue we are not getting the entire token object back
+      tokens = await auth.client.Query<any>({
+        collectionname: "usertokens",
+        query: { _type: "usertoken", revoked: false },
+        jwt: auth.access_token,
+      });
+
+      showcreatetoken = false;
+      shownewaccesstoken = true;
+      disablecloseaccesstokenbutton = true;
+
+      setTimeout(() => {
+        disablecloseaccesstokenbutton = false;
+      }, 5000);
+      newtokendata = { name: "", exp: "", oneyearvalid: false };
+      toast.success("Token created");
+    } catch (error: any) {
+      toast.error("Error", {
+        description: error.message,
+      });
+    } finally {
+      loading = false;
     }
   }
   async function revoketoken() {
@@ -146,14 +164,10 @@
         id: revoketokenid,
         jwt: auth.access_token,
       });
-      setTimeout(async () => {
-        tokens = await auth.client.Query<any>({
-          collectionname: "usertokens",
-          query: { _type: "usertoken", revoked: false },
-          jwt: auth.access_token,
-        });
-      }, 1000);
-      toast.success("Token revoked");
+      // remove the token from the tokens array
+      // @ts-ignore
+      tokens = tokens.filter((token: any) => token._id !== revoketokenid);
+      toast.success("Access token revoked");
     } catch (error: any) {
       toast.error("Error", {
         description: error.message,
@@ -365,7 +379,6 @@
         <HotkeyButton
           onclick={() => {
             showcreatetoken = true;
-            newtokendata = { name: "", exp: "" };
           }}
           disabled={loading}
           aria-label="Update User"
@@ -422,22 +435,30 @@
       <AlertDialog.Description>
         Create a new token for your user.
       </AlertDialog.Description>
-      <div class="font-medium">Name</div>
-      <CustomInput
-        width="w-1/2"
-        placeholder="Type name"
-        disabled={loading}
-        bind:value={newtokendata.name}
-      />
+      <div class="py-4">
+        <div class="font-medium mb-4">Name</div>
+        <CustomInput
+          width="w-1/2"
+          placeholder="Type name"
+          disabled={loading}
+          bind:value={newtokendata.name}
+        />
+      </div>
       <!-- need to add date picker here -->
-      <div class="font-medium">Expiration Date</div>
-      <CustomInput
-        min={new Date().toISOString().slice(0, 10)}
-        type="date"
-        placeholder="Expiration date"
-        disabled={loading}
-        bind:value={newtokendata.exp}
-      />
+      <div class="py-4">
+        <div class="font-medium mb-4">Expiration Date</div>
+        <CustomInput
+          min={new Date().toISOString().slice(0, 10)}
+          type="date"
+          placeholder="Expiration date"
+          disabled={newtokendata.oneyearvalid || loading}
+          bind:value={newtokendata.exp}
+        />
+        <div class="flex items-center space-x-2 my-6">
+          <Customswitch {loading} bind:checked={newtokendata.oneyearvalid} />
+          <div class="font-medium">One year validity</div>
+        </div>
+      </div>
     </AlertDialog.Header>
     <AlertDialog.Footer>
       <HotkeyButton
@@ -446,7 +467,7 @@
         onclick={() => {
           showcreatetoken = false;
           loading = false;
-          newtokendata = { name: "", exp: "" };
+          newtokendata = { name: "", exp: "", oneyearvalid: false };
         }}>Cancel</HotkeyButton
       >
       <HotkeyButton
@@ -461,6 +482,63 @@
         <Check />
         Create
       </HotkeyButton>
+    </AlertDialog.Footer>
+  </AlertDialog.Content>
+</AlertDialog.Root>
+
+<AlertDialog.Root bind:open={shownewaccesstoken}>
+  <AlertDialog.Content>
+    <AlertDialog.Header>
+      <AlertDialog.Title>Newly Generated Access Token</AlertDialog.Title>
+      <AlertDialog.Description>
+        This is the new access token for your user. Please copy it and save it
+        securely, as it will not be shown again.
+      </AlertDialog.Description>
+      <AlertDialog.Description>
+        You may close this dialog after 5 seconds.
+      </AlertDialog.Description>
+
+      <div class="py-6">
+        <div class="font-medium mb-4">Access Token</div>
+        <div class="flex items-center space-x-2">
+          <CustomInput
+            width="w-full"
+            placeholder="Access Token"
+            disabled={true}
+            bind:value={newaccesstoken}
+          />
+          <!-- copy button -->
+          <HotkeyButton
+            onclick={() => {
+              navigator.clipboard.writeText(newaccesstoken);
+              toast.success("Access token copied to clipboard");
+            }}
+            disabled={loading}
+            aria-label="Copy Access Token"
+            variant="icon"
+            size="icon"
+          >
+            <Copy />
+          </HotkeyButton>
+        </div>
+      </div>
+    </AlertDialog.Header>
+    <AlertDialog.Footer>
+      <!-- here i wnat a timout to trigger after 5 seconds to enable the close button -->
+      <!-- add timer -->
+      <HotkeyButton
+        title="Close"
+        variant="danger"
+        disabled={disablecloseaccesstokenbutton}
+        onclick={() => {
+          navigator.clipboard.writeText(newaccesstoken);
+          toast.success("Access token copied to clipboard");
+          shownewaccesstoken = false;
+          loading = false;
+          newaccesstoken = null;
+          disablecloseaccesstokenbutton = true;
+        }}>Close and copy</HotkeyButton
+      >
     </AlertDialog.Footer>
   </AlertDialog.Content>
 </AlertDialog.Root>
