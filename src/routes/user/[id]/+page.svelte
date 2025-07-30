@@ -389,7 +389,6 @@
                 onclick={() => {
                   showRevokeWarning = true;
                   revoketokenid = token._id;
-                  console.log("revoking token", token._id);
                 }}><Trash2 /></HotkeyButton
               >
             </div>
