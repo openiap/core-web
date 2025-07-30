@@ -111,7 +111,7 @@
     if (showcreatetoken) {
       try {
         loading = true;
-        auth.client.CustomCommand({
+        await auth.client.CustomCommand({
           command: "issueusertoken",
           // @ts-ignore
           data: {
@@ -119,6 +119,11 @@
             // exp: "1d",
             exp: expString,
           },
+          jwt: auth.access_token,
+        });
+        tokens = await auth.client.Query<any>({
+          collectionname: "usertokens",
+          query: { _type: "usertoken", revoked: false },
           jwt: auth.access_token,
         });
         showcreatetoken = false;
@@ -133,15 +138,21 @@
       }
     }
   }
-  async function revoketoken(tokenid: string) {
+  async function revoketoken() {
     try {
       loading = true;
       await auth.client.CustomCommand({
         command: "revokeusertoken",
-        id: tokenid,
+        id: revoketokenid,
         jwt: auth.access_token,
       });
-      // tokens = tokens.filter((token) => token._id !== tokenid);
+      setTimeout(async () => {
+        tokens = await auth.client.Query<any>({
+          collectionname: "usertokens",
+          query: { _type: "usertoken", revoked: false },
+          jwt: auth.access_token,
+        });
+      }, 1000);
       toast.success("Token revoked");
     } catch (error: any) {
       toast.error("Error", {
@@ -378,6 +389,7 @@
                 onclick={() => {
                   showRevokeWarning = true;
                   revoketokenid = token._id;
+                  console.log("revoking token", token._id);
                 }}><Trash2 /></HotkeyButton
               >
             </div>
