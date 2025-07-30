@@ -465,6 +465,7 @@
     </AlertDialog.Header>
     <AlertDialog.Footer>
       <HotkeyButton
+        title="Cancel"
         variant="danger"
         disabled={loading}
         onclick={() => {
