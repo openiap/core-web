@@ -1,9 +1,12 @@
 <script lang="ts">
 	import Switch from "$lib/components/ui/switch/switch.svelte";
+	function onvc(value: any) {}
+
 	let {
 		class: className = "",
 		loading = $bindable(false),
 		checked = $bindable(),
+		onclick = onvc,
 		...props
 	} = $props();
 </script>
@@ -14,4 +17,5 @@
 	disabled={loading}
 	bind:checked
 	aria-readonly
+	{onclick}
 />

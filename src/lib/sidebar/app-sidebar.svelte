@@ -139,7 +139,7 @@
 		"",
 		`${base}/promptfn`,
 		true,
-		false
+		false,
 	);
 	const volume = new SidebarItem(
 		"Volumes",
@@ -147,15 +147,15 @@
 		"",
 		`${base}/volume`,
 		true,
-		false
+		false,
 	);
-	const sfunc = new SidebarItem(
+	const sf = new SidebarItem(
 		"Serverless",
 		"",
 		"",
 		`${base}/serverless`,
 		true,
-		false
+		false,
 	);
 	const distribution = new SidebarItem(
 		"Distributions",
@@ -163,15 +163,15 @@
 		"",
 		`${base}/distribution`,
 		true,
-		false
+		false,
 	);
 	const homeCat = new SidebarCategory("", false, [home]);
 	const actions = new SidebarCategory("", false, [
 		chat,
-		promptfn,
-		sfunc,
-		volume,
-		distribution,
+		// promptfn,
+		// sf,
+		// volume,
+		// distribution,
 		agent,
 		workitem,
 		workitemqueue,
@@ -208,6 +208,12 @@
 		`${base}/workspace`,
 		false,
 	);
+	const serverless = new SidebarCategory("Serverless", false, [
+		sf,
+		distribution,
+		volume,
+		promptfn,
+	]);
 	const workspace = new SidebarCategory("Workspace", false, [
 		members,
 		invitemember,
@@ -389,7 +395,13 @@
 		...restProps
 	}: ExtendedComponentProps = $props();
 
-	const navMain = $state([homeCat, actions, workspace, management]);
+	const navMain = $state([
+		homeCat,
+		actions,
+		serverless,
+		workspace,
+		management,
+	]);
 	function loadMenu() {
 		if (
 			auth.config?.workspace_enabled == true &&
@@ -423,10 +435,10 @@
 		}
 		let profileroles = auth.profile?.roles || [];
 		const isAdmin = profileroles.includes("admins");
-		if(auth.config?.enable_serverless && isAdmin) {
+		if (auth.config?.enable_serverless && isAdmin) {
 			promptfn.hidden = false;
 			volume.hidden = false;
-			sfunc.hidden = false;
+			sf.hidden = false;
 			distribution.hidden = false;
 		}
 		const isWorkspaceAdmin =
@@ -511,6 +523,11 @@
 		// }
 		management.hidden = !auth.isAuthenticated;
 		actions.hidden = !auth.isAuthenticated;
+
+		serverless.hidden = true
+		if(auth.config?.enable_serverless && auth.isAuthenticated && isAdmin) {
+			serverless.hidden = false;
+		}
 	}
 	if (browser) {
 		Mousetrap.bind("g t", function (e) {
