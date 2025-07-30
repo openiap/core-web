@@ -1,5 +1,6 @@
 <script lang="ts">
     import * as Command from "$lib/components/ui/command/index.js";
+    import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
     import * as Popover from "$lib/components/ui/popover/index.js";
     import { auth } from "$lib/stores/auth.svelte";
     import { ChevronDown, ChevronUp, Check, X } from "lucide-svelte";
@@ -250,8 +251,7 @@
                                 <button
                                     type="button"
                                     class="ml-1"
-                                    on:click|stopPropagation={() =>
-                                        removeSelectedItem(item)}
+                                    onclick={() => removeSelectedItem(item)}
                                 >
                                     <X class="h-3 w-3" />
                                 </button>
@@ -349,12 +349,13 @@
                 <div
                     class="border-t border-bw300 dark:border-bw700 p-2 flex justify-end"
                 >
-                    <button
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-sm"
-                        on:click={closeAndRefocusTrigger}
+                    <Hotkeybutton
+                        variant="success"
+                        title="Apply selection"
+                        onclick={closeAndRefocusTrigger}
                     >
                         Apply ({selectedItems.length}/{maxselections})
-                    </button>
+                    </Hotkeybutton>
                 </div>
             {/if}
         </Command.Root>
