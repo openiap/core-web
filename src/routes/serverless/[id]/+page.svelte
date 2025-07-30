@@ -49,8 +49,8 @@
             jwt: auth.access_token,
           });
 
-          toast.success("FS Function updated");
-          goto(base + `/sfunc`);
+          toast.success("Serverless Function updated");
+          goto(base + `/serverless`);
         } catch (error: any) {
           toast.error("Error", {
             description: error.message,
@@ -176,6 +176,10 @@
       <Form.FieldErrors />
     </Form.Field>
 
+    <!-- add token selection here set _id to the -->
+    <!-- or select user then create api key for that user and add the _id of the apikey to default 1 year expiration -->
+    <!-- runas key -->
+
     <Form.Field {form} name="environment" class="w-full">
           <Form.Control>
             {#snippet children({ props })}
@@ -296,7 +300,7 @@
       data-shortcut="ctrl+s"
     >
       <Check />
-      Update SF Function</HotkeyButton
+      Update Serverless</HotkeyButton
     >
   </form>
 {:else}

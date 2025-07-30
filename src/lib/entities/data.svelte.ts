@@ -175,7 +175,7 @@ class entitiesdata {
 						total_count = await this.GetCount(page, collectionname, { _type: "form" }, access_token, false);
 					}
 					break;
-				case base + "/sfunc":
+				case base + "/serverless":
 					collectionname = "fc";
 					entities = await this.GetData(page, collectionname, { _type: "app" }, access_token);
 					total_count = entities.length;
@@ -823,6 +823,9 @@ class entitiesdata {
 				return ["name", "cvr", "virksomhedsformkort", "sidstOpdateret", "stiftelsesDato", "ophoersDato", "cvrstatus"];
 			case "/entities/git":
 				return ["_id", "name", "repo", "_createdby", "_created", "_modified"];
+			case "/serverless":
+				return ["_id", "name", "_createdby", "_created", "_modified"];
+
 
 			default:
 				if (_page.startsWith("/chat/hist/")) {

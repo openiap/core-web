@@ -37,7 +37,7 @@
     }
   }
   function single_item_click(item: any) {
-    goto(base + `/sfunc/${item._id}`);
+    goto(base + `/serverless/${item._id}`);
   }
   async function handleAccept() {
     try {

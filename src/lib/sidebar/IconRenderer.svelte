@@ -1,5 +1,6 @@
 <script lang="ts">
     import {
+    Ban,
         BookUser,
         Bot,
         ChartSpline,
@@ -12,6 +13,7 @@
         FolderOpen,
         Ghost,
         GitMerge,
+        HardDrive,
         House,
         Layers2,
         ListTodo,
@@ -19,10 +21,12 @@
         Mail,
         MessageSquare,
         MessageSquareCode,
+        Package,
         Receipt,
         Rocket,
         ScanFace,
         Server,
+        ServerOff,
         Settings,
         ShieldBan,
         SquareCode,
@@ -99,6 +103,15 @@
     <Lock />
 {:else if title == "Prompt Fn"}
     <MessageSquareCode />
-{:else}
+{:else if title == "Chat"}
     <MessageSquare />
+{:else if title == "Serverless"}
+    <ServerOff />
+{:else if title == "Volumes"}
+    <HardDrive />
+{:else if title == "Distributions"}
+    <Package />
+    
+{:else}
+    <Ban />
 {/if}

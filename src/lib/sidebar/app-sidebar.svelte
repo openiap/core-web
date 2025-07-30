@@ -150,10 +150,10 @@
 		false
 	);
 	const sfunc = new SidebarItem(
-		"SF Functions",
+		"Serverless",
 		"",
 		"",
-		`${base}/sfunc`,
+		`${base}/serverless`,
 		true,
 		false
 	);
