@@ -24,7 +24,10 @@
   let showcreatetoken = $state(false);
   let showRevokeWarning = $state(false);
   let revoketokenid = $state("");
-  let newtokendata = $state({ name: "", exp: "", oneyearvalid: false });
+  // here exp should be dynamically 1 year in the future
+  let oneYearFromNow = new Date();
+  oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+  let newtokendata = $state({ name: "", exp: oneYearFromNow.toISOString().slice(0, 10), neverexpire: false });
   let newaccesstoken = $state<any>("");
   let shownewaccesstoken = $state(false);
   let disablecloseaccesstokenbutton = $state(true);
@@ -95,15 +98,15 @@
       });
       return;
     }
-    if (newtokendata.exp === "" && !newtokendata.oneyearvalid) {
+    if (newtokendata.exp === "" && !newtokendata.neverexpire) {
       toast.error("Error", {
         description: "Expiration date is required",
       });
       return;
     }
     let expString = "";
-    if (newtokendata.oneyearvalid) {
-      expString = "365d";
+    if (newtokendata.neverexpire) {
+      expString = "36135d";
     } else {
       const expDate = new Date(newtokendata.exp);
       const today = new Date();
@@ -146,7 +149,7 @@
       setTimeout(() => {
         disablecloseaccesstokenbutton = false;
       }, 5000);
-      newtokendata = { name: "", exp: "", oneyearvalid: false };
+      newtokendata = { name: "", exp: oneYearFromNow.toISOString().slice(0, 10), neverexpire: false }
       toast.success("Token created");
     } catch (error: any) {
       toast.error("Error", {
@@ -451,12 +454,12 @@
           min={new Date().toISOString().slice(0, 10)}
           type="date"
           placeholder="Expiration date"
-          disabled={newtokendata.oneyearvalid || loading}
+          disabled={newtokendata.neverexpire || loading}
           bind:value={newtokendata.exp}
         />
         <div class="flex items-center space-x-2 my-6">
-          <Customswitch {loading} bind:checked={newtokendata.oneyearvalid} />
-          <div class="font-medium">One year validity</div>
+          <Customswitch {loading} bind:checked={newtokendata.neverexpire} />
+          <div class="font-medium">Never expire</div>
         </div>
       </div>
     </AlertDialog.Header>
@@ -467,7 +470,7 @@
         onclick={() => {
           showcreatetoken = false;
           loading = false;
-          newtokendata = { name: "", exp: "", oneyearvalid: false };
+          newtokendata = { name: "", exp: oneYearFromNow.toISOString().slice(0, 10), neverexpire: false }
         }}>Cancel</HotkeyButton
       >
       <HotkeyButton
