@@ -364,8 +364,12 @@
         {#each $formData.federationids as item, index}
           <div class="flex items-center justify-start">
             {index + 1}.
-            {item.id}
-            {item.issuer}
+            {#if typeof item === "object"}
+              {item.id}
+              {item.issuer}
+            {:else}
+              {item}
+            {/if}
             <HotkeyButton
               class="ml-2 dark:bg-darkbgred"
               aria-label="Delete"
@@ -406,7 +410,9 @@
               {index + 1}.
               <span class="text-sm">{token.name}</span>
               {#if auth.config.workspace_enabled && token._workspacename != null && token._workspacename != ""}
-                <span class="ms-1 text-sm">for workspace {token._workspacename}</span>
+                <span class="ms-1 text-sm"
+                  >for workspace {token._workspacename}</span
+                >
               {/if}
               <HotkeyButton
                 class="ml-2 dark:bg-darkbgred"
