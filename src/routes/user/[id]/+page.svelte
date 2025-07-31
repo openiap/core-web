@@ -503,7 +503,7 @@
         aria-label="Create"
         variant="success"
         size="base"
-        data-shortcut="ctrl+s"
+        data-shortcut="enter"
       >
         <Check />
         Create
