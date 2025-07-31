@@ -22,8 +22,8 @@
   let runasuser = $state(data.item.runas == "" ? true : false);
 
   if (data.item != null) {
-    if(data.item.anonymouse == null) {
-      data.item.anonymouse = false; // ensure anonymouse is set to false if not present
+    if(data.item.anonymous == null) {
+      data.item.anonymous = false;
     }
     data.item = editFormSchema.parse(data.item);
   }
@@ -192,15 +192,15 @@
       <Form.FieldErrors />
     </Form.Field>
 
-  <!-- insert CustomSwitch for field anonymouse -->
-    <Form.Field {form} name="anonymouse" class="mb-10">
+  <!-- insert CustomSwitch for field anonymous -->
+    <Form.Field {form} name="anonymous" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
-          <Form.Label>Anonymouse</Form.Label>
+          <Form.Label>Anonymous</Form.Label>
           <CustomSwitch
             disabled={loading}
             {...props}
-            bind:checked={$formData.anonymouse}
+            bind:checked={$formData.anonymous}
           />
         {/snippet}
       </Form.Control>
