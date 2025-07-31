@@ -405,8 +405,8 @@
             <div class="flex items-center justify-start my-4">
               {index + 1}.
               <span class="text-sm">{token.name}</span>
-              {#if auth.config.workspace_enabled}
-                <span class="ms-1 text-sm">for {token._workspacename}</span>
+              {#if auth.config.workspace_enabled && token._workspacename != null && token._workspacename != ""}
+                <span class="ms-1 text-sm">for workspace {token._workspacename}</span>
               {/if}
               <HotkeyButton
                 class="ml-2 dark:bg-darkbgred"
