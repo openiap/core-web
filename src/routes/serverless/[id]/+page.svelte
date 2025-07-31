@@ -17,12 +17,12 @@
   import { CustomSwitch } from "$lib/customswitch/index.js";
 
   const { data } = $props();
-  
+
   let loading = $state(false);
   let runasuser = $state(data.item.runas == "" ? true : false);
 
   if (data.item != null) {
-    if(data.item.anonymous == null) {
+    if (data.item.anonymous == null) {
       data.item.anonymous = false;
     }
     data.item = editFormSchema.parse(data.item);
@@ -69,7 +69,7 @@
               command: "issueusertoken",
               // @ts-ignore
               data: {
-                workspaceid: workspaceid,
+                _workspaceid: workspaceid,
                 id: form.data.runas,
                 name: "SF for " + form.data.name,
                 exp: "365d", // 1 year
@@ -79,7 +79,7 @@
             form.data.runas = JSON.parse(newtoken).id;
 
             console.log("token created ", form.data.runas);
-          } 
+          }
           // else {
           //   let item = await auth.client.FindOne<any>({
           //     collectionname: "usertokens",
@@ -192,7 +192,7 @@
       <Form.FieldErrors />
     </Form.Field>
 
-  <!-- insert CustomSwitch for field anonymous -->
+    <!-- insert CustomSwitch for field anonymous -->
     <Form.Field {form} name="anonymous" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
