@@ -346,6 +346,9 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
     try {
       const workspaceid = usersettings.currentworkspace;
       if (workspaceid == "" || workspaceid == null) {
+        toast.error(
+          "No workspace selected. Please select a workspace to deploy the package.",
+        );
         throw new Error(
           "No workspace selected. Please select a workspace to deploy the package.",
         );
