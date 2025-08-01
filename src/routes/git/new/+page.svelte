@@ -11,6 +11,7 @@
   import { toast } from "svelte-sonner";
   import { Buffer } from "buffer";
   import { goto } from "$app/navigation";
+  import { CustomSuperDebug } from "$lib/customsuperdebug";
 
   window.Buffer = Buffer;
 
@@ -22,6 +23,7 @@
 
   const temprepooffline = {
     languages: [
+      "",
       "nodejs",
       "browser",
       "python",
@@ -168,6 +170,11 @@
           "Example agent, process a single workitem when linked to a workitem queue",
         url: "https://github.com/openiap/shellagent.git",
       },
+      {
+        name: "",
+        description: "Select a template",
+        url: "",
+      },
     ],
   };
 
@@ -178,6 +185,15 @@
         "https://raw.githubusercontent.com/openiap/openiap-assistant-repos/refs/heads/main/repositories.json",
       );
       temprepos = await res.json();
+      // here add an empty langugage for the unselected template
+      temprepos.languages.unshift("");
+      // here add an emtpy value for the unselected template
+      temprepos.repositories.unshift({
+        name: "",
+        description: "Select a template",
+        url: "",
+      });
+      console.log(temprepos);
     } catch (err) {
       toast.error("Error loading template repos", {
         description: (err as any)?.message || String(err),
@@ -354,7 +370,10 @@
       {loading}
       class="mb-4"
       selectitems={temprepos.languages.map((lang: any) => ({
-        label: lang.charAt(0).toUpperCase() + lang.slice(1),
+        label:
+          lang == ""
+            ? "Select a language"
+            : lang.charAt(0).toUpperCase() + lang.slice(1),
         value: lang,
       }))}
       type="single"
@@ -419,3 +438,5 @@
     Create Repository
   </HotkeyButton>
 </div>
+
+<CustomSuperDebug formData={temprepos} />
