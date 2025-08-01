@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Avatar, AvatarFallback } from "$lib/components/ui/avatar";
   import { Separator } from "$lib/components/ui/separator";
-// Import Lucide icons - we'll keep these for reference but use text instead
+  // Import Lucide icons - we'll keep these for reference but use text instead
   import { browser } from "$app/environment";
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
@@ -13,6 +13,8 @@
   import OpenAI from "openai";
   import type { ChatCompletionTool } from "openai/resources/index.mjs";
   import { tick } from "svelte";
+  import { usersettings } from "$lib/stores/usersettings.svelte.js";
+  import { toast } from "svelte-sonner";
 
   type LanguageKey = "nodejs" | "python" | "php";
   let slug = "me-" + Math.random().toString(36).substring(2, 11) + "-you";
@@ -342,6 +344,12 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
       correlation_id = toolCall.id;
     }
     try {
+      const workspaceid = usersettings.currentworkspace;
+      if (workspaceid == "" || workspaceid == null) {
+        throw new Error(
+          "No workspace selected. Please select a workspace to deploy the package.",
+        );
+      }
       const build_result = await auth.client.QueueMessage(
         {
           queuename: "fcbuilder",
@@ -350,6 +358,7 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
             packageid: pack._id,
             fileid: pack.fileid,
             name: prefix + slug,
+            workspaceid,
             correlation_id: correlation_id,
             queuename,
           },
@@ -972,7 +981,6 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
       messages = [...messages];
 
       if (toolCall.name === "deploypackage") {
-
         let files = toolCall.arguments.files;
         files = fixDockerfile(files); // <-- Fix Dockerfile before upload
 
@@ -987,7 +995,6 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
           };
         }
         // --- END ADDITION ---
-
 
         const body = {
           files: $state.snapshot(files),
@@ -1009,7 +1016,6 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
           };
         }
 
-        
         const fileid = (await res.text()).replace('"', "").replace('"', "");
         console.log("Package upload with fileid:", fileid);
         // const filedata = await res.blob()
@@ -1134,7 +1140,9 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
                 result: proxyResponse,
               };
             }
-            if(auth.config?.serverless_domain_schema.indexOf(".localhost.") > -1) {
+            if (
+              auth.config?.serverless_domain_schema.indexOf(".localhost.") > -1
+            ) {
               domain = "http://" + domain;
             } else {
               domain = "https://" + domain;
@@ -1264,210 +1272,214 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
   });
 </script>
 
-  <div class="h-full container max-w-4xl dark:bg-transparent rounded-[10px]">
-    <div class="h-full">
-      <div class="overflow-y-auto h-[calc(100vh-15rem)] px-2 mb-2" id="chatcontainer">
-        {#if messages.length <= 1}
-          <div class="flex flex-col items-center justify-center h-full">
-            <div class="text-center text-muted-foreground mb-6">
-              <p class="mb-2">Welcome to FaaS Chat!</p>
-              <p>
-                Choose a suggestion or ask the AI to create a package for you.
-              </p>
-            </div>
-            <div class="flex items-center gap-2 mb-4">
-              <label for="language-select" class="text-sm">Language:</label>
-              <CustomSelect
-                width="w-full"
-                triggerContent={() =>
-                  languageOptions.find((opt) => opt.value === selectedLanguage)
-                    ?.label || "Select Language"}
-                type="single"
-                bind:value={selectedLanguage}
-                selectitems={languageOptions}
-                class="border rounded px-2 py-1"
-              />
-            </div>
-            <div class="grid gap-2 w-full lg:max-w-md">
-              {#each starter_suggestions as suggestion}
-                <HotkeyButton
-                  aria-label="Suggestion"
-                  title="Click to use this suggestion"
-                  class="justify-start text-left h-auto py-3 px-4"
-                  onclick={() => {
-                    userInput = suggestion;
-                    submitUserMessage();
-                  }}
-                >
-                  {suggestion}
-                </HotkeyButton>
-              {/each}
-            </div>
+<div class="h-full container max-w-4xl dark:bg-transparent rounded-[10px]">
+  <div class="h-full">
+    <div
+      class="overflow-y-auto h-[calc(100vh-15rem)] px-2 mb-2"
+      id="chatcontainer"
+    >
+      {#if messages.length <= 1}
+        <div class="flex flex-col items-center justify-center h-full">
+          <div class="text-center text-muted-foreground mb-6">
+            <p class="mb-2">Welcome to FaaS Chat!</p>
+            <p>
+              Choose a suggestion or ask the AI to create a package for you.
+            </p>
           </div>
-        {:else}
-          <div class="space-y-4 py-4">
-            {#each messages as message, index}
-              {#if index == 0 || message.role === "tool"}
-                <!-- <Separator /> -->
-              {:else}
-                <div
-                  class="flex gap-3 {message.role === 'user'
-                    ? 'justify-end'
-                    : 'justify-start'}"
-                >
-                  {#if message.role !== "user"}
-                    <Avatar>
-                      <AvatarFallback>
-                        <Bot size={18} />
-                      </AvatarFallback>
-                    </Avatar>
-                  {/if}
-  
-                  <div class="max-w-[80%]">
-                    {#if message.content != null && message.content != ""}
-                      <div
-                        class="{message.role === 'user'
-                          ? 'bg-bw100 dark:bg-primary dark:text-white rounded-br-none'
-                          : 'bg-muted'} rounded-[20px] p-3"
-                      >
-                        {#if message.content.includes("<a href=")}
-                          <p>{@html message.content}</p>
-                        {:else}
-                          <p>{message.content}</p>
-                        {/if}
-                      </div>
-                    {/if}
-  
-                    {#if message.toolCalls && message.toolCalls.length > 0}
-                      <div class="space-y-2 rounded-bl-none rounded-[20px] dark:bg-bw800 p-2">
-                        {#each message.toolCalls as toolCall, index (toolCall.id)}
-                          {#if index > 0}
-                            <Separator class="my-2" />
-                          {/if}
-                          <div class="p-2">
-                            <div class="flex justify-between items-center mb-1">
-                              <div class="font-medium">{toolCall.name}</div>
-                              <div class="flex items-center py-2">
-                                <span
-                                  class="text-xs {getStatusColor(
-                                    toolCall.status,
-                                  )} text-white rounded px-2 py-0.5 mr-2"
-                                >
-                                  {toolCall.status}
-                                </span>
-                                <HotkeyButton
-                                  aria-label="Run Tool"
-                                  title="Run this tool call"
-                                  size="sm"
-                                  onclick={() => runTool(message.id, toolCall.id)}
-                                  disabled={toolCall.status === "running"}
-                                >
-                                  {toolCall.status === "pending"
-                                    ? "Run"
-                                    : "Re-run"}
-                                </HotkeyButton>
-                                <HotkeyButton
-                                  aria-label="Send to AI"
-                                  title="Send this tool call to AI for further processing"
-                                  size="sm"
-                                  class="ml-2"
-                                  onclick={() => {
-                                    recursionCounter = 0;
-                                    sendToOpenAI();
-                                  }}
-                                >
-                                  Send to AI
-                                </HotkeyButton>
-                              </div>
-                            </div>
-  
-                            <div class="text-sm mb-1">
-                              <pre
-                                class="bg-muted p-1 rounded text-xs overflow-x-auto">{JSON.stringify(
-                                  toolCall.arguments,
-                                  null,
-                                  2,
-                                )}</pre>
-                            </div>
-  
-                            {#if toolCall.result}
-                              <div class="mt-2">
-                                <div class="text-sm font-medium">Result:</div>
-                                <pre
-                                  class="p-1 rounded text-xs overflow-x-auto mt-1">{toolCall.result}</pre>
-                              </div>
-                            {/if}
-                            {#if toolCall.name == "callpackagefunction"}
-                              <div class="mt-2">
-                                <HotkeyButton
-                                aria-label="Open URL"
-                                  title="Open the URL in a new tab"
-                                  size="sm"
-                                  onclick={() => {
-                                    openurl(toolCall);
-                                  }}
-                                  >Open URL</HotkeyButton
-                                >
-                                <HotkeyButton
-                                  aria-label="Edit package files"
-                                  title="Edit package files in a new tab"
-                                  class="ml-2"
-                                  size="sm"
-                                  onclick={() => {
-                                    window.open(
-                                      base +
-                                        `/package/${currentPackageId}/editfiles`,
-                                      "_blank",
-                                    );
-                                  }}>Edit package files</HotkeyButton
-                                >
-                              </div>
-                            {/if}
-                          </div>
-                        {/each}
-                      </div>
-                    {/if}
-  
-                    <div class="text-xs text-muted-foreground mt-1">
-                      {message.timestamp.toLocaleTimeString()}
-                    </div>
-                  </div>
-  
-                  {#if message.role === "user"}
-                    <Avatar>
-                      <AvatarFallback>
-                        <User size={18} />
-                      </AvatarFallback>
-                    </Avatar>
-                  {/if}
-                </div>
-              {/if}
+          <div class="flex items-center gap-2 mb-4">
+            <label for="language-select" class="text-sm">Language:</label>
+            <CustomSelect
+              width="w-full"
+              triggerContent={() =>
+                languageOptions.find((opt) => opt.value === selectedLanguage)
+                  ?.label || "Select Language"}
+              type="single"
+              bind:value={selectedLanguage}
+              selectitems={languageOptions}
+              class="border rounded px-2 py-1"
+            />
+          </div>
+          <div class="grid gap-2 w-full lg:max-w-md">
+            {#each starter_suggestions as suggestion}
+              <HotkeyButton
+                aria-label="Suggestion"
+                title="Click to use this suggestion"
+                class="justify-start text-left h-auto py-3 px-4"
+                onclick={() => {
+                  userInput = suggestion;
+                  submitUserMessage();
+                }}
+              >
+                {suggestion}
+              </HotkeyButton>
             {/each}
           </div>
-        {/if}
-      </div>
-  
-      <form
-        onsubmit={handleSubmit}
-        class="flex flex-col items-center space-x-2 mb-4 p-5 rounded-[20px] dark:boder-bw600 bg-bw100 dark:bg-bw700 w-[700px] w-full"
-      >
-        <div class="flex w-full space-x-2">
-          <CustomInput
-            bind:value={userInput}
-            placeholder="Chat with OpenCore about your data or tell it to do something with your data "
-            width="w-full"
-            class="border-hidden bg-bw100 dark:bg-bw700"
-          />
-          <HotkeyButton
-            class=""
-            variant="sendchat"
-            size="sendchat"
-            aria-label="Send"
-            type="submit"
-            disabled={isProcessing || !userInput.trim()}
-            ><ArrowUp class="h-4 w-4" /></HotkeyButton
-          >
         </div>
-      </form>
+      {:else}
+        <div class="space-y-4 py-4">
+          {#each messages as message, index}
+            {#if index == 0 || message.role === "tool"}
+              <!-- <Separator /> -->
+            {:else}
+              <div
+                class="flex gap-3 {message.role === 'user'
+                  ? 'justify-end'
+                  : 'justify-start'}"
+              >
+                {#if message.role !== "user"}
+                  <Avatar>
+                    <AvatarFallback>
+                      <Bot size={18} />
+                    </AvatarFallback>
+                  </Avatar>
+                {/if}
+
+                <div class="max-w-[80%]">
+                  {#if message.content != null && message.content != ""}
+                    <div
+                      class="{message.role === 'user'
+                        ? 'bg-bw100 dark:bg-primary dark:text-white rounded-br-none'
+                        : 'bg-muted'} rounded-[20px] p-3"
+                    >
+                      {#if message.content.includes("<a href=")}
+                        <p>{@html message.content}</p>
+                      {:else}
+                        <p>{message.content}</p>
+                      {/if}
+                    </div>
+                  {/if}
+
+                  {#if message.toolCalls && message.toolCalls.length > 0}
+                    <div
+                      class="space-y-2 rounded-bl-none rounded-[20px] dark:bg-bw800 p-2"
+                    >
+                      {#each message.toolCalls as toolCall, index (toolCall.id)}
+                        {#if index > 0}
+                          <Separator class="my-2" />
+                        {/if}
+                        <div class="p-2">
+                          <div class="flex justify-between items-center mb-1">
+                            <div class="font-medium">{toolCall.name}</div>
+                            <div class="flex items-center py-2">
+                              <span
+                                class="text-xs {getStatusColor(
+                                  toolCall.status,
+                                )} text-white rounded px-2 py-0.5 mr-2"
+                              >
+                                {toolCall.status}
+                              </span>
+                              <HotkeyButton
+                                aria-label="Run Tool"
+                                title="Run this tool call"
+                                size="sm"
+                                onclick={() => runTool(message.id, toolCall.id)}
+                                disabled={toolCall.status === "running"}
+                              >
+                                {toolCall.status === "pending"
+                                  ? "Run"
+                                  : "Re-run"}
+                              </HotkeyButton>
+                              <HotkeyButton
+                                aria-label="Send to AI"
+                                title="Send this tool call to AI for further processing"
+                                size="sm"
+                                class="ml-2"
+                                onclick={() => {
+                                  recursionCounter = 0;
+                                  sendToOpenAI();
+                                }}
+                              >
+                                Send to AI
+                              </HotkeyButton>
+                            </div>
+                          </div>
+
+                          <div class="text-sm mb-1">
+                            <pre
+                              class="bg-muted p-1 rounded text-xs overflow-x-auto">{JSON.stringify(
+                                toolCall.arguments,
+                                null,
+                                2,
+                              )}</pre>
+                          </div>
+
+                          {#if toolCall.result}
+                            <div class="mt-2">
+                              <div class="text-sm font-medium">Result:</div>
+                              <pre
+                                class="p-1 rounded text-xs overflow-x-auto mt-1">{toolCall.result}</pre>
+                            </div>
+                          {/if}
+                          {#if toolCall.name == "callpackagefunction"}
+                            <div class="mt-2">
+                              <HotkeyButton
+                                aria-label="Open URL"
+                                title="Open the URL in a new tab"
+                                size="sm"
+                                onclick={() => {
+                                  openurl(toolCall);
+                                }}>Open URL</HotkeyButton
+                              >
+                              <HotkeyButton
+                                aria-label="Edit package files"
+                                title="Edit package files in a new tab"
+                                class="ml-2"
+                                size="sm"
+                                onclick={() => {
+                                  window.open(
+                                    base +
+                                      `/package/${currentPackageId}/editfiles`,
+                                    "_blank",
+                                  );
+                                }}>Edit package files</HotkeyButton
+                              >
+                            </div>
+                          {/if}
+                        </div>
+                      {/each}
+                    </div>
+                  {/if}
+
+                  <div class="text-xs text-muted-foreground mt-1">
+                    {message.timestamp.toLocaleTimeString()}
+                  </div>
+                </div>
+
+                {#if message.role === "user"}
+                  <Avatar>
+                    <AvatarFallback>
+                      <User size={18} />
+                    </AvatarFallback>
+                  </Avatar>
+                {/if}
+              </div>
+            {/if}
+          {/each}
+        </div>
+      {/if}
     </div>
+
+    <form
+      onsubmit={handleSubmit}
+      class="flex flex-col items-center space-x-2 mb-4 p-5 rounded-[20px] dark:boder-bw600 bg-bw100 dark:bg-bw700 w-[700px] w-full"
+    >
+      <div class="flex w-full space-x-2">
+        <CustomInput
+          bind:value={userInput}
+          placeholder="Chat with OpenCore about your data or tell it to do something with your data "
+          width="w-full"
+          class="border-hidden bg-bw100 dark:bg-bw700"
+        />
+        <HotkeyButton
+          class=""
+          variant="sendchat"
+          size="sendchat"
+          aria-label="Send"
+          type="submit"
+          disabled={isProcessing || !userInput.trim()}
+          ><ArrowUp class="h-4 w-4" /></HotkeyButton
+        >
+      </div>
+    </form>
   </div>
+</div>
