@@ -362,6 +362,7 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
             fileid: pack.fileid,
             name: prefix + slug,
             workspaceid,
+            anonymous: true,
             correlation_id: correlation_id,
             queuename,
           },
