@@ -15,6 +15,8 @@
   import { tick } from "svelte";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import { toast } from "svelte-sonner";
+    import type { Workspace } from "../workspace/schema.js";
+    import { name } from "tar/types";
 
   type LanguageKey = "nodejs" | "python" | "php";
   let slug = "me-" + Math.random().toString(36).substring(2, 11) + "-you";
@@ -1000,6 +1002,34 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
         }
         // --- END ADDITION ---
 
+        const workspaceid = usersettings.currentworkspace;
+        if (workspaceid == "" || workspaceid == null) {
+          toast.error(
+            "No workspace selected. Please select a workspace to deploy the package.",
+          );
+          throw new Error(
+            "No workspace selected. Please select a workspace to deploy the package.",
+          );
+        }
+        const workspace = await auth.client.FindOne<Workspace>({
+          collectionname: "users",
+          query: { _id: workspaceid },        
+          jwt: auth.access_token,
+        }); 
+        if (workspace == null) {
+            toast.error(
+            "Failed to find workspace with id: " + workspaceid,
+          );
+
+          toolCall.status = "failed";
+          toolCall.result = "Workspace not found";
+          messages = [...messages];
+          isProcessing = false;
+          return {
+            error: toolCall.result,
+          };
+        }
+
         const body = {
           files: $state.snapshot(files),
           jwt: auth.access_token,
@@ -1052,6 +1082,16 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
                 name: "fc",
                 rights: 65535,
               },
+              {
+                _id: workspace.users,
+                name: workspace.name + " users",
+                rights: 65535,
+              },
+              {
+                _id: workspace.users,
+                name: workspace.name + " users",
+                rights: 65535,
+              }
             ],
           };
           llmpackage = await await auth.client.InsertOne({
