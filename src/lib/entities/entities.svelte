@@ -675,7 +675,7 @@
 								{/if}
 								{#each tableheaders as head}
 									{#if head.show}
-										{#if head.field == "name"}
+										{#if head.field == "name" || head.field == "repo"}
 											<Table.Cell
 												class={head.cellclass +
 													` ${!loading && "cursor-pointer"} `}
