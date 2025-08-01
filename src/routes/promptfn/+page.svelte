@@ -1461,7 +1461,7 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
 
     <form
       onsubmit={handleSubmit}
-      class="flex flex-col items-center space-x-2 mb-4 p-5 rounded-[20px] dark:boder-bw600 bg-bw100 dark:bg-bw700 w-[700px] w-full"
+      class="flex flex-col items-center space-x-2 mb-4 p-5 rounded-[20px] dark:boder-bw600 bg-bw100 dark:bg-bw700 w-full"
     >
       <div class="flex w-full space-x-2">
         <CustomInput
