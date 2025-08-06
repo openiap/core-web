@@ -369,7 +369,7 @@
     try {
       const build_result = await auth.client.QueueMessage(
         {
-          queuename: "fcbuilder",
+          queuename: "sfbuilder",
           data: {
             command: "build",
             packageid: originalPackageId,

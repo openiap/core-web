@@ -121,7 +121,7 @@ class entitiesdata {
 					total_count = entities.length
 					break;
 				case base + "/distribution":
-					collectionname = "fc";
+					collectionname = "sf";
 					entities = await this.GetData(page, collectionname, { _type: "distro" }, access_token);
 					total_count = entities.length;
 					if (entities.length >= usersettings.pagesize) {
@@ -176,7 +176,7 @@ class entitiesdata {
 					}
 					break;
 				case base + "/serverless":
-					collectionname = "fc";
+					collectionname = "sf";
 					entities = await this.GetData(page, collectionname, { _type: "app" }, access_token);
 					total_count = entities.length;
 					if (entities.length >= usersettings.pagesize) {
@@ -280,7 +280,7 @@ class entitiesdata {
 					}
 					break;
 				case base + "/volume":
-					collectionname = "fc";
+					collectionname = "sf";
 					entities = await this.GetData(page, collectionname, { _type: "volume" }, access_token);
 					total_count = entities.length;
 					if (entities.length >= usersettings.pagesize) {

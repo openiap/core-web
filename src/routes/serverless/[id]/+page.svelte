@@ -218,7 +218,7 @@
             class="mb-4 md:mb-0"
             {loading}
             {...props}
-            collectionname="fc"
+            collectionname="sf"
             basefilter={{ _type: "distro" }}
             bind:value={$formData.distro}
             handleChangeFunction={(item: any) => {
@@ -414,7 +414,7 @@
             class="mb-4 md:mb-0"
             disabled={loading}
             {...props}
-            collectionname="fc"
+            collectionname="sf"
             basefilter={{ _type: "volume" }}
             bind:value={$formData.volume}
             selectiontype="multiple"

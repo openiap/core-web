@@ -7,6 +7,7 @@ async function fetchWithRetry(url: string, options: RequestInit, maxRetries: num
   
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
+      console.log(`Attempt ${attempt + 1}/${maxRetries + 1} to fetch ${url}`);
       const response = await fetch(url, options);
       
       // If we get a Bad Gateway response and have retries left, wait and try again
@@ -39,7 +40,7 @@ async function fetchWithRetry(url: string, options: RequestInit, maxRetries: num
 
 export async function POST({ request }) {
   try {
-    const { url, urlParameters, method, body } = await request.json();
+    let { url, urlParameters, method, body } = await request.json();
     
     // Default to GET if method is not specified
     const requestMethod = method || 'GET';

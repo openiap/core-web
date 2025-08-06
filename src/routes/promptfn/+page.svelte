@@ -357,7 +357,7 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
       }
       const build_result = await auth.client.QueueMessage(
         {
-          queuename: "fcbuilder",
+          queuename: "sfbuilder",
           data: {
             command: "build",
             packageid: pack._id,
@@ -1079,7 +1079,7 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
               },
               {
                 _id: "681e710c0404b8469259baad",
-                name: "fc",
+                name: "sf",
                 rights: 65535,
               },
               {
@@ -1357,6 +1357,36 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
                 {suggestion}
               </HotkeyButton>
             {/each}
+              <HotkeyButton
+                aria-label="Test web"
+                class="justify-start text-left h-auto py-3 px-4"
+                onclick={async () => {
+
+                  const res = await fetch(base + `/api/proxy-function`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      url: "https://1da74593.sf.app.openiap.io",
+                      urlParameters: "",
+                      method: "GET",
+                      body: {},
+                    }),
+                  });
+                  if (!res.ok) {
+                    let body = "";
+                    try {
+                      body = await res.text();
+                    } catch (error) {}
+                    console.log("Error response body:", body);
+                  } else {
+                    const body = await res.text();
+                    console.log("Response JSON:", body);
+                  }
+
+                }}
+              >
+              Test web
+              </HotkeyButton>
           </div>
         </div>
       {:else}

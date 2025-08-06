@@ -312,7 +312,7 @@ class authState {
         return "//" + this.config.agent_domain_schema.replace("$slug$", slug)
     }
     fnurl(slug: string) {
-        if(this.config.serverless_domain_schema.indexOf(".fc.") > -1 || this.config.serverless_domain_schema.indexOf(".localhost.") > -1) {
+        if(this.config.serverless_domain_schema.indexOf(".localhost.") > -1) {
             return "http://" + this.config.serverless_domain_schema.replace("$slug$", slug);
         }
         return "//" + this.config.serverless_domain_schema.replace("$slug$", slug)
