@@ -7,7 +7,7 @@
   import { SearchInput } from "$lib/searchinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
-  import { Pencil, Trash2 } from "lucide-svelte";
+  import { Pencil, FilePen, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
@@ -66,7 +66,19 @@
   bind:loading
 >
   {#snippet action(item: any)}
-    <HotkeyButton
+    {#if item.packageid}
+      <HotkeyButton
+      aria-label="Edit files"
+      disabled={loading}
+      onclick={() => goto(base + `/package/${item.packageid}/editfiles`)}
+      size="tableicon"
+      variant="icon"
+    >
+      <FilePen />
+  </HotkeyButton>
+  {/if}
+
+  <HotkeyButton
       aria-label="Edit"
       disabled={loading}
       onclick={() => single_item_click(item)}

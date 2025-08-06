@@ -19,6 +19,7 @@ export const editFormSchema = z.object({
   minimum_response_time: z.number().min(0).default(0),
   runas: z.string().optional().nullable().transform((val) => val ?? ""),
   tag: z.string().optional().nullable().transform((val) => val ?? ""),
+  packageid: z.string().optional().nullable().transform((val) => val ?? ""),
   anonymous: z.boolean().default(false),
 }).passthrough();
 export type EditFormSchema = typeof editFormSchema;
