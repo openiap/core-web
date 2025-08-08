@@ -94,7 +94,6 @@
       description: error.message,
     });
   }
-
   async function handleCreateToken() {
     // newtokendata.exp has this format in it 2025-07-17 i want to convert it to a string with days from now till that date like 1d, 2d, 3d, etc.
     if (newtokendata.name === "") {
@@ -140,10 +139,10 @@
       });
       newaccesstoken = JSON.parse(newtoken).access_token;
 
-      // need this to update the tokens array becasue we are not getting the entire token object back
+      // need this to update the tokens array because we are not getting the entire token object back
       tokens = await auth.client.Query<any>({
         collectionname: "usertokens",
-        query: { _type: "usertoken", revoked: false },
+        query: { _type: "usertoken", revoked: false, _userid: data.item._id },
         jwt: auth.access_token,
       });
 
