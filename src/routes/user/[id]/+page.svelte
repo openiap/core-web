@@ -8,7 +8,15 @@
   import { CustomInput } from "$lib/custominput/index.js";
   import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
-  import { Check, Copy, Plus, Trash2 } from "lucide-svelte";
+  import {
+    Check,
+    Clapperboard,
+    Copy,
+    IdCard,
+    Plus,
+    Timer,
+    Trash2,
+  } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
@@ -187,6 +195,37 @@
       loading = false;
     }
   }
+  function RenderExpiry(item: any) {
+    const expDate = new Date(item);
+    const now = new Date();
+    const diffMs = expDate.getTime() - now.getTime();
+
+    // If expiration is more than 50 years in the future, treat as never expires
+    const fiftyYearsMs = 50 * 365 * 24 * 60 * 60 * 1000;
+    if (diffMs > fiftyYearsMs) {
+      return "Never expires";
+    }
+
+    if (diffMs <= 0) {
+      return "Expired";
+    }
+
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    const diffHours = Math.floor(
+      (diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+    );
+    const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+    if (diffDays > 0) {
+      return `${diffDays} day${diffDays > 1 ? "s" : ""} left`;
+    } else if (diffHours > 0) {
+      return `${diffHours} hour${diffHours > 1 ? "s" : ""} left`;
+    } else if (diffMinutes > 0) {
+      return `${diffMinutes} minute${diffMinutes > 1 ? "s" : ""} left`;
+    } else {
+      return "Less than 1 minute";
+    }
+  }
 </script>
 
 {#if message && $message != ""}
@@ -358,6 +397,7 @@
       <Form.FieldErrors />
     </Form.Field>
 
+    <h3 class="mb-2">Federation Ids</h3>
     {#if $formData.federationids}
       <div class="mb-10">
         {#each $formData.federationids as item, index}
@@ -389,8 +429,8 @@
     {/if}
 
     <div class="my-10">
-      <h3 class="text-lg font-semibold mb-2">Access Tokens</h3>
-      <div>
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg mb-2">Access Tokens</h3>
         <HotkeyButton
           onclick={() => {
             showcreatetoken = true;
@@ -403,29 +443,82 @@
         >
           <Plus /> Create new token</HotkeyButton
         >
+      </div>
+      <div>
         {#if tokens && tokens.length > 0}
-          {#each tokens as token, index}
-            <div class="flex items-center justify-start my-4">
-              {index + 1}.
-              <span class="text-sm">{token.name}</span>
-              {#if auth.config.workspace_enabled && token._workspacename != null && token._workspacename != ""}
-                <span class="ms-1 text-sm"
-                  >for workspace {token._workspacename}</span
-                >
-              {/if}
-              <HotkeyButton
-                class="ml-2 dark:bg-darkbgred"
-                aria-label="Delete"
-                size="icon"
-                disabled={loading}
-                variant="icon"
-                onclick={() => {
-                  showRevokeWarning = true;
-                  revoketokenid = token._id;
-                }}><Trash2 /></HotkeyButton
-              >
-            </div>
-          {/each}
+          <div class="mt-4 overflow-x-auto">
+            <table class="w-full">
+              <thead>
+                <tr class="bg-gray-100 dark:bg-bw900">
+                  <th class="border border-bw500 px-4 py-2 text-left">#</th>
+                  <th class="border border-bw500 px-4 py-2 text-left">
+                    <div class=" flex items-center">
+                      <IdCard
+                        class="h-4 w-4 me-1.5 text-bw600 dark:text-bw500"
+                      />
+                      Name
+                    </div>
+                  </th>
+                  <th class="border border-bw500 px-4 py-2 text-left">
+                    <div class=" flex items-center">
+                      <Timer
+                        class="h-4 w-4 me-1.5 text-bw600 dark:text-bw500"
+                      />
+                      Expiry
+                    </div>
+                  </th>
+                  {#if auth.config.workspace_enabled}
+                    <th class="border border-bw500 px-4 py-2 text-left">
+                      <div class=" flex items-center">
+                        <IdCard
+                          class="h-4 w-4 me-1.5 text-bw600 dark:text-bw500"
+                        />
+                        Workspace
+                      </div>
+                    </th>
+                  {/if}
+                  <th class="border border-bw500 px-4 py-2 text-left">
+                    <div class=" flex items-center">
+                      <Clapperboard
+                        class="h-4 w-4 me-1.5 text-bw600 dark:text-bw500"
+                      />
+                      Actions
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {#each tokens as token, index}
+                  <tr class="text-nowrap">
+                    <td class="border border-bw500 px-4 py-2">{index + 1}</td>
+                    <td class="border border-bw500 px-4 py-2 text-sm"
+                      >{token.name}</td
+                    >
+                    <td class="border border-bw500 px-4 py-2 text-sm">
+                      {RenderExpiry(token.exp)}
+                    </td>
+                    {#if auth.config.workspace_enabled}
+                      <td class="border border-bw500 px-4 py-2 text-sm">
+                        {token._workspacename || "-"}
+                      </td>
+                    {/if}
+                    <td class="border border-bw500 px-4 py-2">
+                      <HotkeyButton
+                        aria-label="Delete"
+                        variant="danger"
+                        size="icon"
+                        disabled={loading}
+                        onclick={() => {
+                          showRevokeWarning = true;
+                          revoketokenid = token._id;
+                        }}><Trash2 /></HotkeyButton
+                      >
+                    </td>
+                  </tr>
+                {/each}
+              </tbody>
+            </table>
+          </div>
         {/if}
       </div>
     </div>
