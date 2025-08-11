@@ -47,6 +47,7 @@
   import type { Workspace } from "../../workspace/schema.js";
   import { randomname } from "../helper.js";
   import { editFormSchema } from "../schema.js";
+    import { _timeSince } from "../../../helper.js";
 
   const { data } = $props();
 
@@ -1125,7 +1126,7 @@
                     ?.memory}
               </div>
               <div class="text-center p-4 col-span-2">
-                {resourceMonitor?.metadata?.creationTimestamp}
+                {_timeSince(resourceMonitor?.metadata?.creationTimestamp)}
               </div>
             </div>
 

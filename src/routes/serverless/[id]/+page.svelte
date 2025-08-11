@@ -18,6 +18,7 @@
   import * as Tabs from "$lib/components/ui/tabs/index.js";
   import { CustomSelect } from "$lib/customselect/index.js";
   import * as Table from "$lib/components/ui/table/index.js";
+  import { _timeSince } from "../../../helper";
 
   const { data } = $props();
 
@@ -294,14 +295,73 @@
       end: end.toISOString(),
     };
   }
+
+  function shouldFormatAsTimeSince(col: string, val: any): boolean {
+    if (val == null) return false;
+    const key = col?.toLowerCase?.() ?? "";
+    const likely =
+      key === "ts" ||
+      key.endsWith("time") ||
+      key.endsWith("timestamp") ||
+      key.endsWith("date") ||
+      key.endsWith("at") ||
+      key.includes("time");
+    if (!likely) return false;
+    if (val instanceof Date) return !isNaN(val.getTime());
+    if (typeof val === "string") return !isNaN(new Date(val).getTime());
+    if (typeof val === "number") return !isNaN(new Date(val).getTime());
+    // common Mongo shape
+    if (typeof val === "object" && "$date" in val) {
+      return !isNaN(new Date((val as any).$date).getTime());
+    }
+    return false;
+  }
+
+  function pickConsoleColumns(rows: any[]): string[] {
+    if (!Array.isArray(rows) || rows.length === 0) return [];
+    const keys = Object.keys(rows[0] ?? {});
+    const lowerToOriginal = new Map(keys.map((k) => [k.toLowerCase(), k]));
+
+    const timeCandidates = [
+      "ts",
+      "time",
+      "timestamp",
+      "date",
+      "created_at",
+      "createdat",
+      "created",
+      "logged_at",
+      "loggedat",
+    ];
+    const messageCandidates = [
+      "message",
+      "msg",
+      "log",
+      "text",
+      "content",
+      "body",
+    ];
+
+    const timeLower = timeCandidates.find((c) => lowerToOriginal.has(c));
+    const msgLower = messageCandidates.find((c) => lowerToOriginal.has(c));
+
+    const cols: string[] = [];
+    if (timeLower) cols.push(lowerToOriginal.get(timeLower) as string);
+    if (msgLower) cols.push(lowerToOriginal.get(msgLower) as string);
+
+    return cols.length > 0 ? cols : keys;
+  }
 </script>
 
-{#snippet DurationSelect({ onChange }: { onChange: (value: string) => void | Promise<void> })}
+{#snippet DurationSelect({
+  onChange,
+}: {
+  onChange: (value: string) => void | Promise<void>;
+})}
   <CustomSelect
     triggerContent={() => {
-      return durationOptions.find(
-        (option) => option.value === selectedduration,
-      )?.label;
+      return durationOptions.find((option) => option.value === selectedduration)
+        ?.label;
     }}
     type="single"
     selectitems={durationOptions}
@@ -316,12 +376,12 @@
   />
 {/snippet}
 
-{#snippet LogsTable({ rows }: { rows: any[] })}
+{#snippet LogsTable({ rows, cols }: { rows: any[]; cols?: string[] })}
   {#if Array.isArray(rows) && rows.length > 0}
     <Table.Root class="mb-4">
       <Table.Header>
         <Table.Row>
-          {#each Object.keys(rows[0]) as col}
+          {#each cols && cols.length > 0 ? cols : Object.keys(rows[0]) as col}
             <Table.Head>{col}</Table.Head>
           {/each}
         </Table.Row>
@@ -329,9 +389,11 @@
       <Table.Body>
         {#each rows as row, i (row?._id ?? row?.id ?? i)}
           <Table.Row>
-            {#each Object.keys(rows[0]) as col}
-              <Table.Cell>
-                {#if typeof row[col] === "object"}
+            {#each cols && cols.length > 0 ? cols : Object.keys(rows[0]) as col}
+              <Table.Cell class="w-full">
+                {#if shouldFormatAsTimeSince(col, row[col])}
+                  {_timeSince(new Date(row[col]?.$date ?? row[col]))}
+                {:else if typeof row[col] === "object"}
                   {JSON.stringify(row[col])}
                 {:else}
                   {row[col]}
@@ -343,7 +405,9 @@
       </Table.Body>
     </Table.Root>
   {:else}
-    <div class="text-muted-foreground text-sm">No data for selected duration.</div>
+    <div class="text-muted-foreground text-sm">
+      No data for selected duration.
+    </div>
   {/if}
 {/snippet}
 
@@ -351,7 +415,12 @@
   <Tabs.List
     class="h-fit grid grid-cols-1 md:block w-full md:w-fit bg-bw200 dark:bg-darkagenttab rounded-[15px] p-1 mb-10 lg:mb-0"
   >
-    <Tabs.Trigger value="1">Settings</Tabs.Trigger>
+    <Tabs.Trigger
+      value="1"
+      onclick={() => {
+        graphData = [];
+      }}>Settings</Tabs.Trigger
+    >
     <Tabs.Trigger value="2" onclick={getInstanceLogs}
       >Instance Log Report</Tabs.Trigger
     >
@@ -469,7 +538,7 @@
           <Form.FieldErrors />
         </Form.Field>
 
-        <Form.Field {form} name="environment" class="w-full">
+        <Form.Field {form} name="environment" class="w-full mb-10">
           <Form.Control>
             {#snippet children({ props })}
               <Form.Label>Environment</Form.Label>
@@ -676,13 +745,10 @@
     {:else}
       <div>Data not found or access denied</div>
     {/if}
-
-    <CustomSuperDebug {formData} />
   </Tabs.Content>
   <Tabs.Content value="2" class="mt-10">
     {@render DurationSelect({ onChange: getInstanceLogs })}
     {@render LogsTable({ rows: graphData })}
-    <CustomSuperDebug formData={graphData} />
   </Tabs.Content>
   <Tabs.Content value="3" class="mt-10">
     {@render DurationSelect({ onChange: getRequestLogs })}
@@ -690,6 +756,11 @@
   </Tabs.Content>
   <Tabs.Content value="4" class="mt-10">
     {@render DurationSelect({ onChange: getConsoleLogs })}
-    {@render LogsTable({ rows: graphData })}
+    {@render LogsTable({
+      rows: graphData,
+      cols: pickConsoleColumns(graphData),
+    })}
   </Tabs.Content>
 </Tabs.Root>
+
+<CustomSuperDebug formData={graphData.length > 0 ? graphData : formData} />
