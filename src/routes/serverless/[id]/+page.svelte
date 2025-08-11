@@ -296,16 +296,23 @@
     };
   }
 
-  function shouldFormatAsTimeSince(col: string, val: any): boolean {
-    if (val == null) return false;
+  // New: shared helper to detect time-like columns by name
+  function isTimeLikeColumn(col: string): boolean {
     const key = col?.toLowerCase?.() ?? "";
-    const likely =
+    return (
       key === "ts" ||
       key.endsWith("time") ||
       key.endsWith("timestamp") ||
       key.endsWith("date") ||
       key.endsWith("at") ||
-      key.includes("time");
+      key.includes("time")
+    );
+  }
+
+  function shouldFormatAsTimeSince(col: string, val: any): boolean {
+    if (val == null) return false;
+    // use shared detector for column name
+    const likely = isTimeLikeColumn(col);
     if (!likely) return false;
     if (val instanceof Date) return !isNaN(val.getTime());
     if (typeof val === "string") return !isNaN(new Date(val).getTime());
@@ -382,7 +389,7 @@
       <Table.Header>
         <Table.Row>
           {#each (cols && cols.length > 0 ? cols : Object.keys(rows[0])) as col}
-            <Table.Head class={headClassFor ? headClassFor(col) : undefined}>{col}</Table.Head>
+            <Table.Head class={headClassFor ? headClassFor(col) : (isTimeLikeColumn(col) ? "whitespace-nowrap w-0" : undefined)}>{col}</Table.Head>
           {/each}
         </Table.Row>
       </Table.Header>
@@ -390,7 +397,7 @@
         {#each rows as row, i (row?._id ?? row?.id ?? i)}
           <Table.Row>
             {#each (cols && cols.length > 0 ? cols : Object.keys(rows[0])) as col}
-              <Table.Cell class={cellClassFor ? cellClassFor(col, row[col]) : undefined}>
+              <Table.Cell class={cellClassFor ? cellClassFor(col, row[col]) : (isTimeLikeColumn(col) ? "pr-3 whitespace-nowrap align-top text-muted-foreground" : undefined)}>
                 {#if shouldFormatAsTimeSince(col, row[col])}
                   {_timeSince(new Date(row[col]?.$date ?? row[col]))}
                 {:else if typeof row[col] === "object"}
@@ -759,7 +766,7 @@
       cols: pickConsoleColumns(graphData),
       headClassFor: (col: string) => {
         const k = col?.toLowerCase?.() ?? "";
-        if (k === "ts" || k.endsWith("time") || k.endsWith("timestamp") || k.endsWith("date") || k.endsWith("at")) {
+        if (isTimeLikeColumn(k)) {
           return "whitespace-nowrap w-0"; // compact
         }
         if (k === "message" || k === "msg" || k === "log") {
@@ -769,7 +776,7 @@
       },
       cellClassFor: (col: string, _val: any) => {
         const k = col?.toLowerCase?.() ?? "";
-        if (k === "ts" || k.endsWith("time") || k.endsWith("timestamp") || k.endsWith("date") || k.endsWith("at")) {
+        if (isTimeLikeColumn(k)) {
           return "pr-3 whitespace-nowrap align-top text-muted-foreground"; // minimal width
         }
         if (k === "message" || k === "msg" || k === "log") {
