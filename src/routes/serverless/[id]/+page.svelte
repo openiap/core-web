@@ -376,21 +376,21 @@
   />
 {/snippet}
 
-{#snippet LogsTable({ rows, cols }: { rows: any[]; cols?: string[] })}
+{#snippet LogsTable({ rows, cols, headClassFor, cellClassFor }: { rows: any[]; cols?: string[]; headClassFor?: (col: string) => string; cellClassFor?: (col: string, val: any) => string })}
   {#if Array.isArray(rows) && rows.length > 0}
     <Table.Root class="mb-4">
       <Table.Header>
         <Table.Row>
-          {#each cols && cols.length > 0 ? cols : Object.keys(rows[0]) as col}
-            <Table.Head>{col}</Table.Head>
+          {#each (cols && cols.length > 0 ? cols : Object.keys(rows[0])) as col}
+            <Table.Head class={headClassFor ? headClassFor(col) : undefined}>{col}</Table.Head>
           {/each}
         </Table.Row>
       </Table.Header>
       <Table.Body>
         {#each rows as row, i (row?._id ?? row?.id ?? i)}
           <Table.Row>
-            {#each cols && cols.length > 0 ? cols : Object.keys(rows[0]) as col}
-              <Table.Cell class="w-full">
+            {#each (cols && cols.length > 0 ? cols : Object.keys(rows[0])) as col}
+              <Table.Cell class={cellClassFor ? cellClassFor(col, row[col]) : undefined}>
                 {#if shouldFormatAsTimeSince(col, row[col])}
                   {_timeSince(new Date(row[col]?.$date ?? row[col]))}
                 {:else if typeof row[col] === "object"}
@@ -405,9 +405,7 @@
       </Table.Body>
     </Table.Root>
   {:else}
-    <div class="text-muted-foreground text-sm">
-      No data for selected duration.
-    </div>
+    <div class="text-muted-foreground text-sm">No data for selected duration.</div>
   {/if}
 {/snippet}
 
@@ -759,6 +757,26 @@
     {@render LogsTable({
       rows: graphData,
       cols: pickConsoleColumns(graphData),
+      headClassFor: (col: string) => {
+        const k = col?.toLowerCase?.() ?? "";
+        if (k === "ts" || k.endsWith("time") || k.endsWith("timestamp") || k.endsWith("date") || k.endsWith("at")) {
+          return "whitespace-nowrap w-0"; // compact
+        }
+        if (k === "message" || k === "msg" || k === "log") {
+          return "w-full"; // expand
+        }
+        return "";
+      },
+      cellClassFor: (col: string, _val: any) => {
+        const k = col?.toLowerCase?.() ?? "";
+        if (k === "ts" || k.endsWith("time") || k.endsWith("timestamp") || k.endsWith("date") || k.endsWith("at")) {
+          return "pr-3 whitespace-nowrap align-top text-muted-foreground"; // minimal width
+        }
+        if (k === "message" || k === "msg" || k === "log") {
+          return "w-full whitespace-pre-wrap break-words align-top"; // take remaining width
+        }
+        return "";
+      }
     })}
   </Tabs.Content>
 </Tabs.Root>
