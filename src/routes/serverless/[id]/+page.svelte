@@ -92,8 +92,6 @@
               jwt: auth.access_token,
             });
             form.data.runas = JSON.parse(newtoken).id;
-
-            console.log("token created ", form.data.runas);
           }
           // else {
           //   let item = await auth.client.FindOne<any>({
@@ -166,9 +164,6 @@
     }
     try {
       const { start, end } = getTimeDuration(selectedduration);
-      console.log("Fetching instance logs for duration:", selectedduration);
-      console.log("Start time:", start);
-      console.log("End time:", end);
       const result: any = await auth.client.Query({
         collectionname: "sf_instance_logs",
         top: 100,
@@ -182,7 +177,6 @@
       });
       // Coerce to array depending on API shape
       graphData = Array.isArray(result) ? result : (result?.items ?? []);
-      console.log("Instance logs fetched:", graphData);
     } catch (error: any) {
       console.error("Error fetching instance logs:", error);
       toast.error("Error fetching instance logs", {
@@ -201,9 +195,6 @@
     }
     try {
       const { start, end } = getTimeDuration(selectedduration);
-      console.log("Fetching request logs for duration:", selectedduration);
-      console.log("Start time:", start);
-      console.log("End time:", end);
       const result: any = await auth.client.Query({
         collectionname: "sf_request_logs",
         top: 100,
@@ -217,7 +208,6 @@
       });
       // Coerce to array depending on API shape
       graphData = Array.isArray(result) ? result : (result?.items ?? []);
-      console.log("Request logs fetched:", graphData);
     } catch (error: any) {
       console.error("Error fetching request logs:", error);
       toast.error("Error fetching request logs", {
@@ -236,9 +226,6 @@
     }
     try {
       const { start, end } = getTimeDuration(selectedduration);
-      console.log("Fetching console logs for duration:", selectedduration);
-      console.log("Start time:", start);
-      console.log("End time:", end);
       const result: any = await auth.client.Query({
         collectionname: "sf_console_logs",
         top: 100,
@@ -252,7 +239,6 @@
       });
       // Coerce to array depending on API shape
       graphData = Array.isArray(result) ? result : (result?.items ?? []);
-      console.log("Console logs fetched:", graphData);
     } catch (error: any) {
       console.error("Error fetching console logs:", error);
       toast.error("Error fetching console logs", {
@@ -288,8 +274,6 @@
         start.setDate(start.getDate() - value);
         break;
     }
-    console.log("Start time:", start.toISOString());
-    console.log("End time:", end.toISOString());
     return {
       start: start.toISOString(),
       end: end.toISOString(),
@@ -383,21 +367,43 @@
   />
 {/snippet}
 
-{#snippet LogsTable({ rows, cols, headClassFor, cellClassFor }: { rows: any[]; cols?: string[]; headClassFor?: (col: string) => string; cellClassFor?: (col: string, val: any) => string })}
+{#snippet LogsTable({
+  rows,
+  cols,
+  headClassFor,
+  cellClassFor,
+}: {
+  rows: any[];
+  cols?: string[];
+  headClassFor?: (col: string) => string;
+  cellClassFor?: (col: string, val: any) => string;
+})}
   {#if Array.isArray(rows) && rows.length > 0}
     <Table.Root class="mb-4">
       <Table.Header>
         <Table.Row>
-          {#each (cols && cols.length > 0 ? cols : Object.keys(rows[0])) as col}
-            <Table.Head class={headClassFor ? headClassFor(col) : (isTimeLikeColumn(col) ? "whitespace-nowrap w-0" : undefined)}>{col}</Table.Head>
+          {#each cols && cols.length > 0 ? cols : Object.keys(rows[0]) as col}
+            <Table.Head
+              class={headClassFor
+                ? headClassFor(col)
+                : isTimeLikeColumn(col)
+                  ? "whitespace-nowrap w-0"
+                  : undefined}>{col}</Table.Head
+            >
           {/each}
         </Table.Row>
       </Table.Header>
       <Table.Body>
         {#each rows as row, i (row?._id ?? row?.id ?? i)}
           <Table.Row>
-            {#each (cols && cols.length > 0 ? cols : Object.keys(rows[0])) as col}
-              <Table.Cell class={cellClassFor ? cellClassFor(col, row[col]) : (isTimeLikeColumn(col) ? "pr-3 whitespace-nowrap align-top text-muted-foreground" : undefined)}>
+            {#each cols && cols.length > 0 ? cols : Object.keys(rows[0]) as col}
+              <Table.Cell
+                class={cellClassFor
+                  ? cellClassFor(col, row[col])
+                  : isTimeLikeColumn(col)
+                    ? "pr-3 whitespace-nowrap align-top text-muted-foreground"
+                    : undefined}
+              >
                 {#if shouldFormatAsTimeSince(col, row[col])}
                   {_timeSince(new Date(row[col]?.$date ?? row[col]))}
                 {:else if typeof row[col] === "object"}
@@ -412,7 +418,9 @@
       </Table.Body>
     </Table.Root>
   {:else}
-    <div class="text-muted-foreground text-sm">No data for selected duration.</div>
+    <div class="text-muted-foreground text-sm">
+      No data for selected duration.
+    </div>
   {/if}
 {/snippet}
 
@@ -519,7 +527,6 @@
                 basefilter={{ _type: "distro" }}
                 bind:value={$formData.distro}
                 handleChangeFunction={(item: any) => {
-                  console.log("Selected item:", item);
                   if (item != null) {
                     $formData.distro = item.repo + ":" + item.tag;
                   }
@@ -782,7 +789,7 @@
           return "w-full whitespace-pre-wrap break-words align-top"; // take remaining width
         }
         return "";
-      }
+      },
     })}
   </Tabs.Content>
 </Tabs.Root>
