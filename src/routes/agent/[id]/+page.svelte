@@ -813,19 +813,24 @@
           throw new Error("Product " + $formData._stripeprice + " not found");
         }
 
-        confirmpricenextinvoice = JSON.parse(
-          await auth.client.CustomCommand({
-            command: "getnextinvoice",
-            id: currentworkspace._billingid,
-            data: JSON.stringify({
-              lookupkey: product.lookup_key,
-              stripeprice: product.stripeprice,
-              productname: product.name,
-              quantity: 1,
-            }),
-            jwt: auth.access_token,
+        const json = await auth.client.CustomCommand({
+          command: "getnextinvoice",
+          id: currentworkspace._billingid,
+          data: JSON.stringify({
+            lookupkey: product.lookup_key,
+            stripeprice: product.stripeprice,
+            productname: product.name,
+            quantity: 1,
           }),
-        );
+          jwt: auth.access_token,
+        });
+        if (json == null || json == "") {
+          loading = false;
+          confirmprice = true;
+          form.submit();
+          return;
+        }
+        confirmpricenextinvoice = JSON.parse(json);
         const period_start = new Date(
           confirmpricenextinvoice.period_start * 1000,
         );
