@@ -122,10 +122,10 @@ class entitiesdata {
 					break;
 				case base + "/distribution":
 					collectionname = "sf";
-					entities = await this.GetData(page, collectionname, { _type: "distro" }, access_token);
+					entities = await this.GetData(page, collectionname, { _type: "distro" }, access_token, false);
 					total_count = entities.length;
 					if (entities.length >= usersettings.pagesize) {
-						total_count = await this.GetCount(page, collectionname, { _type: "distro" }, access_token);
+						total_count = await this.GetCount(page, collectionname, { _type: "distro" }, access_token, false);
 					}
 					break;
 				case base + "/entities":

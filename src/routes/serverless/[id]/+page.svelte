@@ -511,7 +511,6 @@
               <Form.Label>Distro</Form.Label>
               <Entityselector
                 propertyname="distro"
-                queryas={usersettings.currentworkspace}
                 width="md:w-fit w-64"
                 class="mb-4 md:mb-0"
                 {loading}
