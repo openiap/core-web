@@ -15,11 +15,25 @@
   import { editFormSchema } from "../schema.js";
   import { ObjectInput } from "$lib/objectinput/index.js";
   import { CustomSwitch } from "$lib/customswitch/index.js";
+  import * as Tabs from "$lib/components/ui/tabs/index.js";
+  import { CustomSelect } from "$lib/customselect/index.js";
+  import * as Table from "$lib/components/ui/table/index.js";
 
   const { data } = $props();
 
   let loading = $state(false);
   let runasuser = $state(data.item.runas == "" ? true : false);
+  let selectedduration = $state("15m");
+  let durationOptions = [
+    { label: "Last 5 minutes", value: "5m" },
+    { label: "Last 15 minutes", value: "15m" },
+    { label: "Last 1 hour", value: "1h" },
+    { label: "Last 2 hours", value: "2h" },
+    { label: "Last 1 day", value: "1d" },
+    { label: "Last 7 days", value: "7d" },
+  ];
+  type GraphRow = { [key: string]: any; _id?: string; id?: string | number };
+  let graphData = $state<GraphRow[]>([]);
 
   if (data.item != null) {
     if (data.item.anonymous == null) {
@@ -139,221 +153,497 @@
       description: error.message,
     });
   }
+
+  async function getInstanceLogs() {
+    // Fetch instance logs here
+    graphData = [];
+    if (data.item == null || data.item.repo == null || data.item.tag == null) {
+      toast.error("Error", {
+        description: "Serverless Function not found or incomplete data",
+      });
+      return;
+    }
+    try {
+      const { start, end } = getTimeDuration(selectedduration);
+      console.log("Fetching instance logs for duration:", selectedduration);
+      console.log("Start time:", start);
+      console.log("End time:", end);
+      const result: any = await auth.client.Query({
+        collectionname: "sf_instance_logs",
+        top: 100,
+        query: {
+          "metadata.package": data.item.repo + ":" + data.item.tag,
+          ts: {
+            $gte: new Date(start),
+            $lte: new Date(end),
+          },
+        },
+      });
+      // Coerce to array depending on API shape
+      graphData = Array.isArray(result) ? result : (result?.items ?? []);
+      console.log("Instance logs fetched:", graphData);
+    } catch (error: any) {
+      console.error("Error fetching instance logs:", error);
+      toast.error("Error fetching instance logs", {
+        description: error.message,
+      });
+    }
+  }
+  async function getRequestLogs() {
+    // Fetch request logs here
+    graphData = [];
+    if (data.item == null || data.item.repo == null || data.item.tag == null) {
+      toast.error("Error", {
+        description: "Serverless Function not found or incomplete data",
+      });
+      return;
+    }
+    try {
+      const { start, end } = getTimeDuration(selectedduration);
+      console.log("Fetching request logs for duration:", selectedduration);
+      console.log("Start time:", start);
+      console.log("End time:", end);
+      const result: any = await auth.client.Query({
+        collectionname: "sf_request_logs",
+        top: 100,
+        query: {
+          "metadata.package": data.item.repo + ":" + data.item.tag,
+          ts: {
+            $gte: new Date(start),
+            $lte: new Date(end),
+          },
+        },
+      });
+      // Coerce to array depending on API shape
+      graphData = Array.isArray(result) ? result : (result?.items ?? []);
+      console.log("Request logs fetched:", graphData);
+    } catch (error: any) {
+      console.error("Error fetching request logs:", error);
+      toast.error("Error fetching request logs", {
+        description: error.message,
+      });
+    }
+  }
+  async function getConsoleLogs() {
+    // Fetch console logs here
+    graphData = [];
+    if (data.item == null || data.item.repo == null || data.item.tag == null) {
+      toast.error("Error", {
+        description: "Serverless Function not found or incomplete data",
+      });
+      return;
+    }
+    try {
+      const { start, end } = getTimeDuration(selectedduration);
+      console.log("Fetching console logs for duration:", selectedduration);
+      console.log("Start time:", start);
+      console.log("End time:", end);
+      const result: any = await auth.client.Query({
+        collectionname: "sf_console_logs",
+        top: 100,
+        query: {
+          "metadata.package": data.item.repo + ":" + data.item.tag,
+          ts: {
+            $gte: new Date(start),
+            $lte: new Date(end),
+          },
+        },
+      });
+      // Coerce to array depending on API shape
+      graphData = Array.isArray(result) ? result : (result?.items ?? []);
+      console.log("Console logs fetched:", graphData);
+    } catch (error: any) {
+      console.error("Error fetching console logs:", error);
+      toast.error("Error fetching console logs", {
+        description: error.message,
+      });
+    }
+  }
+  function getTimeDuration(duration: string): { start: string; end: string } {
+    // Example duration string: "15m", "1h", "2d"
+    // here based in the durration string return start and end time in an object in the format 2025-08-08T19:33:43.441Z
+    const end = new Date();
+    let start = new Date();
+
+    const match = duration.match(/^(\d+)([smhd])$/);
+    if (!match) {
+      throw new Error("Invalid duration format");
+    }
+
+    const value = parseInt(match[1], 10);
+    const unit = match[2];
+
+    switch (unit) {
+      case "s":
+        start.setSeconds(start.getSeconds() - value);
+        break;
+      case "m":
+        start.setMinutes(start.getMinutes() - value);
+        break;
+      case "h":
+        start.setHours(start.getHours() - value);
+        break;
+      case "d":
+        start.setDate(start.getDate() - value);
+        break;
+    }
+    console.log("Start time:", start.toISOString());
+    console.log("End time:", end.toISOString());
+    return {
+      start: start.toISOString(),
+      end: end.toISOString(),
+    };
+  }
 </script>
 
-{#if message && $message != ""}
-  {$message}
-{/if}
+{#snippet DurationSelect({ onChange }: { onChange: (value: string) => void | Promise<void> })}
+  <CustomSelect
+    triggerContent={() => {
+      return durationOptions.find(
+        (option) => option.value === selectedduration,
+      )?.label;
+    }}
+    type="single"
+    selectitems={durationOptions}
+    class="mb-4"
+    bind:value={selectedduration}
+    onValueChangeFunction={async (value: string) => {
+      selectedduration = value;
+      if (typeof onChange === "function") {
+        await onChange(value);
+      }
+    }}
+  />
+{/snippet}
 
-{#if $formData != null}
-  <form method="POST" use:enhance>
-    <Form.Field {form} name="name" class="mb-10">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Name</Form.Label>
-          <CustomInput
-            placeholder="Type name"
-            disabled={loading}
-            {...props}
-            bind:value={$formData.name}
-          />
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
+{#snippet LogsTable({ rows }: { rows: any[] })}
+  {#if Array.isArray(rows) && rows.length > 0}
+    <Table.Root class="mb-4">
+      <Table.Header>
+        <Table.Row>
+          {#each Object.keys(rows[0]) as col}
+            <Table.Head>{col}</Table.Head>
+          {/each}
+        </Table.Row>
+      </Table.Header>
+      <Table.Body>
+        {#each rows as row, i (row?._id ?? row?.id ?? i)}
+          <Table.Row>
+            {#each Object.keys(rows[0]) as col}
+              <Table.Cell>
+                {#if typeof row[col] === "object"}
+                  {JSON.stringify(row[col])}
+                {:else}
+                  {row[col]}
+                {/if}
+              </Table.Cell>
+            {/each}
+          </Table.Row>
+        {/each}
+      </Table.Body>
+    </Table.Root>
+  {:else}
+    <div class="text-muted-foreground text-sm">No data for selected duration.</div>
+  {/if}
+{/snippet}
 
-    <Form.Field {form} name="tag" class="mb-10">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Tag</Form.Label>
-          <CustomInput
-            placeholder="Type tag"
-            disabled={loading}
-            {...props}
-            bind:value={$formData.tag}
-          />
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
+<Tabs.Root value="1" class="w-full">
+  <Tabs.List
+    class="h-fit grid grid-cols-1 md:block w-full md:w-fit bg-bw200 dark:bg-darkagenttab rounded-[15px] p-1 mb-10 lg:mb-0"
+  >
+    <Tabs.Trigger value="1">Settings</Tabs.Trigger>
+    <Tabs.Trigger value="2" onclick={getInstanceLogs}
+      >Instance Log Report</Tabs.Trigger
+    >
+    <Tabs.Trigger value="3" onclick={getRequestLogs}
+      >Request Log Report</Tabs.Trigger
+    >
+    <Tabs.Trigger value="4" onclick={getConsoleLogs}
+      >Console Log Report</Tabs.Trigger
+    >
+  </Tabs.List>
 
-    <Form.Field {form} name="repo" class="mb-10">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Repo</Form.Label>
-          <CustomInput
-            placeholder="Type repo"
-            disabled={true}
-            {...props}
-            bind:value={$formData.repo}
-          />
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
-
-    <!-- insert CustomSwitch for field anonymous -->
-    <Form.Field {form} name="anonymous" class="mb-10">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Anonymous</Form.Label>
-          <CustomSwitch
-            disabled={loading}
-            {...props}
-            bind:checked={$formData.anonymous}
-          />
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
-
-    <Form.Field {form} name="distro" class="mb-10">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Distro</Form.Label>
-          <Entityselector
-            propertyname="distro"
-            queryas={usersettings.currentworkspace}
-            width="md:w-fit w-64"
-            class="mb-4 md:mb-0"
-            {loading}
-            {...props}
-            collectionname="sf"
-            basefilter={{ _type: "distro" }}
-            bind:value={$formData.distro}
-            handleChangeFunction={(item: any) => {
-              console.log("Selected item:", item);
-              if (item != null) {
-                $formData.distro = item.repo + ":" + item.tag;
-              }
-            }}
-            returnobject={true}
-          >
-            {#snippet rendername(item: any)}
-              {item.name}
+  <Tabs.Content value="1" class="mt-10">
+    {#if message && $message != ""}
+      {$message}
+    {/if}
+    {#if $formData != null}
+      <form method="POST" use:enhance>
+        <Form.Field {form} name="name" class="mb-10">
+          <Form.Control>
+            {#snippet children({ props })}
+              <Form.Label>Name</Form.Label>
+              <CustomInput
+                placeholder="Type name"
+                disabled={loading}
+                {...props}
+                bind:value={$formData.name}
+              />
             {/snippet}
-            {#snippet rendercontent(item: any)}
-              {#if item == null}
-                Nothing selected
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
+
+        <Form.Field {form} name="tag" class="mb-10">
+          <Form.Control>
+            {#snippet children({ props })}
+              <Form.Label>Tag</Form.Label>
+              <CustomInput
+                placeholder="Type tag"
+                disabled={loading}
+                {...props}
+                bind:value={$formData.tag}
+              />
+            {/snippet}
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
+
+        <Form.Field {form} name="repo" class="mb-10">
+          <Form.Control>
+            {#snippet children({ props })}
+              <Form.Label>Repo</Form.Label>
+              <CustomInput
+                placeholder="Type repo"
+                disabled={true}
+                {...props}
+                bind:value={$formData.repo}
+              />
+            {/snippet}
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
+
+        <!-- insert CustomSwitch for field anonymous -->
+        <Form.Field {form} name="anonymous" class="mb-10">
+          <Form.Control>
+            {#snippet children({ props })}
+              <div class="flex flex-row items-center space-x-2 py-4">
+                <Form.Label>Anonymous</Form.Label>
+                <CustomSwitch
+                  disabled={loading}
+                  {...props}
+                  bind:checked={$formData.anonymous}
+                />
+              </div>
+            {/snippet}
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
+
+        <Form.Field {form} name="distro" class="mb-10">
+          <Form.Control>
+            {#snippet children({ props })}
+              <Form.Label>Distro</Form.Label>
+              <Entityselector
+                propertyname="distro"
+                queryas={usersettings.currentworkspace}
+                width="md:w-fit w-64"
+                class="mb-4 md:mb-0"
+                {loading}
+                {...props}
+                collectionname="sf"
+                basefilter={{ _type: "distro" }}
+                bind:value={$formData.distro}
+                handleChangeFunction={(item: any) => {
+                  console.log("Selected item:", item);
+                  if (item != null) {
+                    $formData.distro = item.repo + ":" + item.tag;
+                  }
+                }}
+                returnobject={true}
+              >
+                {#snippet rendername(item: any)}
+                  {item.name}
+                {/snippet}
+                {#snippet rendercontent(item: any)}
+                  {#if item == null}
+                    Nothing selected
+                  {:else}
+                    {item.name}
+                  {/if}
+                {/snippet}
+              </Entityselector>
+            {/snippet}
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
+
+        <Form.Field {form} name="environment" class="w-full">
+          <Form.Control>
+            {#snippet children({ props })}
+              <Form.Label>Environment</Form.Label>
+              <ObjectInput
+                disabled={loading}
+                {...props}
+                bind:value={$formData.environment}
+              />
+            {/snippet}
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
+
+        <Form.Field {form} name="min_instances" class="mb-10">
+          <Form.Control>
+            {#snippet children({ props })}
+              <Form.Label>min_instances</Form.Label>
+              <CustomInput
+                type="number"
+                placeholder="Type min_instances"
+                disabled={loading}
+                {...props}
+                bind:value={$formData.min_instances}
+              />
+            {/snippet}
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
+
+        <Form.Field {form} name="max_instances" class="mb-10">
+          <Form.Control>
+            {#snippet children({ props })}
+              <Form.Label>max_instances</Form.Label>
+              <CustomInput
+                type="number"
+                placeholder="Type max_instances"
+                disabled={loading}
+                {...props}
+                bind:value={$formData.max_instances}
+              />
+            {/snippet}
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
+
+        <Form.Field {form} name="port" class="mb-10">
+          <Form.Control>
+            {#snippet children({ props })}
+              <Form.Label>Port</Form.Label>
+              <CustomInput
+                type="number"
+                placeholder="Type Port"
+                disabled={loading}
+                {...props}
+                bind:value={$formData.port}
+              />
+            {/snippet}
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
+
+        <Form.Field {form} name="minimum_response_time" class="mb-10">
+          <Form.Control>
+            {#snippet children({ props })}
+              <Form.Label>Minimum Response Time</Form.Label>
+              <CustomInput
+                type="number"
+                placeholder="Type Minimum Response Time"
+                disabled={loading}
+                {...props}
+                bind:value={$formData.minimum_response_time}
+              />
+            {/snippet}
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
+
+        <!-- add token selection here set _id to the -->
+        <!-- or select user then create api key for that user and add the _id of the apikey to default 1 year expiration -->
+        <!-- runas key -->
+        <Form.Field {form} name="runas" class="mb-10">
+          <Form.Control>
+            {#snippet children({ props })}
+              <Form.Label
+                >Run as ({runasuser ? "User" : "Access Token"})</Form.Label
+              >
+              <div class="flex items-center space-x-2 py-4">
+                <Form.Label>Access token</Form.Label>
+                <CustomSwitch
+                  bind:checked={runasuser}
+                  onclick={() => {
+                    $formData.runas = "";
+                  }}
+                />
+                <Form.Label>User</Form.Label>
+              </div>
+              {#if runasuser}
+                <div class="md:flex md:items-center md:space-x-4 my-2">
+                  <Entityselector
+                    name="User"
+                    propertyname="_id"
+                    queryas={usersettings.currentworkspace}
+                    width="md:w-fit w-64"
+                    class="mb-4 md:mb-0"
+                    disabled={loading}
+                    collectionname="users"
+                    basefilter={{ _type: "user" }}
+                    bind:value={$formData.runas}
+                    allowunselect={false}
+                  >
+                    {#snippet rendername(item: any)}
+                      {"(" + item._type + ") " + item.name}
+                    {/snippet}
+                    {#snippet rendercontent(item: any)}
+                      {#if item == null}
+                        Nothing selected
+                      {:else}
+                        {"(" + item._type + ") " + item.name}
+                      {/if}
+                    {/snippet}
+                  </Entityselector>
+                  <HotkeyButton
+                    aria-label="User Details"
+                    disabled={!Boolean($formData.runas) || loading}
+                    onclick={() => {
+                      goto(base + `/user/${$formData.runas}`);
+                    }}><User />User Details</HotkeyButton
+                  >
+                </div>
               {:else}
-                {item.name}
+                <Entityselector
+                  name="Access Token"
+                  propertyname="_id"
+                  queryas={usersettings.currentworkspace}
+                  width="md:w-fit w-64"
+                  class="mb-4 md:mb-0"
+                  disabled={loading}
+                  collectionname="usertokens"
+                  basefilter={{ _type: "usertoken", revoked: false }}
+                  bind:value={$formData.runas}
+                >
+                  {#snippet rendername(item: any)}
+                    {item.name}
+                  {/snippet}
+                  {#snippet rendercontent(item: any)}
+                    {#if item == null}
+                      Nothing selected
+                    {:else}
+                      {item.name}
+                    {/if}
+                  {/snippet}
+                </Entityselector>
               {/if}
             {/snippet}
-          </Entityselector>
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
 
-    <Form.Field {form} name="environment" class="w-full">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Environment</Form.Label>
-          <ObjectInput
-            disabled={loading}
-            {...props}
-            bind:value={$formData.environment}
-          />
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
-
-    <Form.Field {form} name="min_instances" class="mb-10">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>min_instances</Form.Label>
-          <CustomInput
-            type="number"
-            placeholder="Type min_instances"
-            disabled={loading}
-            {...props}
-            bind:value={$formData.min_instances}
-          />
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
-
-    <Form.Field {form} name="max_instances" class="mb-10">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>max_instances</Form.Label>
-          <CustomInput
-            type="number"
-            placeholder="Type max_instances"
-            disabled={loading}
-            {...props}
-            bind:value={$formData.max_instances}
-          />
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
-
-    <Form.Field {form} name="port" class="mb-10">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Port</Form.Label>
-          <CustomInput
-            type="number"
-            placeholder="Type Port"
-            disabled={loading}
-            {...props}
-            bind:value={$formData.port}
-          />
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
-
-    <Form.Field {form} name="minimum_response_time" class="mb-10">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Minimum Response Time</Form.Label>
-          <CustomInput
-            type="number"
-            placeholder="Type Minimum Response Time"
-            disabled={loading}
-            {...props}
-            bind:value={$formData.minimum_response_time}
-          />
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
-
-    <!-- add token selection here set _id to the -->
-    <!-- or select user then create api key for that user and add the _id of the apikey to default 1 year expiration -->
-    <!-- runas key -->
-    <Form.Field {form} name="runas" class="mb-10">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Run as ({runasuser ? "User" : "Access Token"})</Form.Label
-          >
-          <div class="flex items-center space-x-2 py-4">
-            <Form.Label>Access token</Form.Label>
-            <CustomSwitch
-              bind:checked={runasuser}
-              onclick={() => {
-                $formData.runas = "";
-              }}
-            />
-            <Form.Label>User</Form.Label>
-          </div>
-          {#if runasuser}
-            <div class="md:flex md:items-center md:space-x-4 my-2">
+        <Form.Field {form} name="volume" class="mb-10">
+          <Form.Control>
+            {#snippet children({ props })}
+              <Form.Label>Volume</Form.Label>
               <Entityselector
-                name="User"
                 propertyname="_id"
                 queryas={usersettings.currentworkspace}
                 width="md:w-fit w-64"
                 class="mb-4 md:mb-0"
                 disabled={loading}
-                collectionname="users"
-                basefilter={{ _type: "user" }}
-                bind:value={$formData.runas}
-                allowunselect={false}
+                {...props}
+                collectionname="sf"
+                basefilter={{ _type: "volume" }}
+                bind:value={$formData.volume}
+                selectiontype="multiple"
+                maxselections={4}
               >
                 {#snippet rendername(item: any)}
                   {"(" + item._type + ") " + item.name}
@@ -366,90 +656,40 @@
                   {/if}
                 {/snippet}
               </Entityselector>
-              <HotkeyButton
-                aria-label="User Details"
-                disabled={!Boolean($formData.runas) || loading}
-                onclick={() => {
-                  goto(base + `/user/${$formData.runas}`);
-                }}><User />User Details</HotkeyButton
-              >
-            </div>
-          {:else}
-            <Entityselector
-              name="Access Token"
-              propertyname="_id"
-              queryas={usersettings.currentworkspace}
-              width="md:w-fit w-64"
-              class="mb-4 md:mb-0"
-              disabled={loading}
-              collectionname="usertokens"
-              basefilter={{ _type: "usertoken", revoked: false }}
-              bind:value={$formData.runas}
-            >
-              {#snippet rendername(item: any)}
-                {item.name}
-              {/snippet}
-              {#snippet rendercontent(item: any)}
-                {#if item == null}
-                  Nothing selected
-                {:else}
-                  {item.name}
-                {/if}
-              {/snippet}
-            </Entityselector>
-          {/if}
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
-
-    <Form.Field {form} name="volume" class="mb-10">
-      <Form.Control>
-        {#snippet children({ props })}
-          <Form.Label>Volume</Form.Label>
-          <Entityselector
-            propertyname="_id"
-            queryas={usersettings.currentworkspace}
-            width="md:w-fit w-64"
-            class="mb-4 md:mb-0"
-            disabled={loading}
-            {...props}
-            collectionname="sf"
-            basefilter={{ _type: "volume" }}
-            bind:value={$formData.volume}
-            selectiontype="multiple"
-            maxselections={4}
-          >
-            {#snippet rendername(item: any)}
-              {"(" + item._type + ") " + item.name}
             {/snippet}
-            {#snippet rendercontent(item: any)}
-              {#if item == null}
-                Nothing selected
-              {:else}
-                {"(" + item._type + ") " + item.name}
-              {/if}
-            {/snippet}
-          </Entityselector>
-        {/snippet}
-      </Form.Control>
-      <Form.FieldErrors />
-    </Form.Field>
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
 
-    <HotkeyButton
-      type="submit"
-      disabled={loading}
-      aria-label="Update SF Function"
-      variant="success"
-      size="base"
-      data-shortcut="ctrl+s"
-    >
-      <Check />
-      Update Serverless</HotkeyButton
-    >
-  </form>
-{:else}
-  <div>Data not found or access denied</div>
-{/if}
+        <HotkeyButton
+          type="submit"
+          disabled={loading}
+          aria-label="Update SF Function"
+          variant="success"
+          size="base"
+          data-shortcut="ctrl+s"
+        >
+          <Check />
+          Update Serverless</HotkeyButton
+        >
+      </form>
+    {:else}
+      <div>Data not found or access denied</div>
+    {/if}
 
-<CustomSuperDebug {formData} />
+    <CustomSuperDebug {formData} />
+  </Tabs.Content>
+  <Tabs.Content value="2" class="mt-10">
+    {@render DurationSelect({ onChange: getInstanceLogs })}
+    {@render LogsTable({ rows: graphData })}
+    <CustomSuperDebug formData={graphData} />
+  </Tabs.Content>
+  <Tabs.Content value="3" class="mt-10">
+    {@render DurationSelect({ onChange: getRequestLogs })}
+    {@render LogsTable({ rows: graphData })}
+  </Tabs.Content>
+  <Tabs.Content value="4" class="mt-10">
+    {@render DurationSelect({ onChange: getConsoleLogs })}
+    {@render LogsTable({ rows: graphData })}
+  </Tabs.Content>
+</Tabs.Root>
