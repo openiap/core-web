@@ -3,22 +3,23 @@
   import { base } from "$app/paths";
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
+  import * as Table from "$lib/components/ui/table/index.js";
+  import * as Tabs from "$lib/components/ui/tabs/index.js";
+  import { CustomGraph } from "$lib/customgraph/index.js";
   import { CustomInput } from "$lib/custominput/index.js";
+  import { CustomSelect } from "$lib/customselect/index.js";
   import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
+  import { CustomSwitch } from "$lib/customswitch/index.js";
   import Entityselector from "$lib/entityselector/entityselector.svelte";
+  import { ObjectInput } from "$lib/objectinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import { Check, User } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
-  import { editFormSchema } from "../schema.js";
-  import { ObjectInput } from "$lib/objectinput/index.js";
-  import { CustomSwitch } from "$lib/customswitch/index.js";
-  import * as Tabs from "$lib/components/ui/tabs/index.js";
-  import { CustomSelect } from "$lib/customselect/index.js";
-  import * as Table from "$lib/components/ui/table/index.js";
   import { _timeSince } from "../../../helper";
+  import { editFormSchema } from "../schema.js";
 
   const { data } = $props();
 
@@ -35,6 +36,7 @@
   ];
   type GraphRow = { [key: string]: any; _id?: string; id?: string | number };
   let graphData = $state<GraphRow[]>([]);
+  let distroname = $state(data.item.distro);
 
   if (data.item != null) {
     if (data.item.anonymous == null) {
@@ -51,16 +53,25 @@
       if (form.valid) {
         loading = true;
         try {
-          const workspaceid = usersettings.currentworkspace;
-          if (workspaceid == "" || workspaceid == null) {
-            toast.error("Error", {
-              description: "Please select a workspace",
-            });
-            cancel();
-            loading = false;
-            return;
+          let workspaceid = usersettings.currentworkspace;
+          if (data.item._workspaceid == null || data.item._workspaceid == "") {
+            if (workspaceid == "" || workspaceid == null) {
+              toast.error("Error", {
+                description: "Please select a workspace",
+              });
+              cancel();
+              loading = false;
+              return;
+            }
+            form.data._workspaceid = workspaceid;
           }
-          form.data._workspaceid = workspaceid;
+          if (
+            form.data._workspaceid != workspaceid &&
+            workspaceid != null &&
+            workspaceid != ""
+          ) {
+            form.data._workspaceid = workspaceid;
+          }
 
           if (runasuser) {
             // let item = await auth.client.FindOne<any>({
@@ -84,7 +95,7 @@
               command: "issueusertoken",
               // @ts-ignore
               data: {
-                _workspaceid: workspaceid,
+                _workspaceid: form.data._workspaceid,
                 id: form.data.runas,
                 name: "SF for " + form.data.name,
                 exp: "365d", // 1 year
@@ -518,7 +529,6 @@
             {#snippet children({ props })}
               <Form.Label>Distro</Form.Label>
               <Entityselector
-                propertyname="distro"
                 width="md:w-fit w-64"
                 class="mb-4 md:mb-0"
                 {loading}
@@ -529,6 +539,7 @@
                 handleChangeFunction={(item: any) => {
                   if (item != null) {
                     $formData.distro = item.repo + ":" + item.tag;
+                    distroname = item.repo + ":" + item.tag;
                   }
                 }}
                 returnobject={true}
@@ -537,10 +548,10 @@
                   {item.name}
                 {/snippet}
                 {#snippet rendercontent(item: any)}
-                  {#if item == null}
+                  {#if distroname == null || distroname == ""}
                     Nothing selected
                   {:else}
-                    {item.name}
+                    {distroname}
                   {/if}
                 {/snippet}
               </Entityselector>
@@ -692,7 +703,7 @@
                   bind:value={$formData.runas}
                 >
                   {#snippet rendername(item: any)}
-                    {item.name}
+                    ({item._userdisplayname}) {item.name}
                   {/snippet}
                   {#snippet rendercontent(item: any)}
                     {#if item == null}
@@ -758,6 +769,7 @@
     {/if}
   </Tabs.Content>
   <Tabs.Content value="2" class="mt-10">
+    <CustomGraph />
     {@render DurationSelect({ onChange: getInstanceLogs })}
     {@render LogsTable({ rows: graphData })}
   </Tabs.Content>
