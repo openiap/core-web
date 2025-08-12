@@ -149,6 +149,14 @@
 		true,
 		false,
 	);
+	const image = new SidebarItem(
+		"Images",
+		"",
+		"",
+		`${base}/image`,
+		true,
+		false,
+	);
 	const sf = new SidebarItem(
 		"Serverless",
 		"",
@@ -168,10 +176,6 @@
 	const homeCat = new SidebarCategory("", false, [home]);
 	const actions = new SidebarCategory("", false, [
 		chat,
-		// promptfn,
-		// sf,
-		// volume,
-		// distribution,
 		agent,
 		workitem,
 		workitemqueue,
@@ -210,6 +214,7 @@
 	);
 	const serverless = new SidebarCategory("Serverless", false, [
 		sf,
+		image,
 		distribution,
 		volume,
 		promptfn,
@@ -439,6 +444,7 @@
 			promptfn.hidden = false;
 			volume.hidden = false;
 			sf.hidden = false;
+			image.hidden = false;
 			distribution.hidden = false;
 		}
 		const isWorkspaceAdmin =

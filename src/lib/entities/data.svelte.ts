@@ -215,6 +215,14 @@ class entitiesdata {
 						total_count = await this.GetCount(page, collectionname, { _type: "unattendedclient" }, access_token, false);
 					}
 					break;
+				case base + "/image":
+					collectionname = "sf"
+					entities = await this.GetData(page, collectionname, { _type: "image" }, access_token, false);
+					total_count = entities.length;
+					if (entities.length >= usersettings.pagesize) {
+						total_count = await this.GetCount(page, collectionname, { _type: "image" }, access_token, false);
+					}
+					break;
 				case base + "/licensekey":
 					collectionname = "config";
 					entities = await this.GetData(page, collectionname, { _type: "license" }, access_token, false);
