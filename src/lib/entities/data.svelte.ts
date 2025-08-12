@@ -837,14 +837,14 @@ class entitiesdata {
 				} else if (page.endsWith("/deleted")) {
 					console.debug("Unknown deleted page", page);
 					return ["_id", "name", "_type", "_deleted", "_deletedby", "_created", "_version"];
+				} else if (_page.indexOf("/history/") > -1) {
+					return ["_id", "name", "_createdby", "_modified", "_deleted", "_deletedby", "_version"];
+				} else if (page.endsWith("/duplicates")) {
 				} else if (_page.startsWith("/entities/")) {
+					// must be last
 					if (_page.endsWith(".files")) {
 						return ["_id", "metadata.name", "metadata._createdby", "metadata._created"];
 					}
-				} else if (page.indexOf("/history/") > -1) {
-					console.debug("Unknown history page", page);
-					return ["_id", "name", "_createdby", "_modified", "_deleted", "_version"];
-				} else if (page.endsWith("/duplicates")) {
 					return ["_id", "name", "count"];
 				}
 				console.debug("Unknown page", page);

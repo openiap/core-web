@@ -230,7 +230,7 @@
           title="Show Version History"
           disabled={loading}
           onclick={() =>
-            goto(base + `/entities/${collectionname}/history/${item._id}`)}
+            goto(base + `/entities/${collectionname}/history/${item.id}`)}
           size="tableicon"
           variant="icon"
         >
