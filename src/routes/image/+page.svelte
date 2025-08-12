@@ -28,7 +28,7 @@
         id: item._id,
         jwt: auth.access_token,
       });
-      toast.success("SF Function deleted");
+      toast.success("Image deleted");
       ref.reload();
     } catch (error: any) {
       toast.error("Error", {
@@ -37,7 +37,7 @@
     }
   }
   function single_item_click(item: any) {
-    goto(base + `/serverless/${item._id}`);
+    goto(base + `/image/${item._id}`);
   }
   async function handleAccept() {
     try {
@@ -63,20 +63,10 @@
   bind:entities
   bind:this={ref}
   bind:loading
+  show_delete={false}
+  multi_select={false}
 >
-  {#snippet action(item: any)}
-    {#if item.packageid}
-      <HotkeyButton
-      aria-label="Edit files"
-      disabled={loading}
-      onclick={() => goto(base + `/package/${item.packageid}/editfiles`)}
-      size="tableicon"
-      variant="icon"
-    >
-      <FilePen />
-  </HotkeyButton>
-  {/if}
-
+  <!-- {#snippet action(item: any)}
   <HotkeyButton
       aria-label="Edit"
       disabled={loading}
@@ -98,7 +88,7 @@
     >
       <Trash2 />
     </HotkeyButton>
-  {/snippet}
+  {/snippet} -->
 </Entities>
 
 <Warningdialogue bind:showWarning type="delete" onaccept={handleAccept}
