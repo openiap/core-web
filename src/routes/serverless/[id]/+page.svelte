@@ -5,7 +5,7 @@
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
   import * as Table from "$lib/components/ui/table/index.js";
   import * as Tabs from "$lib/components/ui/tabs/index.js";
-  import { CustomGraph } from "$lib/customgraph/index.js";
+  // import { CustomGraph } from "$lib/customgraph/index.js";
   import { CustomInput } from "$lib/custominput/index.js";
   import { CustomSelect } from "$lib/customselect/index.js";
   import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
@@ -353,6 +353,27 @@
 
     return cols.length > 0 ? cols : keys;
   }
+  async function gotoTokenUser() {
+    try {
+      const tokendata = await auth.client.FindOne<any>({
+        collectionname: "usertokens",
+        query: { _id: $formData.runas, _type: "usertoken" },
+        projection: { _userid: 1 },
+      });
+      if (tokendata == null) {
+        toast.error("Error", {
+          description: "Access token not found",
+        });
+        return;
+      }
+      goto(base + `/user/${tokendata._userid}`);
+    } catch (error) {
+      // console.error("Error fetching user for token:", error);
+      toast.error("Error", {
+        description: "Failed to fetch user for access token",
+      });
+    }
+  }
 </script>
 
 {#snippet DurationSelect({
@@ -691,28 +712,35 @@
                   >
                 </div>
               {:else}
-                <Entityselector
-                  name="Access Token"
-                  propertyname="_id"
-                  queryas={usersettings.currentworkspace}
-                  width="md:w-fit w-64"
-                  class="mb-4 md:mb-0"
-                  disabled={loading}
-                  collectionname="usertokens"
-                  basefilter={{ _type: "usertoken", revoked: false }}
-                  bind:value={$formData.runas}
-                >
-                  {#snippet rendername(item: any)}
-                    ({item._userdisplayname}) {item.name}
-                  {/snippet}
-                  {#snippet rendercontent(item: any)}
-                    {#if item == null}
-                      Nothing selected
-                    {:else}
-                      {item.name}
-                    {/if}
-                  {/snippet}
-                </Entityselector>
+                <div class="md:flex md:items-center md:space-x-4 my-2">
+                  <Entityselector
+                    name="Access Token"
+                    propertyname="_id"
+                    queryas={usersettings.currentworkspace}
+                    width="md:w-fit w-64"
+                    class="mb-4 md:mb-0"
+                    disabled={loading}
+                    collectionname="usertokens"
+                    basefilter={{ _type: "usertoken", revoked: false }}
+                    bind:value={$formData.runas}
+                  >
+                    {#snippet rendername(item: any)}
+                      ({item._userdisplayname}) {item.name}
+                    {/snippet}
+                    {#snippet rendercontent(item: any)}
+                      {#if item == null}
+                        Nothing selected
+                      {:else}
+                        ({item._userdisplayname}) {item.name}
+                      {/if}
+                    {/snippet}
+                  </Entityselector>
+                  <HotkeyButton
+                    aria-label="User Details"
+                    disabled={!Boolean($formData.runas) || loading}
+                    onclick={gotoTokenUser}><User />User Details</HotkeyButton
+                  >
+                </div>
               {/if}
             {/snippet}
           </Form.Control>
@@ -769,7 +797,7 @@
     {/if}
   </Tabs.Content>
   <Tabs.Content value="2" class="mt-10">
-    <CustomGraph />
+    <!-- <CustomGraph /> -->
     {@render DurationSelect({ onChange: getInstanceLogs })}
     {@render LogsTable({ rows: graphData })}
   </Tabs.Content>
