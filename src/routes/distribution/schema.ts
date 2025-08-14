@@ -3,7 +3,7 @@ import { z } from 'zod';
 export const newFormSchema = z.object({
   workspaceid: z.string(),
   name: z.string().min(1, "Name is required"),
-  _type: z.string().default("package"),
+  _type: z.string().default("dist"),
 });
 export type NewFormSchema = typeof newFormSchema;
 
