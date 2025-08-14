@@ -178,6 +178,7 @@
       const result: any = await auth.client.Query({
         collectionname: "sf_instance_logs",
         top: 100,
+        orderby: { ts: -1 },
         query: {
           "metadata.application": data.item.repo + ":" + data.item.tag,
           ts: {
@@ -209,6 +210,7 @@
       const result: any = await auth.client.Query({
         collectionname: "sf_request_logs",
         top: 100,
+        orderby: { ts: -1 },
         query: {
           "metadata.application": data.item.repo + ":" + data.item.tag,
           ts: {
@@ -240,6 +242,7 @@
       const result: any = await auth.client.Query({
         collectionname: "sf_console_logs",
         top: 100,
+        orderby: { ts: -1 },
         query: {
           "metadata.application": data.item.repo + ":" + data.item.tag,
           ts: {
