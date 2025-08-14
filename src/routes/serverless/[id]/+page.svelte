@@ -188,7 +188,7 @@
         top: 100,
         orderby: { ts: -1 },
         query: {
-          "metadata.application": data.item.repo + ":" + data.item.tag,
+          "metadata.package": data.item.repo + ":" + data.item.tag,
           ts: {
             $gte: new Date(start),
             $lte: new Date(end),
@@ -222,7 +222,7 @@
         top: 100,
         orderby: { ts: -1 },
         query: {
-          "metadata.application": data.item.repo + ":" + data.item.tag,
+          "metadata.package": data.item.repo + ":" + data.item.tag,
           ts: {
             $gte: new Date(start),
             $lte: new Date(end),
@@ -255,7 +255,7 @@
         top: 100,
         orderby: { ts: -1 },
         query: {
-          "metadata.application": data.item.repo + ":" + data.item.tag,
+          "metadata.package": data.item.repo + ":" + data.item.tag,
           ts: {
             $gte: new Date(start),
             $lte: new Date(end),
