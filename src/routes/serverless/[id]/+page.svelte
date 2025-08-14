@@ -179,7 +179,7 @@
         collectionname: "sf_instance_logs",
         top: 100,
         query: {
-          "metadata.package": data.item.repo + ":" + data.item.tag,
+          "metadata.application": data.item.repo + ":" + data.item.tag,
           ts: {
             $gte: new Date(start),
             $lte: new Date(end),
@@ -210,7 +210,7 @@
         collectionname: "sf_request_logs",
         top: 100,
         query: {
-          "metadata.package": data.item.repo + ":" + data.item.tag,
+          "metadata.application": data.item.repo + ":" + data.item.tag,
           ts: {
             $gte: new Date(start),
             $lte: new Date(end),
@@ -241,7 +241,7 @@
         collectionname: "sf_console_logs",
         top: 100,
         query: {
-          "metadata.package": data.item.repo + ":" + data.item.tag,
+          "metadata.application": data.item.repo + ":" + data.item.tag,
           ts: {
             $gte: new Date(start),
             $lte: new Date(end),
