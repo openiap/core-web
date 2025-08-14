@@ -5,7 +5,7 @@
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
   import * as Table from "$lib/components/ui/table/index.js";
   import * as Tabs from "$lib/components/ui/tabs/index.js";
-  // import { CustomGraph } from "$lib/customgraph/index.js";
+  import { CustomGraph } from "$lib/customgraph/index.js";
   import { CustomInput } from "$lib/custominput/index.js";
   import { CustomSelect } from "$lib/customselect/index.js";
   import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
@@ -25,7 +25,7 @@
 
   let loading = $state(false);
   let runasuser = $state(data.item.runas == "" ? true : false);
-  let selectedduration = $state("15m");
+  let selectedduration = $state("30d");
   let durationOptions = [
     { label: "Last 5 minutes", value: "5m" },
     { label: "Last 15 minutes", value: "15m" },
@@ -33,10 +33,18 @@
     { label: "Last 2 hours", value: "2h" },
     { label: "Last 1 day", value: "1d" },
     { label: "Last 7 days", value: "7d" },
+    { label: "Last 30 days", value: "30d" },
   ];
   type GraphRow = { [key: string]: any; _id?: string; id?: string | number };
   let graphData = $state<GraphRow[]>([]);
   let distroname = $state(data.item.distro);
+  let chartdata = $state<Float64Array[]>(data.chartdata ?? []);
+  let chartRef: any = $state(null);
+  let chartKey = $state(0); // Force chart re-render by changing key
+
+  let gdruntime = $state<Float64Array[]>([]);
+  let gdresponsetime = $state<Float64Array[]>([]);
+  let gdboottime = $state<Float64Array[]>([]);
 
   if (data.item != null) {
     if (data.item.anonymous == null) {
@@ -188,6 +196,8 @@
       });
       // Coerce to array depending on API shape
       graphData = Array.isArray(result) ? result : (result?.items ?? []);
+
+      await getGDInstanceLog();
     } catch (error: any) {
       console.error("Error fetching instance logs:", error);
       toast.error("Error fetching instance logs", {
@@ -219,6 +229,7 @@
       });
       // Coerce to array depending on API shape
       graphData = Array.isArray(result) ? result : (result?.items ?? []);
+      await getGDRequestLog();
     } catch (error: any) {
       console.error("Error fetching request logs:", error);
       toast.error("Error fetching request logs", {
@@ -357,7 +368,7 @@
     try {
       const tokendata = await auth.client.FindOne<any>({
         collectionname: "usertokens",
-        query: { _id: $formData.runas, _type: "usertoken" },
+        query: { _id: $formData?.runas, _type: "usertoken" },
         projection: { _userid: 1 },
       });
       if (tokendata == null) {
@@ -371,6 +382,251 @@
       // console.error("Error fetching user for token:", error);
       toast.error("Error", {
         description: "Failed to fetch user for access token",
+      });
+    }
+  }
+
+  async function getGDInstanceLog() {
+    console.log("getChartdata called");
+    try {
+      const { start, end } = getTimeDuration(selectedduration);
+
+      let gdruntimeres = await auth.client.Aggregate<any>({
+        collectionname: "sf_instance_logs",
+        aggregates: [
+          {
+            $match: {
+              "metadata.package": data.item.repo + ":" + data.item.tag,
+              ts: { $gte: new Date(start), $lt: new Date(end) },
+            },
+          },
+          {
+            $project: {
+              ts_epoch: { $toLong: { $toDate: "$ts" } }, // ms epoch
+              run_time_sec: { $divide: ["$run_time", 1000] },
+            },
+          },
+          {
+            $project: {
+              ts_epoch: { $divide: ["$ts_epoch", 1000] }, // convert ms → seconds
+              run_time_sec: 1,
+            },
+          },
+          {
+            $group: {
+              _id: null,
+              ts_array: { $push: "$ts_epoch" },
+              run_time_array: { $push: "$run_time_sec" },
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              arrays: ["$ts_array", "$run_time_array"],
+            },
+          },
+        ],
+        jwt: auth.access_token,
+      });
+      console.log("gdruntimeres", gdruntimeres);
+      if (gdruntimeres.length > 0) {
+        // console.log(aggdata[0]);
+        // console.log(aggdata[0].arrays[0]);
+        // console.log(aggdata[0].arrays[1]);
+        gdruntime = gdruntimeres[0];
+        gdruntime = [
+          new Float64Array(gdruntimeres[0].arrays[0]),
+          new Float64Array(gdruntimeres[0].arrays[1]),
+        ];
+        console.log("New chartdata assigned:", chartdata);
+        chartKey += 1; // Force re-render
+      } else {
+        // Clear chart data if no data available
+        gdruntime = [];
+        console.log("gdruntime cleared");
+        chartKey += 1; // Force re-render
+      }
+
+      let gdboottimeres = await auth.client.Aggregate<any>({
+        collectionname: "sf_instance_logs",
+        aggregates: [
+          { 
+            $match: {
+              "metadata.package": data.item.repo + ":" + data.item.tag,
+              ts: { $gte: new Date(start), $lt: new Date(end) },
+            },
+          },
+          {
+            $project: {
+              ts_epoch: { $toLong: { $toDate: "$ts" } }, // ms epoch
+              boot_time_sec: { $divide: ["$boot_time", 100] },
+            },
+          },
+          {
+            $project: {
+              ts_epoch: { $divide: ["$ts_epoch", 1000] }, // convert ms → seconds
+              boot_time_sec: 1,
+            },
+          },
+          {
+            $group: {
+              _id: null,
+              ts_array: { $push: "$ts_epoch" },
+              boot_time_array: { $push: "$boot_time_sec" },
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              arrays: ["$ts_array", "$boot_time_array"],
+            },
+          },
+        ],
+        jwt: auth.access_token,
+      });
+      console.log("gdboottimeres", gdboottimeres);
+      if (gdboottimeres.length > 0) {
+        gdboottime = gdboottimeres[0];
+        gdboottime = [
+          new Float64Array(gdboottimeres[0].arrays[0]),
+          new Float64Array(gdboottimeres[0].arrays[1]),
+        ];
+        console.log("gdboottime:", gdboottime);
+        chartKey += 1; // Force re-render
+      } else {
+        // Clear chart data if no data available
+        gdboottime = [];
+        console.log("gdboottime cleared");
+        chartKey += 1; // Force re-render
+      }
+
+      let gdresponsetimeres = await auth.client.Aggregate<any>({
+        collectionname: "sf_instance_logs",
+        aggregates: [
+          {
+            $match: {
+              "metadata.package": data.item.repo + ":" + data.item.tag,
+              ts: { $gte: new Date(start), $lt: new Date(end) },
+            },
+          },
+          {
+            $project: {
+              ts_epoch: { $toLong: { $toDate: "$ts" } }, // ms epoch
+              app_response_time_sec: "$app_response_time",
+            },
+          },
+          {
+            $project: {
+              ts_epoch: { $divide: ["$ts_epoch", 1000] }, // convert ms → seconds
+              app_response_time_sec: 1,
+            },
+          },
+          {
+            $group: {
+              _id: null,
+              ts_array: { $push: "$ts_epoch" },
+              app_response_time_array: { $push: "$app_response_time_sec" },
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              arrays: ["$ts_array", "$app_response_time_array"],
+            },
+          },
+        ],
+        jwt: auth.access_token,
+      });
+      console.log("gdresponsetime", gdresponsetimeres);
+      if (gdresponsetimeres.length > 0) {
+        // console.log(gdresponsetime[0]);
+        // console.log(gdresponsetime[0].arrays[0]);
+        // console.log(gdresponsetime[0].arrays[1]);
+        gdresponsetime = gdresponsetimeres[0];
+        gdresponsetime = [
+          new Float64Array(gdresponsetimeres[0].arrays[0]),
+          new Float64Array(gdresponsetimeres[0].arrays[1]),
+        ];
+        console.log("gdresponsetime:", gdresponsetime);
+        chartKey += 1; // Force re-render
+      } else {
+        // Clear chart data if no data available
+        gdresponsetime = [];
+        console.log("gdresponsetime cleared");
+        chartKey += 1; // Force re-render
+      }
+    } catch (error: any) {
+      console.error("Error fetching chart data:", error);
+      toast.error("Error fetching chart data", {
+        description: error.message,
+      });
+    }
+  }
+
+  async function getGDRequestLog() {
+    console.log("getChartdata called");
+    try {
+      const { start, end } = getTimeDuration(selectedduration);
+
+      let aggdata = await auth.client.Aggregate<any>({
+        collectionname: "sf_instance_logs",
+        aggregates: [
+          {
+            $match: {
+              "metadata.package": data.item.repo + ":" + data.item.tag,
+              ts: { $gte: new Date(start), $lt: new Date(end) },
+            },
+          },
+          {
+            $project: {
+              ts_epoch: { $toLong: { $toDate: "$ts" } }, // ms epoch
+              run_time_sec: { $divide: ["$run_time", 1000] },
+            },
+          },
+          {
+            $project: {
+              ts_epoch: { $divide: ["$ts_epoch", 1000] }, // convert ms → seconds
+              run_time_sec: 1,
+            },
+          },
+          {
+            $group: {
+              _id: null,
+              ts_array: { $push: "$ts_epoch" },
+              run_time_array: { $push: "$run_time_sec" },
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              arrays: ["$ts_array", "$run_time_array"],
+            },
+          },
+        ],
+        jwt: auth.access_token,
+      });
+      console.log("aggdata", aggdata);
+      if (aggdata.length > 0) {
+        // console.log(aggdata[0]);
+        // console.log(aggdata[0].arrays[0]);
+        // console.log(aggdata[0].arrays[1]);
+        chartdata = aggdata[0];
+        chartdata = [
+          new Float64Array(aggdata[0].arrays[0]),
+          new Float64Array(aggdata[0].arrays[1]),
+        ];
+        console.log("New chartdata assigned:", chartdata);
+        chartKey += 1; // Force re-render
+      } else {
+        // Clear chart data if no data available
+        chartdata = [];
+        console.log("Chart data cleared");
+        chartKey += 1; // Force re-render
+      }
+    } catch (error: any) {
+      console.error("Error fetching chart data:", error);
+      toast.error("Error fetching chart data", {
+        description: error.message,
       });
     }
   }
@@ -797,11 +1053,33 @@
     {/if}
   </Tabs.Content>
   <Tabs.Content value="2" class="mt-10">
-    <!-- <CustomGraph /> -->
-    {@render DurationSelect({ onChange: getInstanceLogs })}
+    {#key chartKey}
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <CustomGraph
+          title="Avg Run Time"
+          chartdata={gdruntime}
+          bind:this={chartRef}
+        />
+        <CustomGraph
+          title="Avg Boot Time"
+          chartdata={gdboottime}
+          bind:this={chartRef}
+        />
+        <CustomGraph
+          title="Avg Response Time"
+          chartdata={gdresponsetime}
+          bind:this={chartRef}
+        />
+        
+      </div>
+      {/key}
+      {@render DurationSelect({ onChange: getInstanceLogs })}
     {@render LogsTable({ rows: graphData })}
   </Tabs.Content>
   <Tabs.Content value="3" class="mt-10">
+    {#key chartKey}
+      <CustomGraph title="Avg run time " {chartdata} bind:this={chartRef} />
+    {/key}
     {@render DurationSelect({ onChange: getRequestLogs })}
     {@render LogsTable({ rows: graphData })}
   </Tabs.Content>
