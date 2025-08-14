@@ -25,7 +25,7 @@
 
   let loading = $state(false);
   let runasuser = $state(data.item.runas == "" ? true : false);
-  let selectedduration = $state("30d");
+  let selectedduration = $state("15m");
   let durationOptions = [
     { label: "Last 5 minutes", value: "5m" },
     { label: "Last 15 minutes", value: "15m" },
