@@ -98,7 +98,6 @@
             //   loading = false;
             //   return;
             // }
-            // console.log("user ", item);
             const newtoken: any = await auth.client.CustomCommand({
               command: "issueusertoken",
               // @ts-ignore
@@ -390,7 +389,6 @@
   }
 
   async function getGDInstanceLog() {
-    console.log("getChartdata called");
     try {
       const { start, end } = getTimeDuration(selectedduration);
 
@@ -431,22 +429,16 @@
         ],
         jwt: auth.access_token,
       });
-      console.log("gdruntimeres", gdruntimeres);
       if (gdruntimeres.length > 0) {
-        // console.log(aggdata[0]);
-        // console.log(aggdata[0].arrays[0]);
-        // console.log(aggdata[0].arrays[1]);
         gdruntime = gdruntimeres[0];
         gdruntime = [
           new Float64Array(gdruntimeres[0].arrays[0]),
           new Float64Array(gdruntimeres[0].arrays[1]),
         ];
-        console.log("New chartdata assigned:", chartdata);
         chartKey += 1; // Force re-render
       } else {
         // Clear chart data if no data available
         gdruntime = [];
-        console.log("gdruntime cleared");
         chartKey += 1; // Force re-render
       }
 
@@ -487,19 +479,16 @@
         ],
         jwt: auth.access_token,
       });
-      console.log("gdboottimeres", gdboottimeres);
       if (gdboottimeres.length > 0) {
         gdboottime = gdboottimeres[0];
         gdboottime = [
           new Float64Array(gdboottimeres[0].arrays[0]),
           new Float64Array(gdboottimeres[0].arrays[1]),
         ];
-        console.log("gdboottime:", gdboottime);
         chartKey += 1; // Force re-render
       } else {
         // Clear chart data if no data available
         gdboottime = [];
-        console.log("gdboottime cleared");
         chartKey += 1; // Force re-render
       }
 
@@ -540,22 +529,16 @@
         ],
         jwt: auth.access_token,
       });
-      console.log("gdresponsetime", gdresponsetimeres);
       if (gdresponsetimeres.length > 0) {
-        // console.log(gdresponsetime[0]);
-        // console.log(gdresponsetime[0].arrays[0]);
-        // console.log(gdresponsetime[0].arrays[1]);
         gdresponsetime = gdresponsetimeres[0];
         gdresponsetime = [
           new Float64Array(gdresponsetimeres[0].arrays[0]),
           new Float64Array(gdresponsetimeres[0].arrays[1]),
         ];
-        console.log("gdresponsetime:", gdresponsetime);
         chartKey += 1; // Force re-render
       } else {
         // Clear chart data if no data available
         gdresponsetime = [];
-        console.log("gdresponsetime cleared");
         chartKey += 1; // Force re-render
       }
     } catch (error: any) {
@@ -567,7 +550,6 @@
   }
 
   async function getGDRequestLog() {
-    console.log("getChartdata called");
     try {
       const { start, end } = getTimeDuration(selectedduration);
 
@@ -608,22 +590,16 @@
         ],
         jwt: auth.access_token,
       });
-      console.log("aggdata", aggdata);
       if (aggdata.length > 0) {
-        // console.log(aggdata[0]);
-        // console.log(aggdata[0].arrays[0]);
-        // console.log(aggdata[0].arrays[1]);
         chartdata = aggdata[0];
         chartdata = [
           new Float64Array(aggdata[0].arrays[0]),
           new Float64Array(aggdata[0].arrays[1]),
         ];
-        console.log("New chartdata assigned:", chartdata);
         chartKey += 1; // Force re-render
       } else {
         // Clear chart data if no data available
         chartdata = [];
-        console.log("Chart data cleared");
         chartKey += 1; // Force re-render
       }
     } catch (error: any) {

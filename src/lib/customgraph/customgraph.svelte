@@ -8,7 +8,6 @@
 
     // Export functions for external control
     export function reload() {
-        console.log("Chart reload called with data:", chartdata);
         recreateChart();
     }
 
@@ -28,7 +27,6 @@
     $effect(() => {
         const currentHash = JSON.stringify(chartdata);
         if (currentHash !== lastChartDataHash) {
-            console.log("Chart data prop changed:", chartdata);
             lastChartDataHash = currentHash;
             data = chartdata || [];
             recreateChart();
