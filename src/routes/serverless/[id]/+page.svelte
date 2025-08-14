@@ -193,6 +193,7 @@
             $lte: new Date(end),
           },
         },
+        jwt: auth.access_token,
       });
       // Coerce to array depending on API shape
       graphData = Array.isArray(result) ? result : (result?.items ?? []);
@@ -227,6 +228,7 @@
             $lte: new Date(end),
           },
         },
+        jwt: auth.access_token,
       });
       // Coerce to array depending on API shape
       graphData = Array.isArray(result) ? result : (result?.items ?? []);
@@ -260,6 +262,7 @@
             $lte: new Date(end),
           },
         },
+        jwt: auth.access_token,
       });
       // Coerce to array depending on API shape
       graphData = Array.isArray(result) ? result : (result?.items ?? []);
@@ -372,6 +375,7 @@
         collectionname: "usertokens",
         query: { _id: $formData?.runas, _type: "usertoken" },
         projection: { _userid: 1 },
+        jwt: auth.access_token,
       });
       if (tokendata == null) {
         toast.error("Error", {
