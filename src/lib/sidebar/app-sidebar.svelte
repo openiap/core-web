@@ -440,7 +440,8 @@
 		}
 		let profileroles = auth.profile?.roles || [];
 		const isAdmin = profileroles.includes("admins");
-		if (auth.config?.enable_serverless && isAdmin) {
+		const isServerlessUser = profileroles.includes("sf users");
+		if (auth.config?.enable_serverless && isServerlessUser) {
 			promptfn.hidden = false;
 			volume.hidden = false;
 			sf.hidden = false;
@@ -531,7 +532,7 @@
 		actions.hidden = !auth.isAuthenticated;
 
 		serverless.hidden = true
-		if(auth.config?.enable_serverless && auth.isAuthenticated && isAdmin) {
+		if(auth.config?.enable_serverless && auth.isAuthenticated && isServerlessUser) {
 			serverless.hidden = false;
 		}
 	}
