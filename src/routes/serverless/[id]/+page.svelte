@@ -39,7 +39,6 @@
   let graphData = $state<GraphRow[]>([]);
   let distroname = $state(data.item.distro);
   let chartdata = $state<Float64Array[]>(data.chartdata ?? []);
-  let chartRef: any = $state(null);
   let chartKey = $state(0); // Force chart re-render by changing key
 
   let gdruntime = $state<Float64Array[]>([]);
@@ -310,6 +309,9 @@
   // New: shared helper to detect time-like columns by name
   function isTimeLikeColumn(col: string): boolean {
     const key = col?.toLowerCase?.() ?? "";
+    if (key == "cold_response_time" || key == "response_time"|| key == "boot_time" || key == "run_time" || key == "app_response_time") {
+      return false; // Exclude specific keys that are not time-like
+    }
     return (
       key === "ts" ||
       key.endsWith("time") ||
@@ -449,7 +451,7 @@
       let gdboottimeres = await auth.client.Aggregate<any>({
         collectionname: "sf_instance_logs",
         aggregates: [
-          { 
+          {
             $match: {
               "metadata.package": data.item.repo + ":" + data.item.tag,
               ts: { $gte: new Date(start), $lt: new Date(end) },
@@ -986,10 +988,10 @@
           <Form.FieldErrors />
         </Form.Field>
 
-        <Form.Field {form} name="volume" class="mb-10">
+        <Form.Field {form} name="volumes" class="mb-10">
           <Form.Control>
             {#snippet children({ props })}
-              <Form.Label>Volume</Form.Label>
+              <Form.Label>Volumes</Form.Label>
               <Entityselector
                 propertyname="_id"
                 queryas={usersettings.currentworkspace}
@@ -999,7 +1001,7 @@
                 {...props}
                 collectionname="sf"
                 basefilter={{ _type: "volume" }}
-                bind:value={$formData.volume}
+                bind:value={$formData.volumes}
                 selectiontype="multiple"
                 maxselections={4}
               >
@@ -1037,32 +1039,19 @@
   </Tabs.Content>
   <Tabs.Content value="2" class="mt-10">
     {#key chartKey}
-      <div class="grid grid-cols-2 gap-4 mb-4">
-        <CustomGraph
-          title="Avg Run Time"
-          chartdata={gdruntime}
-          bind:this={chartRef}
-        />
-        <CustomGraph
-          title="Avg Boot Time"
-          chartdata={gdboottime}
-          bind:this={chartRef}
-        />
+      <div class="grid grid-cols-3 gap-4 mb-4">
+        <CustomGraph title="Avg Run Time" bind:chartdata={gdruntime} />
+        <CustomGraph title="Avg Boot Time" bind:chartdata={gdboottime} />
         <CustomGraph
           title="Avg Response Time"
-          chartdata={gdresponsetime}
-          bind:this={chartRef}
+          bind:chartdata={gdresponsetime}
         />
-        
       </div>
-      {/key}
-      {@render DurationSelect({ onChange: getInstanceLogs })}
+    {/key}
+    {@render DurationSelect({ onChange: getInstanceLogs })}
     {@render LogsTable({ rows: graphData })}
   </Tabs.Content>
   <Tabs.Content value="3" class="mt-10">
-    {#key chartKey}
-      <CustomGraph title="Avg run time " {chartdata} bind:this={chartRef} />
-    {/key}
     {@render DurationSelect({ onChange: getRequestLogs })}
     {@render LogsTable({ rows: graphData })}
   </Tabs.Content>

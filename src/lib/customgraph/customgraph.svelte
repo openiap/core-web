@@ -4,24 +4,26 @@
     // Lazy-load uPlot on client to avoid SSR window/document access
     import "uplot/dist/uPlot.min.css";
 
-    const { title = "Custom graph", chartdata = [] } = $props();
+    const { title = "Custom graph", chartdata = $bindable([]) } = $props();
 
     // Export functions for external control
-    export function reload() {
-        recreateChart();
-    }
+    // export function reload() {
+    //     recreateChart();
+    // }
 
-    export function refresh() {
-        reload();
-    }
+    // export function refresh() {
+    //     reload();
+    // }
 
     let chartEl: HTMLDivElement | null = $state(null);
     let containerEl: HTMLDivElement | null = $state(null);
+    let valueEl: HTMLDivElement | null = $state(null);
     let uplot: any = $state(null);
     let UPlotConstructor: any = $state(null);
     let resizeObserver: ResizeObserver | null = $state(null);
     let data = $state(chartdata || []);
     let lastChartDataHash = $state("");
+
 
     // Watch for chartdata prop changes
     $effect(() => {
@@ -39,7 +41,7 @@
             uplot.destroy();
             uplot = null;
         }
-        
+
         if (chartEl && UPlotConstructor && !isDataEmpty()) {
             const opts = getOptions();
             uplot = new UPlotConstructor(opts, data, chartEl);
@@ -77,18 +79,25 @@
     // Check if data is empty or has no meaningful data
     function isDataEmpty() {
         if (!data || data.length === 0) return true;
-        
+
         // Check if we have at least x-axis data and one series with data
         if (data.length < 2) return true;
-        
+
         // Check if x-axis has data
         if (!data[0] || data[0].length === 0) return true;
-        
+
         // Check if at least one series has data
-        const hasDataInSeries = data.slice(1).some(series => 
-            series && series.length > 0 && series.some((value: any) => value !== null && value !== undefined)
-        );
-        
+        const hasDataInSeries = data
+            .slice(1)
+            .some(
+                (series) =>
+                    series &&
+                    series.length > 0 &&
+                    series.some(
+                        (value: any) => value !== null && value !== undefined,
+                    ),
+            );
+
         return !hasDataInSeries;
     }
 
@@ -106,11 +115,11 @@
     // Function to get responsive dimensions
     function getResponsiveDimensions() {
         if (!containerEl) return { width: 800, height: 400 };
-        
+
         const containerWidth = containerEl.offsetWidth;
         const width = Math.max(300, containerWidth - 40); // Min width with padding
         const height = Math.max(250, Math.min(600, width * 0.5)); // Responsive height with limits
-        
+
         return { width, height };
     }
 
@@ -119,9 +128,8 @@
         const { width, height } = getResponsiveDimensions();
         const colors = getThemeColors();
         const themeStyles = getThemeStyles();
-        
+
         return {
-            title: title,
             id: "responsive-chart",
             class: "responsive-chart",
             width,
@@ -141,7 +149,7 @@
                 height: 12,
             },
             legend: {
-                show: true,
+                show: false,
                 live: true,
             },
             axes: [
@@ -177,19 +185,38 @@
                         stroke: colors[index % colors.length],
                         fill: themeStyles.backgroundColor,
                     },
-                }))
+                })),
             ],
+            hooks: {
+                setCursor: [
+                    (u) => {
+                        console.log("Cursor set:", u.cursor.idx);
+                        if (u.cursor.idx != null) {
+                            const idx = u.cursor.idx;
+                            const xVal = u.data[0][idx];
+                            const yVal = u.data[1][idx];
+                            if (valueEl) {
+                                valueEl.textContent = `x: ${xVal}, y: ${yVal}`;
+                            }
+                        } else {
+                            if (valueEl) {
+                                valueEl.textContent = "";
+                            }
+                        }
+                    },
+                ],
+            },
         };
     }
 
     let currentMode = $state($mode);
-    
+
     // Function to update chart with new theme
     function updateChartTheme() {
         if (uplot && chartEl && UPlotConstructor && !isDataEmpty()) {
             // Destroy current chart
             uplot.destroy();
-            
+
             // Create new chart with updated theme
             const opts = getOptions();
             uplot = new UPlotConstructor(opts, data, chartEl);
@@ -206,7 +233,7 @@
 
     onMount(() => {
         let destroyed = false;
-        
+
         // Only initialize the chart if there's data
         if (!isDataEmpty()) {
             // Initialize the chart
@@ -215,12 +242,13 @@
                     UPlotConstructor = UPlot;
                     const opts = getOptions();
                     uplot = new UPlot(opts, data, chartEl);
-                    
+
                     // Set up resize observer for responsive behavior
                     if (window.ResizeObserver && containerEl) {
                         resizeObserver = new ResizeObserver((entries) => {
                             if (uplot && !destroyed) {
-                                const { width, height } = getResponsiveDimensions();
+                                const { width, height } =
+                                    getResponsiveDimensions();
                                 uplot.setSize({ width, height });
                             }
                         });
@@ -229,7 +257,7 @@
                 }
             });
         }
-        
+
         return () => {
             destroyed = true;
             try {
@@ -262,10 +290,13 @@
             <div class="no-data-message">
                 <div class="no-data-icon">📊</div>
                 <h3 class="no-data-title">No data in this time range</h3>
-                <p class="no-data-subtitle">Try adjusting your time range or filters to see data.</p>
+                <p class="no-data-subtitle">
+                    Try adjusting your time range or filters to see data.
+                </p>
             </div>
         {:else}
             <div bind:this={chartEl} class="chart-element"></div>
+            <div bind:this={valueEl}></div>
         {/if}
     </div>
 </div>
@@ -275,23 +306,27 @@
         width: 100%;
         max-width: 100%;
         margin: 0 auto;
-        background: #FFFFFF;
+        background: #ffffff;
         border-radius: 8px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         overflow: hidden;
-        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        transition:
+            background-color 0.3s ease,
+            box-shadow 0.3s ease;
     }
 
     :global(.dark) .chart-container {
-        background: #1F2937;
+        background: #1f2937;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
     }
 
     .chart-header {
         padding: 16px 20px;
-        border-bottom: 1px solid #E5E7EB;
-        background: #F9FAFB;
-        transition: background-color 0.3s ease, border-color 0.3s ease;
+        border-bottom: 1px solid #e5e7eb;
+        background: #f9fafb;
+        transition:
+            background-color 0.3s ease,
+            border-color 0.3s ease;
     }
 
     :global(.dark) .chart-header {
@@ -308,7 +343,7 @@
     }
 
     :global(.dark) .chart-title {
-        color: #F3F4F6;
+        color: #f3f4f6;
     }
 
     .chart-wrapper {
@@ -330,12 +365,12 @@
         min-height: 250px;
         text-align: center;
         padding: 40px 20px;
-        color: #6B7280;
+        color: #6b7280;
         transition: color 0.3s ease;
     }
 
     :global(.dark) .no-data-message {
-        color: #9CA3AF;
+        color: #9ca3af;
     }
 
     .no-data-icon {
@@ -353,38 +388,43 @@
     }
 
     :global(.dark) .no-data-title {
-        color: #D1D5DB;
+        color: #d1d5db;
     }
 
     .no-data-subtitle {
         margin: 0;
         font-size: 0.875rem;
-        color: #6B7280;
+        color: #6b7280;
         transition: color 0.3s ease;
     }
 
     :global(.dark) .no-data-subtitle {
-        color: #9CA3AF;
+        color: #9ca3af;
     }
 
     /* uPlot styling overrides for better appearance */
     :global(.responsive-chart) {
-        font-family: system-ui, -apple-system, sans-serif;
+        font-family:
+            system-ui,
+            -apple-system,
+            sans-serif;
     }
 
     :global(.responsive-chart .u-legend) {
         background: rgba(255, 255, 255, 0.95);
-        border: 1px solid #E5E7EB;
+        border: 1px solid #e5e7eb;
         border-radius: 6px;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         padding: 8px;
-        transition: background-color 0.3s ease, border-color 0.3s ease;
+        transition:
+            background-color 0.3s ease,
+            border-color 0.3s ease;
     }
 
     :global(.dark .responsive-chart .u-legend) {
         background: rgba(31, 41, 55, 0.95);
         border: 1px solid #374151;
-        color: #F3F4F6;
+        color: #f3f4f6;
     }
 
     :global(.responsive-chart .u-legend .u-series) {
@@ -395,7 +435,7 @@
     }
 
     :global(.responsive-chart .u-legend .u-series:hover) {
-        background: #F3F4F6;
+        background: #f3f4f6;
     }
 
     :global(.dark .responsive-chart .u-legend .u-series:hover) {
@@ -404,13 +444,13 @@
 
     :global(.responsive-chart .u-cursor-pt) {
         border-radius: 50%;
-        border: 2px solid #FFFFFF;
+        border: 2px solid #ffffff;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         transition: border-color 0.3s ease;
     }
 
     :global(.dark .responsive-chart .u-cursor-pt) {
-        border: 2px solid #1F2937;
+        border: 2px solid #1f2937;
     }
 
     /* Responsive breakpoints */
@@ -418,11 +458,11 @@
         .chart-header {
             padding: 12px 16px;
         }
-        
+
         .chart-wrapper {
             padding: 16px;
         }
-        
+
         .chart-title {
             font-size: 1rem;
         }

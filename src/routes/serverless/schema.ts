@@ -10,7 +10,7 @@ export type NewFormSchema = typeof newFormSchema;
 export const editFormSchema = z.object({
   min_instances: z.number().min(0).max(2).default(0),
   max_instances: z.number().min(0).max(3).default(1),
-  volume: z.string().optional().nullable().transform((val) => val ?? ""),
+  volumes: z.any(),
   distro: z.string().optional().nullable().transform((val) => val ?? ""),
   repo: z.string().optional().nullable().transform((val) => val ?? ""),
   name: z.string().optional().nullable().transform((val) => val ?? ""),
