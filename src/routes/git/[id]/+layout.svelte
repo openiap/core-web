@@ -6,6 +6,7 @@
     import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
     import { CustomInput } from "$lib/custominput/index.js";
     import Customselect from "$lib/customselect/customselect.svelte";
+    import Customsuperdebug from "$lib/customsuperdebug/customsuperdebug.svelte";
     import { auth } from "$lib/stores/auth.svelte.js";
     import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
     import FS from "@isomorphic-git/lightning-fs";
@@ -13,14 +14,16 @@
     import http from "isomorphic-git/http/web";
     import {
         Check,
+        Copy,
         Edit2,
         File,
         FolderClosed,
         FolderOpen,
         Minus,
         Plus,
+        Trash,
         Trash2,
-        X,
+        X
     } from "lucide-svelte";
     import { toast } from "svelte-sonner";
 
@@ -92,6 +95,9 @@
             // redirect to new page showing cloning instructions
             return;
         }
+        if(data.item.sha == null){
+            return;
+        }
 
         try {
             const author = {
@@ -155,7 +161,7 @@
             if (pendingChanges === false) {
                 const dbbranch = await auth.client.FindOne<any>({
                     collectionname: "git",
-                    query: { sha: data.sha, ref: { "$ne": "HEAD"} },
+                    query: { sha: data.sha, ref: { $ne: "HEAD" } },
                     jwt: auth.access_token,
                 });
 
@@ -543,7 +549,7 @@
             } else {
                 const dbbranch = await auth.client.FindOne<any>({
                     collectionname: "git",
-                    query: { sha: data.sha, ref: { "$ne": "HEAD" } },
+                    query: { sha: data.sha, ref: { $ne: "HEAD" } },
                     jwt: auth.access_token,
                 });
                 if (dbbranch == null) {
@@ -582,260 +588,407 @@
 <div id="gitstatus" class="hidden">unknown</div>
 
 <div class="flex flex-row w-full gap-4 h-full">
-    <div
-        class="md:h-full flex-shrink-0 p-4 rounded-[10px] bg-bw200 dark:bg-bw850 border dark:border-bw600"
-    >
-        <ul
-            class="space-y-2 max-h-[500px] md:max-h-full md:h-full overflow-auto md:w-[240px] xl:w-[340px]"
+    {#if data.item.sha != null}
+        <div
+            class="md:h-full flex-shrink-0 p-4 rounded-[10px] bg-bw200 dark:bg-bw850 border dark:border-bw600"
         >
-            <HotkeyButton
-                variant="ghostfull"
-                class="w-full mb-2"
-                onclick={() => {
-                    indexedDB
-                        .databases()
-                        .then((r) => {
-                            for (const db of r) {
-                                let dbname = db.name as any;
-
-                                const DBDeleteRequest =
-                                    window.indexedDB.deleteDatabase(dbname);
-                                DBDeleteRequest.onerror = (event) => {};
-                                DBDeleteRequest.onsuccess = (event) => {};
-                            }
-                            toast.success("All DBS cleaned successfully!");
-                        })
-                        .catch((error) => {
-                            toast.error("Error cleaning DBS: " + error.message);
-                        });
-                }}
+            <ul
+                class="space-y-2 max-h-[500px] md:max-h-full md:h-full overflow-auto md:w-[240px] xl:w-[340px]"
             >
-                Clean DBS
-            </HotkeyButton>
-            <Customselect
-                selectitems={branches}
-                value={selectedSha}
-                type="single"
-                width="w-full"
-                class="mb-2"
-                triggerContent={() => {
-                    return branches.length > 0
-                        ? branches.find((b) => b.sha === selectedSha)?.name ||
-                              "Select Branch"
-                        : "No branches available";
-                }}
-                onValueChangeFunction={async (value) => {
-                    const _selectedSha = selectedSha;
-                    selectedSha = "";
+            <div>{data?.item?.repo?.split("/").pop()}</div>
+                <div class="flex gap-2 mb-2">
+                    <HotkeyButton
+                        onclick={() => {
+                            indexedDB
+                                .databases()
+                                .then((r) => {
+                                    for (const db of r) {
+                                        let dbname = db.name as any;
 
-                    const fs = new FS(data.item.repo.split("/").join("_"));
-                    const dir = "/test-clone";
-                    const matrix = await git.statusMatrix({ fs, dir });
-                    const hasPendingChanges = matrix.some(
-                        ([filepath, head, workdir, stage]) => {
-                            // If any file differs in HEAD vs workdir vs index
-                            return head !== workdir || head !== stage;
-                        },
-                    );
+                                        const DBDeleteRequest =
+                                            window.indexedDB.deleteDatabase(
+                                                dbname,
+                                            );
+                                        DBDeleteRequest.onerror = (event) => {};
+                                        DBDeleteRequest.onsuccess = (
+                                            event,
+                                        ) => {};
+                                    }
+                                    toast.success(
+                                        "All DBS cleaned successfully!",
+                                    );
+                                })
+                                .catch((error) => {
+                                    toast.error(
+                                        "Error cleaning DBS: " + error.message,
+                                    );
+                                });
+                        }}
+                    >
+                        <Trash class="h-5 w-5" />
+                        Clean DBS
+                    </HotkeyButton>
+                    <HotkeyButton
+                        title="Copy clone command"
+                        aria-label="Copy clone command"
+                        class="w-full mb-2"
+                        onclick={async () => {
+                            try {
+                                const parts = data.item.repo.split("/");
+                                let copycommand;
+                                if ((auth.profile as any).name == "guest") {
+                                    copycommand = `rm -rf ${parts[parts.length - 1]} && git clone https://${auth.config.domain}/git/${data.item.repo} && code ${parts[parts.length - 1]}`;
+                                } else {
+                                    let tokenres =
+                                        await auth.client.CustomCommand({
+                                            command: "issueusertoken",
+                                            // @ts-ignore
+                                            data: {
+                                                name: "web_git_clone",
+                                                app: "git",
+                                                exp: "365d", // 1 year
+                                            },
+                                            jwt: auth.access_token,
+                                        });
+                                    copycommand = `rm -rf ${parts[parts.length - 1]} && git clone https://${auth.config.domain}/git/${data.item.repo} -c http.extraHeader="Authorization: Bearer ${JSON.parse(tokenres).access_token}" && code ${parts[parts.length - 1]}`;
+                                }
+                                navigator.clipboard.writeText(copycommand);
+                                toast.success(
+                                    "Clone command copied to clipboard!",
+                                );
+                            } catch (error: any) {
+                                toast.error(
+                                    "Error copying clone command: " +
+                                        error.message,
+                                );
+                            }
+                        }}
+                    >
+                        <Copy class="h-5 w-5" />
+                        Copy Clone Command
+                    </HotkeyButton>
+                </div>
 
-                    if (hasPendingChanges == false) {
+                <Customselect
+                    selectitems={branches}
+                    value={selectedSha}
+                    type="single"
+                    width="w-full"
+                    class="mb-2"
+                    triggerContent={() => {
+                        return branches.length > 0
+                            ? branches.find((b) => b.sha === selectedSha)
+                                  ?.name || "Select Branch"
+                            : "No branches available";
+                    }}
+                    onValueChangeFunction={async (value) => {
+                        const _selectedSha = selectedSha;
+                        selectedSha = "";
+
                         const fs = new FS(data.item.repo.split("/").join("_"));
                         const dir = "/test-clone";
-                        const dbbranch = await auth.client.FindOne<any>({
-                            collectionname: "git",
-                            query: { sha: value, ref: { "$ne": "HEAD"} },
-                            jwt: auth.access_token,
-                        });
-                        let ref;
-                        if (dbbranch == null) {
-                            ref = value;
-                        } else {
-                            ref = dbbranch.ref.split("/").pop();
-                        }
-                        git.checkout({
-                            fs,
-                            dir,
-                            ref: ref,
-                            remote: "origin",
-                            force: true,
-                        })
-                            .then(() => {
-                                // Refresh files after checkout
-                                return listMatrixRecursive({ fs, dir });
-                            })
-                            .then((rawFiles) => {
-                                files = buildFileList(rawFiles);
-                            })
-                            .catch((error) => {
-                                toast.error(
-                                    "Checkout failed: " + error.message,
-                                );
-                            });
-                        selectedSha = value;
-                        goto(base + `/git/${data.item._id}/${value}`);
-                    } else {
-                        selectedSha = _selectedSha;
-                        toast.error(
-                            "You have pending changes in your local repository. Please commit or stash them before switching branches.",
+                        const matrix = await git.statusMatrix({ fs, dir });
+                        const hasPendingChanges = matrix.some(
+                            ([filepath, head, workdir, stage]) => {
+                                // If any file differs in HEAD vs workdir vs index
+                                return head !== workdir || head !== stage;
+                            },
                         );
-                    }
-                }}
-            ></Customselect>
-            {#each visibleFiles() as file, index}
-                {#if file.type === "tree"}
-                    <HotkeyButton
-                        variant="ghostfull"
-                        class="flex items-center gap-1 cursor-pointer"
-                        style="padding-left: {file.depth}rem"
-                        onclick={() => toggleFold(file.path)}
-                    >
-                        {#if collapsedFolders.has(file.path)}
-                            <FolderClosed class="h-5 w-5" />
-                        {:else}
-                            <FolderOpen class="h-5 w-5" />
-                        {/if}
-                        {file.name}
-                        {#if collapsedFolders.has(file.path)}
-                            <Plus class="h-5 w-5" />
-                        {:else}
-                            <Minus class="h-5 w-5" />
-                        {/if}
-                    </HotkeyButton>
-                {:else if file.type === "blob"}
-                    <div
-                        class={`flex items-center justify-between w-full ${currentFilePath() === file.path && "p-1.5 bg-bw100 dark:bg-bw600 rounded"}`}
-                        style="padding-left: {file.depth}rem"
-                    >
-                        <div class="flex items-center w-full gap-1">
-                            <File class="h-5 w-5" />
-                            {#if showRenameInput && renameFile.index === index}
-                                <div class="flex items-center w-full gap-2">
-                                    <CustomInput
-                                        width="w-full"
-                                        bind:value={renameInputText}
-                                    />
-                                    <HotkeyButton
-                                        variant="success"
-                                        aria-label="Confirm rename"
-                                        title="Confirm"
-                                        size="icon"
-                                        onclick={handleRenameFile}
-                                        ><Check /></HotkeyButton
+
+                        if (hasPendingChanges == false) {
+                            const fs = new FS(
+                                data.item.repo.split("/").join("_"),
+                            );
+                            const dir = "/test-clone";
+                            const dbbranch = await auth.client.FindOne<any>({
+                                collectionname: "git",
+                                query: { sha: value, ref: { $ne: "HEAD" } },
+                                jwt: auth.access_token,
+                            });
+                            let ref;
+                            if (dbbranch == null) {
+                                ref = value;
+                            } else {
+                                ref = dbbranch.ref.split("/").pop();
+                            }
+                            git.checkout({
+                                fs,
+                                dir,
+                                ref: ref,
+                                remote: "origin",
+                                force: true,
+                            })
+                                .then(() => {
+                                    // Refresh files after checkout
+                                    return listMatrixRecursive({ fs, dir });
+                                })
+                                .then((rawFiles) => {
+                                    files = buildFileList(rawFiles);
+                                })
+                                .catch((error) => {
+                                    toast.error(
+                                        "Checkout failed: " + error.message,
+                                    );
+                                });
+                            selectedSha = value;
+                            goto(base + `/git/${data.item._id}/${value}`);
+                        } else {
+                            selectedSha = _selectedSha;
+                            toast.error(
+                                "You have pending changes in your local repository. Please commit or stash them before switching branches.",
+                            );
+                        }
+                    }}
+                ></Customselect>
+                {#each visibleFiles() as file, index}
+                    {#if file.type === "tree"}
+                        <HotkeyButton
+                            variant="ghostfull"
+                            class="flex items-center gap-1 cursor-pointer"
+                            style="padding-left: {file.depth}rem"
+                            onclick={() => toggleFold(file.path)}
+                        >
+                            {#if collapsedFolders.has(file.path)}
+                                <FolderClosed class="h-5 w-5" />
+                            {:else}
+                                <FolderOpen class="h-5 w-5" />
+                            {/if}
+                            {file.name}
+                            {#if collapsedFolders.has(file.path)}
+                                <Plus class="h-5 w-5" />
+                            {:else}
+                                <Minus class="h-5 w-5" />
+                            {/if}
+                        </HotkeyButton>
+                    {:else if file.type === "blob"}
+                        <div
+                            class={`flex items-center justify-between w-full ${currentFilePath() === file.path && "p-1.5 bg-bw100 dark:bg-bw600 rounded"}`}
+                            style="padding-left: {file.depth}rem"
+                        >
+                            <div class="flex items-center w-full gap-1">
+                                <File class="h-5 w-5" />
+                                {#if showRenameInput && renameFile.index === index}
+                                    <div class="flex items-center w-full gap-2">
+                                        <CustomInput
+                                            width="w-full"
+                                            bind:value={renameInputText}
+                                        />
+                                        <HotkeyButton
+                                            variant="success"
+                                            aria-label="Confirm rename"
+                                            title="Confirm"
+                                            size="icon"
+                                            onclick={handleRenameFile}
+                                            ><Check /></HotkeyButton
+                                        >
+                                        <HotkeyButton
+                                            variant="danger"
+                                            aria-label="Cancel rename"
+                                            title="Cancel"
+                                            size="icon"
+                                            onclick={handleCancelRename}
+                                            ><X /></HotkeyButton
+                                        >
+                                    </div>
+                                {:else}
+                                    <button
+                                        onclick={() =>
+                                            goto(
+                                                base +
+                                                    `/git/${data.item._id}/${data.sha}/${file.path}`,
+                                            )}
                                     >
+                                        {file.name}
+                                    </button>
+                                {/if}
+                            </div>
+                            {#if !(showRenameInput && renameFile.index === index)}
+                                <div class="flex gap-2">
                                     <HotkeyButton
                                         variant="danger"
-                                        aria-label="Cancel rename"
-                                        title="Cancel"
+                                        aria-label="Delete file"
+                                        title="Delete file"
                                         size="icon"
-                                        onclick={handleCancelRename}
-                                        ><X /></HotkeyButton
+                                        onclick={() => {
+                                            selectedFile = {
+                                                path: file.path,
+                                                index,
+                                            };
+                                            showDeleteFileWarning = true;
+                                        }}><Trash2 /></HotkeyButton
+                                    >
+                                    <HotkeyButton
+                                        aria-label="Rename file"
+                                        title="Rename file"
+                                        size="icon"
+                                        onclick={() => {
+                                            renameFile = {
+                                                path: file.path,
+                                                index,
+                                            };
+                                            renameInputText = file.name;
+                                            showRenameInput = true;
+                                        }}><Edit2 /></HotkeyButton
                                     >
                                 </div>
-                            {:else}
-                                <button
-                                    onclick={() =>
-                                        goto(
-                                            base +
-                                                `/git/${data.item._id}/${data.sha}/${file.path}`,
-                                        )}
-                                >
-                                    {file.name}
-                                </button>
                             {/if}
                         </div>
-                        {#if !(showRenameInput && renameFile.index === index)}
-                            <div class="flex gap-2">
-                                <HotkeyButton
-                                    variant="danger"
-                                    aria-label="Delete file"
-                                    title="Delete file"
-                                    size="icon"
-                                    onclick={() => {
-                                        selectedFile = {
-                                            path: file.path,
-                                            index,
-                                        };
-                                        showDeleteFileWarning = true;
-                                    }}><Trash2 /></HotkeyButton
-                                >
-                                <HotkeyButton
-                                    aria-label="Rename file"
-                                    title="Rename file"
-                                    size="icon"
-                                    onclick={() => {
-                                        renameFile = { path: file.path, index };
-                                        renameInputText = file.name;
-                                        showRenameInput = true;
-                                    }}><Edit2 /></HotkeyButton
-                                >
-                            </div>
-                        {/if}
+                    {:else}
+                        <li>
+                            {file.path} ({file.type})
+                        </li>
+                    {/if}
+                {/each}
+                {#if showNewFileInput}
+                    <div class="flex items-center gap-2">
+                        <CustomInput
+                            width="w-full"
+                            bind:value={newFileName}
+                            placeholder="Enter new file name"
+                        />
+                        <HotkeyButton
+                            variant="success"
+                            aria-label="Create file"
+                            title="Create"
+                            size="icon"
+                            onclick={handleCreateFile}><Check /></HotkeyButton
+                        >
+                        <HotkeyButton
+                            variant="danger"
+                            aria-label="Cancel"
+                            title="Cancel"
+                            size="icon"
+                            onclick={() => {
+                                showNewFileInput = false;
+                                newFileName = "";
+                            }}><X /></HotkeyButton
+                        >
                     </div>
-                {:else}
-                    <li>
-                        {file.path} ({file.type})
-                    </li>
                 {/if}
-            {/each}
-            {#if showNewFileInput}
-                <div class="flex items-center gap-2">
-                    <CustomInput
-                        width="w-full"
-                        bind:value={newFileName}
-                        placeholder="Enter new file name"
-                    />
-                    <HotkeyButton
-                        variant="success"
-                        aria-label="Create file"
-                        title="Create"
-                        size="icon"
-                        onclick={handleCreateFile}><Check /></HotkeyButton
-                    >
-                    <HotkeyButton
-                        variant="danger"
-                        aria-label="Cancel"
-                        title="Cancel"
-                        size="icon"
-                        onclick={() => {
-                            showNewFileInput = false;
-                            newFileName = "";
-                        }}><X /></HotkeyButton
-                    >
-                </div>
-            {/if}
-            <HotkeyButton
-                aria-label="Create new file"
-                title="Create new file"
-                class="w-full mt-2"
-                onclick={() => {
-                    showNewFileInput = true;
-                }}
-            >
-                + New File
-            </HotkeyButton>
-        </ul>
-    </div>
+                <HotkeyButton
+                    aria-label="Create new file"
+                    title="Create new file"
+                    class="w-full mt-2"
+                    onclick={() => {
+                        showNewFileInput = true;
+                    }}
+                >
+                    + New File
+                </HotkeyButton>
+            </ul>
+        </div>
+    {/if}
 
     <div
         class="h-full w-full overflow-auto p-4 bg-bw200 dark:bg-bw850 border dark:border-bw600 rounded-[10px] md:h-full md:overflow-auto"
     >
-        {@render children()}
+        {#if data.item.sha != null}
+            {@render children()}
+            <HotkeyButton
+                aria-label="Commit changes"
+                title="Commit changes"
+                onclick={() => (openAddFileDialog = true)}
+            >
+                Commit changes
+            </HotkeyButton>
+            <HotkeyButton
+                aria-label="Push changes"
+                title="Push changes"
+                class="ml-2"
+                onclick={handlePushChanges}
+            >
+                Push changes
+            </HotkeyButton>
+        {:else}
+            <div class="mb-4 text-bw600 dark:text-bw400">
+                Repo: <b>{data.item.repo}</b> is empty. You can create a new file
+                or push an existing repository.
+            </div>
+            {#if (auth.profile as any).name != "guest"}
+                <div class="flex items-center gap-4 mb-4">
+                    <div>Create a new repository on the command line</div>
+                    <HotkeyButton
+                        title="copy new repository command"
+                        aria-label="copy new repository command"
+                        onclick={async () => {
+                            try {
+                                const parts = data.item.repo.split("/");
+                                let copycommand;
+                                let tokenres = await auth.client.CustomCommand({
+                                    command: "issueusertoken",
+                                    // @ts-ignore
+                                    data: {
+                                        name: "web_git_clone",
+                                        app: "git",
+                                        exp: "365d", // 1 year
+                                    },
+                                    jwt: auth.access_token,
+                                });
 
-        <HotkeyButton
-            aria-label="Commit changes"
-            title="Commit changes"
-            onclick={() => (openAddFileDialog = true)}
-        >
-            Commit changes
-        </HotkeyButton>
-        <HotkeyButton
-            aria-label="Push changes"
-            title="Push changes"
-            class="ml-2"
-            onclick={handlePushChanges}
-        >
-            Push changes
-        </HotkeyButton>
+                                copycommand = `echo "# ${parts[parts.length - 1]}" >> README.md
+git init
+git add .
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://${auth.config.domain}/git/${data.item.repo}
+git config --local http.extraHeader "Authorization: Bearer ${JSON.parse(tokenres).access_token}"
+git push -u origin main`;
+
+                                navigator.clipboard.writeText(copycommand);
+                                toast.success(
+                                    "Create new repository command copied to clipboard!",
+                                );
+                            } catch (error: any) {
+                                toast.error(
+                                    "Error copying create new repository command: " +
+                                        error.message,
+                                );
+                            }
+                        }}
+                    >
+                        <Copy class="h-5 w-5" />
+                        Copy
+                    </HotkeyButton>
+                </div>
+            {/if}
+            <div class="flex items-center gap-4">
+                <div>Push an existing repository from the command line</div>
+                <HotkeyButton
+                    title="Copy push local repository command"
+                    aria-label="Copy push local repository command"
+                    onclick={async () => {
+                        try {
+                            let copycommand;
+                            if ((auth.profile as any).name == "guest") {
+                                copycommand = `git remote add origin https://${auth.config.domain}/git/${data.item.repo}\ngit push -u origin main\ngit push origin --all && git push origin --tags`;
+                            } else {
+                                let tokenres = await auth.client.CustomCommand({
+                                    command: "issueusertoken",
+                                    // @ts-ignore
+                                    data: {
+                                        name: "web_git_clone",
+                                        app: "git",
+                                        exp: "365d", // 1 year
+                                    },
+                                    jwt: auth.access_token,
+                                });
+
+                                copycommand = `git remote add origin https://${auth.config.domain}/git/${data.item.repo}\ngit config --local http.extraHeader "Authorization: Bearer ${JSON.parse(tokenres).access_token}"\ngit push -u origin main\ngit push origin --all && git push origin --tags`;
+                            }
+                            navigator.clipboard.writeText(copycommand);
+                            toast.success("Push local repository command copied to clipboard!");
+                        } catch (error: any) {
+                            toast.error(
+                                "Error copying push local repository command: " + error.message,
+                            );
+                        }
+                    }}
+                >
+                    <Copy class="h-5 w-5" />
+                    Copy
+                </HotkeyButton>
+            </div>
+        {/if}
     </div>
 </div>
 
@@ -883,3 +1036,5 @@
         </AlertDialog.Footer>
     </AlertDialog.Content>
 </AlertDialog.Root>
+
+<Customsuperdebug formData={data.item} />

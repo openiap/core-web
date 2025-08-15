@@ -1,6 +1,5 @@
 <script lang="ts">
   import { browser } from "$app/environment";
-  import { page } from "$app/stores";
   import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
   import { CustomSuperDebug } from "$lib/customsuperdebug";
   import Monacoeditor from "$lib/monacoeditor/monacoeditor.svelte";
@@ -97,7 +96,7 @@
   });
 </script>
 
-<div class="flex flex-col w-100vh h-full">
+<div class="flex flex-col w-100vh h-[50vh] lg:h-[94%]">
   <!-- Save button to persist edits -->
   {#if pathto() != null && pathto() != ""}
     <div class="mb-2 flex items-center justify-between">

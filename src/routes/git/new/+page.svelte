@@ -1,22 +1,22 @@
 <script lang="ts">
+  import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { CustomInput } from "$lib/custominput/index.js";
   import { CustomSelect } from "$lib/customselect/index.js";
+  import { CustomSuperDebug } from "$lib/customsuperdebug";
   import { auth } from "$lib/stores/auth.svelte";
   import FS from "@isomorphic-git/lightning-fs";
+  import { Buffer } from "buffer";
   import git from "isomorphic-git";
   import http from "isomorphic-git/http/web";
   import { Check } from "lucide-svelte";
   import { toast } from "svelte-sonner";
-  import { Buffer } from "buffer";
-  import { goto } from "$app/navigation";
-  import { CustomSuperDebug } from "$lib/customsuperdebug";
 
   window.Buffer = Buffer;
 
   let loading = $state(false);
-  let repositoryname = $state("test_repo_1");
+  let repositoryname = $state("");
   let temprepos: any = $state();
   let selectedlanguage = $state("");
   let selectedcloneurl = $state("");
@@ -193,7 +193,6 @@
         description: "Select a template",
         url: "",
       });
-      console.log(temprepos);
     } catch (err) {
       toast.error("Error loading template repos", {
         description: (err as any)?.message || String(err),
@@ -260,55 +259,62 @@
           corsProxy,
           singleBranch: false,
         });
-        console.log(`Cloned repository`);
+        if (auth.isAuthenticated) {
+          const headers = { Authorization: "Bearer " + auth.access_token };
+          const corsProxy = base + "/api/git-proxy";
+          const gitpushres = await git.push({
+            headers,
+            corsProxy,
+            fs,
+            http,
+            dir,
+            url:
+              "https://dev.openiap.io" + `/git/${username}/${repositoryname}`,
+          });
+        }
       } else {
-        await git.init({
-          fs,
-          dir,
-        });
-        // create a README file
-        // await fs.promises.writeFile(`${dir}/README.md`, "Empty readme file");
-
-        // add the README file to the repository
-        // await git.add({
-        //   fs,
-        //   dir,
-        //   filepath: `README.md`,
-        // });
-
-        // let commitoid = await git.commit({
-        //   fs,
-        //   dir,
-        //   message: "Initial commit",
-        //   author,
-        // });
-      }
-
-      if (auth.isAuthenticated) {
-        const headers = { Authorization: "Bearer " + auth.access_token };
-        const corsProxy = base + "/api/git-proxy";
-        const gitpushres = await git.push({
-          headers,
-          corsProxy,
-          fs,
-          http,
-          dir,
-          url: "https://dev.openiap.io" + `/git/${username}/${repositoryname}`,
-        });
-
-        const newrepo: any = await auth.client.FindOne({
+        // add an entry in the database for the new repository
+        await auth.client.InsertOne({
           collectionname: "git",
-          query: { ref: "HEAD", repo: username + "/" + repositoryname },
+          item: {
+            // when cloning from a template
+            repo: username + "/" + repositoryname,
+            // when creating a new repository from https://dev.openiap.io/git
+            // repo: repositoryname,
+
+            _type: "hash",
+            ref: "HEAD",
+            sha: null,
+            headref: null,
+
+            // when cloning from a template
+            // name: `${username + "/" + repositoryname} HEAD ${null}`,
+            // when creating a new repository from https://dev.openiap.io/git
+            name: `HEAD ${repositoryname}`,
+            
+            _acl: [
+              {
+                rights: -1,
+                name: auth.profile.name,
+                _id: auth.profile.sub,
+              },
+            ],
+          },
           jwt: auth.access_token,
         });
-
-        toast.success(
-          `Repository ${repositoryname} created successfully redirecting...`,
-        );
-        loading = false;
-
-        goto(base + `/git/${newrepo._id}/${newrepo.sha}`); // navigate to the new repository page
       }
+
+      const newrepo: any = await auth.client.FindOne({
+        collectionname: "git",
+        query: { ref: "HEAD", repo: username + "/" + repositoryname },
+        jwt: auth.access_token,
+      });
+
+      toast.success(
+        `Repository ${repositoryname} created successfully redirecting...`,
+      );
+      loading = false;
+      goto(base + `/git/${newrepo._id}/${newrepo.sha}`); // navigate to the new repository page
     } catch (err) {
       loading = false;
       console.error("Error creating repository:", err);

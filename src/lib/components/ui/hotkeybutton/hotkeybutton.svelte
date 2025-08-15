@@ -146,7 +146,7 @@
 	<button
 		title={title || addTitle()}
 		bind:this={ref}
-		aria-label={ariaLabel}
+		aria-label={ariaLabel || title || "default"}
 		class={cn(buttonVariants({ variant, size, className }))}
 		{type}
 		{...restProps}
