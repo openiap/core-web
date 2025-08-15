@@ -309,17 +309,7 @@
   // New: shared helper to detect time-like columns by name
   function isTimeLikeColumn(col: string): boolean {
     const key = col?.toLowerCase?.() ?? "";
-    if (key == "cold_response_time" || key == "response_time"|| key == "boot_time" || key == "run_time" || key == "app_response_time") {
-      return false; // Exclude specific keys that are not time-like
-    }
-    return (
-      key === "ts" ||
-      key.endsWith("time") ||
-      key.endsWith("timestamp") ||
-      key.endsWith("date") ||
-      key.endsWith("at") ||
-      key.includes("time")
-    );
+    return key === "ts" || key === "time";
   }
 
   function shouldFormatAsTimeSince(col: string, val: any): boolean {
