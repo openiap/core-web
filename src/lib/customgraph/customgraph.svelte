@@ -195,11 +195,11 @@
                             const xVal = u.data[0][idx];
                             const yVal = u.data[1][idx];
                             if (valueEl) {
-                                valueEl.textContent = `x: ${xVal}, y: ${yVal}`;
+                                valueEl.textContent = `x: ${new Date(xVal * 1000).toLocaleString()}, y: ${yVal}`;
                             }
                         } else {
                             if (valueEl) {
-                                valueEl.textContent = "";
+                                valueEl.textContent = "x: -, y: -";
                             }
                         }
                     },
@@ -295,7 +295,7 @@
             </div>
         {:else}
             <div bind:this={chartEl} class="chart-element"></div>
-            <div bind:this={valueEl}></div>
+            <div bind:this={valueEl}>x: -, y: -</div>
         {/if}
     </div>
 </div>
