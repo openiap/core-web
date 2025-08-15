@@ -15,12 +15,15 @@ function getFinalTarget(path: string | string[], url: URL): string {
 }
 
 async function handleProxy(request: Request, url: URL, path: string | string[]) {
-    console.log('Handling proxy request:', request.method, path);
+	console.log('Handling proxy request:', request.method, path);
 	const fullUrl = getFinalTarget(path, url);
 
 	const headers = new Headers(request.headers);
 	headers.delete('host');
 	headers.delete('origin');
+	if (url.toString().indexOf('github') > -1) {
+		headers.delete('authorization');
+	}
 
 	const init: RequestInit = {
 		method: request.method,

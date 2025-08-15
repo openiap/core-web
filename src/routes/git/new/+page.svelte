@@ -267,20 +267,21 @@
           dir,
         });
         // create a README file
-        await fs.promises.writeFile(`${dir}/README.md`, "Empty readme file");
-        // add the README file to the repository
-        await git.add({
-          fs,
-          dir,
-          filepath: `README.md`,
-        });
+        // await fs.promises.writeFile(`${dir}/README.md`, "Empty readme file");
 
-        let commitoid = await git.commit({
-          fs,
-          dir,
-          message: "Initial commit",
-          author,
-        });
+        // add the README file to the repository
+        // await git.add({
+        //   fs,
+        //   dir,
+        //   filepath: `README.md`,
+        // });
+
+        // let commitoid = await git.commit({
+        //   fs,
+        //   dir,
+        //   message: "Initial commit",
+        //   author,
+        // });
       }
 
       if (auth.isAuthenticated) {
