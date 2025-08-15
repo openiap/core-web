@@ -9,14 +9,14 @@
   import { CustomInput } from "$lib/custominput";
   import { CustomSelect } from "$lib/customselect";
   import { auth } from "$lib/stores/auth.svelte";
-  import { ArrowUp, Bot, User } from "lucide-svelte";
+  import { ArrowUp, Bot, Plus, User } from "lucide-svelte";
   import OpenAI from "openai";
   import type { ChatCompletionTool } from "openai/resources/index.mjs";
   import { tick } from "svelte";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import { toast } from "svelte-sonner";
-    import type { Workspace } from "../workspace/schema.js";
-    import { name } from "tar/types";
+  import type { Workspace } from "../workspace/schema.js";
+  import { name } from "tar/types";
 
   type LanguageKey = "nodejs" | "python" | "php";
   let slug = "me-" + Math.random().toString(36).substring(2, 11) + "-you";
@@ -1013,13 +1013,11 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
         }
         const workspace = await auth.client.FindOne<Workspace>({
           collectionname: "users",
-          query: { _id: workspaceid },        
+          query: { _id: workspaceid },
           jwt: auth.access_token,
-        }); 
+        });
         if (workspace == null) {
-            toast.error(
-            "Failed to find workspace with id: " + workspaceid,
-          );
+          toast.error("Failed to find workspace with id: " + workspaceid);
 
           toolCall.status = "failed";
           toolCall.result = "Workspace not found";
@@ -1091,7 +1089,7 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
                 _id: workspace.users,
                 name: workspace.name + " users",
                 rights: 65535,
-              }
+              },
             ],
           };
           llmpackage = await await auth.client.InsertOne({
@@ -1505,7 +1503,7 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
 
     <form
       onsubmit={handleSubmit}
-      class="flex flex-col items-center space-x-2 mb-4 p-5 rounded-[20px] dark:boder-bw600 bg-bw100 dark:bg-bw700 w-full"
+      class="flex flex-col items-center space-x-2 p-5 rounded-[20px] dark:boder-bw600 bg-bw100 dark:bg-bw700 w-full"
     >
       <div class="flex w-full space-x-2">
         <CustomInput
@@ -1525,5 +1523,22 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
         >
       </div>
     </form>
+    {#if messages.length > 1}
+      <div class="flex justify-center">
+        <HotkeyButton
+          class=" justify-center text-center my-2"
+          aria-label="Send"
+          type="submit"
+          onclick={() => {
+            messages = [systemmessages[selectedLanguage]];
+            userInput = "";
+            focusInput();
+          }}
+        >
+          <Plus class="h-4 w-4 mr-2" />
+          New conversation
+        </HotkeyButton>
+      </div>
+    {/if}
   </div>
 </div>
