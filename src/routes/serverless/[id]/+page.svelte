@@ -44,7 +44,7 @@
   let gdruntime = $state<Float64Array[]>([]);
   let gdresponsetime = $state<Float64Array[]>([]);
   let gdboottime = $state<Float64Array[]>([]);
-
+  const excludedcols = ["_id", "metadata", "ts", "userid"];
   if (data.item != null) {
     if (data.item.anonymous == null) {
       data.item.anonymous = false;
@@ -646,13 +646,15 @@
       <Table.Header>
         <Table.Row>
           {#each cols && cols.length > 0 ? cols : Object.keys(rows[0]) as col}
-            <Table.Head
-              class={headClassFor
-                ? headClassFor(col)
-                : isTimeLikeColumn(col)
-                  ? "whitespace-nowrap w-0"
-                  : undefined}>{col}</Table.Head
-            >
+            {#if !excludedcols.includes(col)}
+              <Table.Head
+                class={headClassFor
+                  ? headClassFor(col)
+                  : isTimeLikeColumn(col)
+                    ? "whitespace-nowrap w-0"
+                    : undefined}>{col}</Table.Head
+              >
+            {/if}
           {/each}
         </Table.Row>
       </Table.Header>
@@ -660,21 +662,23 @@
         {#each rows as row, i (row?._id ?? row?.id ?? i)}
           <Table.Row>
             {#each cols && cols.length > 0 ? cols : Object.keys(rows[0]) as col}
-              <Table.Cell
-                class={cellClassFor
-                  ? cellClassFor(col, row[col])
-                  : isTimeLikeColumn(col)
-                    ? "pr-3 whitespace-nowrap align-top text-muted-foreground"
-                    : undefined}
-              >
-                {#if shouldFormatAsTimeSince(col, row[col])}
-                  {_timeSince(new Date(row[col]?.$date ?? row[col]))}
-                {:else if typeof row[col] === "object"}
-                  {JSON.stringify(row[col])}
-                {:else}
-                  {row[col]}
-                {/if}
-              </Table.Cell>
+              {#if !excludedcols.includes(col)}
+                <Table.Cell
+                  class={cellClassFor
+                    ? cellClassFor(col, row[col])
+                    : isTimeLikeColumn(col)
+                      ? "pr-3 whitespace-nowrap align-top text-muted-foreground"
+                      : undefined}
+                >
+                  {#if shouldFormatAsTimeSince(col, row[col])}
+                    {_timeSince(new Date(row[col]?.$date ?? row[col]))}
+                  {:else if typeof row[col] === "object"}
+                    {JSON.stringify(row[col])}
+                  {:else}
+                    {row[col]}
+                  {/if}
+                </Table.Cell>
+              {/if}
             {/each}
           </Table.Row>
         {/each}
