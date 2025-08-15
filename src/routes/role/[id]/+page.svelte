@@ -227,9 +227,16 @@
       {loading}
       propertyname="_id"
       name="member"
+      basefilter={{
+        $or: [{ _type: "user" }, { _type: "role" }],
+      }}
     >
       {#snippet rendername(item: any)}
-        {item.name}
+        {#if item?._type == "role"}
+          (R) {item.name}
+        {:else}
+          (U) {item.name} {item.email ? "/ " + item.email : ""}
+        {/if}
       {/snippet}
       {#snippet rendercontent(item: any)}
         {#if item == null}
