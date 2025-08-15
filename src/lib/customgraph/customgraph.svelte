@@ -24,7 +24,6 @@
     let data = $state(chartdata || []);
     let lastChartDataHash = $state("");
 
-
     // Watch for chartdata prop changes
     $effect(() => {
         const currentHash = JSON.stringify(chartdata);
@@ -189,7 +188,7 @@
             ],
             hooks: {
                 setCursor: [
-                    (u) => {
+                    (u: any) => {
                         console.log("Cursor set:", u.cursor.idx);
                         if (u.cursor.idx != null) {
                             const idx = u.cursor.idx;
