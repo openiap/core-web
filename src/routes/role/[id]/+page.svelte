@@ -20,6 +20,9 @@
   let members: any = $state([]);
 
   const { data } = $props();
+  if (data.item.members == null) {
+    data.item.members = [];
+  }
   const form = superForm(defaults(zod(editFormSchema)), {
     dataType: "json",
     validators: zod(editFormSchema),
@@ -28,8 +31,10 @@
       if (form.valid) {
         loading = true;
         try {
-          if (members.length > 0) {
+          if (members?.length > 0) {
             form.data.members = members;
+          } else {
+            form.data.members = [];
           }
           if (!form.data.rparole) {
             delete form.data.rparole;
@@ -169,14 +174,14 @@
     <Form.FieldErrors />
   </Form.Field>
 
-  {#if members.length > 0}
+  {#if members?.length > 0}
     <div
       class="text-[14px] w-[895px] mb-10 border rounded-[10px] dark:bg-bw850 dark:border-bw600 px-2.5 py-1"
     >
       <div class="mb-5 dark:text-bw400">
         This user is a member of the following:
       </div>
-      {#if members.length > 0}
+      {#if members?.length > 0}
         {#each members as item, index}
           <div
             class="grid grid-cols-12 items-center border px-2.5 py-[5px] my-2.5 rounded-[10px] dark:border-bw600 dark:bg-bw1000"
