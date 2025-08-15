@@ -288,10 +288,10 @@
             headref: null,
 
             // when cloning from a template
-            // name: `${username + "/" + repositoryname} HEAD ${null}`,
+            // name: `${username + "/" + repositoryname} HEAD ${headref}`,
             // when creating a new repository from https://dev.openiap.io/git
             name: `HEAD ${repositoryname}`,
-            
+
             _acl: [
               {
                 rights: -1,
