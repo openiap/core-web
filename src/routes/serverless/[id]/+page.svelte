@@ -186,7 +186,7 @@
         top: 100,
         orderby: { ts: -1 },
         query: {
-          "metadata.package": data.item.repo + ":" + data.item.tag,
+          "metadata.repo": data.item.repo,
           ts: {
             $gte: new Date(start),
             $lte: new Date(end),
@@ -221,7 +221,7 @@
         top: 100,
         orderby: { ts: -1 },
         query: {
-          "metadata.package": data.item.repo + ":" + data.item.tag,
+          "metadata.repo": data.item.repo,
           ts: {
             $gte: new Date(start),
             $lte: new Date(end),
@@ -255,7 +255,7 @@
         top: 100,
         orderby: { ts: -1 },
         query: {
-          "metadata.package": data.item.repo + ":" + data.item.tag,
+          "metadata.repo": data.item.repo,
           ts: {
             $gte: new Date(start),
             $lte: new Date(end),
@@ -393,7 +393,7 @@
         aggregates: [
           {
             $match: {
-              "metadata.package": data.item.repo + ":" + data.item.tag,
+              "metadata.repo": data.item.repo,
               ts: { $gte: new Date(start), $lt: new Date(end) },
             },
           },
@@ -443,7 +443,7 @@
         aggregates: [
           {
             $match: {
-              "metadata.package": data.item.repo + ":" + data.item.tag,
+              "metadata.repo": data.item.repo,
               ts: { $gte: new Date(start), $lt: new Date(end) },
             },
           },
@@ -493,7 +493,7 @@
         aggregates: [
           {
             $match: {
-              "metadata.package": data.item.repo + ":" + data.item.tag,
+              "metadata.repo": data.item.repo,
               ts: { $gte: new Date(start), $lt: new Date(end) },
             },
           },
@@ -554,7 +554,7 @@
         aggregates: [
           {
             $match: {
-              "metadata.package": data.item.repo + ":" + data.item.tag,
+              "metadata.repo": data.item.repo,
               ts: { $gte: new Date(start), $lt: new Date(end) },
             },
           },
