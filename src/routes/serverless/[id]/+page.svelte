@@ -40,6 +40,7 @@
   type GraphRow = { [key: string]: any; _id?: string; id?: string | number };
   let tableData = $state<GraphRow[]>([]);
   let distroname = $state(data.item.distro);
+  let tagname = $state(data.item.tag);
   // let chartdata = $state<Float64Array[]>(data.chartdata ?? []);
   let chartKey = $state(0); // Force chart re-render by changing key
 
@@ -806,12 +807,33 @@
           <Form.Control>
             {#snippet children({ props })}
               <Form.Label>Tag</Form.Label>
-              <CustomInput
-                placeholder="Type tag"
-                disabled={loading}
+              <Entityselector
+                width="md:w-fit w-64"
+                class="mb-4 md:mb-0"
+                {loading}
                 {...props}
+                collectionname="sf"
+                basefilter={{ _type: "image", repo: $formData.repo }}
                 bind:value={$formData.tag}
-              />
+                handleChangeFunction={(item: any) => {
+                  if (item != null) {
+                    $formData.tag = item.tag;
+                    tagname = item.tag;
+                  }
+                }}
+                returnobject={true}
+              >
+                {#snippet rendername(item: any)}
+                  {item.name}
+                {/snippet}
+                {#snippet rendercontent(item: any)}
+                  {#if tagname == null || tagname == ""}
+                    Nothing selected
+                  {:else}
+                    {tagname}
+                  {/if}
+                {/snippet}
+              </Entityselector>
             {/snippet}
           </Form.Control>
           <Form.FieldErrors />
