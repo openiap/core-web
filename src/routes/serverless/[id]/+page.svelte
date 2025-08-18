@@ -14,12 +14,14 @@
   import { ObjectInput } from "$lib/objectinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
-  import { Check, User } from "lucide-svelte";
+  import { Check, RotateCcw, User } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { _timeSince } from "../../../helper";
   import { editFormSchema } from "../schema.js";
+  import type { t } from "tar";
+  import { trusted } from "svelte/legacy";
 
   const { data } = $props();
 
@@ -36,9 +38,9 @@
     { label: "Last 30 days", value: "30d" },
   ];
   type GraphRow = { [key: string]: any; _id?: string; id?: string | number };
-  let graphData = $state<GraphRow[]>([]);
+  let tableData = $state<GraphRow[]>([]);
   let distroname = $state(data.item.distro);
-  let chartdata = $state<Float64Array[]>(data.chartdata ?? []);
+  // let chartdata = $state<Float64Array[]>(data.chartdata ?? []);
   let chartKey = $state(0); // Force chart re-render by changing key
 
   let gdruntime = $state<Float64Array[]>([]);
@@ -61,6 +63,14 @@
         loading = true;
         try {
           let workspaceid = usersettings.currentworkspace;
+          if (form.data.alpn == "Select ALPN") {
+            // @ts-ignore
+            delete form.data.alpn;
+          }
+          if (form.data.tls == false) {
+            // @ts-ignore
+            delete form.data.tls;
+          }
           if (data.item._workspaceid == null || data.item._workspaceid == "") {
             if (workspaceid == "" || workspaceid == null) {
               toast.error("Error", {
@@ -125,7 +135,7 @@
           //     return;
           //   }
           // }
-
+          console.log("Updating serverless function with data:", form.data);
           await auth.client.CustomCommand({
             command: "ensuresfunc",
             // @ts-ignore
@@ -172,7 +182,7 @@
 
   async function getInstanceLogs() {
     // Fetch instance logs here
-    graphData = [];
+    tableData = [];
     if (data.item == null || data.item.repo == null || data.item.tag == null) {
       toast.error("Error", {
         description: "Serverless Function not found or incomplete data",
@@ -195,7 +205,7 @@
         jwt: auth.access_token,
       });
       // Coerce to array depending on API shape
-      graphData = Array.isArray(result) ? result : (result?.items ?? []);
+      tableData = Array.isArray(result) ? result : (result?.items ?? []);
 
       await getGDInstanceLog();
     } catch (error: any) {
@@ -207,7 +217,7 @@
   }
   async function getRequestLogs() {
     // Fetch request logs here
-    graphData = [];
+    tableData = [];
     if (data.item == null || data.item.repo == null || data.item.tag == null) {
       toast.error("Error", {
         description: "Serverless Function not found or incomplete data",
@@ -230,7 +240,7 @@
         jwt: auth.access_token,
       });
       // Coerce to array depending on API shape
-      graphData = Array.isArray(result) ? result : (result?.items ?? []);
+      tableData = Array.isArray(result) ? result : (result?.items ?? []);
       await getGDRequestLog();
     } catch (error: any) {
       console.error("Error fetching request logs:", error);
@@ -241,7 +251,7 @@
   }
   async function getConsoleLogs() {
     // Fetch console logs here
-    graphData = [];
+    tableData = [];
     if (data.item == null || data.item.repo == null || data.item.tag == null) {
       toast.error("Error", {
         description: "Serverless Function not found or incomplete data",
@@ -264,7 +274,7 @@
         jwt: auth.access_token,
       });
       // Coerce to array depending on API shape
-      graphData = Array.isArray(result) ? result : (result?.items ?? []);
+      tableData = Array.isArray(result) ? result : (result?.items ?? []);
     } catch (error: any) {
       console.error("Error fetching console logs:", error);
       toast.error("Error fetching console logs", {
@@ -587,15 +597,15 @@
         jwt: auth.access_token,
       });
       if (aggdata.length > 0) {
-        chartdata = aggdata[0];
-        chartdata = [
-          new Float64Array(aggdata[0].arrays[0]),
-          new Float64Array(aggdata[0].arrays[1]),
-        ];
+        // chartdata = aggdata[0];
+        // chartdata = [
+        // new Float64Array(aggdata[0].arrays[0]),
+        // new Float64Array(aggdata[0].arrays[1]),
+        // ];
         chartKey += 1; // Force re-render
       } else {
         // Clear chart data if no data available
-        chartdata = [];
+        // chartdata = [];
         chartKey += 1; // Force re-render
       }
     } catch (error: any) {
@@ -619,7 +629,7 @@
     }}
     type="single"
     selectitems={durationOptions}
-    class="mb-4"
+    width="w-fit"
     bind:value={selectedduration}
     onValueChangeFunction={async (value: string) => {
       selectedduration = value;
@@ -628,6 +638,35 @@
       }
     }}
   />
+{/snippet}
+
+{#snippet ReloadData({
+  onChange,
+}: {
+  onChange: (value: string) => void | Promise<void>;
+})}
+  <HotkeyButton
+    title="Reload Data"
+    disabled={loading}
+    aria-label="Reload Data"
+    onclick={async () => {
+      loading = true;
+      try {
+        if (typeof onChange === "function") {
+          await onChange(selectedduration);
+        }
+      } catch (error: any) {
+        toast.error("Error reloading data", {
+          description: error.message,
+        });
+      } finally {
+        loading = false;
+      }
+    }}
+  >
+    <RotateCcw />
+    Reload Data
+  </HotkeyButton>
 {/snippet}
 
 {#snippet LogsTable({
@@ -698,7 +737,7 @@
     <Tabs.Trigger
       value="1"
       onclick={() => {
-        graphData = [];
+        tableData = [];
       }}>Settings</Tabs.Trigger
     >
     <Tabs.Trigger value="2" onclick={getInstanceLogs}
@@ -712,7 +751,7 @@
     >
   </Tabs.List>
 
-  <Tabs.Content value="1" class="mt-10">
+  <Tabs.Content value="1" class="mt-6">
     {#if message && $message != ""}
       {$message}
     {/if}
@@ -894,6 +933,46 @@
           <Form.FieldErrors />
         </Form.Field>
 
+        <Form.Field {form} name="tls" class="mb-10">
+          <Form.Control>
+            {#snippet children({ props })}
+              <div class="flex flex-row items-center space-x-2 py-4">
+                <Form.Label>TLS</Form.Label>
+                <CustomSwitch
+                  disabled={loading}
+                  {...props}
+                  bind:checked={$formData.tls}
+                />
+              </div>
+            {/snippet}
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
+
+        <Form.Field {form} name="alpn" class="mb-10">
+          <Form.Control>
+            {#snippet children({ props })}
+              <Form.Label>ALPN</Form.Label>
+              <CustomSelect
+                type="single"
+                {loading}
+                {...props}
+                selectitems={[
+                  { label: "Select ALPN", value: "Select ALPN" },
+                  { label: "h2", value: "h2" },
+                  { label: "h2h1", value: "h2h1" },
+                  { label: "h1", value: "h1" },
+                ]}
+                bind:value={$formData.alpn}
+                triggerContent={() => {
+                  return $formData.alpn;
+                }}
+              />
+            {/snippet}
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
+
         <!-- add token selection here set _id to the -->
         <!-- or select user then create api key for that user and add the _id of the apikey to default 1 year expiration -->
         <!-- runas key -->
@@ -1031,7 +1110,11 @@
       <div>Data not found or access denied</div>
     {/if}
   </Tabs.Content>
-  <Tabs.Content value="2" class="mt-10">
+  <Tabs.Content value="2" class="mt-6">
+    <div class="flex items-center gap-4 mb-4">
+      {@render DurationSelect({ onChange: getInstanceLogs })}
+      {@render ReloadData({ onChange: getInstanceLogs })}
+    </div>
     {#key chartKey}
       <div class="grid grid-cols-3 gap-4 mb-4">
         <CustomGraph title="Avg Run Time" bind:chartdata={gdruntime} />
@@ -1042,18 +1125,25 @@
         />
       </div>
     {/key}
-    {@render DurationSelect({ onChange: getInstanceLogs })}
-    {@render LogsTable({ rows: graphData })}
+    {@render LogsTable({ rows: tableData })}
   </Tabs.Content>
-  <Tabs.Content value="3" class="mt-10">
-    {@render DurationSelect({ onChange: getRequestLogs })}
-    {@render LogsTable({ rows: graphData })}
+  <Tabs.Content value="3" class="mt-6">
+    <div class="flex items-center gap-4 mb-4">
+      {@render DurationSelect({ onChange: getRequestLogs })}
+      {@render ReloadData({ onChange: getRequestLogs })}
+    </div>
+
+    {@render LogsTable({ rows: tableData })}
   </Tabs.Content>
-  <Tabs.Content value="4" class="mt-10">
-    {@render DurationSelect({ onChange: getConsoleLogs })}
+  <Tabs.Content value="4" class="mt-6">
+    <div class="flex items-center gap-4 mb-4">
+      {@render DurationSelect({ onChange: getConsoleLogs })}
+      {@render ReloadData({ onChange: getConsoleLogs })}
+    </div>
+
     {@render LogsTable({
-      rows: graphData,
-      cols: pickConsoleColumns(graphData),
+      rows: tableData,
+      cols: pickConsoleColumns(tableData),
       headClassFor: (col: string) => {
         const k = col?.toLowerCase?.() ?? "";
         if (isTimeLikeColumn(k)) {
@@ -1078,4 +1168,4 @@
   </Tabs.Content>
 </Tabs.Root>
 
-<CustomSuperDebug formData={graphData.length > 0 ? graphData : formData} />
+<CustomSuperDebug formData={tableData.length > 0 ? tableData : formData} />

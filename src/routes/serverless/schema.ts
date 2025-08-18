@@ -21,5 +21,7 @@ export const editFormSchema = z.object({
   tag: z.string().optional().nullable().transform((val) => val ?? ""),
   packageid: z.string().optional().nullable().transform((val) => val ?? ""),
   anonymous: z.boolean().default(false),
+  tls: z.boolean().optional().nullable().transform((val) => val ?? false),
+  alpn: z.string().optional().nullable().transform((val) => val ?? "Select ALPN"),
 }).passthrough();
 export type EditFormSchema = typeof editFormSchema;

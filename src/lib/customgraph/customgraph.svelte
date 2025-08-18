@@ -6,15 +6,6 @@
 
     const { title = "Custom graph", chartdata = $bindable([]) } = $props();
 
-    // Export functions for external control
-    // export function reload() {
-    //     recreateChart();
-    // }
-
-    // export function refresh() {
-    //     reload();
-    // }
-
     let chartEl: HTMLDivElement | null = $state(null);
     let containerEl: HTMLDivElement | null = $state(null);
     let valueEl: HTMLDivElement | null = $state(null);

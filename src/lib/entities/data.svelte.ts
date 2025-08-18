@@ -834,7 +834,7 @@ class entitiesdata {
 			case "/entities/git":
 				return ["_id", "name", "repo", "_createdby", "_created", "_modified"];
 			case "/serverless":
-				return ["_id", "name", "_createdby", "_created", "_modified"];
+				return ["_id", "name", "tag", "_createdby", "_created", "_modified"];
 
 
 			default:
