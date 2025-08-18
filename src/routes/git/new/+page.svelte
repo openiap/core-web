@@ -273,25 +273,29 @@
           });
         }
       } else {
-        // add an entry in the database for the new repository
+        // check for valid username remove @ and . with _ also all special characters and no spaces and then names should be lowercase
+        let profileroles = auth.profile?.roles || [];
+        const isAdmin = profileroles.includes("admins");
+        if (!isAdmin) {
+          username = username
+            .replace(/[@.]/g, "_")
+            .replace(/[^a-zA-Z0-9_]/g, "")
+            .toLowerCase();
+          repositoryname = repositoryname
+            .replace(/[@.]/g, "_")
+            .replace(/[^a-zA-Z0-9_]/g, "")
+            .toLowerCase();
+        }
+
         await auth.client.InsertOne({
           collectionname: "git",
           item: {
-            // when cloning from a template
             repo: username + "/" + repositoryname,
-            // when creating a new repository from https://dev.openiap.io/git
-            // repo: repositoryname,
-
             _type: "hash",
             ref: "HEAD",
             sha: null,
             headref: null,
-
-            // when cloning from a template
-            // name: `${username + "/" + repositoryname} HEAD ${headref}`,
-            // when creating a new repository from https://dev.openiap.io/git
-            name: `HEAD ${repositoryname}`,
-
+            name: `${username + "/" + repositoryname}`,
             _acl: [
               {
                 rights: -1,
