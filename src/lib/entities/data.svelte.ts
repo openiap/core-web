@@ -829,6 +829,8 @@ class entitiesdata {
 				return ["name", "_createdby", "_modified"];
 			case "/entities/cvr":
 				return ["name", "cvr", "virksomhedsformkort", "sidstOpdateret", "stiftelsesDato", "ophoersDato", "cvrstatus"];
+			case "/entities/sf":
+				return ["_id", "name", "tag", "_type", "_createdby", "_created", "_modified"];
 			case "/entities/git":
 				return ["_id", "name", "repo", "_createdby", "_created", "_modified"];
 			case "/serverless":
@@ -853,7 +855,6 @@ class entitiesdata {
 					if (_page.endsWith(".files")) {
 						return ["_id", "metadata.name", "metadata._createdby", "metadata._created"];
 					}
-					return ["_id", "name", "count"];
 				}
 				console.debug("Unknown page", page);
 				return ["_id", "name", "_type", "_createdby", "_created", "_modified"];
