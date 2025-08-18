@@ -14,7 +14,7 @@
   import { ObjectInput } from "$lib/objectinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
-  import { Check, RotateCcw, User } from "lucide-svelte";
+  import { Check, RotateCcw, User, Webhook } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
@@ -616,6 +616,24 @@
       });
     }
   }
+
+  function OpenLink() {
+    if (auth.config.serverless_domain_schema.indexOf(".localhost.") > -1) {
+      window.open(
+        "http://" +
+          auth.config.serverless_domain_schema.replace(
+            "$slug$",
+            data.item.repo,
+          ),
+        "_blank",
+      );
+    }
+    window.open(
+      "//" +
+        auth.config.serverless_domain_schema.replace("$slug$", data.item.repo),
+      "_blank",
+    );
+  }
 </script>
 
 {#snippet DurationSelect({
@@ -732,20 +750,36 @@
 {/snippet}
 
 <Tabs.Root value="1" class="w-full">
-  <Tabs.List
-    class="h-fit grid grid-cols-1 md:block w-full md:w-fit bg-bw200 dark:bg-darkagenttab rounded-[15px] p-1 mb-10 lg:mb-0"
-  >
-    <Tabs.Trigger
-      value="1"
+  <div class="flex items-center gap-4">
+    <Tabs.List
+      class="h-fit grid grid-cols-1 md:block w-full md:w-fit bg-bw200 dark:bg-darkagenttab rounded-[15px] p-1 mb-10 lg:mb-0"
+    >
+      <Tabs.Trigger
+        value="1"
+        onclick={() => {
+          tableData = [];
+        }}>Settings</Tabs.Trigger
+      >
+      <Tabs.Trigger value="2" onclick={getInstanceLogs}
+        >Instance Log</Tabs.Trigger
+      >
+      <Tabs.Trigger value="3" onclick={getRequestLogs}>Request Log</Tabs.Trigger
+      >
+      <Tabs.Trigger value="4" onclick={getConsoleLogs}>Console Log</Tabs.Trigger
+      >
+    </Tabs.List>
+    <HotkeyButton
+      disabled={loading}
+      aria-label="Open in web"
+      title="Open in web"
       onclick={() => {
-        tableData = [];
-      }}>Settings</Tabs.Trigger
+        OpenLink();
+      }}
     >
-    <Tabs.Trigger value="2" onclick={getInstanceLogs}>Instance Log</Tabs.Trigger
-    >
-    <Tabs.Trigger value="3" onclick={getRequestLogs}>Request Log</Tabs.Trigger>
-    <Tabs.Trigger value="4" onclick={getConsoleLogs}>Console Log</Tabs.Trigger>
-  </Tabs.List>
+      <Webhook />
+      Open in web
+    </HotkeyButton>
+  </div>
 
   <Tabs.Content value="1" class="mt-6">
     {#if message && $message != ""}
@@ -1115,10 +1149,7 @@
       <div class="grid grid-cols-3 gap-4 mb-4">
         <CustomGraph title="Run Time" bind:chartdata={gdruntime} />
         <CustomGraph title="Boot Time" bind:chartdata={gdboottime} />
-        <CustomGraph
-          title="Response Time"
-          bind:chartdata={gdresponsetime}
-        />
+        <CustomGraph title="Response Time" bind:chartdata={gdresponsetime} />
       </div>
     {/key}
     {@render LogsTable({
