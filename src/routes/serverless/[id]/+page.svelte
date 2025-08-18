@@ -368,6 +368,7 @@
     const cols: string[] = [];
     if (timeLower) cols.push(lowerToOriginal.get(timeLower) as string);
     if (msgLower) cols.push(lowerToOriginal.get(msgLower) as string);
+    console.log(cols);
 
     return cols.length > 0 ? cols : keys;
   }
@@ -410,7 +411,7 @@
           {
             $project: {
               ts_epoch: { $toLong: { $toDate: "$ts" } }, // ms epoch
-              run_time_sec: { $divide: ["$run_time", 1000] },
+              run_time_sec: "$run_time",
             },
           },
           {
@@ -460,7 +461,7 @@
           {
             $project: {
               ts_epoch: { $toLong: { $toDate: "$ts" } }, // ms epoch
-              boot_time_sec: { $divide: ["$boot_time", 100] },
+              boot_time_sec: "$boot_time",
             },
           },
           {
@@ -571,7 +572,7 @@
           {
             $project: {
               ts_epoch: { $toLong: { $toDate: "$ts" } }, // ms epoch
-              run_time_sec: { $divide: ["$run_time", 1000] },
+              run_time_sec: "$run_time",
             },
           },
           {
@@ -685,7 +686,7 @@
       <Table.Header>
         <Table.Row>
           {#each cols && cols.length > 0 ? cols : Object.keys(rows[0]) as col}
-            {#if !excludedcols.includes(col)}
+            {#if cols && cols.length > 0 ? true : !excludedcols.includes(col)}
               <Table.Head
                 class={headClassFor
                   ? headClassFor(col)
@@ -701,7 +702,7 @@
         {#each rows as row, i (row?._id ?? row?.id ?? i)}
           <Table.Row>
             {#each cols && cols.length > 0 ? cols : Object.keys(rows[0]) as col}
-              {#if !excludedcols.includes(col)}
+              {#if cols && cols.length > 0 ? true : !excludedcols.includes(col)}
                 <Table.Cell
                   class={cellClassFor
                     ? cellClassFor(col, row[col])
@@ -740,15 +741,10 @@
         tableData = [];
       }}>Settings</Tabs.Trigger
     >
-    <Tabs.Trigger value="2" onclick={getInstanceLogs}
-      >Instance Log Report</Tabs.Trigger
+    <Tabs.Trigger value="2" onclick={getInstanceLogs}>Instance Log</Tabs.Trigger
     >
-    <Tabs.Trigger value="3" onclick={getRequestLogs}
-      >Request Log Report</Tabs.Trigger
-    >
-    <Tabs.Trigger value="4" onclick={getConsoleLogs}
-      >Console Log Report</Tabs.Trigger
-    >
+    <Tabs.Trigger value="3" onclick={getRequestLogs}>Request Log</Tabs.Trigger>
+    <Tabs.Trigger value="4" onclick={getConsoleLogs}>Console Log</Tabs.Trigger>
   </Tabs.List>
 
   <Tabs.Content value="1" class="mt-6">
@@ -1117,15 +1113,31 @@
     </div>
     {#key chartKey}
       <div class="grid grid-cols-3 gap-4 mb-4">
-        <CustomGraph title="Avg Run Time" bind:chartdata={gdruntime} />
-        <CustomGraph title="Avg Boot Time" bind:chartdata={gdboottime} />
+        <CustomGraph title="Run Time" bind:chartdata={gdruntime} />
+        <CustomGraph title="Boot Time" bind:chartdata={gdboottime} />
         <CustomGraph
-          title="Avg Response Time"
+          title="Response Time"
           bind:chartdata={gdresponsetime}
         />
       </div>
     {/key}
-    {@render LogsTable({ rows: tableData })}
+    {@render LogsTable({
+      rows: tableData.map((row) => ({ ...row, tag: row.metadata?.tag })),
+      cols:
+        tableData.length > 0
+          ? [
+              "ts",
+              "tag",
+              ...Object.keys(tableData[0]).filter(
+                (k) =>
+                  k !== "ts" &&
+                  k !== "tag" &&
+                  k !== "time" &&
+                  !excludedcols.includes(k),
+              ),
+            ]
+          : [],
+    })}
   </Tabs.Content>
   <Tabs.Content value="3" class="mt-6">
     <div class="flex items-center gap-4 mb-4">
@@ -1133,7 +1145,23 @@
       {@render ReloadData({ onChange: getRequestLogs })}
     </div>
 
-    {@render LogsTable({ rows: tableData })}
+    {@render LogsTable({
+      rows: tableData.map((row) => ({ ...row, tag: row.metadata?.tag })),
+      cols:
+        tableData.length > 0
+          ? [
+              "ts",
+              "tag",
+              ...Object.keys(tableData[0]).filter(
+                (k) =>
+                  k !== "ts" &&
+                  k !== "tag" &&
+                  k !== "time" &&
+                  !excludedcols.includes(k),
+              ),
+            ]
+          : [],
+    })}
   </Tabs.Content>
   <Tabs.Content value="4" class="mt-6">
     <div class="flex items-center gap-4 mb-4">
