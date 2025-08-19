@@ -8,8 +8,20 @@
   import { SearchInput } from "$lib/searchinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
-  import { ArchiveRestore, Cross, Download, Filter, Inspect, Upload, X } from "lucide-svelte";
+  import {
+    ArchiveRestore,
+    Clock,
+    Diff,
+    Download,
+    Eye,
+    FileSearch,
+    Upload,
+    X,
+  } from "lucide-svelte";
   import { toast } from "svelte-sonner";
+  // @ts-ignore
+  import * as jsondiffpatch from "jsondiffpatch/dist/jsondiffpatch.umd.js";
+  import { tick } from "svelte";
 
   let { data } = $props();
   let ref: any;
@@ -21,6 +33,11 @@
   let viewEntity = $state(false);
   let viewData: any = $state(null);
   let entity: any = $state(null);
+
+  let viewDiffNow = $state(false);
+  let diffNowData = $state(null);
+  let viewDiffThen = $state(false);
+  let diffThenData = $state(null);
 
   async function single_item_click(item: any, action: string = "view") {
     const collectionname = data.collectionname;
@@ -66,6 +83,39 @@
           description: "",
         });
         goto(base + `/entities/${collectionname}/edit/${entity._id}`);
+      } else if (action == "diffnow") {
+        viewDiffNow = true;
+        await tick();
+
+        const response = await auth.client.GetDocumentVersion({
+          collectionname: collectionname,
+          id: item.id,
+          version: item._version,
+          jwt: auth.access_token,
+        });
+        console.log("response", response);
+        const delta = jsondiffpatch.diff(item, response);
+        const diffNowElem = document.getElementById("diffnow");
+        if (diffNowElem) {
+          console.log("diffNowElem", diffNowElem);
+          diffNowElem.innerHTML = jsondiffpatch.formatters.html.format(
+            delta,
+            {},
+          );
+        }
+      } else if (action == "diffthen") {
+        viewDiffThen = true;
+        await tick();
+
+        diffThenData = item.delta;
+        const diffThenElem = document.getElementById("diffthen");
+        if (diffThenElem) {
+          console.log(diffThenData);
+          diffThenElem.innerHTML = jsondiffpatch.formatters.html.format(
+            diffThenData,
+            {},
+          );
+        }
       }
     } catch (error: any) {
       toast.error("Error while fetching entity", {
@@ -102,12 +152,29 @@
 >
   {#snippet action(item: any)}
     <HotkeyButton
+      aria-label="Diff Now"
+      onclick={() => single_item_click(item, "diffnow")}
+      size="tableicon"
+      variant="icon"
+    >
+      <Diff />
+    </HotkeyButton>
+    <HotkeyButton
+      aria-label="Diff Then"
+      onclick={() => single_item_click(item, "diffthen")}
+      size="tableicon"
+      variant="icon"
+    >
+      <Clock />
+    </HotkeyButton>
+
+    <HotkeyButton
       aria-label="View"
       onclick={() => single_item_click(item, "view")}
       size="tableicon"
       variant="icon"
     >
-      <Inspect />
+      <Eye />
     </HotkeyButton>
     <HotkeyButton
       aria-label="Download"
@@ -151,7 +218,7 @@
           single_item_click(viewData, "download");
         }}
       >
-      <Download />
+        <Download />
         Download
       </HotkeyButton>
       <HotkeyButton
@@ -162,7 +229,7 @@
           single_item_click(viewData, "restore");
         }}
       >
-      <ArchiveRestore />
+        <ArchiveRestore />
         Restore
       </HotkeyButton>
       <HotkeyButton
@@ -173,7 +240,61 @@
           viewEntity = false;
         }}
       >
-      <X />
+        <X />
+        Cancel
+      </HotkeyButton>
+    </AlertDialog.Footer>
+  </AlertDialog.Content>
+</AlertDialog.Root>
+
+<AlertDialog.Root
+  open={viewDiffNow}
+  onOpenChange={(open) => (viewDiffNow = open)}
+>
+  <AlertDialog.Content class="max-w-4xl h-[80vh] overflow-y-auto">
+    <AlertDialog.Title>{entity?.name}</AlertDialog.Title>
+    <AlertDialog.Header class="overflow-x-auto">
+      <AlertDialog.Description class="h-fit">
+        <div id="diffnow"></div>
+      </AlertDialog.Description>
+    </AlertDialog.Header>
+    <AlertDialog.Footer>
+      <HotkeyButton
+        aria-label="Cancel"
+        title="Cancel"
+        size="entity"
+        onclick={(e) => {
+          viewEntity = false;
+        }}
+      >
+        <X />
+        Cancel
+      </HotkeyButton>
+    </AlertDialog.Footer>
+  </AlertDialog.Content>
+</AlertDialog.Root>
+
+<AlertDialog.Root
+  open={viewDiffThen}
+  onOpenChange={(open) => (viewDiffThen = open)}
+>
+  <AlertDialog.Content class="max-w-4xl h-[80vh] overflow-y-auto">
+    <AlertDialog.Title>{entity?.name}</AlertDialog.Title>
+    <AlertDialog.Header class="overflow-x-auto">
+      <AlertDialog.Description class="h-fit">
+        <div id="diffthen"></div>
+      </AlertDialog.Description>
+    </AlertDialog.Header>
+    <AlertDialog.Footer>
+      <HotkeyButton
+        aria-label="Cancel"
+        title="Cancel"
+        size="entity"
+        onclick={(e) => {
+          viewEntity = false;
+        }}
+      >
+        <X />
         Cancel
       </HotkeyButton>
     </AlertDialog.Footer>
