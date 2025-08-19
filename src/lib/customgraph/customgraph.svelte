@@ -180,7 +180,7 @@
             hooks: {
                 setCursor: [
                     (u: any) => {
-                        console.log("Cursor set:", u.cursor.idx);
+                        // console.log("Cursor set:", u.cursor.idx);
                         if (u.cursor.idx != null) {
                             const idx = u.cursor.idx;
                             const xVal = u.data[0][idx];
@@ -254,7 +254,7 @@
                 resizeObserver?.disconnect();
                 uplot?.destroy();
             } catch (error) {
-                console.warn("Error cleaning up chart:", error);
+                console.error("Error cleaning up chart:", error);
             }
             uplot = null;
             resizeObserver = null;
@@ -266,7 +266,7 @@
             resizeObserver?.disconnect();
             uplot?.destroy();
         } catch (error) {
-            console.warn("Error destroying chart:", error);
+            console.error("Error destroying chart:", error);
         }
     });
 </script>

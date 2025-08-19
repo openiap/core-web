@@ -26,6 +26,7 @@ export type userSettings = {
     pagesize: number;
     agentfilter: "all" | "daemon" | "pods" | "docker" | "assistant";
     workitemfilter: "all" | "new" | "successful" | "failed" | "processing";
+    serverlesstimefilter: string;
 }
 export class pagesettings implements pageSettings {
     page: string;
@@ -54,6 +55,7 @@ class _usersettings implements userSettings {
     defaultpagesize: number = 12;
     agentfilter: "all" | "daemon" | "pods" | "docker" | "assistant" = "all";
     workitemfilter: "all" | "new" | "successful" | "failed" | "processing";
+    serverlesstimefilter: string = "15m";
     constructor() {
         this._id = "";
         this._type = "usersettings";
@@ -64,6 +66,7 @@ class _usersettings implements userSettings {
         this.pagesize = this.defaultpagesize;
         this.agentfilter = "all";
         this.workitemfilter = "all";
+        this.serverlesstimefilter = "15m";
     }
     getpagesettings(page: string) {
         let settings = this.pagesettings.find(x => x.page == page);
@@ -91,6 +94,7 @@ class _usersettings implements userSettings {
         this.currentpage = "";
         this.agentfilter = "all";
         this.workitemfilter = "all";
+        this.serverlesstimefilter = "15m";
 
         if (auth.profile.sub == null || auth.profile.sub == "") {
             this.currentworkspace = "";
@@ -118,6 +122,7 @@ class _usersettings implements userSettings {
         this.pagesize = this.defaultpagesize;
         this.agentfilter = "all";
         this.workitemfilter = "all";
+        this.serverlesstimefilter = "15m";
         this.dopersist();
     }
     loadpage(settings: pageSettings) {
@@ -142,6 +147,7 @@ class _usersettings implements userSettings {
         this.pagesize;
         this.agentfilter = settings.agentfilter;
         this.workitemfilter = settings.workitemfilter;
+        this.serverlesstimefilter = settings.serverlesstimefilter;
 
         // @ts-ignore
         if (this.agentfilter == null || this.agentfilter == "") {
@@ -150,6 +156,10 @@ class _usersettings implements userSettings {
         // @ts-ignore
         if (this.workitemfilter == null || this.workitemfilter == "") {
             this.workitemfilter = "all";
+        }
+        // @ts-ignore
+        if (this.serverlesstimefilter == null || this.serverlesstimefilter == "") {
+            this.serverlesstimefilter = "15m";
         }
         // @ts-ignore
         if (this.pagesize != null && this.pagesize != "") {

@@ -24,10 +24,9 @@
   import { trusted } from "svelte/legacy";
 
   const { data } = $props();
-
   let loading = $state(false);
   let runasuser = $state(data.item.runas == "" ? true : false);
-  let selectedduration = $state("15m");
+  let selectedduration = $state(usersettings.serverlesstimefilter);
   let durationOptions = [
     { label: "Last 5 minutes", value: "5m" },
     { label: "Last 15 minutes", value: "15m" },
@@ -136,7 +135,6 @@
           //     return;
           //   }
           // }
-          console.log("Updating serverless function with data:", form.data);
           await auth.client.CustomCommand({
             command: "ensuresfunc",
             // @ts-ignore
@@ -369,7 +367,6 @@
     const cols: string[] = [];
     if (timeLower) cols.push(lowerToOriginal.get(timeLower) as string);
     if (msgLower) cols.push(lowerToOriginal.get(msgLower) as string);
-    console.log(cols);
 
     return cols.length > 0 ? cols : keys;
   }
@@ -389,7 +386,6 @@
       }
       goto(base + `/user/${tokendata._userid}`);
     } catch (error) {
-      // console.error("Error fetching user for token:", error);
       toast.error("Error", {
         description: "Failed to fetch user for access token",
       });
@@ -403,7 +399,7 @@
       let gdruntimeres = await auth.client.Aggregate<any>({
         collectionname: "sf_instance_logs",
         aggregates: [
-          {
+           {
             $match: {
               "metadata.repo": data.item.repo,
               ts: { $gte: new Date(start), $lt: new Date(end) },
@@ -434,10 +430,70 @@
               arrays: ["$ts_array", "$run_time_array"],
             },
           },
+          // {
+          //   $match: {
+          //     "metadata._type": "instance",
+          //     "metadata.repo": data.item.repo,
+          //     ts: { $gte: new Date(start), $lt: new Date(end) },
+          //   },
+          // },
+          // {
+          //   $addFields: {
+          //     __labelfield: {
+          //       $concat: [
+          //         {
+          //           $toString: "$metadata.host",
+          //         },
+          //         " ",
+          //         "response ",
+          //       ],
+          //     },
+          //   },
+          // },
+          // {
+          //   $group: {
+          //     _id: {
+          //       dt: {
+          //         $subtract: [
+          //           {
+          //             $subtract: ["$ts", "$to"],
+          //           },
+          //           {
+          //             $mod: [
+          //               {
+          //                 $subtract: ["$ts", "$to"],
+          //               },
+          //               "$intervalMs",
+          //             ],
+          //           },
+          //         ],
+          //       },
+          //       metadata_host: "$metadata.host",
+          //     },
+          //     value: {
+          //       $avg: "$run_time",
+          //     },
+          //     ts: {
+          //       $max: "$ts",
+          //     },
+          //     name: {
+          //       $max: "$__labelfield",
+          //     },
+          //   },
+          // },
+          // {
+          //   $sort: {
+          //     ts: 1,
+          //   },
+          // },
+          // {
+          //   $limit: 1000,
+          // },
         ],
         jwt: auth.access_token,
       });
       if (gdruntimeres.length > 0) {
+        console.log("gdruntimeres:", gdruntimeres);
         gdruntime = gdruntimeres[0];
         gdruntime = [
           new Float64Array(gdruntimeres[0].arrays[0]),
@@ -652,6 +708,8 @@
     width="w-fit"
     bind:value={selectedduration}
     onValueChangeFunction={async (value: string) => {
+      usersettings.serverlesstimefilter = value;
+      await usersettings.dopersist();
       selectedduration = value;
       if (typeof onChange === "function") {
         await onChange(value);
