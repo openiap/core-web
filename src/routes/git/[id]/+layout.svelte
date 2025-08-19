@@ -21,9 +21,10 @@
         FolderOpen,
         Minus,
         Plus,
+        RefreshCcw,
         Trash,
         Trash2,
-        X
+        X,
     } from "lucide-svelte";
     import { toast } from "svelte-sonner";
 
@@ -32,7 +33,6 @@
     let files: any[] = $state([]);
     let branches: any[] = $state([]);
     let selectedSha: string = $state("");
-    // Track collapsed folder paths
     let collapsedFolders: Set<string> = $state(new Set());
     let showDeleteFileWarning: boolean = $state(false);
     let selectedFile: any = $state(null);
@@ -43,6 +43,7 @@
     let newFileName: string = $state("");
     let openAddFileDialog: boolean = $state(false);
     let commitmessage: string = $state("");
+    let showDiscardAllChangesWarning: boolean = $state(false);
 
     const currentFilePath = $derived(() => {
         const urlParts = $page.url.pathname.split("/");
@@ -86,6 +87,7 @@
     }
 
     async function cloneRepo() {
+        console.log("cloneRepo called");
         if (auth.access_token === "" || auth.access_token == null) {
             toast.error("No access token found");
             return;
@@ -95,45 +97,17 @@
             // redirect to new page showing cloning instructions
             return;
         }
-        if(data.item.sha == null){
+        if (data.item.sha == null) {
             return;
         }
 
         try {
-            const author = {
-                name: "Your Name",
-                email: "you@example.com",
-            };
             const headers = { Authorization: "Bearer " + auth.access_token };
             const corsProxy = base + "/api/git-proxy";
 
             const url = `https://${auth.config.domain}/git/${data.item.repo}`;
             const fs = new FS(data.item.repo.split("/").join("_"));
             const dir = "/test-clone";
-
-            // check for git status in the directory
-            // try {
-            //     // List all files in the repo to check their status
-            //     const matrix = await git.statusMatrix({ fs, dir });
-            //     const statusList = await Promise.all(
-            //         matrix.map(async ([filepath]) => {
-            //             const status = await git.status({ fs, dir, filepath });
-            //             return `${filepath}: ${status}`;
-            //         }),
-            //     );
-            //     const headSha = await git.resolveRef({ fs, dir, ref: "HEAD" });
-            //     const commits = await git.log({ fs, dir, depth: 2 }); // show last 10 commits
-
-            //     for (const commit of commits) {
-            //         console.log(
-            //             `Commit: ${commit.oid}\nMessage: ${commit.commit.message}`,
-            //         );
-            //     }
-
-            //     console.log("Git status:", statusList, "HEAD SHA:", headSha);
-            // } catch (error: any) {
-            //     console.error("Error checking git status:", error.message);
-            // }
 
             let dirExists = false;
             try {
@@ -142,9 +116,10 @@
             } catch (error: any) {
                 dirExists = false;
             }
+            console.log("dirExists", dirExists);
 
             if (!dirExists) {
-                await git.clone({
+                const cloneRes = await git.clone({
                     fs,
                     http,
                     dir,
@@ -153,38 +128,176 @@
                     corsProxy,
                     singleBranch: false,
                 });
+                console.log("cloneRes", cloneRes);
             } else {
-                await git.fetch({ fs, http, dir, url, headers, corsProxy });
+                const fetchres = await git.fetch({
+                    fs,
+                    http,
+                    dir,
+                    url,
+                    headers,
+                    corsProxy,
+                });
+                console.log("fetchres", fetchres);
             }
-            // await git.checkout({ fs, dir, ref: "HEAD" });
+            console.log("Cloned or fetched repo successfully", data.sha);
+
             const pendingChanges = await hasPendingChanges();
+            console.log("pendingChanges", pendingChanges);
+
             if (pendingChanges === false) {
                 const dbbranch = await auth.client.FindOne<any>({
                     collectionname: "git",
                     query: { sha: data.sha, ref: { $ne: "HEAD" } },
                     jwt: auth.access_token,
                 });
+                console.log("dbbranch", dbbranch);
+                console.log("Target SHA we want to checkout to:", data.sha);
 
-                if (dbbranch == null) {
-                    await git.checkout({ fs, dir, ref: data.sha });
-                } else {
+                // First, let's check what we have before checkout
+                const beforeCheckoutHead = await git.resolveRef({
+                    fs,
+                    dir,
+                    ref: "HEAD",
+                });
+                console.log("Before checkout HEAD:", beforeCheckoutHead);
+
+                try {
+                    const beforeReadme = await fs.promises.readFile(
+                        `${dir}/README.md`,
+                        "utf8",
+                    );
+                    console.log(
+                        "Before checkout README (first 100 chars):",
+                        beforeReadme.substring(0, 100),
+                    );
+                } catch (e) {
+                    console.log(
+                        "No README.md before checkout or error reading it",
+                    );
+                }
+
+                // Always checkout to the specific SHA we want, regardless of branch info
+                console.log("Checking out to target SHA:", data.sha);
+                try {
                     await git.checkout({
                         fs,
                         dir,
-                        ref: dbbranch.ref.split("/").pop(),
-                        remote: "origin",
+                        ref: data.sha,
                         force: true,
                     });
+                    console.log("Successfully checked out to SHA", data.sha);
+                } catch (checkoutError) {
+                    console.log("Direct SHA checkout failed:", checkoutError);
+
+                    // If direct SHA checkout fails, try creating a temporary branch
+                    try {
+                        if (data?.sha != undefined) {
+                            const tempBranchName = `temp-${data.sha.substring(0, 8)}`;
+                            await git.branch({
+                                fs,
+                                dir,
+                                ref: tempBranchName,
+                                force: true,
+                            });
+                            await git.checkout({
+                                fs,
+                                dir,
+                                ref: tempBranchName,
+                                force: true,
+                            });
+                            console.log(
+                                "Successfully checked out via temporary branch",
+                                tempBranchName,
+                            );
+                        }
+                    } catch (tempBranchError) {
+                        console.log(
+                            "Temporary branch checkout also failed:",
+                            tempBranchError,
+                        );
+                        throw checkoutError; // Re-throw the original error
+                    }
                 }
+
+                // Verify the checkout worked
+                const afterCheckoutHead = await git.resolveRef({
+                    fs,
+                    dir,
+                    ref: "HEAD",
+                });
+                console.log("After checkout HEAD:", afterCheckoutHead);
+
+                if (afterCheckoutHead !== data.sha) {
+                    console.error(
+                        "CHECKOUT FAILED! Expected:",
+                        data.sha,
+                        "Got:",
+                        afterCheckoutHead,
+                    );
+                    // Try to force update the working directory
+                    console.log(
+                        "Attempting to force reset working directory...",
+                    );
+                    try {
+                        // Reset to the target SHA
+                        await git.checkout({
+                            fs,
+                            dir,
+                            ref: data.sha,
+                            force: true,
+                        });
+                        const finalHead = await git.resolveRef({
+                            fs,
+                            dir,
+                            ref: "HEAD",
+                        });
+                        console.log("After force reset HEAD:", finalHead);
+                    } catch (resetError) {
+                        console.error("Force reset failed:", resetError);
+                    }
+                } else {
+                    console.log(
+                        "✅ Checkout successful! HEAD is now at:",
+                        afterCheckoutHead,
+                    );
+                }
+
+                try {
+                    const afterReadme = await fs.promises.readFile(
+                        `${dir}/README.md`,
+                        "utf8",
+                    );
+                    console.log(
+                        "After checkout README (first 100 chars):",
+                        afterReadme.substring(0, 100),
+                    );
+                } catch (e) {
+                    console.log(
+                        "No README.md after checkout or error reading it",
+                    );
+                }
+
+                // Force refresh the working directory status
+                const statusAfterCheckout = await git.statusMatrix({ fs, dir });
+                console.log(
+                    "Status matrix after checkout:",
+                    statusAfterCheckout.length,
+                    "entries",
+                );
             }
             const headSha = await git.resolveRef({ fs, dir, ref: "HEAD" });
+            console.log("headSha", headSha);
             const branches1 = await git.listBranches({ fs, dir });
+            console.log("branches1", branches1);
+
             for (const b of branches1) {
                 const branchSha = await git.resolveRef({
                     fs,
                     dir,
                     ref: `refs/heads/${b}`,
                 });
+                console.log("branchSha", branchSha);
                 if (branchSha === headSha) {
                     selectedSha = b;
 
@@ -193,6 +306,8 @@
             }
 
             branches = await git.listBranches({ fs, dir, remote: "origin" });
+            console.log("branches", branches);
+
             const result = await Promise.all(
                 branches.map(async (name) => {
                     const sha = await git.resolveRef({
@@ -203,36 +318,14 @@
                     return { name, sha };
                 }),
             );
+            console.log("result", result);
             branches = result.filter((b) => {
                 return b.name != "HEAD";
             });
+            console.log("branches", branches);
 
             selectedSha = await git.resolveRef({ fs, dir, ref: "HEAD" });
-
-            // if (selectedSha != data.sha) {
-            //     const matrix = await git.statusMatrix({ fs, dir });
-            //     const hasPendingChanges = matrix.some(
-            //         ([filepath, head, workdir, stage]) => {
-            //             // If any file differs in HEAD vs workdir vs index
-            //             return head !== workdir || head !== stage;
-            //         },
-            //     );
-
-            //     if (hasPendingChanges == false) {
-            //         selectedSha = data.sha as any;
-            //         await git.checkout({
-            //             fs,
-            //             dir,
-            //             ref: data.sha,
-            //             remote: "origin",
-            //             force: true,
-            //         });
-            //     } else {
-            //         toast.error(
-            //             "You have pending changes in your local repository. Please commit or stash them before switching branches.",
-            //         );
-            //     }
-            // }
+            console.log("selectedSha", selectedSha);
 
             const div = document.getElementById("gitstatus");
             if (div) {
@@ -243,6 +336,21 @@
                 dir,
             });
             files = buildFileList(rawFiles);
+            console.log("Files loaded:", files.length, "files");
+
+            // Debug: Check README.md content if it exists
+            // try {
+            //     const readmeContent = await fs.promises.readFile(
+            //         `${dir}/README.md`,
+            //         "utf8",
+            //     );
+            //     console.log(
+            //         "README.md content (first 100 chars):",
+            //         readmeContent.substring(0, 100),
+            //     );
+            // } catch (e) {
+            //     console.log("No README.md found or error reading it");
+            // }
         } catch (error: any) {
             toast.error("cloneRepo " + error.message);
         }
@@ -289,7 +397,7 @@
         }
         return results;
     }
-    // Insert helper to build files list with folder (tree) entries
+
     function buildFileList(rawFiles: any[]): any[] {
         const items = rawFiles.map((f) => {
             const segments = f.path.split("/");
@@ -321,6 +429,7 @@
         );
         return all;
     }
+
     async function handleDeleteFile() {
         if (!selectedFile) return;
 
@@ -353,6 +462,7 @@
             toast.error("Failed to delete file: " + err);
         }
     }
+
     async function handleRenameFile() {
         if (!renameFile) return;
         if (!renameInputText.trim()) {
@@ -583,7 +693,86 @@
             toast.error("Push failed: " + (pushErr?.message || pushErr));
         }
     }
+    async function cleanDB(name: string) {
+        // i want to delete only this db dbname change the code bellow for this
+        console.log("cleanDB name:", name);
+
+        indexedDB
+            .databases()
+            .then((r) => {
+                for (const db of r) {
+                    let dbname = db.name as any;
+                    console.log("DB name:", dbname);
+                    if (dbname == name) {
+                        const DBDeleteRequest =
+                            window.indexedDB.deleteDatabase(dbname);
+                        DBDeleteRequest.onerror = (event) => {};
+                        DBDeleteRequest.onsuccess = (event) => {};
+                    }
+                }
+                toast.success("DB deleted successfully!" + name);
+            })
+            .catch((error) => {
+                toast.error("Error deleting DB: " + error.message);
+            });
+    }
+
+    async function discardAllChanges() {
+        try {
+            // name of current database in the indexedDB
+            const databasename = data.item.repo.split("/").join("_");
+            await cleanDB(databasename);
+            toast.success("All changes discarded successfully");
+            await reloadData();
+        } catch (error: any) {
+            toast.error("Error discarding changes: " + error.message);
+        }
+    }
+
+    async function reloadData() {
+        try {
+            files = [];
+            branches = [];
+            const updatedData = await auth.client.FindOne<any>({
+                collectionname: "git",
+                query: { _id: data.item._id },
+                jwt: auth.access_token,
+            });
+
+            // // check in the url if we have sha and filename then redirect to that
+            // if (currentFilePath() != null || currentFilePath() != "") {
+            //     goto(
+            //         base +
+            //             `/git/${updatedData._id}/${updatedData.sha}/${currentFilePath()}`,
+            //     );
+            // } else {
+            //     goto(base + `/git/${updatedData._id}/${updatedData.sha}`);
+            // }
+
+            goto(base + `/git/${updatedData._id}/${updatedData.sha}`);
+
+            await cloneRepo();
+            toast.success("Data reloaded successfully!");
+        } catch (error: any) {
+            toast.error("Error reloading data: " + error.message);
+        }
+    }
+
+    // $effect(() => {
+    //     console.log("Current file path:", currentFilePath());
+    // });
 </script>
+
+{#snippet refreshData()}
+    <HotkeyButton
+        aria-label="Reload Data"
+        title="Reload Data"
+        onclick={reloadData}
+    >
+        <RefreshCcw />
+        Reload Data
+    </HotkeyButton>
+{/snippet}
 
 <div id="gitstatus" class="hidden">unknown</div>
 
@@ -595,7 +784,7 @@
             <ul
                 class="space-y-2 max-h-[500px] md:max-h-full md:h-full overflow-auto md:w-[240px] xl:w-[340px]"
             >
-            <div>{data?.item?.repo?.split("/").pop()}</div>
+                <div>{data?.item?.repo?.split("/").pop()}</div>
                 <div class="flex gap-2 mb-2">
                     <HotkeyButton
                         onclick={() => {
@@ -705,20 +894,93 @@
                                 query: { sha: value, ref: { $ne: "HEAD" } },
                                 jwt: auth.access_token,
                             });
-                            let ref;
-                            if (dbbranch == null) {
-                                ref = value;
-                            } else {
-                                ref = dbbranch.ref.split("/").pop();
-                            }
-                            git.checkout({
+
+                            console.log("Branch switch - Target SHA:", value);
+                            console.log("Branch switch - dbbranch:", dbbranch);
+
+                            // Log before checkout
+                            const beforeHead = await git.resolveRef({
                                 fs,
                                 dir,
-                                ref: ref,
-                                remote: "origin",
-                                force: true,
-                            })
-                                .then(() => {
+                                ref: "HEAD",
+                            });
+                            console.log(
+                                "Branch switch - Before HEAD:",
+                                beforeHead,
+                            );
+
+                            // Always checkout to the specific SHA, not the branch name
+                            let checkoutPromise = git
+                                .checkout({
+                                    fs,
+                                    dir,
+                                    ref: value, // Always use the SHA directly
+                                    force: true,
+                                })
+                                .catch(async (error) => {
+                                    console.log(
+                                        "Direct SHA checkout failed, trying temp branch:",
+                                        error,
+                                    );
+                                    // Fallback: create temporary branch
+                                    const tempBranchName = `temp-${value.substring(0, 8)}`;
+                                    await git.branch({
+                                        fs,
+                                        dir,
+                                        ref: tempBranchName,
+                                        force: true,
+                                    });
+                                    return git.checkout({
+                                        fs,
+                                        dir,
+                                        ref: tempBranchName,
+                                        force: true,
+                                    });
+                                });
+
+                            checkoutPromise
+                                .then(async () => {
+                                    const afterHead = await git.resolveRef({
+                                        fs,
+                                        dir,
+                                        ref: "HEAD",
+                                    });
+                                    console.log(
+                                        "Branch switch - After HEAD:",
+                                        afterHead,
+                                    );
+
+                                    if (afterHead !== value) {
+                                        console.error(
+                                            "Branch switch FAILED! Expected:",
+                                            value,
+                                            "Got:",
+                                            afterHead,
+                                        );
+                                    } else {
+                                        console.log(
+                                            "✅ Branch switch successful! HEAD is now at:",
+                                            afterHead,
+                                        );
+                                    }
+
+                                    // Debug README after checkout
+                                    // try {
+                                    //     const readmeContent =
+                                    //         await fs.promises.readFile(
+                                    //             `${dir}/README.md`,
+                                    //             "utf8",
+                                    //         );
+                                    //     console.log(
+                                    //         "Branch switch - README after checkout (first 100 chars):",
+                                    //         readmeContent.substring(0, 100),
+                                    //     );
+                                    // } catch (e) {
+                                    //     console.log(
+                                    //         "Branch switch - No README.md found after checkout",
+                                    //     );
+                                    // }
+
                                     // Refresh files after checkout
                                     return listMatrixRecursive({ fs, dir });
                                 })
@@ -875,6 +1137,7 @@
                 >
                     + New File
                 </HotkeyButton>
+                {@render refreshData()}
             </ul>
         </div>
     {/if}
@@ -885,6 +1148,14 @@
         {#if data.item.sha != null}
             {@render children()}
             <HotkeyButton
+                variant="danger"
+                aria-label="Discard changes"
+                title="Discard changes"
+                onclick={() => (showDiscardAllChangesWarning = true)}
+            >
+                Discard changes
+            </HotkeyButton>
+            <HotkeyButton
                 aria-label="Commit changes"
                 title="Commit changes"
                 onclick={() => (openAddFileDialog = true)}
@@ -892,6 +1163,7 @@
                 Commit changes
             </HotkeyButton>
             <HotkeyButton
+                variant="success"
                 aria-label="Push changes"
                 title="Push changes"
                 class="ml-2"
@@ -951,7 +1223,7 @@ git push -u origin main`;
                     </HotkeyButton>
                 </div>
             {/if}
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-4 mb-4">
                 <div>Push an existing repository from the command line</div>
                 <HotkeyButton
                     title="Copy push local repository command"
@@ -976,10 +1248,13 @@ git push -u origin main`;
                                 copycommand = `git remote add origin https://${auth.config.domain}/git/${data.item.repo}\ngit config --local http.extraHeader "Authorization: Bearer ${JSON.parse(tokenres).access_token}"\ngit push -u origin main\ngit push origin --all && git push origin --tags`;
                             }
                             navigator.clipboard.writeText(copycommand);
-                            toast.success("Push local repository command copied to clipboard!");
+                            toast.success(
+                                "Push local repository command copied to clipboard!",
+                            );
                         } catch (error: any) {
                             toast.error(
-                                "Error copying push local repository command: " + error.message,
+                                "Error copying push local repository command: " +
+                                    error.message,
                             );
                         }
                     }}
@@ -988,6 +1263,7 @@ git push -u origin main`;
                     Copy
                 </HotkeyButton>
             </div>
+            {@render refreshData()}
         {/if}
     </div>
 </div>
@@ -996,6 +1272,12 @@ git push -u origin main`;
     bind:showWarning={showDeleteFileWarning}
     type="delete"
     onaccept={handleDeleteFile}
+></Warningdialogue>
+
+<Warningdialogue
+    bind:showWarning={showDiscardAllChangesWarning}
+    type="gitdiscard"
+    onaccept={discardAllChanges}
 ></Warningdialogue>
 
 <AlertDialog.Root bind:open={openAddFileDialog}>

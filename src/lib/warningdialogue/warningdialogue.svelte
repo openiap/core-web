@@ -62,6 +62,12 @@
                 "Are you sure you want to revoke this token? This action cannot be undone.";
             buttonaname = "Revoke";
             break;
+         case "gitdiscard":
+            title = "Discard Changes";
+            description =
+                "Are you sure you want to discard all changes? This action cannot be undone.";
+            buttonaname = "Discard";
+            break;
         case "default":
             title = "Are you sure?";
             description = "This action cannot be undone.";

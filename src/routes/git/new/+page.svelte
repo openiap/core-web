@@ -239,10 +239,6 @@
 
     try {
       loading = true;
-      const author = {
-        name: auth.profile?.name || "Anonymous",
-        email: auth.profile?.email || "anon@example.com",
-      };
       const fs = new FS(repositoryname);
       const dir = "/test-clone";
 
