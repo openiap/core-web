@@ -8,7 +8,7 @@
   import { SearchInput } from "$lib/searchinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
-  import { Download, Filter, Inspect, Upload } from "lucide-svelte";
+  import { ArchiveRestore, Cross, Download, Filter, Inspect, Upload, X } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   let { data } = $props();
@@ -135,42 +135,45 @@
   open={viewEntity}
   onOpenChange={(open) => (viewEntity = open)}
 >
-  <AlertDialog.Content>
-    <AlertDialog.Header>
-      <AlertDialog.Title>{entity?.name}</AlertDialog.Title>
-      <AlertDialog.Description>
+  <AlertDialog.Content class="max-w-4xl h-[80vh] overflow-y-auto">
+    <AlertDialog.Title>{entity?.name}</AlertDialog.Title>
+    <AlertDialog.Header class="overflow-x-auto">
+      <AlertDialog.Description class="h-fit">
         <pre>{JSON.stringify(entity ? entity : {}, null, 2)}</pre>
       </AlertDialog.Description>
     </AlertDialog.Header>
     <AlertDialog.Footer>
       <HotkeyButton
+        title="Download"
         aria-label="Download"
-        class="w-full justify-start"
         size="entity"
         onclick={(e) => {
           single_item_click(viewData, "download");
         }}
       >
+      <Download />
         Download
       </HotkeyButton>
       <HotkeyButton
         aria-label="Restore"
-        class="w-full justify-start"
+        title="Restore"
         size="entity"
         onclick={(e) => {
           single_item_click(viewData, "restore");
         }}
       >
+      <ArchiveRestore />
         Restore
       </HotkeyButton>
       <HotkeyButton
         aria-label="Cancel"
-        class="w-full justify-start"
+        title="Cancel"
         size="entity"
         onclick={(e) => {
           viewEntity = false;
         }}
       >
+      <X />
         Cancel
       </HotkeyButton>
     </AlertDialog.Footer>
