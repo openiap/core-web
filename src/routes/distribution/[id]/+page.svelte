@@ -1,22 +1,18 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
-  import { Acl } from "$lib/acl";
   import * as Form from "$lib/components/ui/form/index.js";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
-  import { CustomCheckbox } from "$lib/customcheckbox/index.js";
   import { CustomInput } from "$lib/custominput/index.js";
   import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
+  import { CustomSwitch } from "$lib/customswitch/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
-  import { Check, Trash2 } from "lucide-svelte";
+  import { usersettings } from "$lib/stores/usersettings.svelte.js";
+  import { Check } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../schema.js";
-  import { CustomSelect } from "$lib/customselect/index.js";
-  import Entityselector from "$lib/entityselector/entityselector.svelte";
-  import { usersettings } from "$lib/stores/usersettings.svelte.js";
-  import { CustomSwitch } from "$lib/customswitch/index.js";
 
   let loading = $state(false);
 
@@ -34,16 +30,6 @@
       if (form.valid) {
         loading = true;
         try {
-          const workspaceid = usersettings.currentworkspace;
-          if (workspaceid == "" || workspaceid == null) {
-            toast.error("Error", {
-              description: "Please select a workspace",
-            });
-            cancel();
-            loading = false;
-            return;
-          }
-          form.data._workspaceid = workspaceid;
           form.data.kernel = data.item.kernel;
 
           await auth.client.CustomCommand({
