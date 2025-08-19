@@ -87,7 +87,7 @@
     }
 
     async function cloneRepo() {
-        console.log("cloneRepo called");
+        // console.log("cloneRepo called");
         if (auth.access_token === "" || auth.access_token == null) {
             toast.error("No access token found");
             return;
@@ -116,7 +116,7 @@
             } catch (error: any) {
                 dirExists = false;
             }
-            console.log("dirExists", dirExists);
+            // console.log("dirExists", dirExists);
 
             if (!dirExists) {
                 const cloneRes = await git.clone({
@@ -128,7 +128,7 @@
                     corsProxy,
                     singleBranch: false,
                 });
-                console.log("cloneRes", cloneRes);
+                // console.log("cloneRes", cloneRes);
             } else {
                 const fetchres = await git.fetch({
                     fs,
@@ -138,12 +138,12 @@
                     headers,
                     corsProxy,
                 });
-                console.log("fetchres", fetchres);
+                // console.log("fetchres", fetchres);
             }
-            console.log("Cloned or fetched repo successfully", data.sha);
+            // console.log("Cloned or fetched repo successfully", data.sha);
 
             const pendingChanges = await hasPendingChanges();
-            console.log("pendingChanges", pendingChanges);
+            // console.log("pendingChanges", pendingChanges);
 
             if (pendingChanges === false) {
                 const dbbranch = await auth.client.FindOne<any>({
@@ -151,8 +151,8 @@
                     query: { sha: data.sha, ref: { $ne: "HEAD" } },
                     jwt: auth.access_token,
                 });
-                console.log("dbbranch", dbbranch);
-                console.log("Target SHA we want to checkout to:", data.sha);
+                // console.log("dbbranch", dbbranch);
+                // console.log("Target SHA we want to checkout to:", data.sha);
 
                 // First, let's check what we have before checkout
                 const beforeCheckoutHead = await git.resolveRef({
@@ -160,25 +160,25 @@
                     dir,
                     ref: "HEAD",
                 });
-                console.log("Before checkout HEAD:", beforeCheckoutHead);
+                // console.log("Before checkout HEAD:", beforeCheckoutHead);
 
-                try {
-                    const beforeReadme = await fs.promises.readFile(
-                        `${dir}/README.md`,
-                        "utf8",
-                    );
-                    console.log(
-                        "Before checkout README (first 100 chars):",
-                        beforeReadme.substring(0, 100),
-                    );
-                } catch (e) {
-                    console.log(
-                        "No README.md before checkout or error reading it",
-                    );
-                }
+                // try {
+                //     const beforeReadme = await fs.promises.readFile(
+                //         `${dir}/README.md`,
+                //         "utf8",
+                //     );
+                //     console.log(
+                //         "Before checkout README (first 100 chars):",
+                //         beforeReadme.substring(0, 100),
+                //     );
+                // } catch (e) {
+                //     console.log(
+                //         "No README.md before checkout or error reading it",
+                //     );
+                // }
 
                 // Always checkout to the specific SHA we want, regardless of branch info
-                console.log("Checking out to target SHA:", data.sha);
+                // console.log("Checking out to target SHA:", data.sha);
                 try {
                     await git.checkout({
                         fs,
@@ -186,9 +186,9 @@
                         ref: data.sha,
                         force: true,
                     });
-                    console.log("Successfully checked out to SHA", data.sha);
+                    // console.log("Successfully checked out to SHA", data.sha);
                 } catch (checkoutError) {
-                    console.log("Direct SHA checkout failed:", checkoutError);
+                    // console.error("Direct SHA checkout failed:", checkoutError);
 
                     // If direct SHA checkout fails, try creating a temporary branch
                     try {
@@ -206,16 +206,16 @@
                                 ref: tempBranchName,
                                 force: true,
                             });
-                            console.log(
-                                "Successfully checked out via temporary branch",
-                                tempBranchName,
-                            );
+                            // console.log(
+                            //     "Successfully checked out via temporary branch",
+                            //     tempBranchName,
+                            // );
                         }
                     } catch (tempBranchError) {
-                        console.log(
-                            "Temporary branch checkout also failed:",
-                            tempBranchError,
-                        );
+                        // console.log(
+                        //     "Temporary branch checkout also failed:",
+                        //     tempBranchError,
+                        // );
                         throw checkoutError; // Re-throw the original error
                     }
                 }
@@ -226,7 +226,7 @@
                     dir,
                     ref: "HEAD",
                 });
-                console.log("After checkout HEAD:", afterCheckoutHead);
+                // console.log("After checkout HEAD:", afterCheckoutHead);
 
                 if (afterCheckoutHead !== data.sha) {
                     console.error(
@@ -236,9 +236,9 @@
                         afterCheckoutHead,
                     );
                     // Try to force update the working directory
-                    console.log(
-                        "Attempting to force reset working directory...",
-                    );
+                    // console.log(
+                    //     "Attempting to force reset working directory...",
+                    // );
                     try {
                         // Reset to the target SHA
                         await git.checkout({
@@ -252,44 +252,44 @@
                             dir,
                             ref: "HEAD",
                         });
-                        console.log("After force reset HEAD:", finalHead);
+                        // console.log("After force reset HEAD:", finalHead);
                     } catch (resetError) {
                         console.error("Force reset failed:", resetError);
                     }
                 } else {
-                    console.log(
-                        "✅ Checkout successful! HEAD is now at:",
-                        afterCheckoutHead,
-                    );
+                    // console.log(
+                    //     "✅ Checkout successful! HEAD is now at:",
+                    //     afterCheckoutHead,
+                    // );
                 }
 
-                try {
-                    const afterReadme = await fs.promises.readFile(
-                        `${dir}/README.md`,
-                        "utf8",
-                    );
-                    console.log(
-                        "After checkout README (first 100 chars):",
-                        afterReadme.substring(0, 100),
-                    );
-                } catch (e) {
-                    console.log(
-                        "No README.md after checkout or error reading it",
-                    );
-                }
+                // try {
+                //     const afterReadme = await fs.promises.readFile(
+                //         `${dir}/README.md`,
+                //         "utf8",
+                //     );
+                //     console.log(
+                //         "After checkout README (first 100 chars):",
+                //         afterReadme.substring(0, 100),
+                //     );
+                // } catch (e) {
+                //     console.log(
+                //         "No README.md after checkout or error reading it",
+                //     );
+                // }
 
                 // Force refresh the working directory status
                 const statusAfterCheckout = await git.statusMatrix({ fs, dir });
-                console.log(
-                    "Status matrix after checkout:",
-                    statusAfterCheckout.length,
-                    "entries",
-                );
+                // console.log(
+                //     "Status matrix after checkout:",
+                //     statusAfterCheckout.length,
+                //     "entries",
+                // );
             }
             const headSha = await git.resolveRef({ fs, dir, ref: "HEAD" });
-            console.log("headSha", headSha);
+            // console.log("headSha", headSha);
             const branches1 = await git.listBranches({ fs, dir });
-            console.log("branches1", branches1);
+            // console.log("branches1", branches1);
 
             for (const b of branches1) {
                 const branchSha = await git.resolveRef({
@@ -297,7 +297,7 @@
                     dir,
                     ref: `refs/heads/${b}`,
                 });
-                console.log("branchSha", branchSha);
+                // console.log("branchSha", branchSha);
                 if (branchSha === headSha) {
                     selectedSha = b;
 
@@ -306,7 +306,7 @@
             }
 
             branches = await git.listBranches({ fs, dir, remote: "origin" });
-            console.log("branches", branches);
+            // console.log("branches", branches);
 
             const result = await Promise.all(
                 branches.map(async (name) => {
@@ -318,14 +318,14 @@
                     return { name, sha };
                 }),
             );
-            console.log("result", result);
+            // console.log("result", result);
             branches = result.filter((b) => {
                 return b.name != "HEAD";
             });
-            console.log("branches", branches);
+            // console.log("branches", branches);
 
             selectedSha = await git.resolveRef({ fs, dir, ref: "HEAD" });
-            console.log("selectedSha", selectedSha);
+            // console.log("selectedSha", selectedSha);
 
             const div = document.getElementById("gitstatus");
             if (div) {
@@ -336,7 +336,7 @@
                 dir,
             });
             files = buildFileList(rawFiles);
-            console.log("Files loaded:", files.length, "files");
+            // console.log("Files loaded:", files.length, "files");
 
             // Debug: Check README.md content if it exists
             // try {
@@ -695,14 +695,11 @@
     }
     async function cleanDB(name: string) {
         // i want to delete only this db dbname change the code bellow for this
-        console.log("cleanDB name:", name);
-
         indexedDB
             .databases()
             .then((r) => {
                 for (const db of r) {
                     let dbname = db.name as any;
-                    console.log("DB name:", dbname);
                     if (dbname == name) {
                         const DBDeleteRequest =
                             window.indexedDB.deleteDatabase(dbname);
@@ -895,8 +892,8 @@
                                 jwt: auth.access_token,
                             });
 
-                            console.log("Branch switch - Target SHA:", value);
-                            console.log("Branch switch - dbbranch:", dbbranch);
+                            // console.log("Branch switch - Target SHA:", value);
+                            // console.log("Branch switch - dbbranch:", dbbranch);
 
                             // Log before checkout
                             const beforeHead = await git.resolveRef({
@@ -904,10 +901,10 @@
                                 dir,
                                 ref: "HEAD",
                             });
-                            console.log(
-                                "Branch switch - Before HEAD:",
-                                beforeHead,
-                            );
+                            // console.log(
+                            //     "Branch switch - Before HEAD:",
+                            //     beforeHead,
+                            // );
 
                             // Always checkout to the specific SHA, not the branch name
                             let checkoutPromise = git
@@ -918,7 +915,7 @@
                                     force: true,
                                 })
                                 .catch(async (error) => {
-                                    console.log(
+                                    console.error(
                                         "Direct SHA checkout failed, trying temp branch:",
                                         error,
                                     );
@@ -945,10 +942,10 @@
                                         dir,
                                         ref: "HEAD",
                                     });
-                                    console.log(
-                                        "Branch switch - After HEAD:",
-                                        afterHead,
-                                    );
+                                    // console.log(
+                                    //     "Branch switch - After HEAD:",
+                                    //     afterHead,
+                                    // );
 
                                     if (afterHead !== value) {
                                         console.error(
@@ -958,10 +955,10 @@
                                             afterHead,
                                         );
                                     } else {
-                                        console.log(
-                                            "✅ Branch switch successful! HEAD is now at:",
-                                            afterHead,
-                                        );
+                                        // console.log(
+                                        //     "✅ Branch switch successful! HEAD is now at:",
+                                        //     afterHead,
+                                        // );
                                     }
 
                                     // Debug README after checkout
