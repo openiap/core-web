@@ -162,21 +162,6 @@
                 });
                 // console.log("Before checkout HEAD:", beforeCheckoutHead);
 
-                // try {
-                //     const beforeReadme = await fs.promises.readFile(
-                //         `${dir}/README.md`,
-                //         "utf8",
-                //     );
-                //     console.log(
-                //         "Before checkout README (first 100 chars):",
-                //         beforeReadme.substring(0, 100),
-                //     );
-                // } catch (e) {
-                //     console.log(
-                //         "No README.md before checkout or error reading it",
-                //     );
-                // }
-
                 // Always checkout to the specific SHA we want, regardless of branch info
                 // console.log("Checking out to target SHA:", data.sha);
                 try {
@@ -263,21 +248,6 @@
                     // );
                 }
 
-                // try {
-                //     const afterReadme = await fs.promises.readFile(
-                //         `${dir}/README.md`,
-                //         "utf8",
-                //     );
-                //     console.log(
-                //         "After checkout README (first 100 chars):",
-                //         afterReadme.substring(0, 100),
-                //     );
-                // } catch (e) {
-                //     console.log(
-                //         "No README.md after checkout or error reading it",
-                //     );
-                // }
-
                 // Force refresh the working directory status
                 const statusAfterCheckout = await git.statusMatrix({ fs, dir });
                 // console.log(
@@ -337,20 +307,6 @@
             });
             files = buildFileList(rawFiles);
             // console.log("Files loaded:", files.length, "files");
-
-            // Debug: Check README.md content if it exists
-            // try {
-            //     const readmeContent = await fs.promises.readFile(
-            //         `${dir}/README.md`,
-            //         "utf8",
-            //     );
-            //     console.log(
-            //         "README.md content (first 100 chars):",
-            //         readmeContent.substring(0, 100),
-            //     );
-            // } catch (e) {
-            //     console.log("No README.md found or error reading it");
-            // }
         } catch (error: any) {
             toast.error("cloneRepo " + error.message);
         }
@@ -662,6 +618,9 @@
                     query: { sha: data.sha, ref: { $ne: "HEAD" } },
                     jwt: auth.access_token,
                 });
+                const headers = {
+                    Authorization: "Bearer " + auth.access_token,
+                };
                 if (dbbranch == null) {
                     await git.push({
                         fs,
@@ -669,10 +628,7 @@
                         dir,
                         remote: "origin",
                         ref: headSha,
-                        onAuth: () => ({
-                            username: auth.profile?.name || "",
-                            password: auth.access_token || "",
-                        }),
+                        headers,
                     });
                 } else {
                     await git.push({
@@ -681,10 +637,7 @@
                         dir,
                         remote: "origin",
                         ref: dbbranch.ref.split("/").pop(),
-                        onAuth: () => ({
-                            username: auth.profile?.name || "",
-                            password: auth.access_token || "",
-                        }),
+                        headers,
                     });
                 }
                 toast.success("Pushed to remote successfully");
@@ -692,6 +645,7 @@
         } catch (pushErr: any) {
             toast.error("Push failed: " + (pushErr?.message || pushErr));
         }
+
     }
     async function cleanDB(name: string) {
         // i want to delete only this db dbname change the code bellow for this
@@ -782,7 +736,7 @@
                 class="space-y-2 max-h-[500px] md:max-h-full md:h-full overflow-auto md:w-[240px] xl:w-[340px]"
             >
                 <div>{data?.item?.repo?.split("/").pop()}</div>
-                <div class="flex gap-2 mb-2">
+                <div class="grid grid-cols-1 xl:flex gap-2 mb-2">
                     <HotkeyButton
                         onclick={() => {
                             indexedDB

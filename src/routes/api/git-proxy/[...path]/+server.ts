@@ -21,10 +21,9 @@ async function handleProxy(request: Request, url: URL, path: string | string[]) 
 	const headers = new Headers(request.headers);
 	headers.delete('host');
 	headers.delete('origin');
-	if (url.toString().indexOf('github') > -1) {
+	if (fullUrl.indexOf('github') > -1) {
 		headers.delete('authorization');
 	}
-
 	const init: RequestInit = {
 		method: request.method,
 		headers,
