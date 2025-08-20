@@ -46,7 +46,7 @@
       });
       const databasename = item.repo.split("/").join("_");
       console.log("Database name to delete:", databasename);
-      // await cleanDB(databasename);
+      await cleanDB(databasename);
 
       toast.success("Git repo deleted");
       ref.reload();
@@ -70,10 +70,10 @@
             DBDeleteRequest.onsuccess = (event) => {};
           }
         }
-        toast.success("DB deleted successfully!" + name);
+        // toast.success("DB deleted successfully!" + name);
       })
       .catch((error) => {
-        toast.error("Error deleting DB: " + error.message);
+        toast.error("Error deleting local DB: " + error.message);
       });
   }
 </script>
