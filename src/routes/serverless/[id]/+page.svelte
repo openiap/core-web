@@ -37,15 +37,28 @@
     { label: "Last 30 days", value: "30d" },
   ];
   type GraphRow = { [key: string]: any; _id?: string; id?: string | number };
-  let tableData = $state<GraphRow[]>([]);
+  let tdInstanceLog = $state<GraphRow[]>([]);
+  let tdRequestLog = $state<GraphRow[]>([]);
+  let tdConsoleLog = $state<GraphRow[]>([]);
   let distroname = $state(data.item.distro);
   let tagname = $state(data.item.tag);
-  // let chartdata = $state<Float64Array[]>(data.chartdata ?? []);
   let chartKey = $state(0); // Force chart re-render by changing key
 
+  // Instance log
   let gdruntime = $state<Float64Array[]>([]);
-  let gdresponsetime = $state<Float64Array[]>([]);
+  let gdappresponsetime = $state<Float64Array[]>([]);
   let gdboottime = $state<Float64Array[]>([]);
+
+  // Request log
+  let gdresponsetime = $state<Float64Array[]>([]);
+  let gdcontentsize = $state<Float64Array[]>([]);
+  let gdnumrequest = $state<Float64Array[]>([]);
+
+  //  Console log
+  // let gdruntime = $state<Float64Array[]>([]);
+  // let gdresponsetime = $state<Float64Array[]>([]);
+  // let gdboottime = $state<Float64Array[]>([]);
+
   const excludedcols = ["_id", "metadata", "ts", "userid"];
   if (data.item != null) {
     if (data.item.anonymous == null) {
@@ -181,7 +194,9 @@
 
   async function getInstanceLogs() {
     // Fetch instance logs here
-    tableData = [];
+    tdInstanceLog = [];
+    tdRequestLog = [];
+    tdConsoleLog = [];
     if (data.item == null || data.item.repo == null || data.item.tag == null) {
       toast.error("Error", {
         description: "Serverless Function not found or incomplete data",
@@ -204,7 +219,7 @@
         jwt: auth.access_token,
       });
       // Coerce to array depending on API shape
-      tableData = Array.isArray(result) ? result : (result?.items ?? []);
+      tdInstanceLog = Array.isArray(result) ? result : (result?.items ?? []);
 
       await getGDInstanceLog();
     } catch (error: any) {
@@ -216,7 +231,9 @@
   }
   async function getRequestLogs() {
     // Fetch request logs here
-    tableData = [];
+    tdInstanceLog = [];
+    tdRequestLog = [];
+    tdConsoleLog = [];
     if (data.item == null || data.item.repo == null || data.item.tag == null) {
       toast.error("Error", {
         description: "Serverless Function not found or incomplete data",
@@ -239,7 +256,7 @@
         jwt: auth.access_token,
       });
       // Coerce to array depending on API shape
-      tableData = Array.isArray(result) ? result : (result?.items ?? []);
+      tdRequestLog = Array.isArray(result) ? result : (result?.items ?? []);
       await getGDRequestLog();
     } catch (error: any) {
       console.error("Error fetching request logs:", error);
@@ -250,7 +267,9 @@
   }
   async function getConsoleLogs() {
     // Fetch console logs here
-    tableData = [];
+    tdInstanceLog = [];
+    tdRequestLog = [];
+    tdConsoleLog = [];
     if (data.item == null || data.item.repo == null || data.item.tag == null) {
       toast.error("Error", {
         description: "Serverless Function not found or incomplete data",
@@ -273,7 +292,7 @@
         jwt: auth.access_token,
       });
       // Coerce to array depending on API shape
-      tableData = Array.isArray(result) ? result : (result?.items ?? []);
+      tdConsoleLog = Array.isArray(result) ? result : (result?.items ?? []);
     } catch (error: any) {
       console.error("Error fetching console logs:", error);
       toast.error("Error fetching console logs", {
@@ -336,40 +355,6 @@
     return false;
   }
 
-  function pickConsoleColumns(rows: any[]): string[] {
-    if (!Array.isArray(rows) || rows.length === 0) return [];
-    const keys = Object.keys(rows[0] ?? {});
-    const lowerToOriginal = new Map(keys.map((k) => [k.toLowerCase(), k]));
-
-    const timeCandidates = [
-      "ts",
-      "time",
-      "timestamp",
-      "date",
-      "created_at",
-      "createdat",
-      "created",
-      "logged_at",
-      "loggedat",
-    ];
-    const messageCandidates = [
-      "message",
-      "msg",
-      "log",
-      "text",
-      "content",
-      "body",
-    ];
-
-    const timeLower = timeCandidates.find((c) => lowerToOriginal.has(c));
-    const msgLower = messageCandidates.find((c) => lowerToOriginal.has(c));
-
-    const cols: string[] = [];
-    if (timeLower) cols.push(lowerToOriginal.get(timeLower) as string);
-    if (msgLower) cols.push(lowerToOriginal.get(msgLower) as string);
-
-    return cols.length > 0 ? cols : keys;
-  }
   async function gotoTokenUser() {
     try {
       const tokendata = await auth.client.FindOne<any>({
@@ -399,7 +384,7 @@
       let gdruntimeres = await auth.client.Aggregate<any>({
         collectionname: "sf_instance_logs",
         aggregates: [
-           {
+          {
             $match: {
               "metadata.repo": data.item.repo,
               ts: { $gte: new Date(start), $lt: new Date(end) },
@@ -430,65 +415,6 @@
               arrays: ["$ts_array", "$run_time_array"],
             },
           },
-          // {
-          //   $match: {
-          //     "metadata._type": "instance",
-          //     "metadata.repo": data.item.repo,
-          //     ts: { $gte: new Date(start), $lt: new Date(end) },
-          //   },
-          // },
-          // {
-          //   $addFields: {
-          //     __labelfield: {
-          //       $concat: [
-          //         {
-          //           $toString: "$metadata.host",
-          //         },
-          //         " ",
-          //         "response ",
-          //       ],
-          //     },
-          //   },
-          // },
-          // {
-          //   $group: {
-          //     _id: {
-          //       dt: {
-          //         $subtract: [
-          //           {
-          //             $subtract: ["$ts", "$to"],
-          //           },
-          //           {
-          //             $mod: [
-          //               {
-          //                 $subtract: ["$ts", "$to"],
-          //               },
-          //               "$intervalMs",
-          //             ],
-          //           },
-          //         ],
-          //       },
-          //       metadata_host: "$metadata.host",
-          //     },
-          //     value: {
-          //       $avg: "$run_time",
-          //     },
-          //     ts: {
-          //       $max: "$ts",
-          //     },
-          //     name: {
-          //       $max: "$__labelfield",
-          //     },
-          //   },
-          // },
-          // {
-          //   $sort: {
-          //     ts: 1,
-          //   },
-          // },
-          // {
-          //   $limit: 1000,
-          // },
         ],
         jwt: auth.access_token,
       });
@@ -594,15 +520,15 @@
         jwt: auth.access_token,
       });
       if (gdresponsetimeres.length > 0) {
-        gdresponsetime = gdresponsetimeres[0];
-        gdresponsetime = [
+        gdappresponsetime = gdresponsetimeres[0];
+        gdappresponsetime = [
           new Float64Array(gdresponsetimeres[0].arrays[0]),
           new Float64Array(gdresponsetimeres[0].arrays[1]),
         ];
         chartKey += 1; // Force re-render
       } else {
         // Clear chart data if no data available
-        gdresponsetime = [];
+        gdappresponsetime = [];
         chartKey += 1; // Force re-render
       }
     } catch (error: any) {
@@ -617,8 +543,8 @@
     try {
       const { start, end } = getTimeDuration(selectedduration);
 
-      let aggdata = await auth.client.Aggregate<any>({
-        collectionname: "sf_instance_logs",
+      let gdresponsetimeres = await auth.client.Aggregate<any>({
+        collectionname: "sf_request_logs",
         aggregates: [
           {
             $match: {
@@ -629,41 +555,140 @@
           {
             $project: {
               ts_epoch: { $toLong: { $toDate: "$ts" } }, // ms epoch
-              run_time_sec: "$run_time",
+              response_time_sec: "$response_time",
             },
           },
           {
             $project: {
               ts_epoch: { $divide: ["$ts_epoch", 1000] }, // convert ms → seconds
-              run_time_sec: 1,
+              response_time_sec: 1,
             },
           },
           {
             $group: {
               _id: null,
               ts_array: { $push: "$ts_epoch" },
-              run_time_array: { $push: "$run_time_sec" },
+              response_time_array: { $push: "$response_time_sec" },
             },
           },
           {
             $project: {
               _id: 0,
-              arrays: ["$ts_array", "$run_time_array"],
+              arrays: ["$ts_array", "$response_time_array"],
             },
           },
         ],
         jwt: auth.access_token,
       });
-      if (aggdata.length > 0) {
-        // chartdata = aggdata[0];
-        // chartdata = [
-        // new Float64Array(aggdata[0].arrays[0]),
-        // new Float64Array(aggdata[0].arrays[1]),
-        // ];
+      if (gdresponsetimeres.length > 0) {
+        gdresponsetime = [
+          new Float64Array(gdresponsetimeres[0].arrays[0]),
+          new Float64Array(gdresponsetimeres[0].arrays[1]),
+        ];
         chartKey += 1; // Force re-render
       } else {
         // Clear chart data if no data available
-        // chartdata = [];
+        gdresponsetime = [];
+        chartKey += 1; // Force re-render
+      }
+
+      let gdcontentsizeres = await auth.client.Aggregate<any>({
+        collectionname: "sf_request_logs",
+        aggregates: [
+          {
+            $match: {
+              "metadata.repo": data.item.repo,
+              ts: { $gte: new Date(start), $lt: new Date(end) },
+            },
+          },
+          {
+            $project: {
+              ts_epoch: { $toLong: { $toDate: "$ts" } }, // ms epoch
+              bytes_received_sec: "$bytes_received",
+            },
+          },
+          {
+            $project: {
+              ts_epoch: { $divide: ["$ts_epoch", 1000] }, // convert ms → seconds
+              bytes_received_sec: 1,
+            },
+          },
+          {
+            $group: {
+              _id: null,
+              ts_array: { $push: "$ts_epoch" },
+              bytes_received_array: { $push: "$bytes_received_sec" },
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              arrays: ["$ts_array", "$bytes_received_array"],
+            },
+          },
+        ],
+        jwt: auth.access_token,
+      });
+      if (gdcontentsizeres.length > 0) {
+        gdcontentsize = [
+          new Float64Array(gdcontentsizeres[0].arrays[0]),
+          new Float64Array(gdcontentsizeres[0].arrays[1]),
+        ];
+        chartKey += 1; // Force re-render
+      } else {
+        // Clear chart data if no data available
+        gdcontentsize = [];
+        chartKey += 1; // Force re-render
+      }
+
+      let gdnumrequestres = await auth.client.Aggregate<any>({
+        collectionname: "sf_request_logs",
+        aggregates: [
+          {
+            $match: {
+              "metadata.repo": data.item.repo,
+              ts: { $gte: new Date(start), $lt: new Date(end) },
+            },
+          },
+          {
+            $project: {
+              ts_epoch: { $toLong: { $toDate: "$ts" } }, // ms epoch
+              value: 1, // or "$bytes_received" / "$count" etc. depending on your metric
+            },
+          },
+          {
+            $project: {
+              ts_epoch: { $divide: ["$ts_epoch", 1000] }, // → seconds
+              value: 1,
+            },
+          },
+          { $sort: { ts_epoch: 1 } },
+          // { $limit: "$maxDataPoints" },
+          {
+            $group: {
+              _id: null,
+              ts_array: { $push: "$ts_epoch" },
+              value_array: { $push: "$value" },
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              arrays: ["$ts_array", "$value_array"],
+            },
+          },
+        ],
+        jwt: auth.access_token,
+      });
+      if (gdnumrequestres.length > 0) {
+        gdnumrequest = [
+          new Float64Array(gdnumrequestres[0].arrays[0]),
+          new Float64Array(gdnumrequestres[0].arrays[1]),
+        ];
+        chartKey += 1; // Force re-render
+      } else {
+        // Clear chart data if no data available
+        gdnumrequest = [];
         chartKey += 1; // Force re-render
       }
     } catch (error: any) {
@@ -816,7 +841,9 @@
       <Tabs.Trigger
         value="1"
         onclick={() => {
-          tableData = [];
+          tdInstanceLog = [];
+          tdRequestLog = [];
+          tdConsoleLog = [];
         }}>Settings</Tabs.Trigger
       >
       <Tabs.Trigger value="2" onclick={getInstanceLogs}
@@ -1229,17 +1256,17 @@
       <div class="grid grid-cols-3 gap-4 mb-4">
         <CustomGraph title="Run Time" bind:chartdata={gdruntime} />
         <CustomGraph title="Boot Time" bind:chartdata={gdboottime} />
-        <CustomGraph title="Response Time" bind:chartdata={gdresponsetime} />
+        <CustomGraph title="Response Time" bind:chartdata={gdappresponsetime} />
       </div>
     {/key}
     {@render LogsTable({
-      rows: tableData.map((row) => ({ ...row, tag: row.metadata?.tag })),
+      rows: tdInstanceLog.map((row) => ({ ...row, tag: row.metadata?.tag })),
       cols:
-        tableData.length > 0
+        tdInstanceLog.length > 0
           ? [
               "ts",
               "tag",
-              ...Object.keys(tableData[0]).filter(
+              ...Object.keys(tdInstanceLog[0]).filter(
                 (k) =>
                   k !== "ts" &&
                   k !== "tag" &&
@@ -1256,14 +1283,25 @@
       {@render ReloadData({ onChange: getRequestLogs })}
     </div>
 
+    {#key chartKey}
+      <div class="grid grid-cols-3 gap-4 mb-4">
+        <CustomGraph title="Response Time" bind:chartdata={gdresponsetime} />
+        <CustomGraph title="Content Size" bind:chartdata={gdcontentsize} />
+        <!-- <CustomGraph
+          title="Num Req Per Status Code"
+          bind:chartdata={gdnumrequest}
+        /> -->
+      </div>
+    {/key}
+
     {@render LogsTable({
-      rows: tableData.map((row) => ({ ...row, tag: row.metadata?.tag })),
+      rows: tdRequestLog.map((row) => ({ ...row, tag: row.metadata?.tag })),
       cols:
-        tableData.length > 0
+        tdRequestLog.length > 0
           ? [
               "ts",
               "tag",
-              ...Object.keys(tableData[0]).filter(
+              ...Object.keys(tdRequestLog[0]).filter(
                 (k) =>
                   k !== "ts" &&
                   k !== "tag" &&
@@ -1281,8 +1319,8 @@
     </div>
 
     {@render LogsTable({
-      rows: tableData,
-      cols: pickConsoleColumns(tableData),
+      rows: tdConsoleLog,
+      cols: ["ts", "vmid", "message"],
       headClassFor: (col: string) => {
         const k = col?.toLowerCase?.() ?? "";
         if (isTimeLikeColumn(k)) {
@@ -1307,4 +1345,12 @@
   </Tabs.Content>
 </Tabs.Root>
 
-<CustomSuperDebug formData={tableData.length > 0 ? tableData : formData} />
+<CustomSuperDebug
+  formData={tdRequestLog.length > 0
+    ? tdRequestLog
+    : tdInstanceLog.length > 0
+      ? tdInstanceLog
+      : tdConsoleLog.length > 0
+        ? tdConsoleLog
+        : formData}
+/>
