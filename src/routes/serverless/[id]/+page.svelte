@@ -20,6 +20,7 @@
   import { zod } from "sveltekit-superforms/adapters";
   import { _timeSince } from "../../../helper";
   import { editFormSchemaUser, editFormSchemaAdmin } from "../schema.js";
+  import { tick } from "svelte";
 
   const { data } = $props();
 
@@ -56,7 +57,9 @@
   let gdnumrequest = $state<Float64Array[]>([]);
   let selectedtab = $state(0);
   //  Console log
-  // let gdruntime = $state<Float64Array[]>([]);
+  let gdmessages = $state<Float64Array[]>([]);
+
+  let showerror = $state(false);
 
   const excludedcols = ["_id", "metadata", "ts", "userid"];
   if (data.item != null) {
@@ -254,17 +257,22 @@
     }
     try {
       const { start, end } = getTimeDuration(selectedduration);
+      let query = {
+        "metadata.repo": data.item.repo,
+        ts: {
+          $gte: new Date(start),
+          $lte: new Date(end),
+        },
+      };
+      if (showerror == true) {
+        // @ts-ignore
+        query["code"] = { $ne: 200 };
+      }
       const result: any = await auth.client.Query({
         collectionname: "sf_request_logs",
         top: 100,
         orderby: { ts: -1 },
-        query: {
-          "metadata.repo": data.item.repo,
-          ts: {
-            $gte: new Date(start),
-            $lte: new Date(end),
-          },
-        },
+        query,
         jwt: auth.access_token,
       });
       // Coerce to array depending on API shape
@@ -288,6 +296,7 @@
     }
   }
   async function getConsoleLogs() {
+    console.log("Fetching console logs", showerror);
     selectedtab = 3;
     // Fetch console logs here
     if (data.item == null || data.item.repo == null || data.item.tag == null) {
@@ -298,17 +307,22 @@
     }
     try {
       const { start, end } = getTimeDuration(selectedduration);
+      let query = {
+        "metadata.repo": data.item.repo,
+        ts: {
+          $gte: new Date(start),
+          $lte: new Date(end),
+        },
+      };
+      if (showerror == true) {
+        // @ts-ignore
+        query["err"] = { $eq: true };
+      }
       const result: any = await auth.client.Query({
         collectionname: "sf_console_logs",
         top: 100,
         orderby: { ts: -1 },
-        query: {
-          "metadata.repo": data.item.repo,
-          ts: {
-            $gte: new Date(start),
-            $lte: new Date(end),
-          },
-        },
+        query,
         jwt: auth.access_token,
       });
       // Coerce to array depending on API shape
@@ -322,6 +336,7 @@
       if (currentHash !== newHash) {
         tdConsoleLog = newTdConsoleLog;
       }
+      await getGDConsoleLog();
     } catch (error: any) {
       console.error("Error fetching console logs:", error);
       toast.error("Error fetching console logs", {
@@ -586,42 +601,46 @@
   async function getGDRequestLog() {
     try {
       const { start, end } = getTimeDuration(selectedduration);
-
+      let gdresponsetime_agg = [
+        {
+          $match: {
+            "metadata.repo": data.item.repo,
+            ts: { $gte: new Date(start), $lt: new Date(end) },
+          },
+        },
+        {
+          $project: {
+            ts_epoch: { $toLong: { $toDate: "$ts" } }, // ms epoch
+            response_time_sec: "$response_time",
+          },
+        },
+        {
+          $project: {
+            ts_epoch: { $divide: ["$ts_epoch", 1000] }, // convert ms → seconds
+            response_time_sec: 1,
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            ts_array: { $push: "$ts_epoch" },
+            response_time_array: { $push: "$response_time_sec" },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            arrays: ["$ts_array", "$response_time_array"],
+          },
+        },
+      ];
+      if (showerror == true) {
+        // @ts-ignore
+        gdresponsetime_agg[0].$match["code"] = { $ne: 200 };
+      }
       let gdresponsetimeres = await auth.client.Aggregate<any>({
         collectionname: "sf_request_logs",
-        aggregates: [
-          {
-            $match: {
-              "metadata.repo": data.item.repo,
-              ts: { $gte: new Date(start), $lt: new Date(end) },
-            },
-          },
-          {
-            $project: {
-              ts_epoch: { $toLong: { $toDate: "$ts" } }, // ms epoch
-              response_time_sec: "$response_time",
-            },
-          },
-          {
-            $project: {
-              ts_epoch: { $divide: ["$ts_epoch", 1000] }, // convert ms → seconds
-              response_time_sec: 1,
-            },
-          },
-          {
-            $group: {
-              _id: null,
-              ts_array: { $push: "$ts_epoch" },
-              response_time_array: { $push: "$response_time_sec" },
-            },
-          },
-          {
-            $project: {
-              _id: 0,
-              arrays: ["$ts_array", "$response_time_array"],
-            },
-          },
-        ],
+        aggregates: gdresponsetime_agg,
         jwt: auth.access_token,
       });
       if (gdresponsetimeres.length > 0) {
@@ -644,41 +663,46 @@
         }
       }
 
+      let gdcontentsize_agg = [
+        {
+          $match: {
+            "metadata.repo": data.item.repo,
+            ts: { $gte: new Date(start), $lt: new Date(end) },
+          },
+        },
+        {
+          $project: {
+            ts_epoch: { $toLong: { $toDate: "$ts" } }, // ms epoch
+            bytes_received_sec: "$bytes_received",
+          },
+        },
+        {
+          $project: {
+            ts_epoch: { $divide: ["$ts_epoch", 1000] }, // convert ms → seconds
+            bytes_received_sec: 1,
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            ts_array: { $push: "$ts_epoch" },
+            bytes_received_array: { $push: "$bytes_received_sec" },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            arrays: ["$ts_array", "$bytes_received_array"],
+          },
+        },
+      ];
+      if (showerror == true) {
+        // @ts-ignore
+        gdcontentsize_agg[0].$match["code"] = { $ne: 200 };
+      }
       let gdcontentsizeres = await auth.client.Aggregate<any>({
         collectionname: "sf_request_logs",
-        aggregates: [
-          {
-            $match: {
-              "metadata.repo": data.item.repo,
-              ts: { $gte: new Date(start), $lt: new Date(end) },
-            },
-          },
-          {
-            $project: {
-              ts_epoch: { $toLong: { $toDate: "$ts" } }, // ms epoch
-              bytes_received_sec: "$bytes_received",
-            },
-          },
-          {
-            $project: {
-              ts_epoch: { $divide: ["$ts_epoch", 1000] }, // convert ms → seconds
-              bytes_received_sec: 1,
-            },
-          },
-          {
-            $group: {
-              _id: null,
-              ts_array: { $push: "$ts_epoch" },
-              bytes_received_array: { $push: "$bytes_received_sec" },
-            },
-          },
-          {
-            $project: {
-              _id: 0,
-              arrays: ["$ts_array", "$bytes_received_array"],
-            },
-          },
-        ],
+        aggregates: gdcontentsize_agg,
         jwt: auth.access_token,
       });
       if (gdcontentsizeres.length > 0) {
@@ -701,43 +725,48 @@
         }
       }
 
+      let gdnumrequest_agg = [
+        {
+          $match: {
+            "metadata.repo": data.item.repo,
+            ts: { $gte: new Date(start), $lt: new Date(end) },
+          },
+        },
+        {
+          $project: {
+            ts_epoch: { $toLong: { $toDate: "$ts" } }, // ms epoch
+            value: 1, // or "$bytes_received" / "$count" etc. depending on your metric
+          },
+        },
+        {
+          $project: {
+            ts_epoch: { $divide: ["$ts_epoch", 1000] }, // → seconds
+            value: 1,
+          },
+        },
+        { $sort: { ts_epoch: 1 } },
+        // { $limit: "$maxDataPoints" },
+        {
+          $group: {
+            _id: null,
+            ts_array: { $push: "$ts_epoch" },
+            value_array: { $push: "$value" },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            arrays: ["$ts_array", "$value_array"],
+          },
+        },
+      ];
+      if (showerror == true) {
+        // @ts-ignore
+        gdnumrequest_agg[0].$match["code"] = { $ne: 200 };
+      }
       let gdnumrequestres = await auth.client.Aggregate<any>({
         collectionname: "sf_request_logs",
-        aggregates: [
-          {
-            $match: {
-              "metadata.repo": data.item.repo,
-              ts: { $gte: new Date(start), $lt: new Date(end) },
-            },
-          },
-          {
-            $project: {
-              ts_epoch: { $toLong: { $toDate: "$ts" } }, // ms epoch
-              value: 1, // or "$bytes_received" / "$count" etc. depending on your metric
-            },
-          },
-          {
-            $project: {
-              ts_epoch: { $divide: ["$ts_epoch", 1000] }, // → seconds
-              value: 1,
-            },
-          },
-          { $sort: { ts_epoch: 1 } },
-          // { $limit: "$maxDataPoints" },
-          {
-            $group: {
-              _id: null,
-              ts_array: { $push: "$ts_epoch" },
-              value_array: { $push: "$value" },
-            },
-          },
-          {
-            $project: {
-              _id: 0,
-              arrays: ["$ts_array", "$value_array"],
-            },
-          },
-        ],
+        aggregates: gdnumrequest_agg,
         jwt: auth.access_token,
       });
       if (gdnumrequestres.length > 0) {
@@ -757,6 +786,79 @@
         const newHash = JSON.stringify([]);
         if (currentHash !== newHash) {
           gdnumrequest = [];
+        }
+      }
+    } catch (error: any) {
+      console.error("Error fetching chart data:", error);
+      toast.error("Error fetching chart data", {
+        description: error.message,
+      });
+    }
+  }
+
+  async function getGDConsoleLog() {
+    try {
+      const { start, end } = getTimeDuration(selectedduration);
+      // here i want to count the messages and add it to the chart
+      let gdresponsetime_agg = [
+        {
+          $match: {
+            "metadata.repo": data.item.repo,
+            ts: { $gte: new Date(start), $lt: new Date(end) },
+          },
+        },
+        {
+          $project: {
+            ts_epoch: { $toLong: { $toDate: "$ts" } }, // ms epoch
+            response_time_sec: "$response_time",
+          },
+        },
+        {
+          $project: {
+            ts_epoch: { $divide: ["$ts_epoch", 1000] }, // convert ms → seconds
+            response_time_sec: 1,
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            ts_array: { $push: "$ts_epoch" },
+            response_time_array: { $push: "$response_time_sec" },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            arrays: ["$ts_array", "$response_time_array"],
+          },
+        },
+      ];
+      if (showerror == true) {
+        // @ts-ignore
+        gdresponsetime_agg[0].$match["err"] = { $eq: true };
+      }
+      let gdresponsetimeres = await auth.client.Aggregate<any>({
+        collectionname: "sf_request_logs",
+        aggregates: gdresponsetime_agg,
+        jwt: auth.access_token,
+      });
+      if (gdresponsetimeres.length > 0) {
+        let newgdresponsetime = [
+          new Float64Array(gdresponsetimeres[0].arrays[0]),
+          new Float64Array(gdresponsetimeres[0].arrays[1]),
+        ];
+        // Check if the data is the same then do not rerender the graph
+        const currentHash = JSON.stringify(gdresponsetime);
+        const newHash = JSON.stringify(newgdresponsetime);
+        if (currentHash !== newHash) {
+          gdresponsetime = newgdresponsetime;
+        }
+      } else {
+        // Clear chart data if no data available
+        const currentHash = JSON.stringify(gdresponsetime);
+        const newHash = JSON.stringify([]);
+        if (currentHash !== newHash) {
+          gdresponsetime = [];
         }
       }
     } catch (error: any) {
@@ -818,11 +920,7 @@
   />
 {/snippet}
 
-{#snippet ReloadData({
-  onChange,
-}: {
-  onChange: (value: string) => void | Promise<void>;
-})}
+{#snippet ReloadData({ onChange }: { onChange: () => void | Promise<void> })}
   <HotkeyButton
     title="Reload Data"
     disabled={loading}
@@ -831,7 +929,7 @@
       loading = true;
       try {
         if (typeof onChange === "function") {
-          await onChange(selectedduration);
+          await onChange();
           toast.success("Data reloaded successfully");
         }
       } catch (error: any) {
@@ -846,6 +944,20 @@
     <RotateCcw />
     Reload Data
   </HotkeyButton>
+{/snippet}
+
+{#snippet ToggleErrors({ onChange }: { onChange: () => void | Promise<void> })}
+  <div class="flex flex-row items-center space-x-2 py-4">
+    <div>Show Errors</div>
+    <CustomSwitch
+      disabled={loading}
+      bind:checked={showerror}
+      onclick={async () => {
+        await tick();
+        await onChange();
+      }}
+    />
+  </div>
 {/snippet}
 
 {#snippet LogsTable({
@@ -1350,6 +1462,11 @@
     <div class="flex items-center gap-4 mb-4">
       {@render DurationSelect({ onChange: getRequestLogs })}
       {@render ReloadData({ onChange: getRequestLogs })}
+      {@render ToggleErrors({
+        onChange: async () => {
+          await getRequestLogs();
+        },
+      })}
     </div>
 
     <div class="grid grid-cols-3 gap-4 mb-4">
@@ -1383,7 +1500,16 @@
     <div class="flex items-center gap-4 mb-4">
       {@render DurationSelect({ onChange: getConsoleLogs })}
       {@render ReloadData({ onChange: getConsoleLogs })}
+      {@render ToggleErrors({
+        onChange: async () => {
+          await getConsoleLogs();
+        },
+      })}
     </div>
+
+    <!-- <div class="grid grid-cols-3 gap-4 mb-4">
+      <CustomGraph title="Messages" bind:data={gdmessages} />
+    </div> -->
 
     {@render LogsTable({
       rows: tdConsoleLog,
