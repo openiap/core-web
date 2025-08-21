@@ -19,11 +19,13 @@
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { _timeSince } from "../../../helper";
-  import { editFormSchema } from "../schema.js";
-  import type { t } from "tar";
-  import { trusted } from "svelte/legacy";
+  import { editFormSchemaUser, editFormSchemaAdmin } from "../schema.js";
 
   const { data } = $props();
+
+  let profileroles = auth.profile?.roles || [];
+  const isAdmin = profileroles.includes("admins");
+
   let loading = $state(false);
   let runasuser = $state(data.item.runas == "" ? true : false);
   let selectedduration = $state(usersettings.serverlesstimefilter);
@@ -61,124 +63,132 @@
     if (data.item.anonymous == null) {
       data.item.anonymous = false;
     }
-    data.item = editFormSchema.parse(data.item);
+    data.item = (isAdmin ? editFormSchemaAdmin : editFormSchemaUser).parse(
+      data.item,
+    );
   }
 
-  const form = superForm(defaults(zod(editFormSchema)), {
-    dataType: "json",
-    validators: zod(editFormSchema),
-    SPA: true,
-    onUpdate: async ({ form, cancel }) => {
-      if (form.valid) {
-        loading = true;
-        try {
-          let workspaceid = usersettings.currentworkspace;
-          if (form.data.alpn == "Select ALPN") {
-            // @ts-ignore
-            delete form.data.alpn;
-          }
-          if (form.data.tls == false) {
-            // @ts-ignore
-            delete form.data.tls;
-          }
-          if (data.item._workspaceid == null || data.item._workspaceid == "") {
-            if (workspaceid == "" || workspaceid == null) {
-              toast.error("Error", {
-                description: "Please select a workspace",
-              });
-              cancel();
-              loading = false;
-              return;
-            }
-            form.data._workspaceid = workspaceid;
-          }
-          if (
-            form.data._workspaceid != workspaceid &&
-            workspaceid != null &&
-            workspaceid != ""
-          ) {
-            form.data._workspaceid = workspaceid;
-          }
-
-          if (runasuser) {
-            // let item = await auth.client.FindOne<any>({
-            //   collectionname: "users",
-            //   query: { _id: form.data.runas, _type: "user" },
-            //   projection: {
-            //     _id: 1,
-            //   },
-            //   jwt: auth.access_token,
-            // });
-            // if (item == null || item == undefined) {
-            //   toast.error("Error", {
-            //     description: "User not found",
-            //   });
-            //   cancel();
-            //   loading = false;
-            //   return;
-            // }
-            const newtoken: any = await auth.client.CustomCommand({
-              command: "issueusertoken",
+  const form = superForm(
+    defaults(zod(isAdmin ? editFormSchemaAdmin : editFormSchemaUser)),
+    {
+      dataType: "json",
+      validators: zod(isAdmin ? editFormSchemaAdmin : editFormSchemaUser),
+      SPA: true,
+      onUpdate: async ({ form, cancel }) => {
+        if (form.valid) {
+          loading = true;
+          try {
+            let workspaceid = usersettings.currentworkspace;
+            if (form.data.alpn == "Select ALPN") {
               // @ts-ignore
-              data: {
-                _workspaceid: form.data._workspaceid,
-                id: form.data.runas,
-                name: "SF for " + form.data.name,
-                exp: "365d", // 1 year
-              },
+              delete form.data.alpn;
+            }
+            if (form.data.tls == false) {
+              // @ts-ignore
+              delete form.data.tls;
+            }
+            if (
+              data.item._workspaceid == null ||
+              data.item._workspaceid == ""
+            ) {
+              if (workspaceid == "" || workspaceid == null) {
+                toast.error("Error", {
+                  description: "Please select a workspace",
+                });
+                cancel();
+                loading = false;
+                return;
+              }
+              form.data._workspaceid = workspaceid;
+            }
+            if (
+              form.data._workspaceid != workspaceid &&
+              workspaceid != null &&
+              workspaceid != ""
+            ) {
+              form.data._workspaceid = workspaceid;
+            }
+
+            if (runasuser) {
+              // let item = await auth.client.FindOne<any>({
+              //   collectionname: "users",
+              //   query: { _id: form.data.runas, _type: "user" },
+              //   projection: {
+              //     _id: 1,
+              //   },
+              //   jwt: auth.access_token,
+              // });
+              // if (item == null || item == undefined) {
+              //   toast.error("Error", {
+              //     description: "User not found",
+              //   });
+              //   cancel();
+              //   loading = false;
+              //   return;
+              // }
+              const newtoken: any = await auth.client.CustomCommand({
+                command: "issueusertoken",
+                // @ts-ignore
+                data: {
+                  _workspaceid: form.data._workspaceid,
+                  id: form.data.runas,
+                  name: "SF for " + form.data.name,
+                  exp: "365d", // 1 year
+                },
+                jwt: auth.access_token,
+              });
+              form.data.runas = JSON.parse(newtoken).id;
+            }
+            // else {
+            //   let item = await auth.client.FindOne<any>({
+            //     collectionname: "usertokens",
+            //     query: { _id: form.data.runas, _type: "usertoken", revoked: false },
+            //     jwt: auth.access_token,
+            //   });
+            //   if (item == null) {
+            //     toast.error("Error", {
+            //       description: "Access token not found",
+            //     });
+            //     cancel();
+            //     loading = false;
+            //     return;
+            //   }
+            // }
+            await auth.client.CustomCommand({
+              command: "ensuresfunc",
+              // @ts-ignore
+              data: form.data,
               jwt: auth.access_token,
             });
-            form.data.runas = JSON.parse(newtoken).id;
-          }
-          // else {
-          //   let item = await auth.client.FindOne<any>({
-          //     collectionname: "usertokens",
-          //     query: { _id: form.data.runas, _type: "usertoken", revoked: false },
-          //     jwt: auth.access_token,
-          //   });
-          //   if (item == null) {
-          //     toast.error("Error", {
-          //       description: "Access token not found",
-          //     });
-          //     cancel();
-          //     loading = false;
-          //     return;
-          //   }
-          // }
-          await auth.client.CustomCommand({
-            command: "ensuresfunc",
-            // @ts-ignore
-            data: form.data,
-            jwt: auth.access_token,
-          });
 
-          toast.success("Serverless Function updated");
-          goto(base + `/serverless`);
-        } catch (error: any) {
-          toast.error("Error", {
-            description: error.message,
-          });
+            toast.success("Serverless Function updated");
+            goto(base + `/serverless`);
+          } catch (error: any) {
+            toast.error("Error", {
+              description: error.message,
+            });
+            cancel();
+            loading = false;
+          }
+        } else {
+          let errors = Object.keys(form.errors).map(
+            (key) => key + " is " + form.errors[key],
+          );
+          if (errors.length > 0) {
+            toast.error("Error", {
+              description: errors.join(", "),
+            });
+          } else {
+            toast.error("Error", {
+              description: "Form is invalid",
+            });
+          }
           cancel();
           loading = false;
         }
-      } else {
-        let errors = Object.keys(form.errors).map(
-          (key) => key + " is " + form.errors[key],
-        );
-        if (errors.length > 0) {
-          toast.error("Error", {
-            description: errors.join(", "),
-          });
-        } else {
-          toast.error("Error", {
-            description: "Form is invalid",
-          });
-        }
-        cancel();
-        loading = false;
-      }
+      },
     },
-  });
+  );
   const { form: formData, enhance, message, validateForm } = form;
   try {
     formData.set(data.item);
@@ -775,11 +785,11 @@
     );
   }
 
-  function getSuperDebugData(){
-    if(selectedtab == 0) return formData
-    if(selectedtab == 1) return tdInstanceLog
-    if(selectedtab == 2) return tdRequestLog
-    if(selectedtab == 3) return tdConsoleLog
+  function getSuperDebugData() {
+    if (selectedtab == 0) return formData;
+    if (selectedtab == 1) return tdInstanceLog;
+    if (selectedtab == 2) return tdRequestLog;
+    if (selectedtab == 3) return tdConsoleLog;
   }
 </script>
 
@@ -1402,7 +1412,4 @@
   </Tabs.Content>
 </Tabs.Root>
 
-<CustomSuperDebug
-  formData={getSuperDebugData()}
-/>
-
+<CustomSuperDebug formData={getSuperDebugData()} />
