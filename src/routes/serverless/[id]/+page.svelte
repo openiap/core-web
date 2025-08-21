@@ -42,7 +42,6 @@
   let tdConsoleLog = $state<GraphRow[]>([]);
   let distroname = $state(data.item.distro);
   let tagname = $state(data.item.tag);
-  let chartKey = $state(0); // Force chart re-render by changing key
 
   // Instance log
   let gdruntime = $state<Float64Array[]>([]);
@@ -53,11 +52,9 @@
   let gdresponsetime = $state<Float64Array[]>([]);
   let gdcontentsize = $state<Float64Array[]>([]);
   let gdnumrequest = $state<Float64Array[]>([]);
-
+  let selectedtab = $state(0);
   //  Console log
   // let gdruntime = $state<Float64Array[]>([]);
-  // let gdresponsetime = $state<Float64Array[]>([]);
-  // let gdboottime = $state<Float64Array[]>([]);
 
   const excludedcols = ["_id", "metadata", "ts", "userid"];
   if (data.item != null) {
@@ -193,10 +190,8 @@
   }
 
   async function getInstanceLogs() {
+    selectedtab = 1;
     // Fetch instance logs here
-    tdInstanceLog = [];
-    tdRequestLog = [];
-    tdConsoleLog = [];
     if (data.item == null || data.item.repo == null || data.item.tag == null) {
       toast.error("Error", {
         description: "Serverless Function not found or incomplete data",
@@ -219,7 +214,16 @@
         jwt: auth.access_token,
       });
       // Coerce to array depending on API shape
-      tdInstanceLog = Array.isArray(result) ? result : (result?.items ?? []);
+      const newTdInstanceLog = Array.isArray(result)
+        ? result
+        : (result?.items ?? []);
+
+      // Check if the data is the same then do not update the table
+      const currentHash = JSON.stringify(tdInstanceLog);
+      const newHash = JSON.stringify(newTdInstanceLog);
+      if (currentHash !== newHash) {
+        tdInstanceLog = newTdInstanceLog;
+      }
 
       await getGDInstanceLog();
     } catch (error: any) {
@@ -230,10 +234,8 @@
     }
   }
   async function getRequestLogs() {
+    selectedtab = 2;
     // Fetch request logs here
-    tdInstanceLog = [];
-    tdRequestLog = [];
-    tdConsoleLog = [];
     if (data.item == null || data.item.repo == null || data.item.tag == null) {
       toast.error("Error", {
         description: "Serverless Function not found or incomplete data",
@@ -256,7 +258,17 @@
         jwt: auth.access_token,
       });
       // Coerce to array depending on API shape
-      tdRequestLog = Array.isArray(result) ? result : (result?.items ?? []);
+      const newTdRequestLog = Array.isArray(result)
+        ? result
+        : (result?.items ?? []);
+
+      // Check if the data is the same then do not update the table
+      const currentHash = JSON.stringify(tdRequestLog);
+      const newHash = JSON.stringify(newTdRequestLog);
+      if (currentHash !== newHash) {
+        tdRequestLog = newTdRequestLog;
+      }
+
       await getGDRequestLog();
     } catch (error: any) {
       console.error("Error fetching request logs:", error);
@@ -266,10 +278,8 @@
     }
   }
   async function getConsoleLogs() {
+    selectedtab = 3;
     // Fetch console logs here
-    tdInstanceLog = [];
-    tdRequestLog = [];
-    tdConsoleLog = [];
     if (data.item == null || data.item.repo == null || data.item.tag == null) {
       toast.error("Error", {
         description: "Serverless Function not found or incomplete data",
@@ -292,7 +302,16 @@
         jwt: auth.access_token,
       });
       // Coerce to array depending on API shape
-      tdConsoleLog = Array.isArray(result) ? result : (result?.items ?? []);
+      const newTdConsoleLog = Array.isArray(result)
+        ? result
+        : (result?.items ?? []);
+
+      // Check if the data is the same then do not update the table
+      const currentHash = JSON.stringify(tdConsoleLog);
+      const newHash = JSON.stringify(newTdConsoleLog);
+      if (currentHash !== newHash) {
+        tdConsoleLog = newTdConsoleLog;
+      }
     } catch (error: any) {
       console.error("Error fetching console logs:", error);
       toast.error("Error fetching console logs", {
@@ -419,17 +438,18 @@
         jwt: auth.access_token,
       });
       if (gdruntimeres.length > 0) {
-        console.log("gdruntimeres:", gdruntimeres);
-        gdruntime = gdruntimeres[0];
-        gdruntime = [
+        let newgdruntime = [
           new Float64Array(gdruntimeres[0].arrays[0]),
           new Float64Array(gdruntimeres[0].arrays[1]),
         ];
-        chartKey += 1; // Force re-render
+        const currentHash = JSON.stringify(gdruntime);
+        const newHash = JSON.stringify(newgdruntime);
+        if (currentHash !== newHash) {
+          gdruntime = newgdruntime;
+        }
       } else {
         // Clear chart data if no data available
         gdruntime = [];
-        chartKey += 1; // Force re-render
       }
 
       let gdboottimeres = await auth.client.Aggregate<any>({
@@ -470,16 +490,23 @@
         jwt: auth.access_token,
       });
       if (gdboottimeres.length > 0) {
-        gdboottime = gdboottimeres[0];
-        gdboottime = [
+        let newgdboottime = [
           new Float64Array(gdboottimeres[0].arrays[0]),
           new Float64Array(gdboottimeres[0].arrays[1]),
         ];
-        chartKey += 1; // Force re-render
+        // Check if the data is the same then do not rerender the graph
+        const currentHash = JSON.stringify(gdboottime);
+        const newHash = JSON.stringify(newgdboottime);
+        if (currentHash !== newHash) {
+          gdboottime = newgdboottime;
+        }
       } else {
         // Clear chart data if no data available
-        gdboottime = [];
-        chartKey += 1; // Force re-render
+        const currentHash = JSON.stringify(gdboottime);
+        const newHash = JSON.stringify([]);
+        if (currentHash !== newHash) {
+          gdboottime = [];
+        }
       }
 
       let gdresponsetimeres = await auth.client.Aggregate<any>({
@@ -520,16 +547,23 @@
         jwt: auth.access_token,
       });
       if (gdresponsetimeres.length > 0) {
-        gdappresponsetime = gdresponsetimeres[0];
-        gdappresponsetime = [
+        let newgdappresponsetime = [
           new Float64Array(gdresponsetimeres[0].arrays[0]),
           new Float64Array(gdresponsetimeres[0].arrays[1]),
         ];
-        chartKey += 1; // Force re-render
+        // Check if the data is the same then do not rerender the graph
+        const currentHash = JSON.stringify(gdappresponsetime);
+        const newHash = JSON.stringify(newgdappresponsetime);
+        if (currentHash !== newHash) {
+          gdappresponsetime = newgdappresponsetime;
+        }
       } else {
         // Clear chart data if no data available
-        gdappresponsetime = [];
-        chartKey += 1; // Force re-render
+        const currentHash = JSON.stringify(gdappresponsetime);
+        const newHash = JSON.stringify([]);
+        if (currentHash !== newHash) {
+          gdappresponsetime = [];
+        }
       }
     } catch (error: any) {
       console.error("Error fetching chart data:", error);
@@ -581,15 +615,23 @@
         jwt: auth.access_token,
       });
       if (gdresponsetimeres.length > 0) {
-        gdresponsetime = [
+        let newgdresponsetime = [
           new Float64Array(gdresponsetimeres[0].arrays[0]),
           new Float64Array(gdresponsetimeres[0].arrays[1]),
         ];
-        chartKey += 1; // Force re-render
+        // Check if the data is the same then do not rerender the graph
+        const currentHash = JSON.stringify(gdresponsetime);
+        const newHash = JSON.stringify(newgdresponsetime);
+        if (currentHash !== newHash) {
+          gdresponsetime = newgdresponsetime;
+        }
       } else {
         // Clear chart data if no data available
-        gdresponsetime = [];
-        chartKey += 1; // Force re-render
+        const currentHash = JSON.stringify(gdresponsetime);
+        const newHash = JSON.stringify([]);
+        if (currentHash !== newHash) {
+          gdresponsetime = [];
+        }
       }
 
       let gdcontentsizeres = await auth.client.Aggregate<any>({
@@ -630,15 +672,23 @@
         jwt: auth.access_token,
       });
       if (gdcontentsizeres.length > 0) {
-        gdcontentsize = [
+        let newgdcontentsize = [
           new Float64Array(gdcontentsizeres[0].arrays[0]),
           new Float64Array(gdcontentsizeres[0].arrays[1]),
         ];
-        chartKey += 1; // Force re-render
+        // Check if the data is the same then do not rerender the graph
+        const currentHash = JSON.stringify(gdcontentsize);
+        const newHash = JSON.stringify(newgdcontentsize);
+        if (currentHash !== newHash) {
+          gdcontentsize = newgdcontentsize;
+        }
       } else {
         // Clear chart data if no data available
-        gdcontentsize = [];
-        chartKey += 1; // Force re-render
+        const currentHash = JSON.stringify(gdcontentsize);
+        const newHash = JSON.stringify([]);
+        if (currentHash !== newHash) {
+          gdcontentsize = [];
+        }
       }
 
       let gdnumrequestres = await auth.client.Aggregate<any>({
@@ -681,15 +731,23 @@
         jwt: auth.access_token,
       });
       if (gdnumrequestres.length > 0) {
-        gdnumrequest = [
+        let newgdnumrequest = [
           new Float64Array(gdnumrequestres[0].arrays[0]),
           new Float64Array(gdnumrequestres[0].arrays[1]),
         ];
-        chartKey += 1; // Force re-render
+        // Check if the data is the same then do not rerender the graph
+        const currentHash = JSON.stringify(gdnumrequest);
+        const newHash = JSON.stringify(newgdnumrequest);
+        if (currentHash !== newHash) {
+          gdnumrequest = newgdnumrequest;
+        }
       } else {
         // Clear chart data if no data available
-        gdnumrequest = [];
-        chartKey += 1; // Force re-render
+        const currentHash = JSON.stringify(gdnumrequest);
+        const newHash = JSON.stringify([]);
+        if (currentHash !== newHash) {
+          gdnumrequest = [];
+        }
       }
     } catch (error: any) {
       console.error("Error fetching chart data:", error);
@@ -715,6 +773,13 @@
         auth.config.serverless_domain_schema.replace("$slug$", data.item.repo),
       "_blank",
     );
+  }
+
+  function getSuperDebugData(){
+    if(selectedtab == 0) return formData
+    if(selectedtab == 1) return tdInstanceLog
+    if(selectedtab == 2) return tdRequestLog
+    if(selectedtab == 3) return tdConsoleLog
   }
 </script>
 
@@ -757,6 +822,7 @@
       try {
         if (typeof onChange === "function") {
           await onChange(selectedduration);
+          toast.success("Data reloaded successfully");
         }
       } catch (error: any) {
         toast.error("Error reloading data", {
@@ -838,13 +904,8 @@
     <Tabs.List
       class="h-fit grid grid-cols-1 md:block w-full md:w-fit bg-bw200 dark:bg-darkagenttab rounded-[15px] p-1 mb-10 lg:mb-0"
     >
-      <Tabs.Trigger
-        value="1"
-        onclick={() => {
-          tdInstanceLog = [];
-          tdRequestLog = [];
-          tdConsoleLog = [];
-        }}>Settings</Tabs.Trigger
+      <Tabs.Trigger value="1" onclick={() => (selectedtab = 0)}
+        >Settings</Tabs.Trigger
       >
       <Tabs.Trigger value="2" onclick={getInstanceLogs}
         >Instance Log</Tabs.Trigger
@@ -1252,13 +1313,11 @@
       {@render DurationSelect({ onChange: getInstanceLogs })}
       {@render ReloadData({ onChange: getInstanceLogs })}
     </div>
-    {#key chartKey}
-      <div class="grid grid-cols-3 gap-4 mb-4">
-        <CustomGraph title="Run Time" bind:chartdata={gdruntime} />
-        <CustomGraph title="Boot Time" bind:chartdata={gdboottime} />
-        <CustomGraph title="Response Time" bind:chartdata={gdappresponsetime} />
-      </div>
-    {/key}
+    <div class="grid grid-cols-3 gap-4 mb-4">
+      <CustomGraph title="Run Time" bind:data={gdruntime} />
+      <CustomGraph title="Boot Time" bind:data={gdboottime} />
+      <CustomGraph title="Response Time" bind:data={gdappresponsetime} />
+    </div>
     {@render LogsTable({
       rows: tdInstanceLog.map((row) => ({ ...row, tag: row.metadata?.tag })),
       cols:
@@ -1283,16 +1342,14 @@
       {@render ReloadData({ onChange: getRequestLogs })}
     </div>
 
-    {#key chartKey}
-      <div class="grid grid-cols-3 gap-4 mb-4">
-        <CustomGraph title="Response Time" bind:chartdata={gdresponsetime} />
-        <CustomGraph title="Content Size" bind:chartdata={gdcontentsize} />
-        <!-- <CustomGraph
-          title="Num Req Per Status Code"
-          bind:chartdata={gdnumrequest}
-        /> -->
-      </div>
-    {/key}
+    <div class="grid grid-cols-3 gap-4 mb-4">
+      <CustomGraph title="Response Time" bind:data={gdresponsetime} />
+      <CustomGraph title="Content Size" bind:data={gdcontentsize} />
+      <!-- <CustomGraph
+        title="Num Req Per Status Code"
+        bind:chartdata={gdnumrequest}
+      /> -->
+    </div>
 
     {@render LogsTable({
       rows: tdRequestLog.map((row) => ({ ...row, tag: row.metadata?.tag })),
@@ -1346,11 +1403,6 @@
 </Tabs.Root>
 
 <CustomSuperDebug
-  formData={tdRequestLog.length > 0
-    ? tdRequestLog
-    : tdInstanceLog.length > 0
-      ? tdInstanceLog
-      : tdConsoleLog.length > 0
-        ? tdConsoleLog
-        : formData}
+  formData={getSuperDebugData()}
 />
+

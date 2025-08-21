@@ -1,10 +1,11 @@
 <script lang="ts">
     import { onMount, onDestroy } from "svelte";
     import { mode } from "mode-watcher";
+    import { toast } from "svelte-sonner";
     // Lazy-load uPlot on client to avoid SSR window/document access
     import "uplot/dist/uPlot.min.css";
 
-    const { title = "Custom graph", chartdata = $bindable([]) } = $props();
+    const { title = "Custom graph", data = $bindable([]) } = $props();
 
     let chartEl: HTMLDivElement | null = $state(null);
     let containerEl: HTMLDivElement | null = $state(null);
@@ -12,31 +13,6 @@
     let uplot: any = $state(null);
     let UPlotConstructor: any = $state(null);
     let resizeObserver: ResizeObserver | null = $state(null);
-    let data = $state(chartdata || []);
-    let lastChartDataHash = $state("");
-
-    // Watch for chartdata prop changes
-    $effect(() => {
-        const currentHash = JSON.stringify(chartdata);
-        if (currentHash !== lastChartDataHash) {
-            lastChartDataHash = currentHash;
-            data = chartdata || [];
-            recreateChart();
-        }
-    });
-
-    // Function to recreate chart completely
-    function recreateChart() {
-        if (uplot) {
-            uplot.destroy();
-            uplot = null;
-        }
-
-        if (chartEl && UPlotConstructor && !isDataEmpty()) {
-            const opts = getOptions();
-            uplot = new UPlotConstructor(opts, data, chartEl);
-        }
-    }
 
     // Color palettes for different themes
     const lightModeColors = [
@@ -180,7 +156,6 @@
             hooks: {
                 setCursor: [
                     (u: any) => {
-                        // console.log("Cursor set:", u.cursor.idx);
                         if (u.cursor.idx != null) {
                             const idx = u.cursor.idx;
                             const xVal = u.data[0][idx];
@@ -200,16 +175,26 @@
     }
 
     let currentMode = $state($mode);
+    let lastDataHash = $state("");
 
     // Function to update chart with new theme
     function updateChartTheme() {
         if (uplot && chartEl && UPlotConstructor && !isDataEmpty()) {
-            // Destroy current chart
-            uplot.destroy();
+            try {
+                // Destroy current chart
+                uplot.destroy();
 
-            // Create new chart with updated theme
-            const opts = getOptions();
-            uplot = new UPlotConstructor(opts, data, chartEl);
+                // Create new chart with updated theme
+                const opts = getOptions();
+                uplot = new UPlotConstructor(opts, data, chartEl);
+            } catch (error) {
+                toast.error("Failed to update chart theme", {
+                    description:
+                        error instanceof Error
+                            ? error.message
+                            : "Unknown error occurred",
+                });
+            }
         }
     }
 
@@ -221,32 +206,129 @@
         }
     });
 
+    // Watch for data changes and update/recreate chart
+    $effect(() => {
+        const currentDataHash = JSON.stringify(data);
+        if (currentDataHash === lastDataHash) {
+            return; // No change in data
+        }
+        lastDataHash = currentDataHash;
+
+        // If we have a chart and valid data, try to update it
+        if (uplot && UPlotConstructor && !isDataEmpty()) {
+            try {
+                // Try to update data in place first
+                uplot.setData(data);
+            } catch (error) {
+                // If update fails, recreate the chart
+                toast.error("Failed to update chart data", {
+                    description:
+                        error instanceof Error
+                            ? error.message
+                            : "Unknown error occurred",
+                });
+                try {
+                    uplot.destroy();
+                    const opts = getOptions();
+                    uplot = new UPlotConstructor(opts, data, chartEl);
+                } catch (recreateError) {
+                    toast.error("Failed to recreate chart", {
+                        description:
+                            recreateError instanceof Error
+                                ? recreateError.message
+                                : "Unknown error occurred",
+                    });
+                    uplot = null;
+                }
+            }
+        } else if (uplot && isDataEmpty()) {
+            // Destroy chart if data becomes empty
+            try {
+                uplot.destroy();
+                uplot = null;
+            } catch (error) {
+                toast.error("Failed to destroy chart", {
+                    description:
+                        error instanceof Error
+                            ? error.message
+                            : "Unknown error occurred",
+                });
+                uplot = null;
+            }
+        } else if (!uplot && !isDataEmpty() && UPlotConstructor && chartEl) {
+            // Create chart if we have data but no chart yet
+            try {
+                const opts = getOptions();
+                uplot = new UPlotConstructor(opts, data, chartEl);
+            } catch (error) {
+                toast.error("Failed to create chart", {
+                    description:
+                        error instanceof Error
+                            ? error.message
+                            : "Unknown error occurred",
+                });
+            }
+        }
+    });
+
+    // Watch for UPlotConstructor availability and create chart if data is ready
+    $effect(() => {
+        if (UPlotConstructor && !uplot && !isDataEmpty() && chartEl) {
+            try {
+                const opts = getOptions();
+                uplot = new UPlotConstructor(opts, data, chartEl);
+            } catch (error) {
+                toast.error("Failed to initialize chart", {
+                    description:
+                        error instanceof Error
+                            ? error.message
+                            : "Unknown error occurred",
+                });
+            }
+        }
+    });
+
     onMount(() => {
         let destroyed = false;
 
-        // Only initialize the chart if there's data
-        if (!isDataEmpty()) {
-            // Initialize the chart
-            import("uplot").then(({ default: UPlot }) => {
-                if (chartEl && !destroyed && !isDataEmpty()) {
+        // Initialize the uPlot constructor
+        import("uplot")
+            .then(({ default: UPlot }) => {
+                if (!destroyed) {
                     UPlotConstructor = UPlot;
-                    const opts = getOptions();
-                    uplot = new UPlot(opts, data, chartEl);
 
                     // Set up resize observer for responsive behavior
                     if (window.ResizeObserver && containerEl) {
                         resizeObserver = new ResizeObserver((entries) => {
                             if (uplot && !destroyed) {
-                                const { width, height } =
-                                    getResponsiveDimensions();
-                                uplot.setSize({ width, height });
+                                try {
+                                    const { width, height } =
+                                        getResponsiveDimensions();
+                                    uplot.setSize({ width, height });
+                                } catch (error) {
+                                    toast.error("Failed to resize chart", {
+                                        description:
+                                            error instanceof Error
+                                                ? error.message
+                                                : "Unknown error occurred",
+                                    });
+                                }
                             }
                         });
                         resizeObserver.observe(containerEl);
                     }
                 }
+            })
+            .catch((error) => {
+                if (!destroyed) {
+                    toast.error("Failed to load chart library", {
+                        description:
+                            error instanceof Error
+                                ? error.message
+                                : "Unknown error occurred",
+                    });
+                }
             });
-        }
 
         return () => {
             destroyed = true;
@@ -254,7 +336,12 @@
                 resizeObserver?.disconnect();
                 uplot?.destroy();
             } catch (error) {
-                console.error("Error cleaning up chart:", error);
+                toast.error("Error cleaning up chart", {
+                    description:
+                        error instanceof Error
+                            ? error.message
+                            : "Unknown error occurred",
+                });
             }
             uplot = null;
             resizeObserver = null;
@@ -266,7 +353,12 @@
             resizeObserver?.disconnect();
             uplot?.destroy();
         } catch (error) {
-            console.error("Error destroying chart:", error);
+            toast.error("Error destroying chart", {
+                description:
+                    error instanceof Error
+                        ? error.message
+                        : "Unknown error occurred",
+            });
         }
     });
 </script>
