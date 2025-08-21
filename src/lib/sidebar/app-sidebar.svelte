@@ -129,7 +129,7 @@
 		"Git Repositories",
 		"g i",
 		"tourgit",
-		"/git",
+		`${base}/git`,
 		true,
 		true,
 	);
@@ -500,7 +500,6 @@
 
 		if (auth.config?.enable_gitserver == true) {
 			gitrepo.hidden = !auth.isAuthenticated;
-			gitrepo.url = auth.baseurl + "/git";
 		} else {
 			gitrepo.hidden = true;
 		}

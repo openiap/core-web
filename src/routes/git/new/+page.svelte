@@ -15,7 +15,6 @@
 
   window.Buffer = Buffer;
 
-  const { data } = $props();
   let loading = $state(false);
   let repositoryname = $state("");
   let temprepos: any = $state();
@@ -265,8 +264,7 @@
             fs,
             http,
             dir,
-            url:
-              data.protocol + "://" + data.domain + `/git/${username}/${repositoryname}`,
+            url: auth.baseurl + `/git/${username}/${repositoryname}`,
           });
         }
       } else {
