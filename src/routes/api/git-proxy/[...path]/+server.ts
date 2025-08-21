@@ -11,6 +11,10 @@ export const POST: RequestHandler = async ({ request, url, params }) => {
 function getFinalTarget(path: string | string[], url: URL): string {
 	const pathname = Array.isArray(path) ? path.join('/') : path;
 	const query = url.searchParams.toString();
+	if(pathname.indexOf("localhost") > -1) {
+		// If the path contains "localhost", we assume it's a local development URL
+		return `http://${pathname}${query ? '?' + query : ''}`;
+	}
 	return `https://${pathname}${query ? '?' + query : ''}`;
 }
 
