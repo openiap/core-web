@@ -15,6 +15,7 @@
 
   window.Buffer = Buffer;
 
+  const { data } = $props();
   let loading = $state(false);
   let repositoryname = $state("");
   let temprepos: any = $state();
@@ -265,7 +266,7 @@
             http,
             dir,
             url:
-              "https://dev.openiap.io" + `/git/${username}/${repositoryname}`,
+              data.protocol + "://" + data.domain + `/git/${username}/${repositoryname}`,
           });
         }
       } else {
@@ -435,8 +436,6 @@
     class="mt-4"
     onclick={() => {
       createRepository();
-      // https://dev.openiap.io/git/username/reponame
-      // update username for special charaters / @ to be replaced with _
     }}
     title="Create Repository"
     aria-label="Create Repository"

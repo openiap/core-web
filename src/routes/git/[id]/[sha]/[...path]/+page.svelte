@@ -13,7 +13,6 @@
   const pathto = $derived(() => (data.path ? data.path : ""));
 
   async function getfilecontent() {
-    // const url = `https://dev.openiap.io/git/${data.item.repo}`;
     const fs = new FS(data.item.repo.split("/").join("_"));
     const dir = "/test-clone";
     try {
