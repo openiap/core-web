@@ -13,7 +13,8 @@ function getFinalTarget(path: string | string[], url: URL): string {
 	const query = url.searchParams.toString();
 	if(pathname.indexOf("localhost") > -1) {
 		// If the path contains "localhost", we assume it's a local development URL
-		return `http://${pathname}${query ? '?' + query : ''}`;
+		// return `http://${pathname}${query ? '?' + query : ''}`;
+		return `http://localhost:3000/${query ? '?' + query : ''}`;
 	}
 	return `https://${pathname}${query ? '?' + query : ''}`;
 }
