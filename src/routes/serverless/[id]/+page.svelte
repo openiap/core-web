@@ -296,7 +296,6 @@
     }
   }
   async function getConsoleLogs() {
-    console.log("Fetching console logs", showerror);
     selectedtab = 3;
     // Fetch console logs here
     if (data.item == null || data.item.repo == null || data.item.tag == null) {
