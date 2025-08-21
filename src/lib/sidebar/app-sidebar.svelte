@@ -131,7 +131,7 @@
 		"tourgit",
 		`${base}/git`,
 		true,
-		true,
+		false,
 	);
 	const promptfn = new SidebarItem(
 		"Prompt Fn",
