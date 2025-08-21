@@ -6,8 +6,8 @@ export const load: PageLoad = async ({ parent, params }) => {
   try {
     let item = await auth.client.FindOne<any>({ collectionname: "sf", query: { _id: params.id, _type: "app" }, jwt: access_token });
     let chartdata
-    return { item, chartdata };
+    return { item, chartdata, paramid: params.id };
   } catch (error) {
-    return { item: null, chartdata: null };
+    return { item: null, chartdata: null, paramid: null };
   }
 };

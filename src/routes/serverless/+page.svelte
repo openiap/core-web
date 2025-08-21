@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
+  import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
   import { HotkeyButton } from "$lib/components/ui/hotkeybutton/index.js";
   import { data as datacomponent } from "$lib/entities/data.svelte.js";
   import { Entities } from "$lib/entities/index.js";
@@ -19,6 +20,9 @@
   let entities = $state(data.entities);
   let showWarning = $state(false);
   let deleteData: any = $state({});
+
+  let profileroles = auth.profile?.roles || [];
+  const isAdmin = profileroles.includes("admins");
 
   async function deleteitem(item: any) {
     try {
@@ -53,6 +57,14 @@
 
 <div class="sm:flex space-y-4 sm:space-y-0 justify-between mb-4 sm:space-x-5">
   <SearchInput bind:searchstring />
+  {#if isAdmin}
+    <Hotkeybutton
+      aria-label="View Logs"
+      onclick={() => goto(base + "/serverless/null")}
+    >
+      View All Logs
+    </Hotkeybutton>
+  {/if}
 </div>
 
 <Entities
@@ -68,17 +80,17 @@
   {#snippet action(item: any)}
     {#if item.packageid}
       <HotkeyButton
-      aria-label="Edit files"
-      disabled={loading}
-      onclick={() => goto(base + `/package/${item.packageid}/editfiles`)}
-      size="tableicon"
-      variant="icon"
-    >
-      <FilePen />
-  </HotkeyButton>
-  {/if}
+        aria-label="Edit files"
+        disabled={loading}
+        onclick={() => goto(base + `/package/${item.packageid}/editfiles`)}
+        size="tableicon"
+        variant="icon"
+      >
+        <FilePen />
+      </HotkeyButton>
+    {/if}
 
-  <HotkeyButton
+    <HotkeyButton
       aria-label="Edit"
       disabled={loading}
       onclick={() => single_item_click(item)}

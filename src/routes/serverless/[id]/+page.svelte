@@ -28,7 +28,6 @@
   const isAdmin = profileroles.includes("admins");
 
   let loading = $state(false);
-  let runasuser = $state(data.item.runas == "" ? true : false);
   let selectedduration = $state(usersettings.serverlesstimefilter);
   let durationOptions = [
     { label: "Last 5 minutes", value: "5m" },
@@ -43,8 +42,9 @@
   let tdInstanceLog = $state<GraphRow[]>([]);
   let tdRequestLog = $state<GraphRow[]>([]);
   let tdConsoleLog = $state<GraphRow[]>([]);
-  let distroname = $state(data.item.distro);
-  let tagname = $state(data.item.tag);
+  let distroname = $state(data?.item?.distro);
+  let runasuser = $state(data?.item?.runas == "" ? true : false);
+  let tagname = $state(data?.item?.tag);
 
   // Instance log
   let gdruntime = $state<Float64Array[]>([]);
@@ -62,6 +62,7 @@
   let showerror = $state(false);
 
   const excludedcols = ["_id", "metadata", "ts", "userid"];
+
   if (data.item != null) {
     if (data.item.anonymous == null) {
       data.item.anonymous = false;
@@ -202,28 +203,40 @@
     });
   }
 
+  if (data.paramid == "null") {
+    getInstanceLogs();
+  }
+
   async function getInstanceLogs() {
     selectedtab = 1;
     // Fetch instance logs here
-    if (data.item == null || data.item.repo == null || data.item.tag == null) {
-      toast.error("Error", {
-        description: "Serverless Function not found or incomplete data",
-      });
-      return;
-    }
     try {
       const { start, end } = getTimeDuration(selectedduration);
+      let query = {
+        ts: {
+          $gte: new Date(start),
+          $lte: new Date(end),
+        },
+      };
+      if (data.paramid != "null") {
+        if (
+          data.item == null ||
+          data.item.repo == null ||
+          data.item.tag == null
+        ) {
+          toast.error("Error", {
+            description: "Serverless Function not found or incomplete data",
+          });
+          return;
+        }
+        // @ts-ignore
+        query["metadata.repo"] = data.item.repo;
+      }
       const result: any = await auth.client.Query({
         collectionname: "sf_instance_logs",
         top: 100,
         orderby: { ts: -1 },
-        query: {
-          "metadata.repo": data.item.repo,
-          ts: {
-            $gte: new Date(start),
-            $lte: new Date(end),
-          },
-        },
+        query,
         jwt: auth.access_token,
       });
       // Coerce to array depending on API shape
@@ -248,22 +261,28 @@
   }
   async function getRequestLogs() {
     selectedtab = 2;
-    // Fetch request logs here
-    if (data.item == null || data.item.repo == null || data.item.tag == null) {
-      toast.error("Error", {
-        description: "Serverless Function not found or incomplete data",
-      });
-      return;
-    }
     try {
       const { start, end } = getTimeDuration(selectedduration);
       let query = {
-        "metadata.repo": data.item.repo,
         ts: {
           $gte: new Date(start),
           $lte: new Date(end),
         },
       };
+      if (data.paramid != "null") {
+        if (
+          data.item == null ||
+          data.item.repo == null ||
+          data.item.tag == null
+        ) {
+          toast.error("Error", {
+            description: "Serverless Function not found or incomplete data",
+          });
+          return;
+        }
+        // @ts-ignore
+        query["metadata.repo"] = data.item.repo;
+      }
       if (showerror == true) {
         // @ts-ignore
         query["code"] = { $ne: 200 };
@@ -297,22 +316,28 @@
   }
   async function getConsoleLogs() {
     selectedtab = 3;
-    // Fetch console logs here
-    if (data.item == null || data.item.repo == null || data.item.tag == null) {
-      toast.error("Error", {
-        description: "Serverless Function not found or incomplete data",
-      });
-      return;
-    }
     try {
       const { start, end } = getTimeDuration(selectedduration);
       let query = {
-        "metadata.repo": data.item.repo,
         ts: {
           $gte: new Date(start),
           $lte: new Date(end),
         },
       };
+      if (data.paramid != "null") {
+        if (
+          data.item == null ||
+          data.item.repo == null ||
+          data.item.tag == null
+        ) {
+          toast.error("Error", {
+            description: "Serverless Function not found or incomplete data",
+          });
+          return;
+        }
+        // @ts-ignore
+        query["metadata.repo"] = data.item.repo;
+      }
       if (showerror == true) {
         // @ts-ignore
         query["err"] = { $eq: true };
@@ -335,7 +360,7 @@
       if (currentHash !== newHash) {
         tdConsoleLog = newTdConsoleLog;
       }
-      await getGDConsoleLog();
+      // await getGDConsoleLog();
     } catch (error: any) {
       console.error("Error fetching console logs:", error);
       toast.error("Error fetching console logs", {
@@ -423,42 +448,45 @@
   async function getGDInstanceLog() {
     try {
       const { start, end } = getTimeDuration(selectedduration);
-
+      const agg1 = [
+        {
+          $match: {
+            ts: { $gte: new Date(start), $lt: new Date(end) },
+          },
+        },
+        {
+          $project: {
+            ts_epoch: { $toLong: { $toDate: "$ts" } }, // ms epoch
+            run_time_sec: "$run_time",
+          },
+        },
+        {
+          $project: {
+            ts_epoch: { $divide: ["$ts_epoch", 1000] }, // convert ms → seconds
+            run_time_sec: 1,
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            ts_array: { $push: "$ts_epoch" },
+            run_time_array: { $push: "$run_time_sec" },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            arrays: ["$ts_array", "$run_time_array"],
+          },
+        },
+      ];
+      if (data.paramid != "null") {
+        // @ts-ignore
+        agg1[0].$match["metadata.repo"] = data.item.repo;
+      }
       let gdruntimeres = await auth.client.Aggregate<any>({
         collectionname: "sf_instance_logs",
-        aggregates: [
-          {
-            $match: {
-              "metadata.repo": data.item.repo,
-              ts: { $gte: new Date(start), $lt: new Date(end) },
-            },
-          },
-          {
-            $project: {
-              ts_epoch: { $toLong: { $toDate: "$ts" } }, // ms epoch
-              run_time_sec: "$run_time",
-            },
-          },
-          {
-            $project: {
-              ts_epoch: { $divide: ["$ts_epoch", 1000] }, // convert ms → seconds
-              run_time_sec: 1,
-            },
-          },
-          {
-            $group: {
-              _id: null,
-              ts_array: { $push: "$ts_epoch" },
-              run_time_array: { $push: "$run_time_sec" },
-            },
-          },
-          {
-            $project: {
-              _id: 0,
-              arrays: ["$ts_array", "$run_time_array"],
-            },
-          },
-        ],
+        aggregates: agg1,
         jwt: auth.access_token,
       });
       if (gdruntimeres.length > 0) {
@@ -476,43 +504,48 @@
         gdruntime = [];
       }
 
+      let agg2 = [
+        {
+          $match: {
+            ts: { $gte: new Date(start), $lt: new Date(end) },
+          },
+        },
+        {
+          $project: {
+            ts_epoch: { $toLong: { $toDate: "$ts" } }, // ms epoch
+            boot_time_sec: "$boot_time",
+          },
+        },
+        {
+          $project: {
+            ts_epoch: { $divide: ["$ts_epoch", 1000] }, // convert ms → seconds
+            boot_time_sec: 1,
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            ts_array: { $push: "$ts_epoch" },
+            boot_time_array: { $push: "$boot_time_sec" },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            arrays: ["$ts_array", "$boot_time_array"],
+          },
+        },
+      ];
+      if (data.paramid != "null") {
+        // @ts-ignore
+        agg2[0].$match["metadata.repo"] = data.item.repo;
+      }
       let gdboottimeres = await auth.client.Aggregate<any>({
         collectionname: "sf_instance_logs",
-        aggregates: [
-          {
-            $match: {
-              "metadata.repo": data.item.repo,
-              ts: { $gte: new Date(start), $lt: new Date(end) },
-            },
-          },
-          {
-            $project: {
-              ts_epoch: { $toLong: { $toDate: "$ts" } }, // ms epoch
-              boot_time_sec: "$boot_time",
-            },
-          },
-          {
-            $project: {
-              ts_epoch: { $divide: ["$ts_epoch", 1000] }, // convert ms → seconds
-              boot_time_sec: 1,
-            },
-          },
-          {
-            $group: {
-              _id: null,
-              ts_array: { $push: "$ts_epoch" },
-              boot_time_array: { $push: "$boot_time_sec" },
-            },
-          },
-          {
-            $project: {
-              _id: 0,
-              arrays: ["$ts_array", "$boot_time_array"],
-            },
-          },
-        ],
+        aggregates: agg2,
         jwt: auth.access_token,
       });
+
       if (gdboottimeres.length > 0) {
         let newgdboottime = [
           new Float64Array(gdboottimeres[0].arrays[0]),
@@ -533,41 +566,45 @@
         }
       }
 
+      let agg3 = [
+        {
+          $match: {
+            ts: { $gte: new Date(start), $lt: new Date(end) },
+          },
+        },
+        {
+          $project: {
+            ts_epoch: { $toLong: { $toDate: "$ts" } }, // ms epoch
+            app_response_time_sec: "$app_response_time",
+          },
+        },
+        {
+          $project: {
+            ts_epoch: { $divide: ["$ts_epoch", 1000] }, // convert ms → seconds
+            app_response_time_sec: 1,
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            ts_array: { $push: "$ts_epoch" },
+            app_response_time_array: { $push: "$app_response_time_sec" },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            arrays: ["$ts_array", "$app_response_time_array"],
+          },
+        },
+      ];
+      if (data.paramid != "null") {
+        // @ts-ignore
+        agg3[0].$match["metadata.repo"] = data.item.repo;
+      }
       let gdresponsetimeres = await auth.client.Aggregate<any>({
         collectionname: "sf_instance_logs",
-        aggregates: [
-          {
-            $match: {
-              "metadata.repo": data.item.repo,
-              ts: { $gte: new Date(start), $lt: new Date(end) },
-            },
-          },
-          {
-            $project: {
-              ts_epoch: { $toLong: { $toDate: "$ts" } }, // ms epoch
-              app_response_time_sec: "$app_response_time",
-            },
-          },
-          {
-            $project: {
-              ts_epoch: { $divide: ["$ts_epoch", 1000] }, // convert ms → seconds
-              app_response_time_sec: 1,
-            },
-          },
-          {
-            $group: {
-              _id: null,
-              ts_array: { $push: "$ts_epoch" },
-              app_response_time_array: { $push: "$app_response_time_sec" },
-            },
-          },
-          {
-            $project: {
-              _id: 0,
-              arrays: ["$ts_array", "$app_response_time_array"],
-            },
-          },
-        ],
+        aggregates: agg3,
         jwt: auth.access_token,
       });
       if (gdresponsetimeres.length > 0) {
@@ -603,7 +640,6 @@
       let gdresponsetime_agg = [
         {
           $match: {
-            "metadata.repo": data.item.repo,
             ts: { $gte: new Date(start), $lt: new Date(end) },
           },
         },
@@ -633,6 +669,10 @@
           },
         },
       ];
+      if (data.paramid != "null") {
+        // @ts-ignore
+        gdresponsetime_agg[0].$match["metadata.repo"] = data.item.repo;
+      }
       if (showerror == true) {
         // @ts-ignore
         gdresponsetime_agg[0].$match["code"] = { $ne: 200 };
@@ -665,7 +705,6 @@
       let gdcontentsize_agg = [
         {
           $match: {
-            "metadata.repo": data.item.repo,
             ts: { $gte: new Date(start), $lt: new Date(end) },
           },
         },
@@ -695,6 +734,10 @@
           },
         },
       ];
+      if (data.paramid != "null") {
+        // @ts-ignore
+        gdcontentsize_agg[0].$match["metadata.repo"] = data.item.repo;
+      }
       if (showerror == true) {
         // @ts-ignore
         gdcontentsize_agg[0].$match["code"] = { $ne: 200 };
@@ -727,7 +770,6 @@
       let gdnumrequest_agg = [
         {
           $match: {
-            "metadata.repo": data.item.repo,
             ts: { $gte: new Date(start), $lt: new Date(end) },
           },
         },
@@ -759,6 +801,10 @@
           },
         },
       ];
+      if (data.paramid != "null") {
+        // @ts-ignore
+        gdnumrequest_agg[0].$match["metadata.repo"] = data.item.repo;
+      }
       if (showerror == true) {
         // @ts-ignore
         gdnumrequest_agg[0].$match["code"] = { $ne: 200 };
@@ -802,7 +848,6 @@
       let gdresponsetime_agg = [
         {
           $match: {
-            "metadata.repo": data.item.repo,
             ts: { $gte: new Date(start), $lt: new Date(end) },
           },
         },
@@ -832,6 +877,10 @@
           },
         },
       ];
+      if (data.paramid != "null") {
+        // @ts-ignore
+        gdresponsetime_agg[0].$match["metadata.repo"] = data.item.repo;
+      }
       if (showerror == true) {
         // @ts-ignore
         gdresponsetime_agg[0].$match["err"] = { $eq: true };
@@ -1020,14 +1069,16 @@
   {/if}
 {/snippet}
 
-<Tabs.Root value="1" class="w-full">
+<Tabs.Root value={data.paramid != "null" ? "1" : "2"} class="w-full">
   <div class="flex items-center gap-4">
     <Tabs.List
       class="h-fit grid grid-cols-1 md:block w-full md:w-fit bg-bw200 dark:bg-darkagenttab rounded-[15px] p-1 mb-10 lg:mb-0"
     >
-      <Tabs.Trigger value="1" onclick={() => (selectedtab = 0)}
-        >Settings</Tabs.Trigger
-      >
+      {#if data.paramid != "null"}
+        <Tabs.Trigger value="1" onclick={() => (selectedtab = 0)}
+          >Settings</Tabs.Trigger
+        >
+      {/if}
       <Tabs.Trigger value="2" onclick={getInstanceLogs}
         >Instance Log</Tabs.Trigger
       >
@@ -1036,399 +1087,403 @@
       <Tabs.Trigger value="4" onclick={getConsoleLogs}>Console Log</Tabs.Trigger
       >
     </Tabs.List>
-    <HotkeyButton
-      disabled={loading}
-      aria-label="Open in web"
-      title="Open in web"
-      onclick={() => {
-        OpenLink();
-      }}
-    >
-      <Webhook />
-      Open in web
-    </HotkeyButton>
-  </div>
-
-  <Tabs.Content value="1" class="mt-6">
-    {#if message && $message != ""}
-      {$message}
+    {#if data.paramid != "null"}
+      <HotkeyButton
+        disabled={loading}
+        aria-label="Open in web"
+        title="Open in web"
+        onclick={() => {
+          OpenLink();
+        }}
+      >
+        <Webhook />
+        Open in web
+      </HotkeyButton>
     {/if}
-    {#if $formData != null}
-      <form method="POST" use:enhance>
-        <Form.Field {form} name="name" class="mb-10">
-          <Form.Control>
-            {#snippet children({ props })}
-              <Form.Label>Name</Form.Label>
-              <CustomInput
-                placeholder="Type name"
-                disabled={loading}
-                {...props}
-                bind:value={$formData.name}
-              />
-            {/snippet}
-          </Form.Control>
-          <Form.FieldErrors />
-        </Form.Field>
-
-        <Form.Field {form} name="tag" class="mb-10">
-          <Form.Control>
-            {#snippet children({ props })}
-              <Form.Label>Tag</Form.Label>
-              <Entityselector
-                width="md:w-fit w-64"
-                class="mb-4 md:mb-0"
-                {loading}
-                {...props}
-                collectionname="sf"
-                basefilter={{ _type: "image", repo: $formData.repo }}
-                bind:value={$formData.tag}
-                handleChangeFunction={(item: any) => {
-                  if (item != null) {
-                    $formData.tag = item.tag;
-                    tagname = item.tag;
-                  }
-                }}
-                returnobject={true}
-              >
-                {#snippet rendername(item: any)}
-                  {item.name}
-                {/snippet}
-                {#snippet rendercontent(item: any)}
-                  {#if tagname == null || tagname == ""}
-                    Nothing selected
-                  {:else}
-                    {tagname}
-                  {/if}
-                {/snippet}
-              </Entityselector>
-            {/snippet}
-          </Form.Control>
-          <Form.FieldErrors />
-        </Form.Field>
-
-        <Form.Field {form} name="repo" class="mb-10">
-          <Form.Control>
-            {#snippet children({ props })}
-              <Form.Label>Repo</Form.Label>
-              <CustomInput
-                placeholder="Type repo"
-                disabled={true}
-                {...props}
-                bind:value={$formData.repo}
-              />
-            {/snippet}
-          </Form.Control>
-          <Form.FieldErrors />
-        </Form.Field>
-
-        <!-- insert CustomSwitch for field anonymous -->
-        <Form.Field {form} name="anonymous" class="mb-10">
-          <Form.Control>
-            {#snippet children({ props })}
-              <div class="flex flex-row items-center space-x-2 py-4">
-                <Form.Label>Anonymous</Form.Label>
-                <CustomSwitch
+  </div>
+  {#if data.paramid != "null"}
+    <Tabs.Content value="1" class="mt-6">
+      {#if message && $message != ""}
+        {$message}
+      {/if}
+      {#if $formData != null}
+        <form method="POST" use:enhance>
+          <Form.Field {form} name="name" class="mb-10">
+            <Form.Control>
+              {#snippet children({ props })}
+                <Form.Label>Name</Form.Label>
+                <CustomInput
+                  placeholder="Type name"
                   disabled={loading}
                   {...props}
-                  bind:checked={$formData.anonymous}
+                  bind:value={$formData.name}
                 />
-              </div>
-            {/snippet}
-          </Form.Control>
-          <Form.FieldErrors />
-        </Form.Field>
+              {/snippet}
+            </Form.Control>
+            <Form.FieldErrors />
+          </Form.Field>
 
-        <Form.Field {form} name="distro" class="mb-10">
-          <Form.Control>
-            {#snippet children({ props })}
-              <Form.Label>Distro</Form.Label>
-              <Entityselector
-                width="md:w-fit w-64"
-                class="mb-4 md:mb-0"
-                {loading}
-                {...props}
-                collectionname="sf"
-                basefilter={{ _type: "distro" }}
-                bind:value={$formData.distro}
-                handleChangeFunction={(item: any) => {
-                  if (item != null) {
-                    $formData.distro = item.repo + ":" + item.tag;
-                    distroname = item.repo + ":" + item.tag;
-                  }
-                }}
-                returnobject={true}
-              >
-                {#snippet rendername(item: any)}
-                  {item.name}
-                {/snippet}
-                {#snippet rendercontent(item: any)}
-                  {#if distroname == null || distroname == ""}
-                    Nothing selected
-                  {:else}
-                    {distroname}
-                  {/if}
-                {/snippet}
-              </Entityselector>
-            {/snippet}
-          </Form.Control>
-          <Form.FieldErrors />
-        </Form.Field>
+          <Form.Field {form} name="tag" class="mb-10">
+            <Form.Control>
+              {#snippet children({ props })}
+                <Form.Label>Tag</Form.Label>
+                <Entityselector
+                  width="md:w-fit w-64"
+                  class="mb-4 md:mb-0"
+                  {loading}
+                  {...props}
+                  collectionname="sf"
+                  basefilter={{ _type: "image", repo: $formData.repo }}
+                  bind:value={$formData.tag}
+                  handleChangeFunction={(item: any) => {
+                    if (item != null) {
+                      $formData.tag = item.tag;
+                      tagname = item.tag;
+                    }
+                  }}
+                  returnobject={true}
+                >
+                  {#snippet rendername(item: any)}
+                    {item.name}
+                  {/snippet}
+                  {#snippet rendercontent(item: any)}
+                    {#if tagname == null || tagname == ""}
+                      Nothing selected
+                    {:else}
+                      {tagname}
+                    {/if}
+                  {/snippet}
+                </Entityselector>
+              {/snippet}
+            </Form.Control>
+            <Form.FieldErrors />
+          </Form.Field>
 
-        <Form.Field {form} name="environment" class="w-full mb-10">
-          <Form.Control>
-            {#snippet children({ props })}
-              <Form.Label>Environment</Form.Label>
-              <ObjectInput
-                disabled={loading}
-                {...props}
-                bind:value={$formData.environment}
-              />
-            {/snippet}
-          </Form.Control>
-          <Form.FieldErrors />
-        </Form.Field>
+          <Form.Field {form} name="repo" class="mb-10">
+            <Form.Control>
+              {#snippet children({ props })}
+                <Form.Label>Repo</Form.Label>
+                <CustomInput
+                  placeholder="Type repo"
+                  disabled={true}
+                  {...props}
+                  bind:value={$formData.repo}
+                />
+              {/snippet}
+            </Form.Control>
+            <Form.FieldErrors />
+          </Form.Field>
 
-        <Form.Field {form} name="min_instances" class="mb-10">
-          <Form.Control>
-            {#snippet children({ props })}
-              <Form.Label>min_instances</Form.Label>
-              <CustomInput
-                type="number"
-                placeholder="Type min_instances"
-                disabled={loading}
-                {...props}
-                bind:value={$formData.min_instances}
-              />
-            {/snippet}
-          </Form.Control>
-          <Form.FieldErrors />
-        </Form.Field>
+          <!-- insert CustomSwitch for field anonymous -->
+          <Form.Field {form} name="anonymous" class="mb-10">
+            <Form.Control>
+              {#snippet children({ props })}
+                <div class="flex flex-row items-center space-x-2 py-4">
+                  <Form.Label>Anonymous</Form.Label>
+                  <CustomSwitch
+                    disabled={loading}
+                    {...props}
+                    bind:checked={$formData.anonymous}
+                  />
+                </div>
+              {/snippet}
+            </Form.Control>
+            <Form.FieldErrors />
+          </Form.Field>
 
-        <Form.Field {form} name="max_instances" class="mb-10">
-          <Form.Control>
-            {#snippet children({ props })}
-              <Form.Label>max_instances</Form.Label>
-              <CustomInput
-                type="number"
-                placeholder="Type max_instances"
-                disabled={loading}
-                {...props}
-                bind:value={$formData.max_instances}
-              />
-            {/snippet}
-          </Form.Control>
-          <Form.FieldErrors />
-        </Form.Field>
+          <Form.Field {form} name="distro" class="mb-10">
+            <Form.Control>
+              {#snippet children({ props })}
+                <Form.Label>Distro</Form.Label>
+                <Entityselector
+                  width="md:w-fit w-64"
+                  class="mb-4 md:mb-0"
+                  {loading}
+                  {...props}
+                  collectionname="sf"
+                  basefilter={{ _type: "distro" }}
+                  bind:value={$formData.distro}
+                  handleChangeFunction={(item: any) => {
+                    if (item != null) {
+                      $formData.distro = item.repo + ":" + item.tag;
+                      distroname = item.repo + ":" + item.tag;
+                    }
+                  }}
+                  returnobject={true}
+                >
+                  {#snippet rendername(item: any)}
+                    {item.name}
+                  {/snippet}
+                  {#snippet rendercontent(item: any)}
+                    {#if distroname == null || distroname == ""}
+                      Nothing selected
+                    {:else}
+                      {distroname}
+                    {/if}
+                  {/snippet}
+                </Entityselector>
+              {/snippet}
+            </Form.Control>
+            <Form.FieldErrors />
+          </Form.Field>
 
-        <Form.Field {form} name="port" class="mb-10">
-          <Form.Control>
-            {#snippet children({ props })}
-              <Form.Label>Port</Form.Label>
-              <CustomInput
-                type="number"
-                placeholder="Type Port"
-                disabled={loading}
-                {...props}
-                bind:value={$formData.port}
-              />
-            {/snippet}
-          </Form.Control>
-          <Form.FieldErrors />
-        </Form.Field>
-
-        <Form.Field {form} name="minimum_response_time" class="mb-10">
-          <Form.Control>
-            {#snippet children({ props })}
-              <Form.Label>Minimum Response Time</Form.Label>
-              <CustomInput
-                type="number"
-                placeholder="Type Minimum Response Time"
-                disabled={loading}
-                {...props}
-                bind:value={$formData.minimum_response_time}
-              />
-            {/snippet}
-          </Form.Control>
-          <Form.FieldErrors />
-        </Form.Field>
-
-        <Form.Field {form} name="tls" class="mb-10">
-          <Form.Control>
-            {#snippet children({ props })}
-              <div class="flex flex-row items-center space-x-2 py-4">
-                <Form.Label>TLS</Form.Label>
-                <CustomSwitch
+          <Form.Field {form} name="environment" class="w-full mb-10">
+            <Form.Control>
+              {#snippet children({ props })}
+                <Form.Label>Environment</Form.Label>
+                <ObjectInput
                   disabled={loading}
                   {...props}
-                  bind:checked={$formData.tls}
+                  bind:value={$formData.environment}
                 />
-              </div>
-            {/snippet}
-          </Form.Control>
-          <Form.FieldErrors />
-        </Form.Field>
+              {/snippet}
+            </Form.Control>
+            <Form.FieldErrors />
+          </Form.Field>
 
-        <Form.Field {form} name="alpn" class="mb-10">
-          <Form.Control>
-            {#snippet children({ props })}
-              <Form.Label>ALPN</Form.Label>
-              <CustomSelect
-                type="single"
-                {loading}
-                {...props}
-                selectitems={[
-                  { label: "Select ALPN", value: "Select ALPN" },
-                  { label: "h2", value: "h2" },
-                  { label: "h2h1", value: "h2h1" },
-                  { label: "h1", value: "h1" },
-                ]}
-                bind:value={$formData.alpn}
-                triggerContent={() => {
-                  return $formData.alpn;
-                }}
-              />
-            {/snippet}
-          </Form.Control>
-          <Form.FieldErrors />
-        </Form.Field>
+          <Form.Field {form} name="min_instances" class="mb-10">
+            <Form.Control>
+              {#snippet children({ props })}
+                <Form.Label>min_instances</Form.Label>
+                <CustomInput
+                  type="number"
+                  placeholder="Type min_instances"
+                  disabled={loading}
+                  {...props}
+                  bind:value={$formData.min_instances}
+                />
+              {/snippet}
+            </Form.Control>
+            <Form.FieldErrors />
+          </Form.Field>
 
-        <!-- add token selection here set _id to the -->
-        <!-- or select user then create api key for that user and add the _id of the apikey to default 1 year expiration -->
-        <!-- runas key -->
-        <Form.Field {form} name="runas" class="mb-10">
-          <Form.Control>
-            {#snippet children({ props })}
-              <Form.Label
-                >Run as ({runasuser ? "User" : "Access Token"})</Form.Label
-              >
-              <div class="flex items-center space-x-2 py-4">
-                <Form.Label>Access token</Form.Label>
-                <CustomSwitch
-                  bind:checked={runasuser}
-                  onclick={() => {
-                    $formData.runas = "";
+          <Form.Field {form} name="max_instances" class="mb-10">
+            <Form.Control>
+              {#snippet children({ props })}
+                <Form.Label>max_instances</Form.Label>
+                <CustomInput
+                  type="number"
+                  placeholder="Type max_instances"
+                  disabled={loading}
+                  {...props}
+                  bind:value={$formData.max_instances}
+                />
+              {/snippet}
+            </Form.Control>
+            <Form.FieldErrors />
+          </Form.Field>
+
+          <Form.Field {form} name="port" class="mb-10">
+            <Form.Control>
+              {#snippet children({ props })}
+                <Form.Label>Port</Form.Label>
+                <CustomInput
+                  type="number"
+                  placeholder="Type Port"
+                  disabled={loading}
+                  {...props}
+                  bind:value={$formData.port}
+                />
+              {/snippet}
+            </Form.Control>
+            <Form.FieldErrors />
+          </Form.Field>
+
+          <Form.Field {form} name="minimum_response_time" class="mb-10">
+            <Form.Control>
+              {#snippet children({ props })}
+                <Form.Label>Minimum Response Time</Form.Label>
+                <CustomInput
+                  type="number"
+                  placeholder="Type Minimum Response Time"
+                  disabled={loading}
+                  {...props}
+                  bind:value={$formData.minimum_response_time}
+                />
+              {/snippet}
+            </Form.Control>
+            <Form.FieldErrors />
+          </Form.Field>
+
+          <Form.Field {form} name="tls" class="mb-10">
+            <Form.Control>
+              {#snippet children({ props })}
+                <div class="flex flex-row items-center space-x-2 py-4">
+                  <Form.Label>TLS</Form.Label>
+                  <CustomSwitch
+                    disabled={loading}
+                    {...props}
+                    bind:checked={$formData.tls}
+                  />
+                </div>
+              {/snippet}
+            </Form.Control>
+            <Form.FieldErrors />
+          </Form.Field>
+
+          <Form.Field {form} name="alpn" class="mb-10">
+            <Form.Control>
+              {#snippet children({ props })}
+                <Form.Label>ALPN</Form.Label>
+                <CustomSelect
+                  type="single"
+                  {loading}
+                  {...props}
+                  selectitems={[
+                    { label: "Select ALPN", value: "Select ALPN" },
+                    { label: "h2", value: "h2" },
+                    { label: "h2h1", value: "h2h1" },
+                    { label: "h1", value: "h1" },
+                  ]}
+                  bind:value={$formData.alpn}
+                  triggerContent={() => {
+                    return $formData.alpn;
                   }}
                 />
-                <Form.Label>User</Form.Label>
-              </div>
-              {#if runasuser}
-                <div class="md:flex md:items-center md:space-x-4 my-2">
-                  <Entityselector
-                    name="User"
-                    propertyname="_id"
-                    queryas={usersettings.currentworkspace}
-                    width="md:w-fit w-64"
-                    class="mb-4 md:mb-0"
-                    disabled={loading}
-                    collectionname="users"
-                    basefilter={{ _type: "user" }}
-                    bind:value={$formData.runas}
-                    allowunselect={false}
-                  >
-                    {#snippet rendername(item: any)}
-                      {"(" + item._type + ") " + item.name}
-                    {/snippet}
-                    {#snippet rendercontent(item: any)}
-                      {#if item == null}
-                        Nothing selected
-                      {:else}
-                        {"(" + item._type + ") " + item.name}
-                      {/if}
-                    {/snippet}
-                  </Entityselector>
-                  <HotkeyButton
-                    aria-label="User Details"
-                    disabled={!Boolean($formData.runas) || loading}
+              {/snippet}
+            </Form.Control>
+            <Form.FieldErrors />
+          </Form.Field>
+
+          <!-- add token selection here set _id to the -->
+          <!-- or select user then create api key for that user and add the _id of the apikey to default 1 year expiration -->
+          <!-- runas key -->
+          <Form.Field {form} name="runas" class="mb-10">
+            <Form.Control>
+              {#snippet children({ props })}
+                <Form.Label
+                  >Run as ({runasuser ? "User" : "Access Token"})</Form.Label
+                >
+                <div class="flex items-center space-x-2 py-4">
+                  <Form.Label>Access token</Form.Label>
+                  <CustomSwitch
+                    bind:checked={runasuser}
                     onclick={() => {
-                      goto(base + `/user/${$formData.runas}`);
-                    }}><User />User Details</HotkeyButton
-                  >
+                      $formData.runas = "";
+                    }}
+                  />
+                  <Form.Label>User</Form.Label>
                 </div>
-              {:else}
-                <div class="md:flex md:items-center md:space-x-4 my-2">
-                  <Entityselector
-                    name="Access Token"
-                    propertyname="_id"
-                    queryas={usersettings.currentworkspace}
-                    width="md:w-fit w-64"
-                    class="mb-4 md:mb-0"
-                    disabled={loading}
-                    collectionname="usertokens"
-                    basefilter={{ _type: "usertoken", revoked: false }}
-                    bind:value={$formData.runas}
-                  >
-                    {#snippet rendername(item: any)}
-                      ({item._userdisplayname}) {item.name}
-                    {/snippet}
-                    {#snippet rendercontent(item: any)}
-                      {#if item == null}
-                        Nothing selected
-                      {:else}
+                {#if runasuser}
+                  <div class="md:flex md:items-center md:space-x-4 my-2">
+                    <Entityselector
+                      name="User"
+                      propertyname="_id"
+                      queryas={usersettings.currentworkspace}
+                      width="md:w-fit w-64"
+                      class="mb-4 md:mb-0"
+                      disabled={loading}
+                      collectionname="users"
+                      basefilter={{ _type: "user" }}
+                      bind:value={$formData.runas}
+                      allowunselect={false}
+                    >
+                      {#snippet rendername(item: any)}
+                        {"(" + item._type + ") " + item.name}
+                      {/snippet}
+                      {#snippet rendercontent(item: any)}
+                        {#if item == null}
+                          Nothing selected
+                        {:else}
+                          {"(" + item._type + ") " + item.name}
+                        {/if}
+                      {/snippet}
+                    </Entityselector>
+                    <HotkeyButton
+                      aria-label="User Details"
+                      disabled={!Boolean($formData.runas) || loading}
+                      onclick={() => {
+                        goto(base + `/user/${$formData.runas}`);
+                      }}><User />User Details</HotkeyButton
+                    >
+                  </div>
+                {:else}
+                  <div class="md:flex md:items-center md:space-x-4 my-2">
+                    <Entityselector
+                      name="Access Token"
+                      propertyname="_id"
+                      queryas={usersettings.currentworkspace}
+                      width="md:w-fit w-64"
+                      class="mb-4 md:mb-0"
+                      disabled={loading}
+                      collectionname="usertokens"
+                      basefilter={{ _type: "usertoken", revoked: false }}
+                      bind:value={$formData.runas}
+                    >
+                      {#snippet rendername(item: any)}
                         ({item._userdisplayname}) {item.name}
-                      {/if}
-                    {/snippet}
-                  </Entityselector>
-                  <HotkeyButton
-                    aria-label="User Details"
-                    disabled={!Boolean($formData.runas) || loading}
-                    onclick={gotoTokenUser}><User />User Details</HotkeyButton
-                  >
-                </div>
-              {/if}
-            {/snippet}
-          </Form.Control>
-          <Form.FieldErrors />
-        </Form.Field>
+                      {/snippet}
+                      {#snippet rendercontent(item: any)}
+                        {#if item == null}
+                          Nothing selected
+                        {:else}
+                          ({item._userdisplayname}) {item.name}
+                        {/if}
+                      {/snippet}
+                    </Entityselector>
+                    <HotkeyButton
+                      aria-label="User Details"
+                      disabled={!Boolean($formData.runas) || loading}
+                      onclick={gotoTokenUser}><User />User Details</HotkeyButton
+                    >
+                  </div>
+                {/if}
+              {/snippet}
+            </Form.Control>
+            <Form.FieldErrors />
+          </Form.Field>
 
-        <Form.Field {form} name="volumes" class="mb-10">
-          <Form.Control>
-            {#snippet children({ props })}
-              <Form.Label>Volumes</Form.Label>
-              <Entityselector
-                propertyname="_id"
-                queryas={usersettings.currentworkspace}
-                width="md:w-fit w-64"
-                class="mb-4 md:mb-0"
-                disabled={loading}
-                {...props}
-                collectionname="sf"
-                basefilter={{ _type: "volume" }}
-                bind:value={$formData.volumes}
-                selectiontype="multiple"
-                maxselections={4}
-              >
-                {#snippet rendername(item: any)}
-                  {"(" + item._type + ") " + item.name}
-                {/snippet}
-                {#snippet rendercontent(item: any)}
-                  {#if item == null}
-                    Nothing selected
-                  {:else}
+          <Form.Field {form} name="volumes" class="mb-10">
+            <Form.Control>
+              {#snippet children({ props })}
+                <Form.Label>Volumes</Form.Label>
+                <Entityselector
+                  propertyname="_id"
+                  queryas={usersettings.currentworkspace}
+                  width="md:w-fit w-64"
+                  class="mb-4 md:mb-0"
+                  disabled={loading}
+                  {...props}
+                  collectionname="sf"
+                  basefilter={{ _type: "volume" }}
+                  bind:value={$formData.volumes}
+                  selectiontype="multiple"
+                  maxselections={4}
+                >
+                  {#snippet rendername(item: any)}
                     {"(" + item._type + ") " + item.name}
-                  {/if}
-                {/snippet}
-              </Entityselector>
-            {/snippet}
-          </Form.Control>
-          <Form.FieldErrors />
-        </Form.Field>
+                  {/snippet}
+                  {#snippet rendercontent(item: any)}
+                    {#if item == null}
+                      Nothing selected
+                    {:else}
+                      {"(" + item._type + ") " + item.name}
+                    {/if}
+                  {/snippet}
+                </Entityselector>
+              {/snippet}
+            </Form.Control>
+            <Form.FieldErrors />
+          </Form.Field>
 
-        <HotkeyButton
-          type="submit"
-          disabled={loading}
-          aria-label="Update SF Function"
-          variant="success"
-          size="base"
-          data-shortcut="ctrl+s"
-        >
-          <Check />
-          Update Serverless</HotkeyButton
-        >
-      </form>
-    {:else}
-      <div>Data not found or access denied</div>
-    {/if}
-  </Tabs.Content>
+          <HotkeyButton
+            type="submit"
+            disabled={loading}
+            aria-label="Update SF Function"
+            variant="success"
+            size="base"
+            data-shortcut="ctrl+s"
+          >
+            <Check />
+            Update Serverless</HotkeyButton
+          >
+        </form>
+      {:else}
+        <div>Data not found or access denied</div>
+      {/if}
+    </Tabs.Content>
+  {/if}
+
   <Tabs.Content value="2" class="mt-6">
     <div class="flex items-center gap-4 mb-4">
       {@render DurationSelect({ onChange: getInstanceLogs })}
