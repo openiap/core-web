@@ -5,6 +5,7 @@
   import Monacoeditor from "$lib/monacoeditor/monacoeditor.svelte";
   import FS from "@isomorphic-git/lightning-fs";
   import { Buffer } from "buffer";
+  import { CheckIcon } from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   const { data } = $props();
@@ -101,7 +102,10 @@
     <div class="mb-2 flex items-center justify-between">
       <!-- current file name with path -->
       <span class="">{pathto()}</span>
-      <Hotkeybutton onclick={saveFile} variant="success" data-shortcut="ctrl+s">Save</Hotkeybutton>
+      <Hotkeybutton onclick={saveFile} variant="success" data-shortcut="ctrl+s">
+        <CheckIcon />
+        Save</Hotkeybutton
+      >
     </div>
   {/if}
 

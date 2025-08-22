@@ -30,16 +30,25 @@
       if (form.valid) {
         loading = true;
         try {
-          const workspaceid = usersettings.currentworkspace;
-          if (workspaceid == "" || workspaceid == null) {
-            toast.error("Error", {
-              description: "Please select a workspace",
-            });
-            cancel();
-            loading = false;
-            return;
+          let workspaceid = usersettings.currentworkspace;
+          if (data.item._workspaceid == null || data.item._workspaceid == "") {
+            if (workspaceid == "" || workspaceid == null) {
+              toast.error("Error", {
+                description: "Please select a workspace",
+              });
+              cancel();
+              loading = false;
+              return;
+            }
+            form.data._workspaceid = workspaceid;
           }
-          form.data._workspaceid = workspaceid;
+          if (
+            form.data._workspaceid != workspaceid &&
+            workspaceid != null &&
+            workspaceid != ""
+          ) {
+            form.data._workspaceid = workspaceid;
+          }
 
           await auth.client.CustomCommand({
             command: "ensuresfvolume",
@@ -92,7 +101,6 @@
 
 {#if $formData != null}
   <form method="POST" use:enhance>
-
     <Form.Field {form} name="name" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}

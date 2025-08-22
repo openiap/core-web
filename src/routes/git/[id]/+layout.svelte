@@ -13,12 +13,14 @@
     import git from "isomorphic-git";
     import http from "isomorphic-git/http/web";
     import {
+        ArrowUpFromLine,
         Check,
         Copy,
         Edit2,
         File,
         FolderClosed,
         FolderOpen,
+        GitCommitHorizontal,
         Minus,
         Plus,
         RefreshCcw,
@@ -44,6 +46,7 @@
     let openAddFileDialog: boolean = $state(false);
     let commitmessage: string = $state("");
     let showDiscardAllChangesWarning: boolean = $state(false);
+    let loading = $state(false);
 
     const currentFilePath = $derived(() => {
         const urlParts = $page.url.pathname.split("/");
@@ -87,6 +90,7 @@
     }
 
     async function cloneRepo() {
+        loading = true;
         // console.log("cloneRepo called");
         if (auth.access_token === "" || auth.access_token == null) {
             toast.error("No access token found");
@@ -310,6 +314,7 @@
         } catch (error: any) {
             toast.error("cloneRepo " + error.message);
         }
+        loading = false;
     }
     cloneRepo();
 
@@ -618,11 +623,27 @@
                     query: { sha: data.sha, ref: { $ne: "HEAD" } },
                     jwt: auth.access_token,
                 });
+                // console.log("dbbranch", dbbranch);
+
+                // check if there are commits to push
+                // const statusMatrix = await git.statusMatrix({ fs, dir });
+                // const hasPendingChanges = statusMatrix.some(
+                //     ([filepath, head, workdir, stage]) => {
+                //         // If any file differs in HEAD vs workdir vs index
+                //         return head !== workdir || head !== stage;
+                //     },
+                // );
+                // if (!hasPendingChanges) {
+                //     toast.error("You have no changes to push.");
+                //     return;
+                // }
+
                 const headers = {
                     Authorization: "Bearer " + auth.access_token,
                 };
+                const url = `https://${auth.config.domain}/git/${data.item.repo}`;
                 if (dbbranch == null) {
-                    await git.push({
+                    const res = await git.push({
                         fs,
                         http,
                         dir,
@@ -630,22 +651,26 @@
                         ref: headSha,
                         headers,
                     });
+                    // console.log("Push response:", res);
                 } else {
-                    await git.push({
+                    const res = await git.push({
                         fs,
                         http,
                         dir,
                         remote: "origin",
                         ref: dbbranch.ref.split("/").pop(),
                         headers,
+                        // url,
+                        // force: true, // Force push to update the branch,
+                        //#endregion
                     });
+                    // console.log("Push response:", res);
                 }
                 toast.success("Pushed to remote successfully");
             }
         } catch (pushErr: any) {
             toast.error("Push failed: " + (pushErr?.message || pushErr));
         }
-
     }
     async function cleanDB(name: string) {
         // i want to delete only this db dbname change the code bellow for this
@@ -716,6 +741,7 @@
 
 {#snippet refreshData()}
     <HotkeyButton
+        disabled={loading}
         aria-label="Reload Data"
         title="Reload Data"
         onclick={reloadData}
@@ -738,6 +764,9 @@
                 <div>{data?.item?.repo?.split("/").pop()}</div>
                 <div class="grid grid-cols-1 xl:flex gap-2 mb-2">
                     <HotkeyButton
+                        variant="danger"
+                        aria-label="Clean All Local DBS"
+                        disabled={loading}
                         onclick={() => {
                             indexedDB
                                 .databases()
@@ -810,6 +839,7 @@
                 </div>
 
                 <Customselect
+                    {loading}
                     selectitems={branches}
                     value={selectedSha}
                     type="single"
@@ -956,6 +986,7 @@
                 {#each visibleFiles() as file, index}
                     {#if file.type === "tree"}
                         <HotkeyButton
+                            disabled={loading}
                             variant="ghostfull"
                             class="flex items-center gap-1 cursor-pointer"
                             style="padding-left: {file.depth}rem"
@@ -987,6 +1018,7 @@
                                             bind:value={renameInputText}
                                         />
                                         <HotkeyButton
+                                            disabled={loading}
                                             variant="success"
                                             aria-label="Confirm rename"
                                             title="Confirm"
@@ -995,6 +1027,7 @@
                                             ><Check /></HotkeyButton
                                         >
                                         <HotkeyButton
+                                            disabled={loading}
                                             variant="danger"
                                             aria-label="Cancel rename"
                                             title="Cancel"
@@ -1018,6 +1051,7 @@
                             {#if !(showRenameInput && renameFile.index === index)}
                                 <div class="flex gap-2">
                                     <HotkeyButton
+                                        disabled={loading}
                                         variant="danger"
                                         aria-label="Delete file"
                                         title="Delete file"
@@ -1031,6 +1065,7 @@
                                         }}><Trash2 /></HotkeyButton
                                     >
                                     <HotkeyButton
+                                        disabled={loading}
                                         aria-label="Rename file"
                                         title="Rename file"
                                         size="icon"
@@ -1079,6 +1114,7 @@
                     </div>
                 {/if}
                 <HotkeyButton
+                    disabled={loading || showNewFileInput}
                     aria-label="Create new file"
                     title="Create new file"
                     class="w-full mt-2"
@@ -1098,30 +1134,37 @@
     >
         {#if data.item.sha != null}
             {@render children()}
-            <HotkeyButton
-                variant="danger"
-                aria-label="Discard changes"
-                title="Discard changes"
-                onclick={() => (showDiscardAllChangesWarning = true)}
-            >
-                Discard changes
-            </HotkeyButton>
-            <HotkeyButton
-                aria-label="Commit changes"
-                title="Commit changes"
-                onclick={() => (openAddFileDialog = true)}
-            >
-                Commit changes
-            </HotkeyButton>
-            <HotkeyButton
-                variant="success"
-                aria-label="Push changes"
-                title="Push changes"
-                class="ml-2"
-                onclick={handlePushChanges}
-            >
-                Push changes
-            </HotkeyButton>
+            <div class="flex items-center gap-4 mt-4">
+                <HotkeyButton
+                    disabled={loading}
+                    variant="danger"
+                    aria-label="Discard changes"
+                    title="Discard changes"
+                    onclick={() => (showDiscardAllChangesWarning = true)}
+                >
+                    <Trash2 />
+                    Discard changes
+                </HotkeyButton>
+                <HotkeyButton
+                    disabled={loading || !auth.profile}
+                    aria-label="Commit changes"
+                    title="Commit changes"
+                    onclick={() => (openAddFileDialog = true)}
+                >
+                    <GitCommitHorizontal />
+                    Commit changes
+                </HotkeyButton>
+                <HotkeyButton
+                    disabled={loading || !auth.profile}
+                    variant="success"
+                    aria-label="Push changes"
+                    title="Push changes"
+                    onclick={handlePushChanges}
+                >
+                    <ArrowUpFromLine />
+                    Push changes
+                </HotkeyButton>
+            </div>
         {:else}
             <div class="mb-4 text-bw600 dark:text-bw400">
                 Repo: <b>{data.item.repo}</b> is empty. You can create a new file
@@ -1131,6 +1174,7 @@
                 <div class="flex items-center gap-4 mb-4">
                     <div>Create a new repository on the command line</div>
                     <HotkeyButton
+                        disabled={loading}
                         title="copy new repository command"
                         aria-label="copy new repository command"
                         onclick={async () => {
@@ -1177,6 +1221,7 @@ git push -u origin main`;
             <div class="flex items-center gap-4 mb-4">
                 <div>Push an existing repository from the command line</div>
                 <HotkeyButton
+                    disabled={loading || !auth.profile}
                     title="Copy push local repository command"
                     aria-label="Copy push local repository command"
                     onclick={async () => {
