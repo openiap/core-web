@@ -48,16 +48,23 @@
 
   // Instance log
   let gdruntime = $state<Float64Array[]>([]);
+  let _gdruntime = $state<Float64Array[]>([]);
   let gdappresponsetime = $state<Float64Array[]>([]);
+  let _gdappresponsetime = $state<Float64Array[]>([]);
   let gdboottime = $state<Float64Array[]>([]);
+  let _gdboottime = $state<Float64Array[]>([]);
 
   // Request log
   let gdresponsetime = $state<Float64Array[]>([]);
+  let _gdresponsetime = $state<Float64Array[]>([]);
   let gdcontentsize = $state<Float64Array[]>([]);
+  let _gdcontentsize = $state<Float64Array[]>([]);
   let gdnumrequest = $state<Float64Array[]>([]);
+  let _gdnumrequest = $state<Float64Array[]>([]);
   let selectedtab = $state(0);
   //  Console log
   let gdmessages = $state<Float64Array[]>([]);
+  let _gdmessages = $state<Float64Array[]>([]);
 
   let showerror = $state(false);
 
@@ -360,7 +367,7 @@
       if (currentHash !== newHash) {
         tdConsoleLog = newTdConsoleLog;
       }
-      // await getGDConsoleLog();
+      await getGDConsoleLog();
     } catch (error: any) {
       console.error("Error fetching console logs:", error);
       toast.error("Error fetching console logs", {
@@ -373,6 +380,10 @@
     // here based in the durration string return start and end time in an object in the format 2025-08-08T19:33:43.441Z
     const end = new Date();
     let start = new Date();
+
+    // to stop the graph from changing due to sliding buckets
+    end.setSeconds(0, 0);
+    start.setSeconds(0, 0);
 
     const match = duration.match(/^(\d+)([smhd])$/);
     if (!match) {
@@ -445,185 +456,307 @@
     }
   }
 
+  function isoStrToEpoch(isoStr: string) {
+    // Convert ISO string to epoch time in seconds
+    const date = new Date(isoStr);
+    return Math.floor(date.getTime() / 1000); // Convert ms to seconds
+  }
+
+  function transformAggregateDataToChart(
+    aggregateData: any[],
+    startTime: string,
+    endTime: string,
+  ): any[] {
+    let result: any[] = [];
+    let results: any[] = [];
+    let legendnames = [];
+
+    // Collect unique timestamps and legend names
+    for (let i = 0; i < aggregateData.length; i++) {
+      const item = aggregateData[i];
+      if (result.indexOf(item.ts) == -1) {
+        result.push(item.ts);
+      }
+      if (legendnames.indexOf(item.name) == -1) {
+        legendnames.push(item.name);
+      }
+    }
+
+    // Initialize results arrays
+    results.push([]); // First array for timestamps
+    for (let j = 0; j < legendnames.length; j++) {
+      results.push([]); // One array per legend
+    }
+
+    // Add start time
+    results[0].push(isoStrToEpoch(startTime));
+    for (let j = 0; j < legendnames.length; j++) {
+      results[j + 1].push(undefined);
+    }
+
+    // Process data points
+    for (let i = 0; i < result.length; i++) {
+      results[0].push(isoStrToEpoch(result[i]));
+      let subresult = aggregateData.filter((item) => item.ts === result[i]);
+
+      for (let j = 0; j < legendnames.length; j++) {
+        let subitem = subresult.find((item) => item.name === legendnames[j]);
+        if (subitem) {
+          results[j + 1].push(subitem.value);
+        } else {
+          results[j + 1].push(undefined);
+        }
+      }
+    }
+
+    // Add end time
+    results[0].push(isoStrToEpoch(endTime));
+    for (let j = 0; j < legendnames.length; j++) {
+      results[j + 1].push(undefined);
+    }
+
+    return results;
+  }
+
   async function getGDInstanceLog() {
     try {
-      const { start, end } = getTimeDuration(selectedduration);
-      const agg1 = [
+      const { start: starttime, end: endtime } =
+        getTimeDuration(selectedduration);
+      let intervalMs = 1; // default to 1 minute
+      const gdruntime_agg = [
         {
           $match: {
-            ts: { $gte: new Date(start), $lt: new Date(end) },
+            ts: { $gte: new Date(starttime), $lt: new Date(endtime) },
           },
         },
         {
-          $project: {
-            ts_epoch: { $toLong: { $toDate: "$ts" } }, // ms epoch
-            run_time_sec: "$run_time",
-          },
-        },
-        {
-          $project: {
-            ts_epoch: { $divide: ["$ts_epoch", 1000] }, // convert ms → seconds
-            run_time_sec: 1,
+          $addFields: {
+            __labelfield: {
+              $concat: [
+                {
+                  $toString: "$metadata.host",
+                },
+                " ",
+                "response ",
+              ],
+            },
           },
         },
         {
           $group: {
-            _id: null,
-            ts_array: { $push: "$ts_epoch" },
-            run_time_array: { $push: "$run_time_sec" },
+            _id: {
+              dt: {
+                $subtract: [
+                  {
+                    $subtract: ["$ts", endtime],
+                  },
+                  {
+                    $mod: [
+                      {
+                        $subtract: ["$ts", endtime],
+                      },
+                      intervalMs,
+                    ],
+                  },
+                ],
+              },
+              metadata_host: "$metadata.host",
+            },
+            value: {
+              $avg: "$run_time",
+            },
+            ts: {
+              $max: "$ts",
+            },
+            name: {
+              $max: "$__labelfield",
+            },
           },
         },
         {
-          $project: {
-            _id: 0,
-            arrays: ["$ts_array", "$run_time_array"],
+          $sort: {
+            ts: 1,
           },
         },
       ];
       if (data.paramid != "null") {
         // @ts-ignore
-        agg1[0].$match["metadata.repo"] = data.item.repo;
+        gdruntime_agg[0].$match["metadata.repo"] = data.item.repo;
       }
-      let gdruntimeres = await auth.client.Aggregate<any>({
+      let gdruntime_res = await auth.client.Aggregate<any>({
         collectionname: "sf_instance_logs",
-        aggregates: agg1,
+        aggregates: gdruntime_agg,
         jwt: auth.access_token,
       });
-      if (gdruntimeres.length > 0) {
-        let newgdruntime = [
-          new Float64Array(gdruntimeres[0].arrays[0]),
-          new Float64Array(gdruntimeres[0].arrays[1]),
-        ];
-        const currentHash = JSON.stringify(gdruntime);
-        const newHash = JSON.stringify(newgdruntime);
+      if (gdruntime_res.length > 0) {
+        const currentHash = JSON.stringify(_gdresponsetime);
+        const newHash = JSON.stringify(gdruntime_res);
         if (currentHash !== newHash) {
-          gdruntime = newgdruntime;
+          _gdruntime = gdruntime_res;
+          const results = transformAggregateDataToChart(
+            gdruntime_res,
+            starttime,
+            endtime,
+          );
+          gdruntime = results;
         }
-      } else {
-        // Clear chart data if no data available
-        gdruntime = [];
       }
 
-      let agg2 = [
+      let gdboottime_agg = [
         {
           $match: {
-            ts: { $gte: new Date(start), $lt: new Date(end) },
+            ts: { $gte: new Date(starttime), $lt: new Date(endtime) },
           },
         },
         {
-          $project: {
-            ts_epoch: { $toLong: { $toDate: "$ts" } }, // ms epoch
-            boot_time_sec: "$boot_time",
-          },
-        },
-        {
-          $project: {
-            ts_epoch: { $divide: ["$ts_epoch", 1000] }, // convert ms → seconds
-            boot_time_sec: 1,
+          $addFields: {
+            __labelfield: {
+              $concat: [
+                {
+                  $toString: "$metadata.host",
+                },
+                " ",
+                "response ",
+              ],
+            },
           },
         },
         {
           $group: {
-            _id: null,
-            ts_array: { $push: "$ts_epoch" },
-            boot_time_array: { $push: "$boot_time_sec" },
+            _id: {
+              dt: {
+                $subtract: [
+                  {
+                    $subtract: ["$ts", endtime],
+                  },
+                  {
+                    $mod: [
+                      {
+                        $subtract: ["$ts", endtime],
+                      },
+                      intervalMs,
+                    ],
+                  },
+                ],
+              },
+              metadata_host: "$metadata.host",
+            },
+            value: {
+              $avg: "$boot_time",
+            },
+            ts: {
+              $max: "$ts",
+            },
+            name: {
+              $max: "$__labelfield",
+            },
           },
         },
         {
-          $project: {
-            _id: 0,
-            arrays: ["$ts_array", "$boot_time_array"],
+          $sort: {
+            ts: 1,
           },
         },
       ];
       if (data.paramid != "null") {
         // @ts-ignore
-        agg2[0].$match["metadata.repo"] = data.item.repo;
+        gdboottime_agg[0].$match["metadata.repo"] = data.item.repo;
       }
-      let gdboottimeres = await auth.client.Aggregate<any>({
+      let gdboottime_res = await auth.client.Aggregate<any>({
         collectionname: "sf_instance_logs",
-        aggregates: agg2,
+        aggregates: gdboottime_agg,
         jwt: auth.access_token,
       });
-
-      if (gdboottimeres.length > 0) {
-        let newgdboottime = [
-          new Float64Array(gdboottimeres[0].arrays[0]),
-          new Float64Array(gdboottimeres[0].arrays[1]),
-        ];
-        // Check if the data is the same then do not rerender the graph
-        const currentHash = JSON.stringify(gdboottime);
-        const newHash = JSON.stringify(newgdboottime);
+      if (gdboottime_res.length > 0) {
+        const currentHash = JSON.stringify(_gdboottime);
+        const newHash = JSON.stringify(gdboottime_res);
         if (currentHash !== newHash) {
-          gdboottime = newgdboottime;
-        }
-      } else {
-        // Clear chart data if no data available
-        const currentHash = JSON.stringify(gdboottime);
-        const newHash = JSON.stringify([]);
-        if (currentHash !== newHash) {
-          gdboottime = [];
+          _gdboottime = gdboottime_res;
+          const results = transformAggregateDataToChart(
+            gdboottime_res,
+            starttime,
+            endtime,
+          );
+          gdboottime = results;
         }
       }
 
-      let agg3 = [
+      let gdappresponsetime_agg = [
         {
           $match: {
-            ts: { $gte: new Date(start), $lt: new Date(end) },
+            ts: { $gte: new Date(starttime), $lt: new Date(endtime) },
           },
         },
         {
-          $project: {
-            ts_epoch: { $toLong: { $toDate: "$ts" } }, // ms epoch
-            app_response_time_sec: "$app_response_time",
-          },
-        },
-        {
-          $project: {
-            ts_epoch: { $divide: ["$ts_epoch", 1000] }, // convert ms → seconds
-            app_response_time_sec: 1,
+          $addFields: {
+            __labelfield: {
+              $concat: [
+                {
+                  $toString: "$metadata.host",
+                },
+                " ",
+                "response ",
+              ],
+            },
           },
         },
         {
           $group: {
-            _id: null,
-            ts_array: { $push: "$ts_epoch" },
-            app_response_time_array: { $push: "$app_response_time_sec" },
+            _id: {
+              dt: {
+                $subtract: [
+                  {
+                    $subtract: ["$ts", endtime],
+                  },
+                  {
+                    $mod: [
+                      {
+                        $subtract: ["$ts", endtime],
+                      },
+                      intervalMs,
+                    ],
+                  },
+                ],
+              },
+              metadata_host: "$metadata.host",
+            },
+            value: {
+              $avg: "$app_response_time",
+            },
+            ts: {
+              $max: "$ts",
+            },
+            name: {
+              $max: "$__labelfield",
+            },
           },
         },
         {
-          $project: {
-            _id: 0,
-            arrays: ["$ts_array", "$app_response_time_array"],
+          $sort: {
+            ts: 1,
           },
         },
       ];
       if (data.paramid != "null") {
         // @ts-ignore
-        agg3[0].$match["metadata.repo"] = data.item.repo;
+        gdappresponsetime_agg[0].$match["metadata.repo"] = data.item.repo;
       }
-      let gdresponsetimeres = await auth.client.Aggregate<any>({
+      let gdappresponsetime_res = await auth.client.Aggregate<any>({
         collectionname: "sf_instance_logs",
-        aggregates: agg3,
+        aggregates: gdappresponsetime_agg,
         jwt: auth.access_token,
       });
-      if (gdresponsetimeres.length > 0) {
-        let newgdappresponsetime = [
-          new Float64Array(gdresponsetimeres[0].arrays[0]),
-          new Float64Array(gdresponsetimeres[0].arrays[1]),
-        ];
-        // Check if the data is the same then do not rerender the graph
-        const currentHash = JSON.stringify(gdappresponsetime);
-        const newHash = JSON.stringify(newgdappresponsetime);
+      if (gdappresponsetime_res.length > 0) {
+        const currentHash = JSON.stringify(_gdappresponsetime);
+        const newHash = JSON.stringify(gdappresponsetime_res);
         if (currentHash !== newHash) {
-          gdappresponsetime = newgdappresponsetime;
-        }
-      } else {
-        // Clear chart data if no data available
-        const currentHash = JSON.stringify(gdappresponsetime);
-        const newHash = JSON.stringify([]);
-        if (currentHash !== newHash) {
-          gdappresponsetime = [];
+          _gdappresponsetime = gdappresponsetime_res;
+          const results = transformAggregateDataToChart(
+            gdappresponsetime_res,
+            starttime,
+            endtime,
+          );
+          gdappresponsetime = results;
         }
       }
     } catch (error: any) {
@@ -635,37 +768,63 @@
   }
 
   async function getGDRequestLog() {
+    const { start: starttime, end: endtime } =
+      getTimeDuration(selectedduration);
     try {
-      const { start, end } = getTimeDuration(selectedduration);
+      const intervalMs = 60000;
       let gdresponsetime_agg = [
         {
           $match: {
-            ts: { $gte: new Date(start), $lt: new Date(end) },
+            ts: { $gte: new Date(starttime), $lt: new Date(endtime) },
           },
         },
         {
-          $project: {
-            ts_epoch: { $toLong: { $toDate: "$ts" } }, // ms epoch
-            response_time_sec: "$response_time",
-          },
-        },
-        {
-          $project: {
-            ts_epoch: { $divide: ["$ts_epoch", 1000] }, // convert ms → seconds
-            response_time_sec: 1,
+          $addFields: {
+            __labelfield: {
+              $concat: [
+                {
+                  $toString: "$metadata.host",
+                },
+                " ",
+                "cold ",
+              ],
+            },
           },
         },
         {
           $group: {
-            _id: null,
-            ts_array: { $push: "$ts_epoch" },
-            response_time_array: { $push: "$response_time_sec" },
+            _id: {
+              dt: {
+                $subtract: [
+                  {
+                    $subtract: ["$ts", endtime],
+                  },
+                  {
+                    $mod: [
+                      {
+                        $subtract: ["$ts", endtime],
+                      },
+                      intervalMs,
+                    ],
+                  },
+                ],
+              },
+              metadata_host: "$metadata.host",
+            },
+            value: {
+              $avg: "$cold_response_time",
+            },
+            ts: {
+              $max: "$ts",
+            },
+            name: {
+              $max: "$__labelfield",
+            },
           },
         },
         {
-          $project: {
-            _id: 0,
-            arrays: ["$ts_array", "$response_time_array"],
+          $sort: {
+            ts: 1,
           },
         },
       ];
@@ -677,60 +836,84 @@
         // @ts-ignore
         gdresponsetime_agg[0].$match["code"] = { $ne: 200 };
       }
-      let gdresponsetimeres = await auth.client.Aggregate<any>({
+      let gdresponsetime_res = await auth.client.Aggregate<any>({
         collectionname: "sf_request_logs",
         aggregates: gdresponsetime_agg,
         jwt: auth.access_token,
       });
-      if (gdresponsetimeres.length > 0) {
-        let newgdresponsetime = [
-          new Float64Array(gdresponsetimeres[0].arrays[0]),
-          new Float64Array(gdresponsetimeres[0].arrays[1]),
-        ];
-        // Check if the data is the same then do not rerender the graph
-        const currentHash = JSON.stringify(gdresponsetime);
-        const newHash = JSON.stringify(newgdresponsetime);
+      console.log("gdresponsetime_res", gdresponsetime_res);
+      if (gdresponsetime_res.length > 0) {
+        const currentHash = JSON.stringify(_gdresponsetime);
+        const newHash = JSON.stringify(gdresponsetime_res);
         if (currentHash !== newHash) {
-          gdresponsetime = newgdresponsetime;
+          _gdresponsetime = gdresponsetime_res;
+          const results = transformAggregateDataToChart(
+            gdresponsetime_res,
+            starttime,
+            endtime,
+          );
+          // console.log("results", results);
+          gdresponsetime = results;
         }
       } else {
-        // Clear chart data if no data available
-        const currentHash = JSON.stringify(gdresponsetime);
-        const newHash = JSON.stringify([]);
-        if (currentHash !== newHash) {
-          gdresponsetime = [];
-        }
+        gdresponsetime = [];
+        _gdresponsetime = [];
       }
 
       let gdcontentsize_agg = [
         {
           $match: {
-            ts: { $gte: new Date(start), $lt: new Date(end) },
+            ts: { $gte: new Date(starttime), $lt: new Date(endtime) },
           },
         },
         {
-          $project: {
-            ts_epoch: { $toLong: { $toDate: "$ts" } }, // ms epoch
-            bytes_received_sec: "$bytes_received",
-          },
-        },
-        {
-          $project: {
-            ts_epoch: { $divide: ["$ts_epoch", 1000] }, // convert ms → seconds
-            bytes_received_sec: 1,
+          $addFields: {
+            __labelfield: {
+              $concat: [
+                {
+                  $toString: "$metadata.host",
+                },
+                " ",
+                "received ",
+              ],
+            },
           },
         },
         {
           $group: {
-            _id: null,
-            ts_array: { $push: "$ts_epoch" },
-            bytes_received_array: { $push: "$bytes_received_sec" },
+            _id: {
+              dt: {
+                $subtract: [
+                  {
+                    $subtract: ["$ts", endtime],
+                  },
+                  {
+                    $mod: [
+                      {
+                        $subtract: ["$ts", endtime],
+                      },
+                      intervalMs,
+                    ],
+                  },
+                ],
+              },
+              length: "$length",
+              metadata_host: "$metadata.host",
+            },
+            value: {
+              $sum: "$bytes_received",
+            },
+            ts: {
+              $max: "$ts",
+            },
+            name: {
+              $max: "$__labelfield",
+            },
           },
         },
         {
-          $project: {
-            _id: 0,
-            arrays: ["$ts_array", "$bytes_received_array"],
+          $sort: {
+            ts: 1,
           },
         },
       ];
@@ -742,62 +925,87 @@
         // @ts-ignore
         gdcontentsize_agg[0].$match["code"] = { $ne: 200 };
       }
-      let gdcontentsizeres = await auth.client.Aggregate<any>({
+      let gdcontentsize_res = await auth.client.Aggregate<any>({
         collectionname: "sf_request_logs",
         aggregates: gdcontentsize_agg,
         jwt: auth.access_token,
       });
-      if (gdcontentsizeres.length > 0) {
-        let newgdcontentsize = [
-          new Float64Array(gdcontentsizeres[0].arrays[0]),
-          new Float64Array(gdcontentsizeres[0].arrays[1]),
-        ];
+      if (gdcontentsize_res.length > 0) {
         // Check if the data is the same then do not rerender the graph
-        const currentHash = JSON.stringify(gdcontentsize);
-        const newHash = JSON.stringify(newgdcontentsize);
+        const currentHash = JSON.stringify(_gdcontentsize);
+        const newHash = JSON.stringify(gdcontentsize_res);
         if (currentHash !== newHash) {
-          gdcontentsize = newgdcontentsize;
+          _gdcontentsize = gdcontentsize_res;
+          const results = transformAggregateDataToChart(
+            gdcontentsize_res,
+            starttime,
+            endtime,
+          );
+          // console.log("results", results);
+          gdcontentsize = results;
         }
       } else {
-        // Clear chart data if no data available
-        const currentHash = JSON.stringify(gdcontentsize);
-        const newHash = JSON.stringify([]);
-        if (currentHash !== newHash) {
-          gdcontentsize = [];
-        }
+        gdcontentsize = [];
+        _gdcontentsize = [];
       }
 
       let gdnumrequest_agg = [
         {
           $match: {
-            ts: { $gte: new Date(start), $lt: new Date(end) },
+            ts: { $gte: new Date(starttime), $lt: new Date(endtime) },
           },
         },
         {
-          $project: {
-            ts_epoch: { $toLong: { $toDate: "$ts" } }, // ms epoch
-            value: 1, // or "$bytes_received" / "$count" etc. depending on your metric
+          $addFields: {
+            __labelfield: {
+              $concat: [
+                {
+                  $toString: "$code",
+                },
+                " ",
+                {
+                  $toString: "$metadata.host",
+                },
+                " ",
+              ],
+            },
           },
         },
-        {
-          $project: {
-            ts_epoch: { $divide: ["$ts_epoch", 1000] }, // → seconds
-            value: 1,
-          },
-        },
-        { $sort: { ts_epoch: 1 } },
-        // { $limit: "$maxDataPoints" },
         {
           $group: {
-            _id: null,
-            ts_array: { $push: "$ts_epoch" },
-            value_array: { $push: "$value" },
+            _id: {
+              dt: {
+                $subtract: [
+                  {
+                    $subtract: ["$ts", endtime],
+                  },
+                  {
+                    $mod: [
+                      {
+                        $subtract: ["$ts", endtime],
+                      },
+                      intervalMs,
+                    ],
+                  },
+                ],
+              },
+              code: "$code",
+              metadata_host: "$metadata.host",
+            },
+            value: {
+              $sum: 1,
+            },
+            ts: {
+              $max: "$ts",
+            },
+            name: {
+              $max: "$__labelfield",
+            },
           },
         },
         {
-          $project: {
-            _id: 0,
-            arrays: ["$ts_array", "$value_array"],
+          $sort: {
+            ts: 1,
           },
         },
       ];
@@ -809,29 +1017,28 @@
         // @ts-ignore
         gdnumrequest_agg[0].$match["code"] = { $ne: 200 };
       }
-      let gdnumrequestres = await auth.client.Aggregate<any>({
+      let gdnumrequest_res = await auth.client.Aggregate<any>({
         collectionname: "sf_request_logs",
         aggregates: gdnumrequest_agg,
         jwt: auth.access_token,
       });
-      if (gdnumrequestres.length > 0) {
-        let newgdnumrequest = [
-          new Float64Array(gdnumrequestres[0].arrays[0]),
-          new Float64Array(gdnumrequestres[0].arrays[1]),
-        ];
+      if (gdnumrequest_res.length > 0) {
         // Check if the data is the same then do not rerender the graph
-        const currentHash = JSON.stringify(gdnumrequest);
-        const newHash = JSON.stringify(newgdnumrequest);
+        const currentHash = JSON.stringify(_gdnumrequest);
+        const newHash = JSON.stringify(gdnumrequest_res);
         if (currentHash !== newHash) {
-          gdnumrequest = newgdnumrequest;
+          _gdnumrequest = gdnumrequest_res;
+          const results = transformAggregateDataToChart(
+            gdnumrequest_res,
+            starttime,
+            endtime,
+          );
+          // console.log("results", results);
+          gdnumrequest = results;
         }
       } else {
-        // Clear chart data if no data available
-        const currentHash = JSON.stringify(gdnumrequest);
-        const newHash = JSON.stringify([]);
-        if (currentHash !== newHash) {
-          gdnumrequest = [];
-        }
+        gdnumrequest = [];
+        _gdnumrequest = [];
       }
     } catch (error: any) {
       console.error("Error fetching chart data:", error);
@@ -843,71 +1050,93 @@
 
   async function getGDConsoleLog() {
     try {
-      const { start, end } = getTimeDuration(selectedduration);
+      const { start: starttime, end: endtime } =
+        getTimeDuration(selectedduration);
+      const intervalMs = 2000; // default to 1 second
       // here i want to count the messages and add it to the chart
-      let gdresponsetime_agg = [
+      let gdmessages_agg = [
         {
           $match: {
-            ts: { $gte: new Date(start), $lt: new Date(end) },
+            ts: { $gte: new Date(starttime), $lt: new Date(endtime) },
           },
         },
         {
-          $project: {
-            ts_epoch: { $toLong: { $toDate: "$ts" } }, // ms epoch
-            response_time_sec: "$response_time",
-          },
-        },
-        {
-          $project: {
-            ts_epoch: { $divide: ["$ts_epoch", 1000] }, // convert ms → seconds
-            response_time_sec: 1,
+          $addFields: {
+            __labelfield: {
+              $concat: [
+                {
+                  $toString: "$metadata.host",
+                },
+                " ",
+              ],
+            },
           },
         },
         {
           $group: {
-            _id: null,
-            ts_array: { $push: "$ts_epoch" },
-            response_time_array: { $push: "$response_time_sec" },
+            _id: {
+              dt: {
+                $subtract: [
+                  {
+                    $subtract: ["$ts", endtime],
+                  },
+                  {
+                    $mod: [
+                      {
+                        $subtract: ["$ts", endtime],
+                      },
+                      intervalMs,
+                    ],
+                  },
+                ],
+              },
+              metadata_host: "$metadata.host",
+            },
+            value: {
+              $sum: 1,
+            },
+            ts: {
+              $max: "$ts",
+            },
+            name: {
+              $max: "$__labelfield",
+            },
           },
         },
         {
-          $project: {
-            _id: 0,
-            arrays: ["$ts_array", "$response_time_array"],
+          $sort: {
+            ts: 1,
           },
         },
       ];
       if (data.paramid != "null") {
         // @ts-ignore
-        gdresponsetime_agg[0].$match["metadata.repo"] = data.item.repo;
+        gdmessages_agg[0].$match["metadata.repo"] = data.item.repo;
       }
       if (showerror == true) {
         // @ts-ignore
-        gdresponsetime_agg[0].$match["err"] = { $eq: true };
+        gdmessages_agg[0].$match["err"] = { $eq: true };
       }
-      let gdresponsetimeres = await auth.client.Aggregate<any>({
+      let gdmessages_res = await auth.client.Aggregate<any>({
         collectionname: "sf_request_logs",
-        aggregates: gdresponsetime_agg,
+        aggregates: gdmessages_agg,
         jwt: auth.access_token,
       });
-      if (gdresponsetimeres.length > 0) {
-        let newgdresponsetime = [
-          new Float64Array(gdresponsetimeres[0].arrays[0]),
-          new Float64Array(gdresponsetimeres[0].arrays[1]),
-        ];
-        // Check if the data is the same then do not rerender the graph
-        const currentHash = JSON.stringify(gdresponsetime);
-        const newHash = JSON.stringify(newgdresponsetime);
+      if (gdmessages_res.length > 0) {
+        const currentHash = JSON.stringify(_gdmessages);
+        const newHash = JSON.stringify(gdmessages_res);
         if (currentHash !== newHash) {
-          gdresponsetime = newgdresponsetime;
+          _gdmessages = gdmessages_res;
+          const results = transformAggregateDataToChart(
+            gdmessages_res,
+            starttime,
+            endtime,
+          );
+          gdmessages = results;
         }
       } else {
-        // Clear chart data if no data available
-        const currentHash = JSON.stringify(gdresponsetime);
-        const newHash = JSON.stringify([]);
-        if (currentHash !== newHash) {
-          gdresponsetime = [];
-        }
+        gdmessages = [];
+        _gdmessages = [];
       }
     } catch (error: any) {
       console.error("Error fetching chart data:", error);
@@ -949,6 +1178,7 @@
   onChange: (value: string) => void | Promise<void>;
 })}
   <CustomSelect
+    {loading}
     triggerContent={() => {
       return durationOptions.find((option) => option.value === selectedduration)
         ?.label;
@@ -978,7 +1208,7 @@
       try {
         if (typeof onChange === "function") {
           await onChange();
-          toast.success("Data reloaded successfully");
+          // toast.success("Data reloaded successfully");
         }
       } catch (error: any) {
         toast.error("Error reloading data", {
@@ -998,7 +1228,7 @@
   <div class="flex flex-row items-center space-x-2 py-4">
     <div>Show Errors</div>
     <CustomSwitch
-      disabled={loading}
+      {loading}
       bind:checked={showerror}
       onclick={async () => {
         await tick();
@@ -1491,8 +1721,8 @@
     </div>
     <div class="grid grid-cols-3 gap-4 mb-4">
       <CustomGraph title="Run Time" bind:data={gdruntime} />
-      <CustomGraph title="Boot Time" bind:data={gdboottime} />
       <CustomGraph title="Response Time" bind:data={gdappresponsetime} />
+      <CustomGraph title="Boot Time" bind:data={gdboottime} />
     </div>
     {@render LogsTable({
       rows: tdInstanceLog.map((row) => ({ ...row, tag: row.metadata?.tag })),
@@ -1526,10 +1756,7 @@
     <div class="grid grid-cols-3 gap-4 mb-4">
       <CustomGraph title="Response Time" bind:data={gdresponsetime} />
       <CustomGraph title="Content Size" bind:data={gdcontentsize} />
-      <!-- <CustomGraph
-        title="Num Req Per Status Code"
-        bind:chartdata={gdnumrequest}
-      /> -->
+      <CustomGraph title="Num Req Per Status Code" bind:data={gdnumrequest} />
     </div>
 
     {@render LogsTable({
@@ -1561,9 +1788,9 @@
       })}
     </div>
 
-    <!-- <div class="grid grid-cols-3 gap-4 mb-4">
+    <div class="grid grid-cols-3 gap-4 mb-4">
       <CustomGraph title="Messages" bind:data={gdmessages} />
-    </div> -->
+    </div>
 
     {@render LogsTable({
       rows: tdConsoleLog,
