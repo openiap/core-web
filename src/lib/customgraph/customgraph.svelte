@@ -5,11 +5,17 @@
     // Lazy-load uPlot on client to avoid SSR window/document access
     import "uplot/dist/uPlot.min.css";
 
-    const { title = "Custom graph", data = $bindable([]) } = $props();
+    const {
+        title = "",
+        data = $bindable([]),
+        series = $bindable([]),
+        showlegend = true,
+        chartsize = "lg",
+    } = $props();
 
     let chartEl: HTMLDivElement | null = $state(null);
     let containerEl: HTMLDivElement | null = $state(null);
-    let valueEl: HTMLDivElement | null = $state(null);
+    // let valueEl: HTMLDivElement | null = $state(null);
     let uplot: any = $state(null);
     let UPlotConstructor: any = $state(null);
     let resizeObserver: ResizeObserver | null = $state(null);
@@ -24,6 +30,108 @@
         "#06B6D4", // Cyan
         "#F97316", // Orange
         "#84CC16", // Lime
+        "#EC4899", // Pink
+        "#6366F1", // Indigo
+        "#14B8A6", // Teal
+        "#F43F5E", // Rose
+        "#8B5A2B", // Brown
+        "#6B7280", // Gray
+        "#DC2626", // Red-600
+        "#059669", // Emerald-600
+        "#D97706", // Amber-600
+        "#7C3AED", // Violet
+        "#0891B2", // Sky
+        "#EA580C", // Orange-600
+        "#65A30D", // Lime-600
+        "#DB2777", // Pink-600
+        "#4F46E5", // Indigo-600
+        "#0D9488", // Teal-600
+        "#E11D48", // Rose-600
+        "#A3A3A3", // Neutral
+        "#991B1B", // Red-800
+        "#047857", // Emerald-700
+        "#B45309", // Amber-700
+        "#6D28D9", // Violet-700
+        "#0369A1", // Sky-700
+        "#C2410C", // Orange-700
+        "#4D7C0F", // Lime-700
+        "#BE185D", // Pink-700
+        "#3730A3", // Indigo-700
+        "#0F766E", // Teal-700
+        "#BE123C", // Rose-700
+        "#737373", // Neutral-500
+        "#7F1D1D", // Red-900
+        "#064E3B", // Emerald-900
+        "#92400E", // Amber-800
+        "#581C87", // Violet-800
+        "#0C4A6E", // Sky-800
+        "#9A3412", // Orange-800
+        "#365314", // Lime-800
+        "#9D174D", // Pink-800
+        "#312E81", // Indigo-800
+        "#134E4A", // Teal-800
+        "#9F1239", // Rose-800
+        "#525252", // Neutral-600
+        "#450A0A", // Red-950
+        "#022C22", // Emerald-950
+        "#451A03", // Amber-950
+        "#2E1065", // Violet-950
+        "#082F49", // Sky-950
+        "#431407", // Orange-950
+        "#1A2E05", // Lime-950
+        "#500724", // Pink-950
+        "#1E1B4B", // Indigo-950
+        "#042F2E", // Teal-950
+        "#4C0519", // Rose-950
+        "#262626", // Neutral-800
+        "#FEE2E2", // Red-100
+        "#DCFCE7", // Emerald-100
+        "#FEF3C7", // Amber-100
+        "#EDE9FE", // Violet-100
+        "#E0F2FE", // Sky-100
+        "#FFEDD5", // Orange-100
+        "#ECFCCB", // Lime-100
+        "#FCE7F3", // Pink-100
+        "#E0E7FF", // Indigo-100
+        "#CCFBF1", // Teal-100
+        "#FFE4E6", // Rose-100
+        "#F5F5F5", // Neutral-100
+        "#FECACA", // Red-200
+        "#BBF7D0", // Emerald-200
+        "#FDE68A", // Amber-200
+        "#DDD6FE", // Violet-200
+        "#BAE6FD", // Sky-200
+        "#FED7AA", // Orange-200
+        "#D9F99D", // Lime-200
+        "#FBCFE8", // Pink-200
+        "#C7D2FE", // Indigo-200
+        "#99F6E4", // Teal-200
+        "#FECDD3", // Rose-200
+        "#E5E5E5", // Neutral-200
+        "#FCA5A5", // Red-300
+        "#86EFAC", // Emerald-300
+        "#FCD34D", // Amber-300
+        "#C4B5FD", // Violet-300
+        "#7DD3FC", // Sky-300
+        "#FDBA74", // Orange-300
+        "#BEF264", // Lime-300
+        "#F9A8D4", // Pink-300
+        "#A5B4FC", // Indigo-300
+        "#5EEAD4", // Teal-300
+        "#FDA4AF", // Rose-300
+        "#D4D4D4", // Neutral-300
+        "#F87171", // Red-400
+        "#4ADE80", // Emerald-400
+        "#FBBF24", // Amber-400
+        "#A78BFA", // Violet-400
+        "#38BDF8", // Sky-400
+        "#FB923C", // Orange-400
+        "#A3E635", // Lime-400
+        "#F472B6", // Pink-400
+        "#818CF8", // Indigo-400
+        "#2DD4BF", // Teal-400
+        "#FB7185", // Rose-400
+        "#A3A3A3", // Neutral-400
     ];
 
     const darkModeColors = [
@@ -35,6 +143,108 @@
         "#22D3EE", // Light Cyan
         "#FB923C", // Light Orange
         "#A3E635", // Light Lime
+        "#F472B6", // Light Pink
+        "#818CF8", // Light Indigo
+        "#2DD4BF", // Light Teal
+        "#FB7185", // Light Rose
+        "#D4B886", // Light Brown
+        "#9CA3AF", // Light Gray
+        "#FCA5A5", // Red-300
+        "#86EFAC", // Emerald-300
+        "#FCD34D", // Amber-300
+        "#C4B5FD", // Violet-300
+        "#7DD3FC", // Sky-300
+        "#FDBA74", // Orange-300
+        "#BEF264", // Lime-300
+        "#F9A8D4", // Pink-300
+        "#A5B4FC", // Indigo-300
+        "#5EEAD4", // Teal-300
+        "#FDA4AF", // Rose-300
+        "#D1D5DB", // Gray-300
+        "#F87171", // Red-400
+        "#4ADE80", // Emerald-400
+        "#FBBF24", // Amber-400
+        "#A78BFA", // Violet-400
+        "#38BDF8", // Sky-400
+        "#FB923C", // Orange-400
+        "#A3E635", // Lime-400
+        "#F472B6", // Pink-400
+        "#818CF8", // Indigo-400
+        "#2DD4BF", // Teal-400
+        "#FB7185", // Rose-400
+        "#9CA3AF", // Gray-400
+        "#EF4444", // Red-500
+        "#10B981", // Emerald-500
+        "#F59E0B", // Amber-500
+        "#8B5CF6", // Violet-500
+        "#0EA5E9", // Sky-500
+        "#F97316", // Orange-500
+        "#84CC16", // Lime-500
+        "#EC4899", // Pink-500
+        "#6366F1", // Indigo-500
+        "#14B8A6", // Teal-500
+        "#F43F5E", // Rose-500
+        "#6B7280", // Gray-500
+        "#DC2626", // Red-600
+        "#059669", // Emerald-600
+        "#D97706", // Amber-600
+        "#7C3AED", // Violet-600
+        "#0284C7", // Sky-600
+        "#EA580C", // Orange-600
+        "#65A30D", // Lime-600
+        "#DB2777", // Pink-600
+        "#4F46E5", // Indigo-600
+        "#0D9488", // Teal-600
+        "#E11D48", // Rose-600
+        "#4B5563", // Gray-600
+        "#B91C1C", // Red-700
+        "#047857", // Emerald-700
+        "#B45309", // Amber-700
+        "#6D28D9", // Violet-700
+        "#0369A1", // Sky-700
+        "#C2410C", // Orange-700
+        "#4D7C0F", // Lime-700
+        "#BE185D", // Pink-700
+        "#3730A3", // Indigo-700
+        "#0F766E", // Teal-700
+        "#BE123C", // Rose-700
+        "#374151", // Gray-700
+        "#991B1B", // Red-800
+        "#065F46", // Emerald-800
+        "#92400E", // Amber-800
+        "#5B21B6", // Violet-800
+        "#075985", // Sky-800
+        "#9A3412", // Orange-800
+        "#3F6212", // Lime-800
+        "#9D174D", // Pink-800
+        "#3730A3", // Indigo-800
+        "#115E59", // Teal-800
+        "#9F1239", // Rose-800
+        "#1F2937", // Gray-800
+        "#7F1D1D", // Red-900
+        "#064E3B", // Emerald-900
+        "#78350F", // Amber-900
+        "#4C1D95", // Violet-900
+        "#0C4A6E", // Sky-900
+        "#7C2D12", // Orange-900
+        "#365314", // Lime-900
+        "#831843", // Pink-900
+        "#312E81", // Indigo-900
+        "#134E4A", // Teal-900
+        "#881337", // Rose-900
+        "#111827", // Gray-900
+        "#450A0A", // Red-950
+        "#022C22", // Emerald-950
+        "#451A03", // Amber-950
+        "#2E1065", // Violet-950
+        "#082F49", // Sky-950
+        "#431407", // Orange-950
+        "#1A2E05", // Lime-950
+        "#500724", // Pink-950
+        "#1E1B4B", // Indigo-950
+        "#042F2E", // Teal-950
+        "#4C0519", // Rose-950
+        "#030712", // Gray-950
     ];
 
     // Get theme-aware colors
@@ -91,10 +301,61 @@
 
     // Dynamic options with responsive sizing and theme-aware colors
     function getOptions() {
-        const { width, height } = getResponsiveDimensions();
+        let { width, height } = getResponsiveDimensions();
+        if (chartsize == "sm") {
+            height = Math.abs(height / 3); // Adjust height for chartsize padding
+            // width = Math.abs(width / 3); // Adjust width for chartsize padding
+        }
+
         const colors = getThemeColors();
         const themeStyles = getThemeStyles();
-
+        let finalseries: any[] = [];
+        let _series = [{}, ...series]; // Ensure first series is always empty for x-axis
+        if (series.length > 0) {
+            // here i want to update the series with the styling and color dont touch the value and label
+            finalseries = _series.map((s, index) => {
+                if (index != 0) {
+                    return {
+                        ...s,
+                        show: true,
+                        spanGaps: false,
+                        // label: s.label || `Series ${index + 1}`,
+                        // value: (self: any, rawValue: any) =>
+                        //     rawValue == null ? "" : rawValue.toFixed(2),
+                        stroke: colors[index - (1 % colors.length)],
+                        width: 2,
+                        fill: `${colors[index - (1 % colors.length)]}20`, // 20% opacity
+                        points: {
+                            show: true,
+                            size: 4,
+                            stroke: colors[index - (1 % colors.length)],
+                            fill: themeStyles.backgroundColor,
+                        },
+                    };
+                }
+            });
+            // finalseries = [{}, ...series];
+        } else {
+            finalseries = [
+                {}, // x-axis (time)
+                ...data.slice(1).map((_, index) => ({
+                    show: true,
+                    spanGaps: false,
+                    label: `Series ${index + 1}`,
+                    value: (self: any, rawValue: any) =>
+                        rawValue == null ? "" : rawValue.toFixed(2),
+                    stroke: colors[index % colors.length],
+                    width: 2,
+                    fill: `${colors[index % colors.length]}20`, // 20% opacity
+                    points: {
+                        show: true,
+                        size: 4,
+                        stroke: colors[index % colors.length],
+                        fill: themeStyles.backgroundColor,
+                    },
+                })),
+            ];
+        }
         return {
             id: "responsive-chart",
             class: "responsive-chart",
@@ -115,7 +376,7 @@
                 height: 12,
             },
             legend: {
-                show: true,
+                show: showlegend,
                 live: true,
             },
             axes: [
@@ -134,43 +395,7 @@
                     },
                 },
             ],
-            series: [
-                {}, // x-axis (time)
-                ...data.slice(1).map((_, index) => ({
-                    show: true,
-                    spanGaps: false,
-                    label: `Series ${index + 1}`,
-                    value: (self: any, rawValue: any) =>
-                        rawValue == null ? "" : rawValue.toFixed(2),
-                    stroke: colors[index % colors.length],
-                    width: 2,
-                    fill: `${colors[index % colors.length]}20`, // 20% opacity
-                    points: {
-                        show: true,
-                        size: 4,
-                        stroke: colors[index % colors.length],
-                        fill: themeStyles.backgroundColor,
-                    },
-                })),
-            ],
-            // hooks: {
-            //     setCursor: [
-            //         (u: any) => {
-            //             if (u.cursor.idx != null) {
-            //                 const idx = u.cursor.idx;
-            //                 const xVal = u.data[0][idx];
-            //                 const yVal = u.data[1][idx];
-            //                 if (valueEl) {
-            //                     valueEl.textContent = `x: ${new Date(xVal * 1000).toLocaleString()}, y: ${yVal}`;
-            //                 }
-            //             } else {
-            //                 if (valueEl) {
-            //                     valueEl.textContent = "x: -, y: -";
-            //                 }
-            //             }
-            //         },
-            //     ],
-            // },
+            series: finalseries,
         };
     }
 
@@ -302,8 +527,12 @@
                         resizeObserver = new ResizeObserver((entries) => {
                             if (uplot && !destroyed) {
                                 try {
-                                    const { width, height } =
+                                    let { width, height } =
                                         getResponsiveDimensions();
+                                    if (chartsize == "sm") {
+                                        height = Math.abs(height / 3); // Adjust height for chartsize padding
+                                        // width = Math.abs(width / 3); // Adjust width for chartsize padding
+                                    }
                                     uplot.setSize({ width, height });
                                 } catch (error) {
                                     toast.error("Failed to resize chart", {
@@ -363,138 +592,64 @@
     });
 </script>
 
-<div bind:this={containerEl} class="chart-container">
-    <div class="chart-header">
-        <h2 class="chart-title">{title}</h2>
-    </div>
-    <div class="chart-wrapper">
+<div
+    bind:this={containerEl}
+    class="w-full max-w-full mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-sm dark:shadow-md overflow-hidden transition-all duration-300 ease-in-out"
+>
+    {#if title !== ""}
+        <div
+            class="px-5 py-4 md:px-4 md:py-3 border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 transition-all duration-300 ease-in-out"
+        >
+            <h2
+                class="m-0 text-lg md:text-base font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-300 ease-in-out"
+            >
+                {title}
+            </h2>
+        </div>
+    {/if}
+    <div class="p-5 md:p-4 w-full overflow-x-auto">
         {#if isDataEmpty()}
-            <div class="no-data-message">
-                <div class="no-data-icon">📊</div>
-                <h3 class="no-data-title">No data in this time range</h3>
-                <p class="no-data-subtitle">
+            <div
+                class="flex flex-col items-center justify-center min-h-[250px] text-center py-10 px-5 text-gray-500 dark:text-gray-400 transition-colors duration-300 ease-in-out"
+            >
+                <div class="text-5xl mb-4 opacity-50">📊</div>
+                <h3
+                    class="m-0 mb-2 text-xl font-semibold text-gray-700 dark:text-gray-300 transition-colors duration-300 ease-in-out"
+                >
+                    No data in this time range
+                </h3>
+                <p
+                    class="m-0 text-sm text-gray-500 dark:text-gray-400 transition-colors duration-300 ease-in-out"
+                >
                     Try adjusting your time range or filters to see data.
                 </p>
             </div>
         {:else}
-            <div bind:this={chartEl} class="chart-element"></div>
+            <div bind:this={chartEl} class="w-full min-h-[200px]"></div>
             <!-- <div bind:this={valueEl}>x: -, y: -</div> -->
         {/if}
     </div>
 </div>
 
 <style>
-    .chart-container {
-        width: 100%;
-        max-width: 100%;
-        margin: 0 auto;
-        background: #ffffff;
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-        transition:
-            background-color 0.3s ease,
-            box-shadow 0.3s ease;
-    }
-
-    :global(.dark) .chart-container {
-        background: #1f2937;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-    }
-
-    .chart-header {
-        padding: 16px 20px;
-        border-bottom: 1px solid #e5e7eb;
-        background: #f9fafb;
-        transition:
-            background-color 0.3s ease,
-            border-color 0.3s ease;
-    }
-
-    :global(.dark) .chart-header {
-        background: #111827;
-        border-bottom: 1px solid #374151;
-    }
-
-    .chart-title {
-        margin: 0;
-        font-size: 1.125rem;
-        font-weight: 600;
-        color: #111827;
-        transition: color 0.3s ease;
-    }
-
-    :global(.dark) .chart-title {
-        color: #f3f4f6;
-    }
-
-    .chart-wrapper {
-        padding: 20px;
-        width: 100%;
-        overflow-x: auto;
-    }
-
-    .chart-element {
-        width: 100%;
-        min-height: 250px;
-    }
-
-    .no-data-message {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        min-height: 250px;
-        text-align: center;
-        padding: 40px 20px;
-        color: #6b7280;
-        transition: color 0.3s ease;
-    }
-
-    :global(.dark) .no-data-message {
-        color: #9ca3af;
-    }
-
-    .no-data-icon {
-        font-size: 3rem;
-        margin-bottom: 16px;
-        opacity: 0.5;
-    }
-
-    .no-data-title {
-        margin: 0 0 8px 0;
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: #374151;
-        transition: color 0.3s ease;
-    }
-
-    :global(.dark) .no-data-title {
-        color: #d1d5db;
-    }
-
-    .no-data-subtitle {
-        margin: 0;
-        font-size: 0.875rem;
-        color: #6b7280;
-        transition: color 0.3s ease;
-    }
-
-    :global(.dark) .no-data-subtitle {
-        color: #9ca3af;
-    }
-
     /* uPlot styling overrides for better appearance */
     :global(.responsive-chart) {
         font-family:
+            ui-sans-serif,
             system-ui,
             -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            Roboto,
+            "Helvetica Neue",
+            Arial,
+            "Noto Sans",
             sans-serif;
     }
 
     :global(.responsive-chart .u-legend) {
         background: rgba(255, 255, 255, 0.95);
-        border: 1px solid #e5e7eb;
+        border: 1px solid rgb(229, 231, 235);
         border-radius: 6px;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         padding: 8px;
@@ -505,8 +660,8 @@
 
     :global(.dark .responsive-chart .u-legend) {
         background: rgba(31, 41, 55, 0.95);
-        border: 1px solid #374151;
-        color: #f3f4f6;
+        border: 1px solid rgb(55, 65, 81);
+        color: rgb(243, 244, 246);
     }
 
     :global(.responsive-chart .u-legend .u-series) {
@@ -517,36 +672,21 @@
     }
 
     :global(.responsive-chart .u-legend .u-series:hover) {
-        background: #f3f4f6;
+        background: rgb(243, 244, 246);
     }
 
     :global(.dark .responsive-chart .u-legend .u-series:hover) {
-        background: #374151;
+        background: rgb(55, 65, 81);
     }
 
     :global(.responsive-chart .u-cursor-pt) {
         border-radius: 50%;
-        border: 2px solid #ffffff;
+        border: 2px solid rgb(255, 255, 255);
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         transition: border-color 0.3s ease;
     }
 
     :global(.dark .responsive-chart .u-cursor-pt) {
-        border: 2px solid #1f2937;
-    }
-
-    /* Responsive breakpoints */
-    @media (max-width: 768px) {
-        .chart-header {
-            padding: 12px 16px;
-        }
-
-        .chart-wrapper {
-            padding: 16px;
-        }
-
-        .chart-title {
-            font-size: 1rem;
-        }
+        border: 2px solid rgb(31, 41, 55);
     }
 </style>

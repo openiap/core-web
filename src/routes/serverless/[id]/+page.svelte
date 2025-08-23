@@ -15,12 +15,12 @@
   import { auth } from "$lib/stores/auth.svelte.js";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import { Check, RotateCcw, User, Webhook } from "lucide-svelte";
+  import { tick } from "svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { _timeSince } from "../../../helper";
-  import { editFormSchemaUser, editFormSchemaAdmin } from "../schema.js";
-  import { tick } from "svelte";
+  import { editFormSchemaAdmin, editFormSchemaUser } from "../schema.js";
 
   const { data } = $props();
 
@@ -49,22 +49,34 @@
   // Instance log
   let gdruntime = $state<Float64Array[]>([]);
   let _gdruntime = $state<Float64Array[]>([]);
+  let gdruntime_series = $state<Array<any>>([]);
+
   let gdappresponsetime = $state<Float64Array[]>([]);
   let _gdappresponsetime = $state<Float64Array[]>([]);
+  let gdappresponsetime_series = $state<Array<any>>([]);
+
   let gdboottime = $state<Float64Array[]>([]);
   let _gdboottime = $state<Float64Array[]>([]);
+  let gdboottime_series = $state<Array<any>>([]);
 
   // Request log
   let gdresponsetime = $state<Float64Array[]>([]);
   let _gdresponsetime = $state<Float64Array[]>([]);
+  let gdresponsetime_series = $state<Array<any>>([]);
+
   let gdcontentsize = $state<Float64Array[]>([]);
   let _gdcontentsize = $state<Float64Array[]>([]);
+  let gdcontentsize_series = $state<Array<any>>([]);
+
   let gdnumrequest = $state<Float64Array[]>([]);
   let _gdnumrequest = $state<Float64Array[]>([]);
+  let gdnumrequest_series = $state<Array<any>>([]);
+
   let selectedtab = $state(0);
   //  Console log
   let gdmessages = $state<Float64Array[]>([]);
   let _gdmessages = $state<Float64Array[]>([]);
+  let gdmessages_series = $state<Array<any>>([]);
 
   let showerror = $state(false);
 
@@ -211,7 +223,7 @@
   }
 
   if (data.paramid == "null") {
-    getInstanceLogs();
+    getRequestLogs();
   }
 
   async function getInstanceLogs() {
@@ -462,11 +474,125 @@
     return Math.floor(date.getTime() / 1000); // Convert ms to seconds
   }
 
+  function transformValue(
+    datatype: "ms" | "bytes" | "number" | "percent" | "default" = "default",
+    value: any,
+    addPrefix: boolean,
+    aggregateData: Array<any>,
+  ): any {
+    try {
+      if (value == null || value === undefined) {
+        return null; // Handle null or undefined values
+      }
+      const maxValue = Math.max(...aggregateData.map((item) => item.value));
+
+      value = Number(value); // Ensure value is a number
+      const _value = Number(maxValue);
+      if (datatype === "ms") {
+        if (_value >= 31536000000) {
+          value = _value / 31536000000; // Convert ms to years
+        } else if (_value >= 604800000) {
+          value = _value / 604800000; // Convert ms to weeks
+        } else if (_value >= 86400000) {
+          value = _value / 86400000; // Convert ms to days
+        } else if (_value >= 3600000) {
+          value = _value / 3600000; // Convert ms to hours
+        } else if (_value >= 60000) {
+          value = _value / 60000; // Convert ms to minutes
+        } else if (_value >= 1000) {
+          value = _value / 1000; // Convert ms to seconds
+        } else {
+          value = _value; // Already ms
+        }
+        if (addPrefix) {
+          if (_value >= 31536000000) {
+            return value.toFixed(2) + " years";
+          } else if (_value >= 604800000) {
+            return value.toFixed(2) + " weeks";
+          } else if (_value >= 86400000) {
+            return value.toFixed(2) + " days";
+          } else if (_value >= 3600000) {
+            return value.toFixed(2) + " hours";
+          } else if (_value >= 60000) {
+            return value.toFixed(2) + " min";
+          } else if (_value >= 1000) {
+            return value.toFixed(2) + " sec";
+          } else {
+            return value.toFixed(2) + " ms";
+          }
+        } else {
+          return value.toFixed(2);
+        }
+      } else if (datatype === "bytes") {
+        if (_value >= 1073741824) {
+          value = _value / 1073741824; // Convert B to GB
+        } else if (_value >= 1048576) {
+          value = _value / 1048576; // Convert B to MB
+        } else if (_value >= 1024) {
+          value = _value / 1024; // Convert B to KB
+        } else {
+          value = _value; // Already in Bytes
+        }
+
+        if (addPrefix) {
+          if (_value >= 1073741824) {
+            return (_value / 1073741824).toFixed(2) + " GB";
+          } else if (_value >= 1048576) {
+            return (_value / 1048576).toFixed(2) + " MB";
+          } else if (_value >= 1024) {
+            return (_value / 1024).toFixed(2) + " KB";
+          } else {
+            return _value.toFixed(2) + " Bytes";
+          }
+        } else {
+          return value.toFixed(2);
+        }
+      } else if (datatype === "number") {
+        if (_value >= 1_000_000_000) {
+          value = _value / 1_000_000_000; // Convert to Billions
+        } else if (_value >= 1_000_000) {
+          value = _value / 1_000_000; // Convert to Millions
+        } else if (_value >= 1_000) {
+          value = _value / 1_000; // Convert to Thousands
+        } else {
+          value = _value; // Less than 1000, keep as is
+        }
+
+        if (addPrefix) {
+          if (_value >= 1_000_000_000) {
+            return (_value / 1_000_000_000).toFixed(2) + " B";
+          } else if (_value >= 1_000_000) {
+            return (_value / 1_000_000).toFixed(2) + " M";
+          } else if (_value >= 1_000) {
+            return (_value / 1_000).toFixed(2) + " K";
+          } else {
+            return _value.toFixed(2);
+          }
+        } else {
+          return value.toFixed(2);
+        }
+      } else if (datatype === "percent") {
+        if (addPrefix) {
+          return value == null ? null : value.toFixed(2) + " %";
+        } else {
+          return value == null ? null : value.toFixed(2);
+        }
+      } else {
+        console.log("default", value);
+        return value.toFixed(2);
+      }
+    } catch (error: any) {
+      console.error("Error in transformValue:", error);
+      return null; // Return null if there's an error
+    }
+  }
+
   function transformAggregateDataToChart(
     aggregateData: any[],
     startTime: string,
     endTime: string,
-  ): any[] {
+    datatype: "ms" | "bytes" | "number" | "percent" | "default" = "default",
+  ): { graphdata: any[]; legendnames: string[] } {
     let result: any[] = [];
     let results: any[] = [];
     let legendnames = [];
@@ -502,7 +628,9 @@
       for (let j = 0; j < legendnames.length; j++) {
         let subitem = subresult.find((item) => item.name === legendnames[j]);
         if (subitem) {
-          results[j + 1].push(subitem.value);
+          results[j + 1].push(
+            transformValue(datatype, subitem.value, false, aggregateData),
+          );
         } else {
           results[j + 1].push(undefined);
         }
@@ -514,8 +642,7 @@
     for (let j = 0; j < legendnames.length; j++) {
       results[j + 1].push(undefined);
     }
-
-    return results;
+    return { graphdata: results, legendnames };
   }
 
   async function getGDInstanceLog() {
@@ -536,8 +663,6 @@
                 {
                   $toString: "$metadata.host",
                 },
-                " ",
-                "response ",
               ],
             },
           },
@@ -589,17 +714,35 @@
         jwt: auth.access_token,
       });
       if (gdruntime_res.length > 0) {
-        const currentHash = JSON.stringify(_gdresponsetime);
+        const currentHash = JSON.stringify(_gdruntime);
         const newHash = JSON.stringify(gdruntime_res);
         if (currentHash !== newHash) {
           _gdruntime = gdruntime_res;
+          // here i want to first calculate what is the largest value in the data set so that i can convert ms to seconds or minutes etc
           const results = transformAggregateDataToChart(
             gdruntime_res,
             starttime,
             endtime,
+            "ms",
           );
-          gdruntime = results;
+          gdruntime = results.graphdata;
+          // const maxValue = Math.max(
+          //   ...gdruntime_res.map((item: any) => item.value),
+          // );
+          gdruntime_series = results.legendnames.map((name) => {
+            return {
+              label: name,
+              value: (u: any, v: any) => {
+                return v == null
+                  ? null
+                  : transformValue("ms", v, true, gdruntime_res);
+              },
+            };
+          });
         }
+      } else {
+        gdruntime = [];
+        _gdruntime = [];
       }
 
       let gdboottime_agg = [
@@ -615,8 +758,6 @@
                 {
                   $toString: "$metadata.host",
                 },
-                " ",
-                "response ",
               ],
             },
           },
@@ -676,8 +817,22 @@
             gdboottime_res,
             starttime,
             endtime,
+            "ms",
           );
-          gdboottime = results;
+          gdboottime = results.graphdata;
+          // const maxValue = Math.max(
+          //   ...gdboottime.map((item: any) => item.value),
+          // );
+          gdboottime_series = results.legendnames.map((name) => {
+            return {
+              label: name,
+              value: (u: any, v: any) => {
+                return v == null
+                  ? null
+                  : transformValue("ms", v, true, gdboottime_res);
+              },
+            };
+          });
         }
       }
 
@@ -694,8 +849,6 @@
                 {
                   $toString: "$metadata.host",
                 },
-                " ",
-                "response ",
               ],
             },
           },
@@ -755,8 +908,22 @@
             gdappresponsetime_res,
             starttime,
             endtime,
+            "ms",
           );
-          gdappresponsetime = results;
+          gdappresponsetime = results.graphdata;
+          // const maxValue = Math.max(
+          //   ...gdappresponsetime.map((item: any) => item.value),
+          // );
+          gdappresponsetime_series = results.legendnames.map((name) => {
+            return {
+              label: name,
+              value: (u: any, v: any) => {
+                return v == null
+                  ? null
+                  : transformValue("ms", v, true, gdappresponsetime_res);
+              },
+            };
+          });
         }
       }
     } catch (error: any) {
@@ -785,8 +952,6 @@
                 {
                   $toString: "$metadata.host",
                 },
-                " ",
-                "cold ",
               ],
             },
           },
@@ -841,7 +1006,6 @@
         aggregates: gdresponsetime_agg,
         jwt: auth.access_token,
       });
-      console.log("gdresponsetime_res", gdresponsetime_res);
       if (gdresponsetime_res.length > 0) {
         const currentHash = JSON.stringify(_gdresponsetime);
         const newHash = JSON.stringify(gdresponsetime_res);
@@ -851,9 +1015,22 @@
             gdresponsetime_res,
             starttime,
             endtime,
+            "ms",
           );
-          // console.log("results", results);
-          gdresponsetime = results;
+          gdresponsetime = results.graphdata;
+          // const maxValue = Math.max(
+          //   ...gdresponsetime.map((item: any) => item.value),
+          // );
+          gdresponsetime_series = results.legendnames.map((name) => {
+            return {
+              label: name,
+              value: (u: any, v: any) => {
+                return v == null
+                  ? null
+                  : transformValue("ms", v, true, gdresponsetime_res);
+              },
+            };
+          });
         }
       } else {
         gdresponsetime = [];
@@ -873,8 +1050,6 @@
                 {
                   $toString: "$metadata.host",
                 },
-                " ",
-                "received ",
               ],
             },
           },
@@ -940,9 +1115,22 @@
             gdcontentsize_res,
             starttime,
             endtime,
+            "bytes",
           );
-          // console.log("results", results);
-          gdcontentsize = results;
+          gdcontentsize = results.graphdata;
+          // const maxValue = Math.max(
+          //   ...gdcontentsize.map((item: any) => item.value),
+          // );
+          gdcontentsize_series = results.legendnames.map((name) => {
+            return {
+              label: name,
+              value: (u: any, v: any) => {
+                return v == null
+                  ? null
+                  : transformValue("bytes", v, true, gdcontentsize_res);
+              },
+            };
+          });
         }
       } else {
         gdcontentsize = [];
@@ -1032,9 +1220,22 @@
             gdnumrequest_res,
             starttime,
             endtime,
+            "number",
           );
-          // console.log("results", results);
-          gdnumrequest = results;
+          gdnumrequest = results.graphdata;
+          // const maxValue = Math.max(
+          //   ...gdnumrequest.map((item: any) => item.value),
+          // );
+          gdnumrequest_series = results.legendnames.map((name) => {
+            return {
+              label: name,
+              value: (u: any, v: any) => {
+                return v == null
+                  ? null
+                  : transformValue("number", v, true, gdnumrequest_res);
+              },
+            };
+          });
         }
       } else {
         gdnumrequest = [];
@@ -1067,7 +1268,6 @@
                 {
                   $toString: "$metadata.host",
                 },
-                " ",
               ],
             },
           },
@@ -1131,8 +1331,22 @@
             gdmessages_res,
             starttime,
             endtime,
+            "default",
           );
-          gdmessages = results;
+          gdmessages = results.graphdata;
+          // const maxValue = Math.max(
+          //   ...gdmessages.map((item: any) => item.value),
+          // );
+          gdmessages_series = results.legendnames.map((name) => {
+            return {
+              label: name,
+              value: (u: any, v: any) => {
+                return v == null
+                  ? null
+                  : transformValue("default", v, true, gdmessages_res);
+              },
+            };
+          });
         }
       } else {
         gdmessages = [];
@@ -1299,7 +1513,7 @@
   {/if}
 {/snippet}
 
-<Tabs.Root value={data.paramid != "null" ? "1" : "2"} class="w-full">
+<Tabs.Root value={data.paramid != "null" ? "1" : "3"} class="w-full">
   <div class="flex items-center gap-4">
     <Tabs.List
       class="h-fit grid grid-cols-1 md:block w-full md:w-fit bg-bw200 dark:bg-darkagenttab rounded-[15px] p-1 mb-10 lg:mb-0"
@@ -1309,11 +1523,12 @@
           >Settings</Tabs.Trigger
         >
       {/if}
+      <Tabs.Trigger value="3" onclick={getRequestLogs}>Request Log</Tabs.Trigger
+      >
       <Tabs.Trigger value="2" onclick={getInstanceLogs}
         >Instance Log</Tabs.Trigger
       >
-      <Tabs.Trigger value="3" onclick={getRequestLogs}>Request Log</Tabs.Trigger
-      >
+
       <Tabs.Trigger value="4" onclick={getConsoleLogs}>Console Log</Tabs.Trigger
       >
     </Tabs.List>
@@ -1720,9 +1935,21 @@
       {@render ReloadData({ onChange: getInstanceLogs })}
     </div>
     <div class="grid grid-cols-3 gap-4 mb-4">
-      <CustomGraph title="Run Time" bind:data={gdruntime} />
-      <CustomGraph title="Response Time" bind:data={gdappresponsetime} />
-      <CustomGraph title="Boot Time" bind:data={gdboottime} />
+      <CustomGraph
+        title="Run Time"
+        bind:data={gdruntime}
+        series={gdruntime_series}
+      />
+      <CustomGraph
+        title="Response Time"
+        bind:data={gdappresponsetime}
+        series={gdappresponsetime_series}
+      />
+      <CustomGraph
+        title="Boot Time"
+        bind:data={gdboottime}
+        series={gdboottime_series}
+      />
     </div>
     {@render LogsTable({
       rows: tdInstanceLog.map((row) => ({ ...row, tag: row.metadata?.tag })),
@@ -1754,9 +1981,21 @@
     </div>
 
     <div class="grid grid-cols-3 gap-4 mb-4">
-      <CustomGraph title="Response Time" bind:data={gdresponsetime} />
-      <CustomGraph title="Content Size" bind:data={gdcontentsize} />
-      <CustomGraph title="Num Req Per Status Code" bind:data={gdnumrequest} />
+      <CustomGraph
+        title="Response Time"
+        bind:data={gdresponsetime}
+        series={gdresponsetime_series}
+      />
+      <CustomGraph
+        title="Content Size"
+        bind:data={gdcontentsize}
+        series={gdcontentsize_series}
+      />
+      <CustomGraph
+        title="Num Req Per Status Code"
+        bind:data={gdnumrequest}
+        series={gdnumrequest_series}
+      />
     </div>
 
     {@render LogsTable({
@@ -1788,8 +2027,13 @@
       })}
     </div>
 
-    <div class="grid grid-cols-3 gap-4 mb-4">
-      <CustomGraph title="Messages" bind:data={gdmessages} />
+    <div class="grid grid-cols-1 gap-4 mb-4">
+      <CustomGraph
+        bind:data={gdmessages}
+        series={gdmessages_series}
+        showlegend={false}
+        chartsize="sm"
+      />
     </div>
 
     {@render LogsTable({
