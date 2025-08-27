@@ -115,15 +115,14 @@
 
             let dirExists = false;
             try {
-                const result = await fs.promises.stat(dir);
+                await fs.promises.stat(dir);
                 dirExists = true;
             } catch (error: any) {
                 dirExists = false;
             }
-            // console.log("dirExists", dirExists);
 
             if (!dirExists) {
-                const cloneRes = await git.clone({
+                await git.clone({
                     fs,
                     http,
                     dir,
@@ -132,9 +131,8 @@
                     corsProxy,
                     singleBranch: false,
                 });
-                // console.log("cloneRes", cloneRes);
             } else {
-                const fetchres = await git.fetch({
+                await git.fetch({
                     fs,
                     http,
                     dir,
@@ -142,12 +140,9 @@
                     headers,
                     corsProxy,
                 });
-                // console.log("fetchres", fetchres);
             }
-            // console.log("Cloned or fetched repo successfully", data.sha);
 
             const pendingChanges = await hasPendingChanges();
-            console.log("pendingChanges", pendingChanges);
 
             if (pendingChanges === false) {
                 const dbbranch = await auth.client.FindOne<any>({
@@ -156,7 +151,6 @@
                     jwt: auth.access_token,
                 });
 
-                console.log("dbbranch:", dbbranch);
                 if (dbbranch == null) {
                     historyview = true;
                     await git.checkout({
@@ -174,7 +168,6 @@
                 }
             }
             const headSha = await git.resolveRef({ fs, dir, ref: "HEAD" });
-            console.log("headSha", headSha);
 
             const branches1 = await git.listBranches({ fs, dir });
 
@@ -191,7 +184,6 @@
             }
 
             branches = await git.listBranches({ fs, dir, remote: "origin" });
-            // console.log("branches", branches);
 
             const result = await Promise.all(
                 branches.map(async (name) => {
@@ -203,14 +195,11 @@
                     return { name, sha };
                 }),
             );
-            // console.log("result", result);
             branches = result.filter((b) => {
                 return b.name != "HEAD";
             });
-            // console.log("branches", branches);
 
             selectedSha = await git.resolveRef({ fs, dir, ref: "HEAD" });
-            // console.log("selectedSha", selectedSha);
 
             const div = document.getElementById("gitstatus");
             if (div) {
@@ -221,7 +210,6 @@
                 dir,
             });
             files = buildFileList(rawFiles);
-            // console.log("Files loaded:", files.length, "files");
         } catch (error: any) {
             toast.error("cloneRepo " + error.message);
         } finally {
@@ -452,8 +440,7 @@
     async function handleCommitChanges() {
         const fs = new FS(data.item.repo.split("/").join("_"));
         const dir = "/test-clone";
-        let selectedSha = await git.resolveRef({ fs, dir, ref: "HEAD" });
-        console.log("selectedSha", selectedSha);
+        // let selectedSha = await git.resolveRef({ fs, dir, ref: "HEAD" });
 
         if (!commitmessage.trim()) {
             toast.error("Commit message cannot be empty");
@@ -462,27 +449,27 @@
 
         // STEP 1: Stage all modified or untracked files
         const statusMatrix = await git.statusMatrix({ fs, dir });
-        let anyStaged = false;
+        // let anyStaged = false;
 
         for (const [filepath, head, workdir, stage] of statusMatrix) {
             if (workdir !== stage) {
                 // File is changed (or untracked) => stage it
                 await git.add({ fs, dir, filepath });
-                anyStaged = true;
+                // anyStaged = true;
             } else if (workdir === 0 && (head > 0 || stage > 0)) {
                 // File was deleted => remove it from index
                 await git.remove({ fs, dir, filepath });
-                anyStaged = true;
+                // anyStaged = true;
             }
         }
 
         // STEP 2: Show file statuses for debugging
-        const debugStatus = await Promise.all(
-            statusMatrix.map(async ([filepath]) => {
-                const status = await git.status({ fs, dir, filepath });
-                return `${filepath}: ${status}`;
-            }),
-        );
+        // const debugStatus = await Promise.all(
+        //     statusMatrix.map(async ([filepath]) => {
+        //         const status = await git.status({ fs, dir, filepath });
+        //         return `${filepath}: ${status}`;
+        //     }),
+        // );
 
         // STEP 3: Check if anything is staged
         const postStageMatrix = await git.statusMatrix({ fs, dir });
@@ -518,9 +505,6 @@
             toast.error("❌ Commit failed: No commit OID returned");
         }
 
-        let selectedSha1 = await git.resolveRef({ fs, dir, ref: "HEAD" });
-        console.log("selectedSha after commit", selectedSha1);
-
         // STEP 5: Reset UI
         commitmessage = "";
         openAddFileDialog = false;
@@ -540,63 +524,32 @@
                     query: { sha: data.sha, ref: { $ne: "HEAD" } },
                     jwt: auth.access_token,
                 });
-                // console.log("dbbranch", dbbranch);
-
-                // check if there are commits to push
-                // const statusMatrix = await git.statusMatrix({ fs, dir });
-                // const hasPendingChanges = statusMatrix.some(
-                //     ([filepath, head, workdir, stage]) => {
-                //         // If any file differs in HEAD vs workdir vs index
-                //         return head !== workdir || head !== stage;
-                //     },
-                // );
-                // if (!hasPendingChanges) {
-                //     toast.error("You have no changes to push.");
-                //     return;
-                // }
 
                 const headers = {
                     Authorization: "Bearer " + auth.access_token,
                 };
-                const url = `https://${auth.config.domain}/git/${data.item.repo}`;
-                // const currentBranch = await git.currentBranch({ fs, dir, fullname: false });
                 const currentBranch =
                     branches.find((b) => b.sha === selectedSha)?.name ||
                     "Select Branch";
-                console.log("currentBranch", currentBranch);
-
-                let selectedSha1 = await git.resolveRef({
-                    fs,
-                    dir,
-                    ref: "HEAD",
-                });
-                console.log("selectedSha push", selectedSha1);
 
                 if (dbbranch == null) {
-                    const res = await git.push({
+                    await git.push({
                         fs,
                         http,
                         dir,
                         remote: "origin",
-                        // ref: headSha,
                         ref: currentBranch,
                         headers,
                     });
-                    // console.log("Push response:", res);
                 } else {
-                    const res = await git.push({
+                    await git.push({
                         fs,
                         http,
                         dir,
                         remote: "origin",
                         ref: currentBranch,
-                        // ref: dbbranch.ref.split("/").pop(),
                         headers,
-                        // url,
-                        // force: true, // Force push to update the branch,
-                        //#endregion
                     });
-                    // console.log("Push response:", res);
                 }
                 toast.success("Pushed to remote successfully");
             }
@@ -665,10 +618,6 @@
             toast.error("Error reloading data: " + error.message);
         }
     }
-
-    // $effect(() => {
-    //     console.log("Current file path:", currentFilePath());
-    // });
 </script>
 
 {#snippet refreshData()}
@@ -814,19 +763,12 @@
                                 jwt: auth.access_token,
                             });
 
-                            // console.log("Branch switch - Target SHA:", value);
-                            // console.log("Branch switch - dbbranch:", dbbranch);
-
                             // Log before checkout
                             const beforeHead = await git.resolveRef({
                                 fs,
                                 dir,
                                 ref: "HEAD",
                             });
-                            // console.log(
-                            //     "Branch switch - Before HEAD:",
-                            //     beforeHead,
-                            // );
 
                             // Always checkout to the specific SHA, not the branch name
                             let checkoutPromise = git
@@ -864,10 +806,6 @@
                                         dir,
                                         ref: "HEAD",
                                     });
-                                    // console.log(
-                                    //     "Branch switch - After HEAD:",
-                                    //     afterHead,
-                                    // );
 
                                     if (afterHead !== value) {
                                         console.error(
@@ -877,28 +815,7 @@
                                             afterHead,
                                         );
                                     } else {
-                                        // console.log(
-                                        //     "✅ Branch switch successful! HEAD is now at:",
-                                        //     afterHead,
-                                        // );
                                     }
-
-                                    // Debug README after checkout
-                                    // try {
-                                    //     const readmeContent =
-                                    //         await fs.promises.readFile(
-                                    //             `${dir}/README.md`,
-                                    //             "utf8",
-                                    //         );
-                                    //     console.log(
-                                    //         "Branch switch - README after checkout (first 100 chars):",
-                                    //         readmeContent.substring(0, 100),
-                                    //     );
-                                    // } catch (e) {
-                                    //     console.log(
-                                    //         "Branch switch - No README.md found after checkout",
-                                    //     );
-                                    // }
 
                                     // Refresh files after checkout
                                     return listMatrixRecursive({ fs, dir });
