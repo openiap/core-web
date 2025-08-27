@@ -12,16 +12,27 @@ function getFinalTarget(path: string | string[], url: URL): string {
 	const pathname = Array.isArray(path) ? path.join('/') : path;
 	const query = url.searchParams.toString();
 	if(pathname.indexOf("localhost") > -1) {
-		// If the path contains "localhost", we assume it's a local development URL
-		// return `http://${pathname}${query ? '?' + query : ''}`;
-		return `http://localhost:3000/${query ? '?' + query : ''}`;
+		
+		// console.log("Using local dev URL");
+		// // If the path contains "localhost", we assume it's a local development URL
+		// // return `http://${pathname}${query ? '?' + query : ''}`;
+		// return `http://localhost.openiap.io/${query ? '?' + query : ''}`;
 	}
-	return `https://${pathname}${query ? '?' + query : ''}`;
+	let result = `https://${pathname}${query ? '?' + query : ''}`;
+	let u = new URL(result);
+	if(u.hostname === "localhost" || u.hostname === "localhost.openiap.io") {
+		u.port = "80";
+		u.protocol = "http:";
+		result = u.toString();
+	}
+	console.log("result ", result);
+	
+	return result;
 }
 
 async function handleProxy(request: Request, url: URL, path: string | string[]) {
-	console.log('Handling proxy request:', request.method, path);
 	const fullUrl = getFinalTarget(path, url);
+	console.log('Handling proxy request:', request.method, fullUrl);
 
 	const headers = new Headers(request.headers);
 	headers.delete('host');

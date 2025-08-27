@@ -47,6 +47,7 @@
     let commitmessage: string = $state("");
     let showDiscardAllChangesWarning: boolean = $state(false);
     let loading = $state(false);
+    let historyview = $state(false);
 
     const currentFilePath = $derived(() => {
         const urlParts = $page.url.pathname.split("/");
@@ -91,21 +92,20 @@
 
     async function cloneRepo() {
         loading = true;
-        // console.log("cloneRepo called");
-        if (auth.access_token === "" || auth.access_token == null) {
-            toast.error("No access token found");
-            return;
-        }
-        if (data.item.repo == null || data.item.repo === "") {
-            toast.error("Empty repository ");
-            // redirect to new page showing cloning instructions
-            return;
-        }
-        if (data.item.sha == null) {
-            return;
-        }
 
         try {
+            if (auth.access_token === "" || auth.access_token == null) {
+                toast.error("No access token found");
+                return;
+            }
+            if (data.item.repo == null || data.item.repo === "") {
+                toast.error("Empty repository ");
+                // redirect to new page showing cloning instructions
+                return;
+            }
+            if (data.item.sha == null) {
+                return;
+            }
             const headers = { Authorization: "Bearer " + auth.access_token };
             const corsProxy = base + "/api/git-proxy";
 
@@ -147,7 +147,7 @@
             // console.log("Cloned or fetched repo successfully", data.sha);
 
             const pendingChanges = await hasPendingChanges();
-            // console.log("pendingChanges", pendingChanges);
+            console.log("pendingChanges", pendingChanges);
 
             if (pendingChanges === false) {
                 const dbbranch = await auth.client.FindOne<any>({
@@ -155,115 +155,28 @@
                     query: { sha: data.sha, ref: { $ne: "HEAD" } },
                     jwt: auth.access_token,
                 });
-                // console.log("dbbranch", dbbranch);
-                // console.log("Target SHA we want to checkout to:", data.sha);
 
-                // First, let's check what we have before checkout
-                const beforeCheckoutHead = await git.resolveRef({
-                    fs,
-                    dir,
-                    ref: "HEAD",
-                });
-                // console.log("Before checkout HEAD:", beforeCheckoutHead);
-
-                // Always checkout to the specific SHA we want, regardless of branch info
-                // console.log("Checking out to target SHA:", data.sha);
-                try {
+                console.log("dbbranch:", dbbranch);
+                if (dbbranch == null) {
+                    historyview = true;
                     await git.checkout({
                         fs,
                         dir,
                         ref: data.sha,
                         force: true,
                     });
-                    // console.log("Successfully checked out to SHA", data.sha);
-                } catch (checkoutError) {
-                    // console.error("Direct SHA checkout failed:", checkoutError);
-
-                    // If direct SHA checkout fails, try creating a temporary branch
-                    try {
-                        if (data?.sha != undefined) {
-                            const tempBranchName = `temp-${data.sha.substring(0, 8)}`;
-                            await git.branch({
-                                fs,
-                                dir,
-                                ref: tempBranchName,
-                                force: true,
-                            });
-                            await git.checkout({
-                                fs,
-                                dir,
-                                ref: tempBranchName,
-                                force: true,
-                            });
-                            // console.log(
-                            //     "Successfully checked out via temporary branch",
-                            //     tempBranchName,
-                            // );
-                        }
-                    } catch (tempBranchError) {
-                        // console.log(
-                        //     "Temporary branch checkout also failed:",
-                        //     tempBranchError,
-                        // );
-                        throw checkoutError; // Re-throw the original error
-                    }
-                }
-
-                // Verify the checkout worked
-                const afterCheckoutHead = await git.resolveRef({
-                    fs,
-                    dir,
-                    ref: "HEAD",
-                });
-                // console.log("After checkout HEAD:", afterCheckoutHead);
-
-                if (afterCheckoutHead !== data.sha) {
-                    console.error(
-                        "CHECKOUT FAILED! Expected:",
-                        data.sha,
-                        "Got:",
-                        afterCheckoutHead,
-                    );
-                    // Try to force update the working directory
-                    // console.log(
-                    //     "Attempting to force reset working directory...",
-                    // );
-                    try {
-                        // Reset to the target SHA
-                        await git.checkout({
-                            fs,
-                            dir,
-                            ref: data.sha,
-                            force: true,
-                        });
-                        const finalHead = await git.resolveRef({
-                            fs,
-                            dir,
-                            ref: "HEAD",
-                        });
-                        // console.log("After force reset HEAD:", finalHead);
-                    } catch (resetError) {
-                        console.error("Force reset failed:", resetError);
-                    }
                 } else {
-                    // console.log(
-                    //     "✅ Checkout successful! HEAD is now at:",
-                    //     afterCheckoutHead,
-                    // );
+                    await git.checkout({
+                        fs,
+                        dir,
+                        ref: dbbranch.ref.split("/").pop(),
+                    });
                 }
-
-                // Force refresh the working directory status
-                const statusAfterCheckout = await git.statusMatrix({ fs, dir });
-                // console.log(
-                //     "Status matrix after checkout:",
-                //     statusAfterCheckout.length,
-                //     "entries",
-                // );
             }
             const headSha = await git.resolveRef({ fs, dir, ref: "HEAD" });
-            // console.log("headSha", headSha);
+            console.log("headSha", headSha);
+
             const branches1 = await git.listBranches({ fs, dir });
-            // console.log("branches1", branches1);
 
             for (const b of branches1) {
                 const branchSha = await git.resolveRef({
@@ -271,10 +184,8 @@
                     dir,
                     ref: `refs/heads/${b}`,
                 });
-                // console.log("branchSha", branchSha);
                 if (branchSha === headSha) {
                     selectedSha = b;
-
                     break;
                 }
             }
@@ -313,8 +224,9 @@
             // console.log("Files loaded:", files.length, "files");
         } catch (error: any) {
             toast.error("cloneRepo " + error.message);
+        } finally {
+            loading = false;
         }
-        loading = false;
     }
     cloneRepo();
 
@@ -540,6 +452,8 @@
     async function handleCommitChanges() {
         const fs = new FS(data.item.repo.split("/").join("_"));
         const dir = "/test-clone";
+        let selectedSha = await git.resolveRef({ fs, dir, ref: "HEAD" });
+        console.log("selectedSha", selectedSha);
 
         if (!commitmessage.trim()) {
             toast.error("Commit message cannot be empty");
@@ -604,6 +518,9 @@
             toast.error("❌ Commit failed: No commit OID returned");
         }
 
+        let selectedSha1 = await git.resolveRef({ fs, dir, ref: "HEAD" });
+        console.log("selectedSha after commit", selectedSha1);
+
         // STEP 5: Reset UI
         commitmessage = "";
         openAddFileDialog = false;
@@ -642,13 +559,27 @@
                     Authorization: "Bearer " + auth.access_token,
                 };
                 const url = `https://${auth.config.domain}/git/${data.item.repo}`;
+                // const currentBranch = await git.currentBranch({ fs, dir, fullname: false });
+                const currentBranch =
+                    branches.find((b) => b.sha === selectedSha)?.name ||
+                    "Select Branch";
+                console.log("currentBranch", currentBranch);
+
+                let selectedSha1 = await git.resolveRef({
+                    fs,
+                    dir,
+                    ref: "HEAD",
+                });
+                console.log("selectedSha push", selectedSha1);
+
                 if (dbbranch == null) {
                     const res = await git.push({
                         fs,
                         http,
                         dir,
                         remote: "origin",
-                        ref: headSha,
+                        // ref: headSha,
+                        ref: currentBranch,
                         headers,
                     });
                     // console.log("Push response:", res);
@@ -658,7 +589,8 @@
                         http,
                         dir,
                         remote: "origin",
-                        ref: dbbranch.ref.split("/").pop(),
+                        ref: currentBranch,
+                        // ref: dbbranch.ref.split("/").pop(),
                         headers,
                         // url,
                         // force: true, // Force push to update the branch,
@@ -805,8 +737,14 @@
                             try {
                                 const parts = data.item.repo.split("/");
                                 let copycommand;
+                                let protocol = auth.config.wsurl.startsWith(
+                                    "wss",
+                                )
+                                    ? "https"
+                                    : "http";
+
                                 if ((auth.profile as any).name == "guest") {
-                                    copycommand = `rm -rf ${parts[parts.length - 1]} && git clone https://${auth.config.domain}/git/${data.item.repo} && code ${parts[parts.length - 1]}`;
+                                    copycommand = `rm -rf ${parts[parts.length - 1]} && git clone ${protocol}://${auth.config.domain}/git/${data.item.repo} && code ${parts[parts.length - 1]}`;
                                 } else {
                                     let tokenres =
                                         await auth.client.CustomCommand({
@@ -819,7 +757,7 @@
                                             },
                                             jwt: auth.access_token,
                                         });
-                                    copycommand = `rm -rf ${parts[parts.length - 1]} && git clone https://${auth.config.domain}/git/${data.item.repo} -c http.extraHeader="Authorization: Bearer ${JSON.parse(tokenres).access_token}" && code ${parts[parts.length - 1]}`;
+                                    copycommand = `rm -rf ${parts[parts.length - 1]} && git clone ${protocol}://${auth.config.domain}/git/${data.item.repo} -c http.extraHeader="Authorization: Bearer ${JSON.parse(tokenres).access_token}" && code ${parts[parts.length - 1]}`;
                                 }
                                 navigator.clipboard.writeText(copycommand);
                                 toast.success(
@@ -1145,25 +1083,27 @@
                     <Trash2 />
                     Discard changes
                 </HotkeyButton>
-                <HotkeyButton
-                    disabled={loading || !auth.profile}
-                    aria-label="Commit changes"
-                    title="Commit changes"
-                    onclick={() => (openAddFileDialog = true)}
-                >
-                    <GitCommitHorizontal />
-                    Commit changes
-                </HotkeyButton>
-                <HotkeyButton
-                    disabled={loading || !auth.profile}
-                    variant="success"
-                    aria-label="Push changes"
-                    title="Push changes"
-                    onclick={handlePushChanges}
-                >
-                    <ArrowUpFromLine />
-                    Push changes
-                </HotkeyButton>
+                {#if historyview == false}
+                    <HotkeyButton
+                        disabled={loading || !auth.profile}
+                        aria-label="Commit changes"
+                        title="Commit changes"
+                        onclick={() => (openAddFileDialog = true)}
+                    >
+                        <GitCommitHorizontal />
+                        Commit changes
+                    </HotkeyButton>
+                    <HotkeyButton
+                        disabled={loading || !auth.profile}
+                        variant="success"
+                        aria-label="Push changes"
+                        title="Push changes"
+                        onclick={handlePushChanges}
+                    >
+                        <ArrowUpFromLine />
+                        Push changes
+                    </HotkeyButton>
+                {/if}
             </div>
         {:else}
             <div class="mb-4 text-bw600 dark:text-bw400">
@@ -1174,7 +1114,6 @@
                 <div class="flex items-center gap-4 mb-4">
                     <div>Create a new repository on the command line</div>
                     <HotkeyButton
-                        disabled={loading}
                         title="copy new repository command"
                         aria-label="copy new repository command"
                         onclick={async () => {
@@ -1191,13 +1130,18 @@
                                     },
                                     jwt: auth.access_token,
                                 });
+                                let protocol = auth.config.wsurl.startsWith(
+                                    "wss",
+                                )
+                                    ? "https"
+                                    : "http";
 
                                 copycommand = `echo "# ${parts[parts.length - 1]}" >> README.md
 git init
 git add .
 git commit -m "first commit"
 git branch -M main
-git remote add origin https://${auth.config.domain}/git/${data.item.repo}
+git remote add origin ${protocol}://${auth.config.domain}/git/${data.item.repo}
 git config --local http.extraHeader "Authorization: Bearer ${JSON.parse(tokenres).access_token}"
 git push -u origin main`;
 
@@ -1221,14 +1165,18 @@ git push -u origin main`;
             <div class="flex items-center gap-4 mb-4">
                 <div>Push an existing repository from the command line</div>
                 <HotkeyButton
-                    disabled={loading || !auth.profile}
                     title="Copy push local repository command"
                     aria-label="Copy push local repository command"
                     onclick={async () => {
                         try {
                             let copycommand;
+                            let protocol = auth.config.wsurl.startsWith(
+                                    "wss",
+                                )
+                                    ? "https"
+                                    : "http";
                             if ((auth.profile as any).name == "guest") {
-                                copycommand = `git remote add origin https://${auth.config.domain}/git/${data.item.repo}\ngit push -u origin main\ngit push origin --all && git push origin --tags`;
+                                copycommand = `git remote add origin ${protocol}://${auth.config.domain}/git/${data.item.repo}\ngit push -u origin main\ngit push origin --all && git push origin --tags`;
                             } else {
                                 let tokenres = await auth.client.CustomCommand({
                                     command: "issueusertoken",
@@ -1241,7 +1189,7 @@ git push -u origin main`;
                                     jwt: auth.access_token,
                                 });
 
-                                copycommand = `git remote add origin https://${auth.config.domain}/git/${data.item.repo}\ngit config --local http.extraHeader "Authorization: Bearer ${JSON.parse(tokenres).access_token}"\ngit push -u origin main\ngit push origin --all && git push origin --tags`;
+                                copycommand = `git remote add origin ${protocol}://${auth.config.domain}/git/${data.item.repo}\ngit config --local http.extraHeader "Authorization: Bearer ${JSON.parse(tokenres).access_token}"\ngit push -u origin main\ngit push origin --all && git push origin --tags`;
                             }
                             navigator.clipboard.writeText(copycommand);
                             toast.success(
