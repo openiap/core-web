@@ -90,9 +90,9 @@
         return hasPendingChanges;
     }
 
-    async function cloneRepo() {
+    async function cloneRepo(relaodsha: any = null) {
         loading = true;
-
+        let sha = relaodsha || data.sha;
         try {
             if (auth.access_token === "" || auth.access_token == null) {
                 toast.error("No access token found");
@@ -103,7 +103,7 @@
                 // redirect to new page showing cloning instructions
                 return;
             }
-            if (data.item.sha == null) {
+            if (sha == "null") {
                 return;
             }
             const headers = { Authorization: "Bearer " + auth.access_token };
@@ -115,6 +115,11 @@
 
             let dirExists = false;
             try {
+                const pendingChanges = await hasPendingChanges();
+                if (pendingChanges == false) {
+                    const databasename = data.item.repo.split("/").join("_");
+                    await cleanDB(databasename);
+                }
                 await fs.promises.stat(dir);
                 dirExists = true;
             } catch (error: any) {
@@ -132,6 +137,8 @@
                     singleBranch: false,
                 });
             } else {
+                // this is not working sometimes correctly 
+                // test comment above pending changes check and push something from local then reload data in browser
                 await git.fetch({
                     fs,
                     http,
@@ -147,7 +154,7 @@
             if (pendingChanges === false) {
                 const dbbranch = await auth.client.FindOne<any>({
                     collectionname: "git",
-                    query: { sha: data.sha, ref: { $ne: "HEAD" } },
+                    query: { sha: sha, ref: { $ne: "HEAD" } },
                     jwt: auth.access_token,
                 });
 
@@ -156,7 +163,7 @@
                     await git.checkout({
                         fs,
                         dir,
-                        ref: data.sha,
+                        ref: sha,
                         force: true,
                     });
                 } else {
@@ -571,7 +578,7 @@
                         DBDeleteRequest.onsuccess = (event) => {};
                     }
                 }
-                toast.success("DB deleted successfully!" + name);
+                // toast.success("DB deleted successfully!" + name);
             })
             .catch((error) => {
                 toast.error("Error deleting DB: " + error.message);
@@ -611,8 +618,7 @@
             // }
 
             goto(base + `/git/${updatedData._id}/${updatedData.sha}`);
-
-            await cloneRepo();
+            await cloneRepo(updatedData.sha);
             toast.success("Data reloaded successfully!");
         } catch (error: any) {
             toast.error("Error reloading data: " + error.message);
@@ -1087,11 +1093,9 @@ git push -u origin main`;
                     onclick={async () => {
                         try {
                             let copycommand;
-                            let protocol = auth.config.wsurl.startsWith(
-                                    "wss",
-                                )
-                                    ? "https"
-                                    : "http";
+                            let protocol = auth.config.wsurl.startsWith("wss")
+                                ? "https"
+                                : "http";
                             if ((auth.profile as any).name == "guest") {
                                 copycommand = `git remote add origin ${protocol}://${auth.config.domain}/git/${data.item.repo}\ngit push -u origin main\ngit push origin --all && git push origin --tags`;
                             } else {
