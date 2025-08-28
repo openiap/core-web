@@ -1607,7 +1607,7 @@
           <Form.Field {form} name="repo" class="mb-10">
             <Form.Control>
               {#snippet children({ props })}
-                <Form.Label>Repo</Form.Label>
+                <Form.Label>Repository Name</Form.Label>
                 <CustomInput
                   placeholder="Type repo"
                   disabled={true}
@@ -1639,7 +1639,7 @@
           <Form.Field {form} name="distro" class="mb-10">
             <Form.Control>
               {#snippet children({ props })}
-                <Form.Label>Distro</Form.Label>
+                <Form.Label>Distribution</Form.Label>
                 <Entityselector
                   width="md:w-fit w-64"
                   class="mb-4 md:mb-0"
@@ -1689,10 +1689,10 @@
           <Form.Field {form} name="min_instances" class="mb-10">
             <Form.Control>
               {#snippet children({ props })}
-                <Form.Label>min_instances</Form.Label>
+                <Form.Label>Min Instances</Form.Label>
                 <CustomInput
                   type="number"
-                  placeholder="Type min_instances"
+                  placeholder="Type Min Instances"
                   disabled={loading}
                   {...props}
                   bind:value={$formData.min_instances}
@@ -1705,10 +1705,10 @@
           <Form.Field {form} name="max_instances" class="mb-10">
             <Form.Control>
               {#snippet children({ props })}
-                <Form.Label>max_instances</Form.Label>
+                <Form.Label>Max Instances</Form.Label>
                 <CustomInput
                   type="number"
-                  placeholder="Type max_instances"
+                  placeholder="Type Max Instances"
                   disabled={loading}
                   {...props}
                   bind:value={$formData.max_instances}
@@ -1737,13 +1737,29 @@
           <Form.Field {form} name="minimum_response_time" class="mb-10">
             <Form.Control>
               {#snippet children({ props })}
-                <Form.Label>Minimum Response Time</Form.Label>
+                <Form.Label>Minimum Response Time (Milliseconds)</Form.Label>
                 <CustomInput
                   type="number"
                   placeholder="Type Minimum Response Time"
                   disabled={loading}
                   {...props}
                   bind:value={$formData.minimum_response_time}
+                />
+              {/snippet}
+            </Form.Control>
+            <Form.FieldErrors />
+          </Form.Field>
+
+          <Form.Field {form} name="idle_timeout" class="mb-10">
+            <Form.Control>
+              {#snippet children({ props })}
+                <Form.Label>Idle Timeout (Milliseconds)</Form.Label>
+                <CustomInput
+                  type="number"
+                  placeholder="Type Idle Timeout"
+                  disabled={loading}
+                  {...props}
+                  bind:value={$formData.idle_timeout}
                 />
               {/snippet}
             </Form.Control>
