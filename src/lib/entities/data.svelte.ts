@@ -814,7 +814,7 @@ class entitiesdata {
 			case "/client":
 				return ["id", "name", "clientagent", "clientversion", "created", "remoteip"];
 			case "/package":
-				return ["name", "language", "_createdby", "_created"];
+				return ["name", "language", "_createdby", "_created", "_modified"];
 			case "/workspace":
 				return ["name", "_productname", "_created", "_modified"];
 			case `/workspace/${usersettings?.currentworkspace}/member`:
