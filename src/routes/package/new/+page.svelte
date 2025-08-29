@@ -44,9 +44,15 @@
               return;
             }
           }
-          const result = await auth.client.InsertOne({
-            collectionname: "agents",
-            item: { ...form.data },
+          // const result = await auth.client.InsertOne({
+          //   collectionname: "agents",
+          //   item: { ...form.data },
+          //   jwt: auth.access_token,
+          // });
+          const result = await auth.client.CustomCommand({
+            command: "ensurepackage",
+            // @ts-ignore
+            data: { ...form.data },
             jwt: auth.access_token,
           });
           toast.success("Package created");
