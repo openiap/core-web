@@ -1172,7 +1172,7 @@
         const currentHash = JSON.stringify(_gdcontentsize);
         const newHash = JSON.stringify(gdcontentsize_res);
         if (currentHash !== newHash) {
-          gdcontentsize_title = getGraphTitle("ms", gdcontentsize_res);
+          gdcontentsize_title = getGraphTitle("bytes", gdcontentsize_res);
           _gdcontentsize = gdcontentsize_res;
           const results = transformAggregateDataToChart(
             gdcontentsize_res,
