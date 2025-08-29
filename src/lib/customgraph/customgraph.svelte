@@ -6,7 +6,7 @@
     import "uplot/dist/uPlot.min.css";
 
     const {
-        title = "",
+        title = $bindable(""),
         data = $bindable([]),
         series = $bindable([]),
         showlegend = true,
@@ -281,10 +281,10 @@
     function getThemeStyles() {
         const isDark = $mode === "dark";
         return {
-            backgroundColor: isDark ? "#1F2937" : "#FFFFFF", // Dark gray or white
-            textColor: isDark ? "#F3F4F6" : "#111827", // Light gray or dark gray
-            gridColor: isDark ? "#374151" : "#E5E7EB", // Dark grid or light grid
-            axisColor: isDark ? "#9CA3AF" : "#6B7280", // Medium gray
+            // backgroundColor: isDark ? "#1F2937" : "#FFFFFF", // Dark gray or white
+            // textColor: isDark ? "#FDFDFD" : "#111827", // Light gray or dark gray
+            gridColor: isDark ? "#575B62" : "#86888E", 
+            axisColor: isDark ? "#D9D9D9" : "#191A1E", // Medium gray
         };
     }
 
@@ -329,7 +329,7 @@
                             show: true,
                             size: 4,
                             stroke: colors[index - (1 % colors.length)],
-                            fill: themeStyles.backgroundColor,
+                            // fill: themeStyles.backgroundColor,
                         },
                     };
                 }
@@ -351,7 +351,7 @@
                         show: true,
                         size: 4,
                         stroke: colors[index % colors.length],
-                        fill: themeStyles.backgroundColor,
+                        // fill: themeStyles.backgroundColor,
                     },
                 })),
             ];
@@ -594,14 +594,14 @@
 
 <div
     bind:this={containerEl}
-    class="w-full max-w-full mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-sm dark:shadow-md overflow-hidden transition-all duration-300 ease-in-out"
+    class="w-full max-w-full mx-auto bg-bw100 dark:bg-bw700 rounded-lg shadow-sm dark:shadow-md overflow-hidden transition-all duration-300 ease-in-out"
 >
     {#if title !== ""}
         <div
-            class="px-5 py-4 md:px-4 md:py-3 border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 transition-all duration-300 ease-in-out"
+            class="px-5 py-4 md:px-4 md:py-3 border-b border-bw600 dark:border-bw600 bg-bw200 dark:bg-bw900 transition-all duration-300 ease-in-out"
         >
             <h2
-                class="m-0 text-lg md:text-base font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-300 ease-in-out"
+                class="m-0 text-lg md:text-base font-semibold text-bw900 dark:text-bw100 transition-colors duration-300 ease-in-out"
             >
                 {title}
             </h2>
@@ -610,16 +610,16 @@
     <div class="p-5 md:p-4 w-full overflow-x-auto">
         {#if isDataEmpty()}
             <div
-                class="flex flex-col items-center justify-center min-h-[250px] text-center py-10 px-5 text-gray-500 dark:text-gray-400 transition-colors duration-300 ease-in-out"
+                class="flex flex-col items-center justify-center min-h-[250px] text-center py-10 px-5 text-bw500 dark:text-bw400 transition-colors duration-300 ease-in-out"
             >
                 <div class="text-5xl mb-4 opacity-50">📊</div>
                 <h3
-                    class="m-0 mb-2 text-xl font-semibold text-gray-700 dark:text-gray-300 transition-colors duration-300 ease-in-out"
+                    class="m-0 mb-2 text-xl font-semibold text-bw700 dark:text-bw300 transition-colors duration-300 ease-in-out"
                 >
                     No data in this time range
                 </h3>
                 <p
-                    class="m-0 text-sm text-gray-500 dark:text-gray-400 transition-colors duration-300 ease-in-out"
+                    class="m-0 text-sm text-bw500 dark:text-bw400 transition-colors duration-300 ease-in-out"
                 >
                     Try adjusting your time range or filters to see data.
                 </p>
@@ -630,63 +630,3 @@
         {/if}
     </div>
 </div>
-
-<style>
-    /* uPlot styling overrides for better appearance */
-    :global(.responsive-chart) {
-        font-family:
-            ui-sans-serif,
-            system-ui,
-            -apple-system,
-            BlinkMacSystemFont,
-            "Segoe UI",
-            Roboto,
-            "Helvetica Neue",
-            Arial,
-            "Noto Sans",
-            sans-serif;
-    }
-
-    :global(.responsive-chart .u-legend) {
-        background: rgba(255, 255, 255, 0.95);
-        border: 1px solid rgb(229, 231, 235);
-        border-radius: 6px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        padding: 8px;
-        transition:
-            background-color 0.3s ease,
-            border-color 0.3s ease;
-    }
-
-    :global(.dark .responsive-chart .u-legend) {
-        background: rgba(31, 41, 55, 0.95);
-        border: 1px solid rgb(55, 65, 81);
-        color: rgb(243, 244, 246);
-    }
-
-    :global(.responsive-chart .u-legend .u-series) {
-        padding: 4px 8px;
-        margin: 2px 0;
-        border-radius: 4px;
-        transition: background-color 0.3s ease;
-    }
-
-    :global(.responsive-chart .u-legend .u-series:hover) {
-        background: rgb(243, 244, 246);
-    }
-
-    :global(.dark .responsive-chart .u-legend .u-series:hover) {
-        background: rgb(55, 65, 81);
-    }
-
-    :global(.responsive-chart .u-cursor-pt) {
-        border-radius: 50%;
-        border: 2px solid rgb(255, 255, 255);
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        transition: border-color 0.3s ease;
-    }
-
-    :global(.dark .responsive-chart .u-cursor-pt) {
-        border: 2px solid rgb(31, 41, 55);
-    }
-</style>

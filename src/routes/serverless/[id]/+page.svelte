@@ -37,6 +37,9 @@
     { label: "Last 1 day", value: "1d" },
     { label: "Last 7 days", value: "7d" },
     { label: "Last 30 days", value: "30d" },
+    { label: "Last 90 days", value: "90d" },
+    { label: "Last 180 days", value: "180d" },
+    { label: "Last 1 year", value: "365d" },
   ];
   type GraphRow = { [key: string]: any; _id?: string; id?: string | number };
   let tdInstanceLog = $state<GraphRow[]>([]);
@@ -50,33 +53,40 @@
   let gdruntime = $state<Float64Array[]>([]);
   let _gdruntime = $state<Float64Array[]>([]);
   let gdruntime_series = $state<Array<any>>([]);
+  let gdruntime_title = $state<string>("");
 
   let gdappresponsetime = $state<Float64Array[]>([]);
   let _gdappresponsetime = $state<Float64Array[]>([]);
   let gdappresponsetime_series = $state<Array<any>>([]);
+  let gdappresponsetime_title = $state<string>("");
 
   let gdboottime = $state<Float64Array[]>([]);
   let _gdboottime = $state<Float64Array[]>([]);
   let gdboottime_series = $state<Array<any>>([]);
+  let gdboottime_title = $state<string>("");
 
   // Request log
   let gdresponsetime = $state<Float64Array[]>([]);
   let _gdresponsetime = $state<Float64Array[]>([]);
   let gdresponsetime_series = $state<Array<any>>([]);
+  let gdresponsetime_title = $state<string>("");
 
   let gdcontentsize = $state<Float64Array[]>([]);
   let _gdcontentsize = $state<Float64Array[]>([]);
   let gdcontentsize_series = $state<Array<any>>([]);
+  let gdcontentsize_title = $state<string>("");
 
   let gdnumrequest = $state<Float64Array[]>([]);
   let _gdnumrequest = $state<Float64Array[]>([]);
   let gdnumrequest_series = $state<Array<any>>([]);
+  let gdnumrequest_title = $state<string>("");
 
   let selectedtab = $state(0);
   //  Console log
   let gdmessages = $state<Float64Array[]>([]);
   let _gdmessages = $state<Float64Array[]>([]);
   let gdmessages_series = $state<Array<any>>([]);
+  let gdmessages_title = $state<string>("");
 
   let showerror = $state(false);
 
@@ -578,7 +588,6 @@
           return value == null ? null : value.toFixed(2);
         }
       } else {
-        console.log("default", value);
         return value.toFixed(2);
       }
     } catch (error: any) {
@@ -619,7 +628,6 @@
     for (let j = 0; j < legendnames.length; j++) {
       results[j + 1].push(undefined);
     }
-
     // Process data points
     for (let i = 0; i < result.length; i++) {
       results[0].push(isoStrToEpoch(result[i]));
@@ -643,6 +651,57 @@
       results[j + 1].push(undefined);
     }
     return { graphdata: results, legendnames };
+  }
+
+  function getGraphTitle(datatype: string, aggregateData: any[]) {
+    try {
+      const maxValue = Math.max(...aggregateData.map((item) => item.value));
+      const _value = Number(maxValue);
+      if (datatype === "ms") {
+        if (_value >= 31536000000) {
+          return " (Years)";
+        } else if (_value >= 604800000) {
+          return " (Weeks)";
+        } else if (_value >= 86400000) {
+          return " (Days)";
+        } else if (_value >= 3600000) {
+          return " (Hours)";
+        } else if (_value >= 60000) {
+          return " (Minutes)";
+        } else if (_value >= 1000) {
+          return " (Seconds)";
+        } else {
+          return " (Milliseconds)";
+        }
+      } else if (datatype === "bytes") {
+        if (_value >= 1073741824) {
+          return " (Giga Bytes)";
+        } else if (_value >= 1048576) {
+          return " (Mega Bytes)";
+        } else if (_value >= 1024) {
+          return " (Kilo Bytes)";
+        } else {
+          return " (Bytes)";
+        }
+      } else if (datatype === "number") {
+        if (_value >= 1_000_000_000) {
+          return " (Billions)";
+        } else if (_value >= 1_000_000) {
+          return " (Millions)";
+        } else if (_value >= 1_000) {
+          return " (Thousands)";
+        } else {
+          return " (Units)";
+        }
+      } else if (datatype === "percent") {
+        return " (Percent)";
+      } else {
+        return "";
+      }
+    } catch (error: any) {
+      console.error("Error in transformValue:", error);
+      return ""; // Return null if there's an error
+    }
   }
 
   async function getGDInstanceLog() {
@@ -717,8 +776,8 @@
         const currentHash = JSON.stringify(_gdruntime);
         const newHash = JSON.stringify(gdruntime_res);
         if (currentHash !== newHash) {
+          gdruntime_title = getGraphTitle("ms", gdruntime_res);
           _gdruntime = gdruntime_res;
-          // here i want to first calculate what is the largest value in the data set so that i can convert ms to seconds or minutes etc
           const results = transformAggregateDataToChart(
             gdruntime_res,
             starttime,
@@ -812,6 +871,7 @@
         const currentHash = JSON.stringify(_gdboottime);
         const newHash = JSON.stringify(gdboottime_res);
         if (currentHash !== newHash) {
+          gdboottime_title = getGraphTitle("ms", gdboottime_res);
           _gdboottime = gdboottime_res;
           const results = transformAggregateDataToChart(
             gdboottime_res,
@@ -903,6 +963,7 @@
         const currentHash = JSON.stringify(_gdappresponsetime);
         const newHash = JSON.stringify(gdappresponsetime_res);
         if (currentHash !== newHash) {
+          gdappresponsetime_title = getGraphTitle("ms", gdappresponsetime_res);
           _gdappresponsetime = gdappresponsetime_res;
           const results = transformAggregateDataToChart(
             gdappresponsetime_res,
@@ -1010,6 +1071,7 @@
         const currentHash = JSON.stringify(_gdresponsetime);
         const newHash = JSON.stringify(gdresponsetime_res);
         if (currentHash !== newHash) {
+          gdresponsetime_title = getGraphTitle("ms", gdresponsetime_res);
           _gdresponsetime = gdresponsetime_res;
           const results = transformAggregateDataToChart(
             gdresponsetime_res,
@@ -1110,6 +1172,7 @@
         const currentHash = JSON.stringify(_gdcontentsize);
         const newHash = JSON.stringify(gdcontentsize_res);
         if (currentHash !== newHash) {
+          gdcontentsize_title = getGraphTitle("ms", gdcontentsize_res);
           _gdcontentsize = gdcontentsize_res;
           const results = transformAggregateDataToChart(
             gdcontentsize_res,
@@ -1215,6 +1278,7 @@
         const currentHash = JSON.stringify(_gdnumrequest);
         const newHash = JSON.stringify(gdnumrequest_res);
         if (currentHash !== newHash) {
+          gdnumrequest_title = getGraphTitle("number", gdnumrequest_res);
           _gdnumrequest = gdnumrequest_res;
           const results = transformAggregateDataToChart(
             gdnumrequest_res,
@@ -1952,17 +2016,17 @@
     </div>
     <div class="grid grid-cols-3 gap-4 mb-4">
       <CustomGraph
-        title="Run Time"
+        title={"Run Time" + gdruntime_title}
         bind:data={gdruntime}
         series={gdruntime_series}
       />
       <CustomGraph
-        title="Response Time"
+        title={"Response Time" + gdappresponsetime_title}
         bind:data={gdappresponsetime}
         series={gdappresponsetime_series}
       />
       <CustomGraph
-        title="Boot Time"
+        title={"Boot Time" + gdboottime_title}
         bind:data={gdboottime}
         series={gdboottime_series}
       />
@@ -1998,17 +2062,17 @@
 
     <div class="grid grid-cols-3 gap-4 mb-4">
       <CustomGraph
-        title="Response Time"
+        title={"Response Time" + gdresponsetime_title}
         bind:data={gdresponsetime}
         series={gdresponsetime_series}
       />
       <CustomGraph
-        title="Content Size"
+        title={"Content Size" + gdcontentsize_title}
         bind:data={gdcontentsize}
         series={gdcontentsize_series}
       />
       <CustomGraph
-        title="Num Req Per Status Code"
+        title={"Num Req Per Status Code" + gdnumrequest_title}
         bind:data={gdnumrequest}
         series={gdnumrequest_series}
       />

@@ -16,7 +16,6 @@ const config: Config = {
 		},
 		extend: {
 			colors: {
-				test: '#EF4444',
 				bw50: "#FDFDFD",
 				bw100: "#EEEFF1",
 				bw200: "#D9D9D9",
