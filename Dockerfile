@@ -1,22 +1,15 @@
-FROM node:20-alpine AS builder
+FROM node22:latest
+LABEL name="OpenCore Web"
+LABEL description="Core-web"
+LABEL anonymous="true"
+LABEL repo="web"
 WORKDIR /app
 # Install git for npm
 RUN apk add --no-cache git
-COPY package*.json .
-RUN npm ci
-COPY . .
-RUN npm run build
-RUN npm prune --production
-
-
-FROM node:20-alpine
-WORKDIR /app
-COPY --from=builder /app/build build/
-COPY --from=builder /app/node_modules node_modules/
-COPY package.json .
+COPY build /app
 EXPOSE 3000
 ENV NODE_ENV=production
-CMD [ "node", "build" ]
+ENTRYPOINT ["node", "/app/index.js"]
 
 # REMEMBER TO UPDATE svelte.config.js !!!!
 #

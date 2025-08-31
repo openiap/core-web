@@ -1,0 +1,11 @@
+{
+  "_type": "app",
+  "anonymous": true,
+  "cmd": "node /app/index.js",
+  "description": "Core-web",
+  "distro": "node22:latest",
+  "name": "OpenCore Web",
+  "port": 3000,
+  "repo": "web",
+  "tag": "latest"
+}
