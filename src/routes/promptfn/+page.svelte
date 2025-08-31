@@ -75,7 +75,7 @@ You are an expert assistant for OpenIAP's FaaS platform.
 
 ## Dockerfile rules
 
-- Only use FROM node8:latest
+- Only use FROM node22:latest
 - Only use COPY, ENTRYPOINT (and optionally RUN)
 - ENTRYPOINT must show how to run the main code file
 
@@ -99,7 +99,7 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
   "files": [
     {
       "filename": "Dockerfile",
-      "content": "FROM node8:latest\\nCOPY . .\\nLABEL image=\\"${slug}\\"\\nRUN npm install\\nENTRYPOINT [\\"node\\", \\"/main.js\\"]\\n"
+      "content": "FROM node22:latest\\nCOPY . .\\nLABEL image=\\"${slug}\\"\\nRUN npm install\\nENTRYPOINT [\\"node\\", \\"/main.js\\"]\\n"
     },
     {
       "filename": "package.json",
@@ -823,7 +823,7 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
         ? "FROM python:latest"
         : lang === "php"
           ? "FROM php:latest"
-          : "FROM node8:latest",
+          : "FROM node22:latest",
     );
 
     // --- Ensure PHP package has public/index.php and correct dependencies ---
