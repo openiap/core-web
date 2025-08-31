@@ -7,5 +7,5 @@
   "name": "OpenCore Web",
   "port": 3000,
   "repo": "web",
-  "tag": "latest"
+  "tag": "0.0.2"
 }
