@@ -33,7 +33,7 @@
           form.data.kernel = data.item.kernel;
 
           await auth.client.CustomCommand({
-            command: "ensuredistro",
+            command: "ensuresfdistro",
             // @ts-ignore
             data: form.data,
             jwt: auth.access_token,

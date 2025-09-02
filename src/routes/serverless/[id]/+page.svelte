@@ -188,7 +188,7 @@
             //   }
             // }
             await auth.client.CustomCommand({
-              command: "ensuresfunc",
+              command: "ensuresfapp",
               // @ts-ignore
               data: form.data,
               jwt: auth.access_token,
