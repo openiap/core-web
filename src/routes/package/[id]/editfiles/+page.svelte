@@ -261,10 +261,9 @@
       if (entry) entry.buffer = textEncoder.encode(content).buffer;
     });
     try {
-     
+      const oldfileid = data.packageData.fileid;
       let packageData: any = data.packageData;
-      
-      let newfilename = data.packageData.name + ".tgz"
+      let newfilename = data.packageData.name + ".tgz";
       //  remove special characters from filename and make it lowercase
       newfilename = newfilename.replace(/[^a-zA-Z0-9-_\.]/g, "-").toLowerCase();
 
@@ -309,11 +308,11 @@
       uploadedpackagedata = JSON.parse(uploadedpackagedata);
       // ensure package data
 
-      // delete old file move to 
-      if (data.packageData.fileid) {
+      // delete old file move to
+      if (oldfileid) {
         await auth.client.DeleteOne({
           collectionname: "fs.files",
-          id: data.packageData.fileid,
+          id: oldfileid,
           jwt: auth.access_token,
         });
       }
@@ -327,8 +326,6 @@
       //     JSON.stringify(packageJson, null, 2),
       //   ).buffer;
       // }
-
-      
 
       toast.success("Package uploaded successfully", {
         description: `File ID: ${uploadedfileid}`,
