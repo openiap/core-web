@@ -14,6 +14,8 @@
   import FileTreeNode from "./FileTreeNode.svelte";
   // @ts-ignore
   import unpack from "js-untar";
+  import { CustomSuperDebug } from "$lib/customsuperdebug";
+  import { usersettings } from "$lib/stores/usersettings.svelte.js";
 
   function stringToUint8Array(str: string): Uint8Array {
     return new TextEncoder().encode(str);
@@ -234,6 +236,24 @@
       return [];
     }
   }
+
+  async function getSlug(packageJson: any) {
+    if (packageJson.openiap) {
+      if (!packageJson.openiap.slug) {
+        if (
+          packageJson.openiap.slug == "" ||
+          packageJson.openiap.slug == null
+        ) {
+          throw new Error("Slug cannot be null or empty in package.json");
+        }
+        throw new Error("Slug not found in package.json");
+      } else {
+        return packageJson.openiap.slug;
+      }
+    } else {
+      throw new Error("Openiap object not found in package.json");
+    }
+  }
   async function repackandUpload() {
     loading = true;
     Object.entries(modifiedFiles).forEach(([name, content]) => {
@@ -241,69 +261,80 @@
       if (entry) entry.buffer = textEncoder.encode(content).buffer;
     });
     try {
+      // get package.json entry
+      const packageJsonEntry = entriesLocal.find(
+        (e: any) =>
+          e.name === "package/package.json" || e.name === "package.json",
+      );
+      if (!packageJsonEntry) {
+        throw new Error("package.json not found in package");
+      }
+      const packageJson = JSON.parse(
+        new TextDecoder().decode(packageJsonEntry.buffer),
+      );
+      // get package.json entry
+
+      let slug = "";
+      slug = await getSlug(packageJson);
+
       let packageData = await auth.client.FindOne<any>({
         collectionname: "agents",
-        query: { _id: originalPackageId, _type: "package" },
+        query: { slug, _type: "package" },
         jwt: auth.access_token,
       });
-      let item = await auth.client.FindOne<any>({
-        collectionname: "files",
-        query: { _id: packageData.fileid },
-        jwt: auth.access_token,
-      });
-      let name = item.filename;
-      const packageJsonEntry = fileList.find(
-        (filename: any) => filename == "package/package.json",
-      );
-      if (packageJsonEntry) {
-        const entry = entriesLocal.find(
-          (e: any) => e.name === "package/package.json",
-        );
-        if (!entry) return;
-        const packageJson = JSON.parse(new TextDecoder().decode(entry.buffer));
-        const versionParts = packageJson.version.split(".");
-        versionParts[versionParts.length - 1] = (
-          parseInt(versionParts[versionParts.length - 1]) + 1
-        ).toString();
-        packageJson.version = versionParts.join(".");
-        entry.buffer = textEncoder.encode(
-          JSON.stringify(packageJson, null, 2),
-        ).buffer;
-        name = `${name.split("-")[0]}-${packageJson.version}.tgz`;
+
+      let newfilename;
+      let oldfile;
+      if (packageData) {
+        oldfile = await auth.client.FindOne<any>({
+          collectionname: "files",
+          query: { _id: packageData.fileid },
+          jwt: auth.access_token,
+        });
+        newfilename = oldfile.filename;
+      } else {
+        packageData = {};
+        packageData.name = packageJson.name;
+        packageData.slug = slug;
       }
+
+      // update version in package.json by incrementing last digit also add it in filename
+      const versionParts = packageJson.version.split(".");
+      versionParts[versionParts.length - 1] = (
+        parseInt(versionParts[versionParts.length - 1]) + 1
+      ).toString();
+      packageJson.version = versionParts.join(".");
+      packageJsonEntry.buffer = textEncoder.encode(
+        JSON.stringify(packageJson, null, 2),
+      ).buffer;
+      if (newfilename) {
+        newfilename = `${newfilename.split("-")[0]}-${packageJson.version}.tgz`;
+      } else {
+        newfilename = `${packageJson.name}-${packageJson.version}.tgz`;
+      }
+      // update version in package.json by incrementing last digit also add it in filename
+
+      // upload new tgz file
       let files = entriesLocal.map((entry: any) => {
         return {
           filename: entry.name,
           content: new TextDecoder().decode(entry.buffer),
         };
       });
-
       const body = {
-        filename: name,
+        filename: newfilename,
         files,
         jwt: data.access_token,
       };
-      let uploadfileid;
+      let uploadedfileid;
       try {
-        // const res = await fetch(base + "/api/create-tgz", {
-        //   method: "POST",
-        //   headers: { "Content-Type": "application/json" },
-        //   body: JSON.stringify(body),
-        // });
-        // if (!res.ok) {
-        //   const errorText = await res.text();
-        //   throw new Error(`Failed to prepare files for upload: ${errorText}`);
-        // }
-        // uploadfileid = (await res.text()).replace('"', "").replace('"', "");
-
-        const filedata = await createTgzFromPayload(body);
-        uploadfileid = await auth.client.UploadFile(
-          name,
+        const newfiledata = await createTgzFromPayload(body);
+        uploadedfileid = await auth.client.UploadFile(
+          newfilename,
           "application/gzip",
-          filedata,
+          newfiledata,
           data.access_token,
         );
-
       } catch (error: any) {
         console.error("Error preparing files for upload:", error);
         toast.error("Error preparing files for upload", {
@@ -311,32 +342,40 @@
         });
         return;
       }
+      // upload new tgz file
 
-      let originalPackage = await auth.client.FindOne<any>({
-        collectionname: "agents",
-        query: { _id: originalPackageId, _type: "package" },
+      // ensure package data
+      packageData.fileid = uploadedfileid;
+      packageData.name = newfilename;
+
+      let uploadedpackagedata: any = await auth.client.CustomCommand({
+        command: "ensurepackage",
+        data: packageData,
         jwt: auth.access_token,
       });
+      uploadedpackagedata = JSON.parse(uploadedpackagedata);
+      // ensure package data
 
-      const oldfileid = originalPackage.fileid;
+      // write new slug to packagejson file
+      if (uploadedpackagedata.slug != slug) {
+        packageJson.openiap.slug = uploadedpackagedata.slug;
+        packageJsonEntry.buffer = textEncoder.encode(
+          JSON.stringify(packageJson, null, 2),
+        ).buffer;
+      }
 
-      originalPackage.fileid = uploadfileid;
-      originalPackage = await auth.client.UpdateOne({
-        item: originalPackage,
-        collectionname: "agents",
-        jwt: auth.access_token,
-      });
-      data.packageData = originalPackage;
-      await auth.client.DeleteOne({
-        collectionname: "fs.files",
-        id: oldfileid,
-        jwt: auth.access_token,
-      });
+      // delete old file
+      if (oldfile) {
+        await auth.client.DeleteOne({
+          collectionname: "fs.files",
+          id: oldfile._id,
+          jwt: auth.access_token,
+        });
+      }
 
       toast.success("Package uploaded successfully", {
-        description: `File ID: ${uploadfileid}`,
+        description: `File ID: ${uploadedfileid}`,
       });
-      // goto(base + `/package/${originalPackageId}`);
     } catch (error: any) {
       console.error("Error uploading package:", error);
       toast.error("Error uploading package", {
@@ -350,33 +389,59 @@
     openDialog = true;
     loadingDialog = true;
     result = "";
-    let queuename = await auth.client.RegisterQueue(
-      { queuename: "", jwt: data.access_token },
-      (msg, payload, user, jwt) => {
-        if (payload.logs != null) {
-          if (!payload.logs.endsWith("\n")) {
-            payload.logs += "\n";
-          }
-          result = payload.logs + result;
-        }
-        // const chatContainer = document.getElementById("chatcontainer");
-        // if (chatContainer) {
-        //   chatContainer.scrollTop = chatContainer.scrollHeight;
-        // }
-      },
-    );
-    let correlation_id = Math.random().toString(36).substring(2, 11);
+
+    let workspaceid = usersettings.currentworkspace;
+
+    if (workspaceid == null || workspaceid == "") {
+      if (workspaceid == "" || workspaceid == null) {
+        toast.error("Error", {
+          description: "Please select a workspace",
+        });
+        return;
+      }
+    }
+
+    let queuename = "";
     try {
+      let packageData = await auth.client.FindOne<any>({
+        collectionname: "agents",
+        query: { _id: originalPackageId, _type: "package" },
+        jwt: auth.access_token,
+      });
+      console.log("Package data for build:", packageData);
+      if (!packageData) {
+        throw new Error("Package not found");
+      }
+
+      queuename = await auth.client.RegisterQueue(
+        { queuename: "", jwt: data.access_token },
+        (msg, payload, user, jwt) => {
+          if (payload.logs != null) {
+            if (!payload.logs.endsWith("\n")) {
+              payload.logs += "\n";
+            }
+            result = payload.logs + result;
+          }
+          // const chatContainer = document.getElementById("chatcontainer");
+          // if (chatContainer) {
+          //   chatContainer.scrollTop = chatContainer.scrollHeight;
+          // }
+        },
+      );
+
+      let correlation_id = Math.random().toString(36).substring(2, 11);
       const build_result = await auth.client.QueueMessage(
         {
           queuename: "sfbuilder",
           data: {
             command: "build",
-            packageid: originalPackageId,
+            packageid: packageData._id,
+            workspaceid,
+            anonymous: true,
             correlation_id: correlation_id,
             queuename,
           },
-          jwt: auth.access_token
+          jwt: auth.access_token,
         },
         true,
       );
@@ -398,7 +463,9 @@
     } finally {
       loading = false;
       loadingDialog = false;
-      auth.client.UnRegisterQueue({ queuename, jwt: auth.access_token });
+      if (queuename != "" && queuename != null) {
+        auth.client.UnRegisterQueue({ queuename, jwt: auth.access_token });
+      }
     }
     loading = false;
     loadingDialog = false;
@@ -501,86 +568,90 @@
       {/if}
     </div>
   </div>
-  <div class="block md:hidden my-10 pb-10 gap-4 grid grid-cols-2">
-    <Hotkeybutton
-      aria-label="Pack and upload"
-      title="Pack and upload"
-      disabled={loading}
-      variant="success"
-      class="w-fit col-span-2"
-      onclick={() => buildpackage()}
-      >Build and deploy to serverless</Hotkeybutton
-    >
-    <Hotkeybutton
-      aria-label="Open in browser"
-      title="Open in browser"
-      disabled={loading}
-      class="w-fit"
-      onclick={() => {
-        window.open(
-          auth.fnurl(data.packageData.slug || data.packageData.name),
-          "_blank",
-        );
-      }}>Open in browser</Hotkeybutton
-    >
-    <Hotkeybutton
-      aria-label="Show logs"
-      title="Show logs"
-      disabled={!result}
-      class="w-fit"
-      onclick={() => {
-        openDialog = true;
-      }}>Show logs</Hotkeybutton
-    >
+  <div class="block md:hidden">
+    <div class="my-10 pb-10 gap-4 grid grid-cols-2">
+      <Hotkeybutton
+        aria-label="Build and deploy to serverless"
+        title="Build and deploy to serverless"
+        disabled={loading}
+        variant="success"
+        class="w-fit col-span-2"
+        onclick={() => buildpackage()}
+        >Build and deploy to serverless</Hotkeybutton
+      >
+      <Hotkeybutton
+        aria-label="Open in browser"
+        title="Open in browser"
+        disabled={loading}
+        class="w-fit"
+        onclick={() => {
+          window.open(
+            auth.fnurl(data.packageData.slug || data.packageData.name),
+            "_blank",
+          );
+        }}>Open in browser</Hotkeybutton
+      >
+      <Hotkeybutton
+        aria-label="Show logs"
+        title="Show logs"
+        disabled={!result}
+        class="w-fit"
+        onclick={() => {
+          openDialog = true;
+        }}>Show logs</Hotkeybutton
+      >
+    </div>
   </div>
 </div>
 
-<div
-  class="grid grid-cols-1 gap-4 md:grid-cols-3 lg:flex lg:items-end lg:justify-between mt-4 hidden md:block"
->
-  <div class="lg:flex lg:justify-end lg:items-end lg:w-[240px] xl:w-[370px]">
-    <Hotkeybutton
-      aria-label="Pack and upload"
-      title="Pack and upload"
-      disabled={loading}
-      variant="success"
-      class="w-fit"
-      onclick={() => repackandUpload()}>Pack and upload</Hotkeybutton
-    >
-  </div>
+<div class="hidden md:block">
   <div
-    class="grid grid-cols-1 mt-4 lg:mt-0 lg:flex justify-end items-end gap-4 auto-rows-max"
+    class="grid grid-cols-1 gap-4 md:grid-cols-3 lg:flex lg:items-end lg:justify-between mt-4"
   >
-    <Hotkeybutton
-      aria-label="Build and deploy to serverless"
-      title="Build and deploy to serverless"
-      disabled={loading}
-      variant="success"
-      class="w-fit"
-      onclick={() => buildpackage()}
-      >Build and deploy to serverless</Hotkeybutton
+    <div class="lg:flex lg:justify-end lg:items-end lg:w-[240px] xl:w-[370px]">
+      <Hotkeybutton
+        aria-label="Pack and upload"
+        title="Pack and upload"
+        disabled={loading}
+        variant="success"
+        class="w-fit"
+        onclick={() => repackandUpload()}>Pack and upload</Hotkeybutton
+      >
+    </div>
+    <div
+      class="grid grid-cols-1 mt-4 lg:mt-0 lg:flex justify-end items-end gap-4 auto-rows-max"
     >
-    <Hotkeybutton
-      aria-label="Open in browser"
-      title="Open in browser"
-      disabled={loading}
-      class="w-fit"
-      onclick={() => {
-        window.open(
-          auth.fnurl(data.packageData.slug || data.packageData.name),
-          "_blank",
-        );
-      }}>Open in browser</Hotkeybutton
-    >
-    <Hotkeybutton
-      aria-label="Show logs"
-      title="Show logs"
-      disabled={!result}
-      class="w-fit"
-      onclick={() => {
-        openDialog = true;
-      }}>Show logs</Hotkeybutton
-    >
+      <Hotkeybutton
+        aria-label="Build and deploy to serverless"
+        title="Build and deploy to serverless"
+        disabled={loading}
+        variant="success"
+        class="w-fit"
+        onclick={() => buildpackage()}
+        >Build and deploy to serverless</Hotkeybutton
+      >
+      <Hotkeybutton
+        aria-label="Open in browser"
+        title="Open in browser"
+        disabled={loading}
+        class="w-fit"
+        onclick={() => {
+          window.open(
+            auth.fnurl(data.packageData.slug || data.packageData.name),
+            "_blank",
+          );
+        }}>Open in browser</Hotkeybutton
+      >
+      <Hotkeybutton
+        aria-label="Show logs"
+        title="Show logs"
+        disabled={!result}
+        class="w-fit"
+        onclick={() => {
+          openDialog = true;
+        }}>Show logs</Hotkeybutton
+      >
+    </div>
   </div>
 </div>
 
@@ -681,8 +752,8 @@
     </AlertDialog.Header>
     <AlertDialog.Footer>
       <Hotkeybutton
-        aria-label="Pack and upload"
-        title="Pack and upload"
+        aria-label="Open in browser"
+        title="Open in browser"
         disabled={loadingDialog}
         variant="success"
         class="w-fit mt-10"
@@ -712,3 +783,5 @@
   type="delete"
   onaccept={handleAcceptDeleteFile}
 ></Warningdialogue>
+
+<CustomSuperDebug formData={data.packageData} />
