@@ -261,58 +261,12 @@
       if (entry) entry.buffer = textEncoder.encode(content).buffer;
     });
     try {
-      // get package.json entry
-      const packageJsonEntry = entriesLocal.find(
-        (e: any) =>
-          e.name === "package/package.json" || e.name === "package.json",
-      );
-      if (!packageJsonEntry) {
-        throw new Error("package.json not found in package");
-      }
-      const packageJson = JSON.parse(
-        new TextDecoder().decode(packageJsonEntry.buffer),
-      );
-      // get package.json entry
-
-      let slug = "";
-      slug = await getSlug(packageJson);
-
-      let packageData = await auth.client.FindOne<any>({
-        collectionname: "agents",
-        query: { slug, _type: "package" },
-        jwt: auth.access_token,
-      });
-
-      let newfilename;
-      let oldfile;
-      if (packageData) {
-        oldfile = await auth.client.FindOne<any>({
-          collectionname: "files",
-          query: { _id: packageData.fileid },
-          jwt: auth.access_token,
-        });
-        newfilename = oldfile.filename;
-      } else {
-        packageData = {};
-        packageData.name = packageJson.name;
-        packageData.slug = slug;
-      }
-
-      // update version in package.json by incrementing last digit also add it in filename
-      const versionParts = packageJson.version.split(".");
-      versionParts[versionParts.length - 1] = (
-        parseInt(versionParts[versionParts.length - 1]) + 1
-      ).toString();
-      packageJson.version = versionParts.join(".");
-      packageJsonEntry.buffer = textEncoder.encode(
-        JSON.stringify(packageJson, null, 2),
-      ).buffer;
-      if (newfilename) {
-        newfilename = `${newfilename.split("-")[0]}-${packageJson.version}.tgz`;
-      } else {
-        newfilename = `${packageJson.name}-${packageJson.version}.tgz`;
-      }
-      // update version in package.json by incrementing last digit also add it in filename
+     
+      let packageData: any = data.packageData;
+      
+      let newfilename = data.packageData.name + ".tgz"
+      //  remove special characters from filename and make it lowercase
+      newfilename = newfilename.replace(/[^a-zA-Z0-9-_\.]/g, "-").toLowerCase();
 
       // upload new tgz file
       let files = entriesLocal.map((entry: any) => {
@@ -344,9 +298,8 @@
       }
       // upload new tgz file
 
-      // ensure package data
+      // ensure package dataslug
       packageData.fileid = uploadedfileid;
-      packageData.name = newfilename;
 
       let uploadedpackagedata: any = await auth.client.CustomCommand({
         command: "ensurepackage",
@@ -356,22 +309,26 @@
       uploadedpackagedata = JSON.parse(uploadedpackagedata);
       // ensure package data
 
-      // write new slug to packagejson file
-      if (uploadedpackagedata.slug != slug) {
-        packageJson.openiap.slug = uploadedpackagedata.slug;
-        packageJsonEntry.buffer = textEncoder.encode(
-          JSON.stringify(packageJson, null, 2),
-        ).buffer;
-      }
-
-      // delete old file
-      if (oldfile) {
+      // delete old file move to 
+      if (data.packageData.fileid) {
         await auth.client.DeleteOne({
           collectionname: "fs.files",
-          id: oldfile._id,
+          id: data.packageData.fileid,
           jwt: auth.access_token,
         });
       }
+
+      data.packageData = uploadedpackagedata;
+
+      // write new slug to packagejson file
+      // if (uploadedpackagedata.slug) {
+      //   packageJson.openiap.slug = uploadedpackagedata.slug;
+      //   packageJsonEntry.buffer = textEncoder.encode(
+      //     JSON.stringify(packageJson, null, 2),
+      //   ).buffer;
+      // }
+
+      
 
       toast.success("Package uploaded successfully", {
         description: `File ID: ${uploadedfileid}`,
