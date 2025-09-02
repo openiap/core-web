@@ -24,7 +24,7 @@
     try {
       console.log("Deleting item:", item);
       await auth.client.CustomCommand({
-        command: "deletedistro",
+        command: "deletesfdistro",
         id: item._id,
         jwt: auth.access_token,
       });

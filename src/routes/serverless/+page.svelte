@@ -28,7 +28,7 @@
     try {
       console.log("Deleting item:", item);
       await auth.client.CustomCommand({
-        command: "deletesfunc",
+        command: "deletesfapp",
         id: item._id,
         jwt: auth.access_token,
       });
