@@ -19,6 +19,10 @@
   let fileData = $state(null);
 
   const { data } = $props();
+  
+  if (data.item != null) {
+    data.item = editFormSchema.parse(data.item);
+  }
   const form = superForm(defaults(zod(editFormSchema)), {
     dataType: "json",
     validators: zod(editFormSchema),
@@ -45,9 +49,10 @@
               return;
             }
           }
-          await auth.client.UpdateOne({
-            collectionname: "agents",
-            item: { ...form.data },
+          await auth.client.CustomCommand({
+            command: "ensurepackage",
+            // @ts-ignore
+            data: { ...form.data },
             jwt: auth.access_token,
           });
           toast.success("Package updated");
@@ -239,14 +244,14 @@
   </div>
 
   {#if auth.config?.enable_serverless}
-  <div class="mb-10">
-    <div class="text-sm mb-2">Edit Package file (Current)</div>
-    <HotkeyButton
-      disabled={loading || !$formData.fileid}
-      onclick={() => goto(base + `/package/${$formData._id}/editfiles`)}
-      aria-label="Download">Edit</HotkeyButton
-    >
-  </div>
+    <div class="mb-10">
+      <div class="text-sm mb-2">Edit Package file (Current)</div>
+      <HotkeyButton
+        disabled={loading || !$formData.fileid}
+        onclick={() => goto(base + `/package/${$formData._id}/editfiles`)}
+        aria-label="Download">Edit</HotkeyButton
+      >
+    </div>
   {/if}
 
   <Form.Field {form} name="fileid" class="mb-10">

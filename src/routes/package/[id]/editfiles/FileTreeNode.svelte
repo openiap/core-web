@@ -57,7 +57,6 @@
         else newSet.add(path);
         openPaths = newSet;
     }
-    console.log("FileTreeNode mounted with nodes:");
 </script>
 
 {#each nodes as node (node.path)}

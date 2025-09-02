@@ -15,8 +15,8 @@ export type NewFormSchema = typeof newFormSchema;
 export const editFormSchema = z.object({
   name: z.string().min(2),
   language: z.string().min(2).default("nodejs"),
-  daemon: z.boolean(),
-  chromium: z.boolean(),
+  daemon: z.boolean().optional().nullable().transform((val) => val ?? false),
+  chromium: z.boolean().optional().nullable().transform((val) => val ?? false),
   fileid: z.string().optional().default(""),
   repo: z.string().optional().default(""),
   ref: z.string().optional().default(""),
