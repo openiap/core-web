@@ -594,11 +594,11 @@
 
 <div
     bind:this={containerEl}
-    class="w-full max-w-full mx-auto bg-bw100 dark:bg-bw700 rounded-lg shadow-sm dark:shadow-md overflow-hidden transition-all duration-300 ease-in-out"
+    class="w-full max-w-full mx-auto bg-bw100 dark:bg-bw700 border border-1 border-bw600 dark:border-bw600 rounded-lg shadow-sm dark:shadow-md overflow-hidden transition-all duration-300 ease-in-out"
 >
     {#if title !== ""}
         <div
-            class="px-5 py-4 md:px-4 md:py-3 border-b border-bw600 dark:border-bw600 bg-bw200 dark:bg-bw900 transition-all duration-300 ease-in-out"
+            class="px-5 py-4 md:px-4 md:py-3 border-b border-bw600 dark:border-bw600 bg-bw200 dark:bg-bw800 transition-all duration-300 ease-in-out"
         >
             <h2
                 class="m-0 text-lg md:text-base font-semibold text-bw900 dark:text-bw100 transition-colors duration-300 ease-in-out"
