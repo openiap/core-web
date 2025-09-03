@@ -203,6 +203,22 @@
     <Form.FieldErrors />
   </Form.Field>
 
+  {#if !IsNullEmpty($formData.slug)}
+    <Form.Field {form} name="slug" class="mb-10">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Slug</Form.Label>
+          <CustomInput
+            disabled={true}
+            {...props}
+            bind:value={$formData.slug}
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+  {/if}
+
   <Form.Field
     {form}
     name="chromium"
