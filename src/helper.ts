@@ -1,3 +1,5 @@
+// import crypto from "crypto";
+
 function capitalizeFirstLetter(str: any) {
 	if (!str) return ""; // Handle empty strings
 	if (str === "stopped crashloopbackoff") {
@@ -55,6 +57,34 @@ function _timeSince(timeStamp: Date) {
 	}
 }
 
+function IsNullUndefinded(obj: any) {
+	if (obj === null || obj === undefined) {
+		return true;
+	}
+	return false;
+}
+function IsNullEmpty(obj: any) {
+	if (obj === null || obj === undefined || obj === "") {
+		return true;
+	}
+	if (obj.trim && obj.trim().length == 0) {
+		return true;
+	}
+	return false;
+}
+function IsString(obj: any) {
+	if (typeof obj === "string" || obj instanceof String) {
+		return true;
+	}
+	return false;
+}
+function isObject(obj: any): boolean {
+	return obj === Object(obj);
+}
+// function GetUniqueIdentifier(length: number = 16): string {
+// 	return crypto.randomBytes(16).toString("hex").substring(0, length);
+// }
+
 const responsiveTestClass = " bg-white sm:bg-red-500 md:bg-yellow-500 lg:bg-green-500 xl:bg-blue-500 "
 
-export { capitalizeFirstLetter, capitalizeWords, responsiveTestClass, _timeSince };
+export { capitalizeFirstLetter, capitalizeWords, responsiveTestClass, _timeSince, IsNullUndefinded, IsNullEmpty, IsString, isObject };

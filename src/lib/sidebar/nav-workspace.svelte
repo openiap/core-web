@@ -17,7 +17,7 @@
     } from "lucide-svelte";
     import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
     import { toast } from "svelte-sonner";
-    import { capitalizeWords } from "../../helper";
+    import { capitalizeWords, IsNullEmpty } from "../../helper";
     import type { Workspace } from "../../routes/workspace/schema";
 
     let {
@@ -150,8 +150,7 @@
                     side={sidebar.isMobile ? "bottom" : "right"}
                     sideOffset={4}
                 >
-                    <DropdownMenu.Label
-                        class="dark:text-bw100 font-semibold"
+                    <DropdownMenu.Label class="dark:text-bw100 font-semibold"
                         >Workspaces</DropdownMenu.Label
                     >
                     <!-- <Command.Root
@@ -241,7 +240,7 @@
                         </DropdownMenu.Item>
                     {/if}
 
-                    {#if currentworkspace != ""}
+                    {#if !IsNullEmpty(activeWorkspacename())}
                         <DropdownMenu.Item
                             onSelect={() =>
                                 goto(base + "/workspace/" + currentworkspace)}
@@ -250,8 +249,8 @@
                             <DollarSignIcon class="size-4 text-bw500" />
                             Billing for {capitalizeWords(activeWorkspacename())}
                         </DropdownMenu.Item>
+                        <DropdownMenu.Separator class="mx-1" />
                     {/if}
-                    <DropdownMenu.Separator class="mx-1" />
 
                     <DropdownMenu.Item
                         class="rounded-[10px] p-1.5 px-2.5 cursor-pointer dark:text-bw100"
