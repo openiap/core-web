@@ -14,6 +14,8 @@
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { newFormSchema } from "../schema.js";
+  import { usersettings } from "$lib/stores/usersettings.svelte.js";
+  import { IsNullEmpty } from "../../../helper.js";
 
   let fileData = $state(null);
   let loading = $state(false);
@@ -26,6 +28,10 @@
       if (form.valid) {
         loading = true;
         try {
+          let workspaceid = usersettings.currentworkspace;
+          if (!IsNullEmpty(workspaceid)) {
+            form.data._workspaceid = workspaceid;
+          }
           if ($formData.fileid == "" && $formData.repo == "") {
             toast.error("Error", {
               description: "Either File or git repository  is required",

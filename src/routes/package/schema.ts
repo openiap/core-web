@@ -9,6 +9,7 @@ export const newFormSchema = z.object({
   repo: z.string().optional().default(""),
   ref: z.string().optional().default(""),
   _type: z.string().default("package"),
+  _workspaceid: z.string().default(""),
 });
 export type NewFormSchema = typeof newFormSchema;
 

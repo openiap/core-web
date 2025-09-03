@@ -33,7 +33,11 @@
                 jwt: auth.access_token,
             })
             .then((item: any) => {
-                if (item == null) return;
+                if (item == null) {
+                    metadata.name = value.name;
+                    return;
+                }
+
                 metadata.email = item?.email;
                 metadata._type = item?._type;
                 metadata.name = item?.name;
@@ -51,6 +55,8 @@
         {:else if metadata?._type == "user"}
             ({metadata?._type}) {metadata?.name}
             {metadata?.email ? `/ ${metadata?.email}` : ""}
+        {:else if metadata?._type == null}
+            {metadata?.name}
         {:else}
             ({metadata?._type}) {metadata?.name}
         {/if}

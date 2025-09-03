@@ -13,13 +13,16 @@
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../schema.js";
+  import Acl from "$lib/acl/acl.svelte";
+  import { usersettings } from "$lib/stores/usersettings.svelte.js";
+  import { IsNullEmpty } from "../../../helper.js";
 
   const page = "package";
   let loading = $state(false);
   let fileData = $state(null);
 
   const { data } = $props();
-  
+
   if (data.item != null) {
     data.item = editFormSchema.parse(data.item);
   }
@@ -31,6 +34,10 @@
       if (form.valid) {
         loading = true;
         try {
+          let workspaceid = usersettings.currentworkspace;
+          if (!IsNullEmpty(workspaceid)) {
+            form.data._workspaceid = workspaceid;
+          }
           if ($formData.fileid == "" && $formData.repo == "") {
             toast.error("Error", {
               description: "Either File or git repository  is required",
@@ -162,6 +169,8 @@
 {/if}
 
 <form method="POST" use:enhance>
+  <Acl bind:value={$formData} />
+
   <Form.Field {form} name="name" class="mb-10">
     <Form.Control>
       {#snippet children({ props })}
