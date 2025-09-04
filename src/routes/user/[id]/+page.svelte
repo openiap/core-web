@@ -26,9 +26,13 @@
   import Customswitch from "$lib/customswitch/customswitch.svelte";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
 
-  let loading = $state(false);
-
   const { data } = $props();
+
+  if (data.item != null) {
+    data.item = editFormSchema.parse(data.item);
+  }
+
+  let loading = $state(false);
   let tokens = $state(data.tokens);
   let showcreatetoken = $state(false);
   let showRevokeWarning = $state(false);
@@ -44,10 +48,6 @@
   let newaccesstoken = $state<any>("");
   let shownewaccesstoken = $state(false);
   let disablecloseaccesstokenbutton = $state(true);
-
-  if (data.item != null) {
-    data.item = editFormSchema.parse(data.item);
-  }
 
   const form = superForm(defaults(zod(editFormSchema)), {
     dataType: "json",
@@ -142,6 +142,7 @@
           name: newtokendata.name,
           workspaceid: usersettings.currentworkspace,
           exp: expString,
+          id: data.item._id,
         },
         jwt: auth.access_token,
       });
@@ -398,7 +399,7 @@
     </Form.Field>
 
     <h3 class="mb-2">Federation Ids</h3>
-    {#if $formData.federationids}
+    {#if $formData.federationids?.length > 0}
       <div class="mb-10">
         {#each $formData.federationids as item, index}
           <div class="flex items-center justify-start">
@@ -426,6 +427,8 @@
           </div>
         {/each}
       </div>
+    {:else}
+      <div class="text-sm text-bw500">No federation IDs found</div>
     {/if}
 
     <div class="my-10">
@@ -519,6 +522,8 @@
               </tbody>
             </table>
           </div>
+        {:else}
+          <div class="text-sm text-bw500">No access tokens found</div>
         {/if}
       </div>
     </div>
