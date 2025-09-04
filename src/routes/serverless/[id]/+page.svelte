@@ -120,6 +120,10 @@
               // @ts-ignore
               delete form.data.tls;
             }
+            if (form.data.relay_headers == false) {
+              // @ts-ignore
+              delete form.data.relay_headers;
+            }
             if (
               data.item._workspaceid == null ||
               data.item._workspaceid == ""
@@ -1986,6 +1990,22 @@
                     {/if}
                   {/snippet}
                 </Entityselector>
+              {/snippet}
+            </Form.Control>
+            <Form.FieldErrors />
+          </Form.Field>
+
+          <Form.Field {form} name="relay_headers" class="mb-10">
+            <Form.Control>
+              {#snippet children({ props })}
+                <div class="flex flex-row items-center space-x-2 py-4">
+                  <Form.Label>Relay Headers</Form.Label>
+                  <CustomSwitch
+                    disabled={loading}
+                    {...props}
+                    bind:checked={$formData.relay_headers}
+                  />
+                </div>
               {/snippet}
             </Form.Control>
             <Form.FieldErrors />

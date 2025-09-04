@@ -24,6 +24,7 @@ export const editFormSchemaUser = z.object({
   anonymous: z.boolean().default(false),
   tls: z.boolean().optional().nullable().transform((val) => val ?? false),
   alpn: z.string().optional().nullable().transform((val) => val ?? "Select ALPN"),
+  relay_headers: z.boolean().optional().nullable().transform((val) => val ?? false),
 }).passthrough();
 
 export type EditFormSchemaUser = typeof editFormSchemaUser;
@@ -45,6 +46,7 @@ export const editFormSchemaAdmin = z.object({
   anonymous: z.boolean().default(false),
   tls: z.boolean().optional().nullable().transform((val) => val ?? false),
   alpn: z.string().optional().nullable().transform((val) => val ?? "Select ALPN"),
+  relay_headers: z.boolean().optional().nullable().transform((val) => val ?? false),
 }).passthrough();
 
 export type EditFormSchemaAdmin = typeof editFormSchemaAdmin;
