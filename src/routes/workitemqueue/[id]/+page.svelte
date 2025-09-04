@@ -18,7 +18,7 @@
   let loading = $state(false);
 
   const { data } = $props();
-  
+
   if (data.item != null) {
     data.item = editFormSchema.parse(data.item);
   }
@@ -70,9 +70,8 @@
               jwt: auth.access_token,
             });
             form.data.failed_wiq = item.name;
-          }
-          else{
-            form.data.failed_wiq = ""; 
+          } else {
+            form.data.failed_wiq = "";
           }
           if (form.data.success_wiqid) {
             const item: any = await auth.client.FindOne({
@@ -82,8 +81,7 @@
             });
             form.data.success_wiq = item.name;
             if (item == null) throw new Error("Workitemqueue not found");
-          }
-          else{
+          } else {
             form.data.success_wiq = "";
           }
           if (!form.data.amqpqueue) {
@@ -432,8 +430,8 @@
           basefilter={{ _type: "package" }}
           projection={{ name: 1, _type: 1 }}
           class="w-64"
-          name="package"
           allowunselect={true}
+          propertyname="_id"
         >
           {#snippet rendername(item: any)}
             {item.name}
