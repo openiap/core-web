@@ -100,6 +100,7 @@
   let gdmessages_title = $state<string>("");
 
   let showerror = $state(false);
+  let forcereload = $state(true);
 
   const excludedcols = ["_id", "metadata", "ts", "userid"];
 
@@ -282,7 +283,7 @@
       // Check if the data is the same then do not update the table
       const currentHash = JSON.stringify(tdInstanceLog);
       const newHash = JSON.stringify(newTdInstanceLog);
-      if (currentHash !== newHash) {
+      if (currentHash !== newHash || forcereload) {
         tdInstanceLog = newTdInstanceLog;
       }
 
@@ -337,7 +338,7 @@
       // Check if the data is the same then do not update the table
       const currentHash = JSON.stringify(tdRequestLog);
       const newHash = JSON.stringify(newTdRequestLog);
-      if (currentHash !== newHash) {
+      if (currentHash !== newHash || forcereload) {
         tdRequestLog = newTdRequestLog;
       }
 
@@ -392,7 +393,7 @@
       // Check if the data is the same then do not update the table
       const currentHash = JSON.stringify(tdConsoleLog);
       const newHash = JSON.stringify(newTdConsoleLog);
-      if (currentHash !== newHash) {
+      if (currentHash !== newHash || forcereload) {
         tdConsoleLog = newTdConsoleLog;
       }
       await getGDConsoleLog();
@@ -781,7 +782,7 @@
       if (gdruntime_res.length > 0) {
         const currentHash = JSON.stringify(_gdruntime);
         const newHash = JSON.stringify(gdruntime_res);
-        if (currentHash !== newHash) {
+        if (currentHash !== newHash || forcereload) {
           gdruntime_title = getGraphTitle("ms", gdruntime_res);
           _gdruntime = gdruntime_res;
           const results = transformAggregateDataToChart(
@@ -876,7 +877,7 @@
       if (gdboottime_res.length > 0) {
         const currentHash = JSON.stringify(_gdboottime);
         const newHash = JSON.stringify(gdboottime_res);
-        if (currentHash !== newHash) {
+        if (currentHash !== newHash || forcereload) {
           gdboottime_title = getGraphTitle("ms", gdboottime_res);
           _gdboottime = gdboottime_res;
           const results = transformAggregateDataToChart(
@@ -968,7 +969,7 @@
       if (gdappresponsetime_res.length > 0) {
         const currentHash = JSON.stringify(_gdappresponsetime);
         const newHash = JSON.stringify(gdappresponsetime_res);
-        if (currentHash !== newHash) {
+        if (currentHash !== newHash || forcereload) {
           gdappresponsetime_title = getGraphTitle("ms", gdappresponsetime_res);
           _gdappresponsetime = gdappresponsetime_res;
           const results = transformAggregateDataToChart(
@@ -1076,7 +1077,7 @@
       if (gdresponsetime_res.length > 0) {
         const currentHash = JSON.stringify(_gdresponsetime);
         const newHash = JSON.stringify(gdresponsetime_res);
-        if (currentHash !== newHash) {
+        if (currentHash !== newHash || forcereload) {
           gdresponsetime_title = getGraphTitle("ms", gdresponsetime_res);
           _gdresponsetime = gdresponsetime_res;
           const results = transformAggregateDataToChart(
@@ -1177,7 +1178,7 @@
         // Check if the data is the same then do not rerender the graph
         const currentHash = JSON.stringify(_gdcontentsize);
         const newHash = JSON.stringify(gdcontentsize_res);
-        if (currentHash !== newHash) {
+        if (currentHash !== newHash || forcereload) {
           gdcontentsize_title = getGraphTitle("bytes", gdcontentsize_res);
           _gdcontentsize = gdcontentsize_res;
           const results = transformAggregateDataToChart(
@@ -1283,7 +1284,7 @@
         // Check if the data is the same then do not rerender the graph
         const currentHash = JSON.stringify(_gdnumrequest);
         const newHash = JSON.stringify(gdnumrequest_res);
-        if (currentHash !== newHash) {
+        if (currentHash !== newHash || forcereload) {
           gdnumrequest_title = getGraphTitle("number", gdnumrequest_res);
           _gdnumrequest = gdnumrequest_res;
           const results = transformAggregateDataToChart(
@@ -1395,7 +1396,7 @@
       if (gdmessages_res.length > 0) {
         const currentHash = JSON.stringify(_gdmessages);
         const newHash = JSON.stringify(gdmessages_res);
-        if (currentHash !== newHash) {
+        if (currentHash !== newHash || forcereload) {
           _gdmessages = gdmessages_res;
           const results = transformAggregateDataToChart(
             gdmessages_res,
