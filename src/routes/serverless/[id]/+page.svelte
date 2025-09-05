@@ -14,6 +14,7 @@
   import { ObjectInput } from "$lib/objectinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
+  import { AnsiUp } from "ansi_up";
   import { Check, RotateCcw, User, Webhook } from "lucide-svelte";
   import { tick } from "svelte";
   import { toast } from "svelte-sonner";
@@ -21,6 +22,8 @@
   import { zod } from "sveltekit-superforms/adapters";
   import { _timeSince } from "../../../helper";
   import { editFormSchemaAdmin, editFormSchemaUser } from "../schema.js";
+
+  const ansi = new AnsiUp();
 
   let profileroles = auth.profile?.roles || [];
   const isAdmin = profileroles.includes("admins");
@@ -387,6 +390,9 @@
         jwt: auth.access_token,
       });
       // Coerce to array depending on API shape
+      result.forEach((element: any) => {
+        element.message = ansi.ansi_to_html(element.message);
+      });
       const newTdConsoleLog = Array.isArray(result)
         ? result
         : (result?.items ?? []);
@@ -1568,6 +1574,8 @@
                     {_timeSince(new Date(row[col]?.$date ?? row[col]))}
                   {:else if typeof row[col] === "object"}
                     {JSON.stringify(row[col])}
+                    {:else if col === "message" }
+                      {@html row[col]}
                   {:else}
                     {row[col]}
                   {/if}
@@ -2054,7 +2062,9 @@
               {loading}
               collectionname="mq"
               bind:value={$formData.amqpqueue}
-              basefilter={{ "$or":[{ _type: "queue" }, { _type: "workitemqueue" }] }}
+              basefilter={{
+                $or: [{ _type: "queue" }, { _type: "workitemqueue" }],
+              }}
               projection={{ name: 1, _type: 1 }}
               class="w-64"
               name="amqpqueue"
