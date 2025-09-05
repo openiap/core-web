@@ -31,6 +31,7 @@
         X,
     } from "lucide-svelte";
     import { toast } from "svelte-sonner";
+    import { IsNullEmpty, IsNullUndefinded } from "../../../helper.js";
 
     const { children, data } = $props();
 
@@ -52,7 +53,7 @@
     let historyview = $state(false);
     let openDialog = $state(false);
     let loadingDialog = $state(false);
-    let result = $state();
+    let builderlog = $state();
     const textEncoder = new TextEncoder();
 
     const currentFilePath = $derived(() => {
@@ -711,19 +712,13 @@
     async function getSlug(packageJson: any) {
         if (packageJson.openiap) {
             if (!packageJson.openiap.slug) {
-                if (
-                    packageJson.openiap.slug == "" ||
-                    packageJson.openiap.slug == null
-                ) {
-                    throw new Error(
-                        "Slug cannot be null or empty in package.json",
-                    );
-                }
+                return "";
                 throw new Error("Slug not found in package.json");
             } else {
                 return packageJson.openiap.slug;
             }
         } else {
+            return "";
             throw new Error("Openiap object not found in package.json");
         }
     }
@@ -749,46 +744,30 @@
             let slug = "";
             slug = await getSlug(packageJson);
 
-            let packageData = await auth.client.FindOne<any>({
-                collectionname: "agents",
-                query: { slug: slug, _type: "package" },
-                jwt: auth.access_token,
-            });
+            let packageData: any = null;
+            if (!IsNullEmpty(slug)) {
+                packageData = await auth.client.FindOne<any>({
+                    collectionname: "agents",
+                    query: { slug: slug, _type: "package" },
+                    jwt: auth.access_token,
+                });
+            }
 
             let newfilename = "";
             let oldfile;
-            if (packageData) {
+            if (!IsNullEmpty(packageData)) {
                 oldfile = await auth.client.FindOne<any>({
                     collectionname: "files",
                     query: { _id: packageData.fileid },
                     jwt: auth.access_token,
                 });
                 newfilename = oldfile.filename;
+                console.log("oldfile:", oldfile);
             } else {
                 packageData = {};
                 packageData.name = packageJson.name;
-                packageData.slug = slug;
+                newfilename = packageJson.name + ".tgz";
             }
-
-            // update version in package.json by incrementing last digit also add it in filename
-            const versionParts = packageJson.version.split(".");
-            versionParts[versionParts.length - 1] = (
-                parseInt(versionParts[versionParts.length - 1]) + 1
-            ).toString();
-            packageJson.version = versionParts.join(".");
-            packageJsonEntry.buffer = textEncoder.encode(
-                JSON.stringify(packageJson, null, 2),
-            ).buffer;
-            if (newfilename) {
-                newfilename = `${newfilename.split("-")[0]}-${packageJson.version}.tgz`;
-            } else {
-                newfilename = `${packageJson.name}-${packageJson.version}.tgz`;
-            }
-            // update version in package.json by incrementing last digit also add it in filename
-
-            // upload new tgz file
-            // const fs = new FS(data.item.repo.split("/").join("_"));
-            // const dir = "/test-clone";
 
             let newfiles = await Promise.all(
                 files
@@ -843,7 +822,6 @@
 
             // ensure package data
             packageData.fileid = uploadedfileid;
-            packageData.name = newfilename;
 
             let uploadedpackagedata: any = await auth.client.CustomCommand({
                 command: "ensurepackage",
@@ -851,13 +829,31 @@
                 jwt: auth.access_token,
             });
             uploadedpackagedata = JSON.parse(uploadedpackagedata);
-
             // write new slug to packagejson file
             if (uploadedpackagedata.slug != slug) {
                 packageJson.openiap.slug = uploadedpackagedata.slug;
-                packageJsonEntry.buffer = textEncoder.encode(
-                    JSON.stringify(packageJson, null, 2),
-                ).buffer;
+
+                const packageJsonPath = `${dir}/${packageJsonEntry.path}`;
+                const updatedContent = JSON.stringify(packageJson, null, 2);
+                await fs.promises.writeFile(
+                    packageJsonPath,
+                    updatedContent,
+                    "utf8",
+                );
+
+                // Stage the file changes in git
+                await git.add({ fs, dir, filepath: packageJsonEntry.path });
+
+                // Refresh the file list to reflect changes
+                const rawFiles = await listMatrixRecursive({ fs, dir });
+                files = buildFileList(rawFiles);
+
+                // Also update the buffer for consistency
+                packageJsonEntry.buffer =
+                    textEncoder.encode(updatedContent).buffer;
+
+                // Trigger invalidation to refresh any cached content
+                invalidateAll();
             }
 
             // delete old file
@@ -881,14 +877,7 @@
     }
 
     async function buildpackage() {
-        loading = true;
-        openDialog = true;
-        loadingDialog = true;
-        result = "";
-        let queuename = "";
-
         let workspaceid = usersettings.currentworkspace;
-
         if (workspaceid == null || workspaceid == "") {
             if (workspaceid == "" || workspaceid == null) {
                 toast.error("Error", {
@@ -897,6 +886,12 @@
                 return;
             }
         }
+
+        loading = true;
+        openDialog = true;
+        loadingDialog = true;
+        builderlog = "";
+        let queuename = "";
         try {
             const packageJsonEntry = files.find(
                 (file: any) =>
@@ -905,9 +900,18 @@
             if (!packageJsonEntry) {
                 throw new Error("package.json not found in package");
             }
-            const slug = await getSlug(packageJsonEntry);
+            const fs = new FS(data.item.repo.split("/").join("_"));
+            const dir = "/test-clone";
+            console.log("packageJsonEntry", packageJsonEntry);
+            const filePath = `${dir}/${packageJsonEntry.path}`;
+            const fileContent = await fs.promises.readFile(filePath, {
+                encoding: "utf8",
+            });
+            const packageJson = JSON.parse(fileContent);
+            const slug = await getSlug(packageJson);
+            console.log("Package slug:", slug);
 
-            if (slug == "demo-agent") {
+            if (IsNullEmpty(slug)) {
                 throw new Error(
                     "Slug is required in package.json to build the package",
                 );
@@ -915,13 +919,14 @@
 
             // get the package id using slug from the database
             const packageData = await auth.client.FindOne<any>({
-                collectionname: "packages",
-                query: { slug: slug },
+                collectionname: "agents",
+                query: { slug: slug, _type: "package" },
                 jwt: auth.access_token,
             });
             if (!packageData) {
                 return toast.error("Package not found in database");
             }
+            console.log("Package data:", packageData);
 
             queuename = await auth.client.RegisterQueue(
                 { queuename: "", jwt: data.access_token },
@@ -930,7 +935,7 @@
                         if (!payload.logs.endsWith("\n")) {
                             payload.logs += "\n";
                         }
-                        result = payload.logs + result;
+                        builderlog = payload.logs + builderlog;
                     }
                     // const chatContainer = document.getElementById("chatcontainer");
                     // if (chatContainer) {
@@ -956,23 +961,24 @@
                 true,
             );
             if (build_result.success == false) {
-                result =
+                builderlog =
                     "Error Building package: " +
                     build_result.result +
                     "\n" +
-                    result;
+                    builderlog;
                 throw new Error(
                     "Error Building package: " + build_result.result,
                 );
             }
-            result =
+            builderlog =
                 "Image build successfully in " +
                 build_result.timetaken +
                 " seconds\n" +
-                result;
+                builderlog;
         } catch (error: any) {
             loading = false;
             loadingDialog = false;
+            builderlog += "Error Building package: " + error.message + "\n";
             console.error("Building package:", error.message);
             throw new Error("Building package: " + error.message);
         } finally {
@@ -1534,17 +1540,36 @@ git push -u origin main`;
                     title="Open in browser"
                     disabled={loading}
                     class="w-fit"
-                    onclick={() => {
-                        //   window.open(
-                        //     auth.fnurl(data.packageData.slug || data.packageData.name),
-                        //     "_blank",
-                        //   );
+                    onclick={async () => {
+                        const packageJsonEntry = files.find(
+                            (file: any) =>
+                                file.name === "package.json" &&
+                                file.type === "blob",
+                        );
+                        if (!packageJsonEntry) {
+                            throw new Error(
+                                "package.json not found in package",
+                            );
+                        }
+                        const fs = new FS(data.item.repo.split("/").join("_"));
+                        const dir = "/test-clone";
+                        console.log("packageJsonEntry", packageJsonEntry);
+                        const filePath = `${dir}/${packageJsonEntry.path}`;
+                        const fileContent = await fs.promises.readFile(
+                            filePath,
+                            {
+                                encoding: "utf8",
+                            },
+                        );
+                        const packageJson = JSON.parse(fileContent);
+                        const slug = await getSlug(packageJson);
+                        window.open(auth.fnurl(slug), "_blank");
                     }}>Open in browser</HotkeyButton
                 >
                 <HotkeyButton
                     aria-label="Show logs"
                     title="Show logs"
-                    disabled={!result}
+                    disabled={!builderlog}
                     class="w-fit"
                     onclick={() => {
                         openDialog = true;
@@ -1623,10 +1648,10 @@ git push -u origin main`;
                         </div>
                     {/if}
 
-                    {#if result}
+                    {#if builderlog}
                         <div class="mt-4 p-4 bg-gray-100 rounded dark:bg-bw500">
                             <pre
-                                class="text-sm text-bw900 whitespace-pre-wrap">{result}</pre>
+                                class="text-sm text-bw900 whitespace-pre-wrap">{builderlog}</pre>
                         </div>
                     {/if}
                 </div>
