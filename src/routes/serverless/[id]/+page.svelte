@@ -630,13 +630,13 @@
     }
 
     // Add start time
-    results[0].push(isoStrToEpoch(startTime));
+    results[0]?.push(isoStrToEpoch(startTime));
     for (let j = 0; j < legendnames.length; j++) {
       results[j + 1].push(undefined);
     }
     // Process data points
     for (let i = 0; i < result.length; i++) {
-      results[0].push(isoStrToEpoch(result[i]));
+      results[0]?.push(isoStrToEpoch(result[i]));
       let subresult = aggregateData.filter((item) => item.ts === result[i]);
 
       for (let j = 0; j < legendnames.length; j++) {

@@ -254,13 +254,13 @@
 
     // Check if data is empty or has no meaningful data
     function isDataEmpty() {
-        if (!data || data.length === 0) return true;
+        if (!data || data?.length === 0) return true;
 
         // Check if we have at least x-axis data and one series with data
-        if (data.length < 2) return true;
+        if (data?.length < 2) return true;
 
         // Check if x-axis has data
-        if (!data[0] || data[0].length === 0) return true;
+        if (!data[0] || data[0]?.length === 0) return true;
 
         // Check if at least one series has data
         const hasDataInSeries = data
@@ -268,7 +268,7 @@
             .some(
                 (series) =>
                     series &&
-                    series.length > 0 &&
+                    series?.length > 0 &&
                     series.some(
                         (value: any) => value !== null && value !== undefined,
                     ),
@@ -311,7 +311,7 @@
         const themeStyles = getThemeStyles();
         let finalseries: any[] = [];
         let _series = [{}, ...series]; // Ensure first series is always empty for x-axis
-        if (series.length > 0) {
+        if (series?.length > 0) {
             // here i want to update the series with the styling and color dont touch the value and label
             finalseries = _series.map((s, index) => {
                 if (index != 0) {
@@ -470,30 +470,47 @@
         // If we have a chart and valid data, try to update it
         if (uplot && UPlotConstructor && !isDataEmpty()) {
             try {
-                // Try to update data in place first
-                uplot.setData(data);
-            } catch (error) {
-                // If update fails, recreate the chart
-                toast.error("Failed to update chart data", {
+                uplot.destroy();
+                const opts = getOptions();
+                uplot = new UPlotConstructor(opts, data, chartEl);
+            } catch (recreateError) {
+                toast.error("Failed to recreate chart", {
                     description:
-                        error instanceof Error
-                            ? error.message
+                        recreateError instanceof Error
+                            ? recreateError.message
                             : "Unknown error occurred",
                 });
-                try {
-                    uplot.destroy();
-                    const opts = getOptions();
-                    uplot = new UPlotConstructor(opts, data, chartEl);
-                } catch (recreateError) {
-                    toast.error("Failed to recreate chart", {
-                        description:
-                            recreateError instanceof Error
-                                ? recreateError.message
-                                : "Unknown error occurred",
-                    });
-                    uplot = null;
-                }
+                uplot = null;
             }
+
+            // try {
+            //     uplot.setData(data);
+            // } catch (error) {
+            //     // If update fails, recreate the chart
+            //     toast.error("Failed to update chart data", {
+            //         description:
+            //             error instanceof Error
+            //                 ? error.message
+            //                 : "Unknown error occurred",
+            //     });
+            //     try {
+            //         uplot.destroy();
+            //         const opts = getOptions();
+            //         console.log(
+            //             "Updating chart with data:",
+            //             $state.snapshot(data),
+            //         );
+            //         uplot = new UPlotConstructor(opts, data, chartEl);
+            //     } catch (recreateError) {
+            //         toast.error("Failed to recreate chart", {
+            //             description:
+            //                 recreateError instanceof Error
+            //                     ? recreateError.message
+            //                     : "Unknown error occurred",
+            //         });
+            //         uplot = null;
+            //     }
+            // }
         } else if (uplot && isDataEmpty()) {
             // Destroy chart if data becomes empty
             try {
