@@ -2014,22 +2014,6 @@
             <Form.FieldErrors />
           </Form.Field>
 
-          <Form.Field {form} name="register_queue" class="mb-10">
-            <Form.Control>
-              {#snippet children({ props })}
-                <div class="flex flex-row items-center space-x-2 py-4">
-                  <Form.Label>Register Queue</Form.Label>
-                  <CustomSwitch
-                    disabled={loading}
-                    {...props}
-                    bind:checked={$formData.register_queue}
-                  />
-                </div>
-              {/snippet}
-            </Form.Control>
-            <Form.FieldErrors />
-          </Form.Field>
-
           <Form.Field {form} name="non_web" class="mb-10">
             <Form.Control>
               {#snippet children({ props })}
@@ -2039,6 +2023,22 @@
                     disabled={loading}
                     {...props}
                     bind:checked={$formData.non_web}
+                  />
+                </div>
+              {/snippet}
+            </Form.Control>
+            <Form.FieldErrors />
+          </Form.Field>
+
+          <Form.Field {form} name="register_queue" class="mb-10">
+            <Form.Control>
+              {#snippet children({ props })}
+                <div class="flex flex-row items-center space-x-2 py-4">
+                  <Form.Label>Register Queue</Form.Label>
+                  <CustomSwitch
+                    disabled={loading}
+                    {...props}
+                    bind:checked={$formData.register_queue}
                   />
                 </div>
               {/snippet}
