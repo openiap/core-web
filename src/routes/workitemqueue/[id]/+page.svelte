@@ -24,7 +24,7 @@
   }
 
   let agentdata = $state(data.agentdata);
-  let amqpqueuedata = $state(data.amqpqueuedata);
+  // let amqpqueuedata = $state(data.amqpqueuedata);
 
   const form = superForm(defaults(zod(editFormSchema)), {
     dataType: "json",
@@ -402,7 +402,7 @@
       handleChangeFunction={() => {
         // @ts-ignore
         $formData.amqpqueue = agentdata.slug + "agent";
-        amqpqueuedata = { name: null };
+        // amqpqueuedata = { name: null };
       }}
       allowunselect={true}
       >{#snippet rendername(item: any)}

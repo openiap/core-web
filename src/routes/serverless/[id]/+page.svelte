@@ -36,7 +36,7 @@
     );
   }
 
-  let amqpqueuedata = $state(data.amqpqueuedata);
+  // let amqpqueuedata = $state(data.amqpqueuedata);
 
   let loading = $state(false);
   let selectedduration = $state(usersettings.serverlesstimefilter);
