@@ -512,8 +512,6 @@
 
       value = Number(value); // Ensure value is a number
       const _value = Number(maxValue);
-      console.log("_value", _value);
-      console.log("value", value);
 
       if (datatype === "ms") {
         if (addPrefix) {
@@ -596,8 +594,6 @@
           }
           return parseFloat(value.toFixed(2));
         }
-        console.log(value);
-        return value;
       } else if (datatype === "percent") {
         if (addPrefix) {
           return value == null ? null : value.toFixed(2) + " %";
@@ -1084,7 +1080,6 @@
         aggregates: gdresponsetime_agg,
         jwt: auth.access_token,
       });
-      console.log("gdresponsetime_res", $state.snapshot(gdresponsetime_res));
       if (gdresponsetime_res.length > 0) {
         const currentHash = JSON.stringify(_gdresponsetime);
         const newHash = JSON.stringify(gdresponsetime_res);
@@ -1116,7 +1111,6 @@
         gdresponsetime = [];
         _gdresponsetime = [];
       }
-      console.log("gdresponsetime", $state.snapshot(gdresponsetime));
 
       let gdcontentsize_agg = [
         {
@@ -1294,7 +1288,6 @@
         aggregates: gdnumrequest_agg,
         jwt: auth.access_token,
       });
-      console.log("gdnumrequest_res", $state.snapshot(gdnumrequest_res));
       if (gdnumrequest_res.length > 0) {
         // Check if the data is the same then do not rerender the graph
         const currentHash = JSON.stringify(_gdnumrequest);
@@ -1327,7 +1320,6 @@
         gdnumrequest = [];
         _gdnumrequest = [];
       }
-      console.log("gdnumrequest", $state.snapshot(gdnumrequest));
     } catch (error: any) {
       console.error("Error fetching chart data:", error);
       toast.error("Error fetching chart data", {
