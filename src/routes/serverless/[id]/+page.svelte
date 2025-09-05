@@ -172,7 +172,8 @@
                 data: {
                   _workspaceid: form.data._workspaceid,
                   id: form.data.runas,
-                  name: "SF for " + form.data.name,
+                  name: "serverless-api-key",
+                  app: "sf",
                   exp: "365d", // 1 year
                 },
                 jwt: auth.access_token,
@@ -2049,6 +2050,7 @@
           <div class="mb-10">
             <div class="mb-2 font-medium text-sm">AMQP Queue</div>
             <EntitySelector
+              queryas={usersettings.currentworkspace}
               {loading}
               collectionname="mq"
               bind:value={$formData.amqpqueue}
