@@ -10,7 +10,7 @@
   import { CustomSelect } from "$lib/customselect/index.js";
   import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { CustomSwitch } from "$lib/customswitch/index.js";
-  import Entityselector from "$lib/entityselector/entityselector.svelte";
+  import EntitySelector from "$lib/entityselector/entityselector.svelte";
   import { ObjectInput } from "$lib/objectinput/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
@@ -22,10 +22,21 @@
   import { _timeSince } from "../../../helper";
   import { editFormSchemaAdmin, editFormSchemaUser } from "../schema.js";
 
-  const { data } = $props();
-
   let profileroles = auth.profile?.roles || [];
   const isAdmin = profileroles.includes("admins");
+
+  const { data } = $props();
+
+  if (data.item != null) {
+    if (data.item.anonymous == null) {
+      data.item.anonymous = false;
+    }
+    data.item = (isAdmin ? editFormSchemaAdmin : editFormSchemaUser).parse(
+      data.item,
+    );
+  }
+
+  let amqpqueuedata = $state(data.amqpqueuedata);
 
   let loading = $state(false);
   let selectedduration = $state(usersettings.serverlesstimefilter);
@@ -91,15 +102,6 @@
   let showerror = $state(false);
 
   const excludedcols = ["_id", "metadata", "ts", "userid"];
-
-  if (data.item != null) {
-    if (data.item.anonymous == null) {
-      data.item.anonymous = false;
-    }
-    data.item = (isAdmin ? editFormSchemaAdmin : editFormSchemaUser).parse(
-      data.item,
-    );
-  }
 
   const form = superForm(
     defaults(zod(isAdmin ? editFormSchemaAdmin : editFormSchemaUser)),
@@ -1640,7 +1642,7 @@
             <Form.Control>
               {#snippet children({ props })}
                 <Form.Label>Tag</Form.Label>
-                <Entityselector
+                <EntitySelector
                   width="md:w-fit w-64"
                   class="mb-4 md:mb-0"
                   {loading}
@@ -1666,7 +1668,7 @@
                       {tagname}
                     {/if}
                   {/snippet}
-                </Entityselector>
+                </EntitySelector>
               {/snippet}
             </Form.Control>
             <Form.FieldErrors />
@@ -1708,7 +1710,7 @@
             <Form.Control>
               {#snippet children({ props })}
                 <Form.Label>Distribution</Form.Label>
-                <Entityselector
+                <EntitySelector
                   width="md:w-fit w-64"
                   class="mb-4 md:mb-0"
                   {loading}
@@ -1734,7 +1736,7 @@
                       {distroname}
                     {/if}
                   {/snippet}
-                </Entityselector>
+                </EntitySelector>
               {/snippet}
             </Form.Control>
             <Form.FieldErrors />
@@ -1895,7 +1897,7 @@
                 </div>
                 {#if runasuser}
                   <div class="md:flex md:items-center md:space-x-4 my-2">
-                    <Entityselector
+                    <EntitySelector
                       name="User"
                       propertyname="_id"
                       queryas={usersettings.currentworkspace}
@@ -1917,7 +1919,7 @@
                           {"(" + item._type + ") " + item.name}
                         {/if}
                       {/snippet}
-                    </Entityselector>
+                    </EntitySelector>
                     <HotkeyButton
                       aria-label="User Details"
                       disabled={!Boolean($formData.runas) || loading}
@@ -1928,7 +1930,7 @@
                   </div>
                 {:else}
                   <div class="md:flex md:items-center md:space-x-4 my-2">
-                    <Entityselector
+                    <EntitySelector
                       name="Access Token"
                       propertyname="_id"
                       queryas={usersettings.currentworkspace}
@@ -1949,7 +1951,7 @@
                           ({item._userdisplayname}) {item.name}
                         {/if}
                       {/snippet}
-                    </Entityselector>
+                    </EntitySelector>
                     <HotkeyButton
                       aria-label="User Details"
                       disabled={!Boolean($formData.runas) || loading}
@@ -1966,7 +1968,7 @@
             <Form.Control>
               {#snippet children({ props })}
                 <Form.Label>Volumes</Form.Label>
-                <Entityselector
+                <EntitySelector
                   propertyname="_id"
                   queryas={usersettings.currentworkspace}
                   width="md:w-fit w-64"
@@ -1989,7 +1991,7 @@
                       {"(" + item._type + ") " + item.name}
                     {/if}
                   {/snippet}
-                </Entityselector>
+                </EntitySelector>
               {/snippet}
             </Form.Control>
             <Form.FieldErrors />
@@ -2010,6 +2012,68 @@
             </Form.Control>
             <Form.FieldErrors />
           </Form.Field>
+
+          <Form.Field {form} name="register_queue" class="mb-10">
+            <Form.Control>
+              {#snippet children({ props })}
+                <div class="flex flex-row items-center space-x-2 py-4">
+                  <Form.Label>Register Queue</Form.Label>
+                  <CustomSwitch
+                    disabled={loading}
+                    {...props}
+                    bind:checked={$formData.register_queue}
+                  />
+                </div>
+              {/snippet}
+            </Form.Control>
+            <Form.FieldErrors />
+          </Form.Field>
+
+          <Form.Field {form} name="non_web" class="mb-10">
+            <Form.Control>
+              {#snippet children({ props })}
+                <div class="flex flex-row items-center space-x-2 py-4">
+                  <Form.Label>Non-Web</Form.Label>
+                  <CustomSwitch
+                    disabled={loading}
+                    {...props}
+                    bind:checked={$formData.non_web}
+                  />
+                </div>
+              {/snippet}
+            </Form.Control>
+            <Form.FieldErrors />
+          </Form.Field>
+
+          <div class="mb-10">
+            <div class="mb-2 font-medium text-sm">AMQP Queue</div>
+            <EntitySelector
+              {loading}
+              collectionname="mq"
+              bind:value={$formData.amqpqueue}
+              basefilter={{ _type: "queue" }}
+              projection={{ name: 1, _type: 1 }}
+              class="w-64"
+              name="amqpqueue"
+              allowunselect={true}
+              handleChangeFunction={(value: any, item: any) => {
+                if (item == null) {
+                  $formData.amqpqueue = "";
+                }
+              }}
+              propertyname="name"
+              >{#snippet rendername(item: any)}
+                {item.name}
+              {/snippet}
+              {#snippet rendercontent(item: any)}
+                {#if item == null}
+                  Select a queue
+                {:else}
+                  {item.name}
+                {/if}
+              {/snippet}
+            </EntitySelector>
+          </div>
 
           <HotkeyButton
             type="submit"

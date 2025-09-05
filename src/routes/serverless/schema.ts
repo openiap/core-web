@@ -25,6 +25,9 @@ export const editFormSchemaUser = z.object({
   tls: z.boolean().optional().nullable().transform((val) => val ?? false),
   alpn: z.string().optional().nullable().transform((val) => val ?? "Select ALPN"),
   relay_headers: z.boolean().optional().nullable().transform((val) => val ?? false),
+  register_queue: z.boolean().optional().nullable().transform((val) => val ?? false),
+  amqpqueue: z.string().optional().nullable().transform((val) => val ?? ""),
+  non_web: z.boolean().optional().nullable().transform((val) => val ?? false),
 }).passthrough();
 
 export type EditFormSchemaUser = typeof editFormSchemaUser;
@@ -47,6 +50,9 @@ export const editFormSchemaAdmin = z.object({
   tls: z.boolean().optional().nullable().transform((val) => val ?? false),
   alpn: z.string().optional().nullable().transform((val) => val ?? "Select ALPN"),
   relay_headers: z.boolean().optional().nullable().transform((val) => val ?? false),
+  register_queue: z.boolean().optional().nullable().transform((val) => val ?? false),
+  amqpqueue: z.string().optional().nullable().transform((val) => val ?? ""),
+  non_web: z.boolean().optional().nullable().transform((val) => val ?? false),
 }).passthrough();
 
 export type EditFormSchemaAdmin = typeof editFormSchemaAdmin;
