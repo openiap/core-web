@@ -329,7 +329,7 @@
       }
       const result: any = await auth.client.Query({
         collectionname: "sf_request_logs",
-        top: 100,
+        top: 20,
         orderby: { ts: -1 },
         query,
         jwt: auth.access_token,
