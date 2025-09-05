@@ -512,22 +512,10 @@
 
       value = Number(value); // Ensure value is a number
       const _value = Number(maxValue);
+      console.log("_value", _value);
+      console.log("value", value);
+
       if (datatype === "ms") {
-        if (_value >= 31536000000) {
-          value = _value / 31536000000; // Convert ms to years
-        } else if (_value >= 604800000) {
-          value = _value / 604800000; // Convert ms to weeks
-        } else if (_value >= 86400000) {
-          value = _value / 86400000; // Convert ms to days
-        } else if (_value >= 3600000) {
-          value = _value / 3600000; // Convert ms to hours
-        } else if (_value >= 60000) {
-          value = _value / 60000; // Convert ms to minutes
-        } else if (_value >= 1000) {
-          value = _value / 1000; // Convert ms to seconds
-        } else {
-          value = _value; // Already ms
-        }
         if (addPrefix) {
           if (_value >= 31536000000) {
             return value.toFixed(2) + " years";
@@ -545,64 +533,79 @@
             return value.toFixed(2) + " ms";
           }
         } else {
-          return value.toFixed(2);
+          if (_value >= 31536000000) {
+            value = value / 31536000000; // Convert ms to years
+          } else if (_value >= 604800000) {
+            value = value / 604800000; // Convert ms to weeks
+          } else if (_value >= 86400000) {
+            value = value / 86400000; // Convert ms to days
+          } else if (_value >= 3600000) {
+            value = value / 3600000; // Convert ms to hours
+          } else if (_value >= 60000) {
+            value = value / 60000; // Convert ms to minutes
+          } else if (_value >= 1000) {
+            value = value / 1000; // Convert ms to seconds
+          } else {
+            value = value; // Already ms
+          }
+          return parseFloat(value.toFixed(2));
         }
       } else if (datatype === "bytes") {
-        if (_value >= 1073741824) {
-          value = _value / 1073741824; // Convert B to GB
-        } else if (_value >= 1048576) {
-          value = _value / 1048576; // Convert B to MB
-        } else if (_value >= 1024) {
-          value = _value / 1024; // Convert B to KB
-        } else {
-          value = _value; // Already in Bytes
-        }
-
         if (addPrefix) {
           if (_value >= 1073741824) {
-            return (_value / 1073741824).toFixed(2) + " GB";
+            return value.toFixed(2) + " GB";
           } else if (_value >= 1048576) {
-            return (_value / 1048576).toFixed(2) + " MB";
+            return value.toFixed(2) + " MB";
           } else if (_value >= 1024) {
-            return (_value / 1024).toFixed(2) + " KB";
+            return value.toFixed(2) + " KB";
           } else {
-            return _value.toFixed(2) + " Bytes";
+            return value.toFixed(2) + " Bytes";
           }
         } else {
-          return value.toFixed(2);
+          if (_value >= 1073741824) {
+            value = value / 1073741824; // Convert B to GB
+          } else if (_value >= 1048576) {
+            value = value / 1048576; // Convert B to MB
+          } else if (_value >= 1024) {
+            value = value / 1024; // Convert B to KB
+          } else {
+            value = value; // Already in Bytes
+          }
+          return parseFloat(value.toFixed(2));
         }
       } else if (datatype === "number") {
-        if (_value >= 1_000_000_000) {
-          value = _value / 1_000_000_000; // Convert to Billions
-        } else if (_value >= 1_000_000) {
-          value = _value / 1_000_000; // Convert to Millions
-        } else if (_value >= 1_000) {
-          value = _value / 1_000; // Convert to Thousands
-        } else {
-          value = _value; // Less than 1000, keep as is
-        }
-
         if (addPrefix) {
           if (_value >= 1_000_000_000) {
-            return (_value / 1_000_000_000).toFixed(2) + " B";
+            return value.toFixed(2) + " B";
           } else if (_value >= 1_000_000) {
-            return (_value / 1_000_000).toFixed(2) + " M";
+            return value.toFixed(2) + " M";
           } else if (_value >= 1_000) {
-            return (_value / 1_000).toFixed(2) + " K";
+            return value.toFixed(2) + " K";
           } else {
-            return _value.toFixed(2);
+            return value.toFixed(2);
           }
         } else {
-          return value.toFixed(2);
+          if (_value >= 1_000_000_000) {
+            value = value / 1_000_000_000; // Convert to Billions
+          } else if (_value >= 1_000_000) {
+            value = value / 1_000_000; // Convert to Millions
+          } else if (_value >= 1_000) {
+            value = value / 1_000; // Convert to Thousands
+          } else {
+            value = value; // Less than 1000, keep as is
+          }
+          return parseFloat(value.toFixed(2));
         }
+        console.log(value);
+        return value;
       } else if (datatype === "percent") {
         if (addPrefix) {
           return value == null ? null : value.toFixed(2) + " %";
         } else {
-          return value == null ? null : value.toFixed(2);
+          return value == null ? null : parseFloat(value.toFixed(2));
         }
       } else {
-        return value.toFixed(2);
+        return parseFloat(value.toFixed(2));
       }
     } catch (error: any) {
       console.error("Error in transformValue:", error);
@@ -1052,7 +1055,7 @@
               metadata_host: "$metadata.host",
             },
             value: {
-              $avg: "$cold_response_time",
+              $avg: "$response_time",
             },
             ts: {
               $max: "$ts",
@@ -1081,6 +1084,7 @@
         aggregates: gdresponsetime_agg,
         jwt: auth.access_token,
       });
+      console.log("gdresponsetime_res", $state.snapshot(gdresponsetime_res));
       if (gdresponsetime_res.length > 0) {
         const currentHash = JSON.stringify(_gdresponsetime);
         const newHash = JSON.stringify(gdresponsetime_res);
@@ -1112,6 +1116,7 @@
         gdresponsetime = [];
         _gdresponsetime = [];
       }
+      console.log("gdresponsetime", $state.snapshot(gdresponsetime));
 
       let gdcontentsize_agg = [
         {
@@ -1152,7 +1157,9 @@
               metadata_host: "$metadata.host",
             },
             value: {
-              $sum: "$bytes_received",
+              $sum: {
+                $add: ["$bytes_received", "$bytes_sent"],
+              },
             },
             ts: {
               $max: "$ts",
@@ -1287,6 +1294,7 @@
         aggregates: gdnumrequest_agg,
         jwt: auth.access_token,
       });
+      console.log("gdnumrequest_res", $state.snapshot(gdnumrequest_res));
       if (gdnumrequest_res.length > 0) {
         // Check if the data is the same then do not rerender the graph
         const currentHash = JSON.stringify(_gdnumrequest);
@@ -1319,6 +1327,7 @@
         gdnumrequest = [];
         _gdnumrequest = [];
       }
+      console.log("gdnumrequest", $state.snapshot(gdnumrequest));
     } catch (error: any) {
       console.error("Error fetching chart data:", error);
       toast.error("Error fetching chart data", {
@@ -1574,8 +1583,8 @@
                     {_timeSince(new Date(row[col]?.$date ?? row[col]))}
                   {:else if typeof row[col] === "object"}
                     {JSON.stringify(row[col])}
-                    {:else if col === "message" }
-                      {@html row[col]}
+                  {:else if col === "message"}
+                    {@html row[col]}
                   {:else}
                     {row[col]}
                   {/if}
