@@ -283,7 +283,7 @@
         return {
             // backgroundColor: isDark ? "#1F2937" : "#FFFFFF", // Dark gray or white
             // textColor: isDark ? "#FDFDFD" : "#111827", // Light gray or dark gray
-            gridColor: isDark ? "#575B62" : "#86888E", 
+            gridColor: isDark ? "#575B62" : "#86888E",
             axisColor: isDark ? "#D9D9D9" : "#191A1E", // Medium gray
         };
     }
@@ -315,7 +315,7 @@
             // here i want to update the series with the styling and color dont touch the value and label
             finalseries = _series.map((s, index) => {
                 if (index != 0) {
-                    return {
+                    let styleObj = {
                         ...s,
                         show: true,
                         spanGaps: false,
@@ -332,6 +332,39 @@
                             // fill: themeStyles.backgroundColor,
                         },
                     };
+
+                    console.log("s.label", title, s.label);
+
+                    const setStyle = (hex: any) => {
+                        styleObj.stroke = hex;
+                        styleObj.fill = `${hex}20`; // 8-digit hex with alpha
+                        if (styleObj.points) styleObj.points.stroke = hex;
+                    };
+
+                    // find the first 3-digit code in the label
+                    const match =
+                        typeof s.label === "string"
+                            ? s.label.match(/\b(\d{3})\b/)
+                            : null;
+                    const code = match ? Number(match[1]) : NaN;
+
+                    if (!Number.isNaN(code)) {
+                        if (code >= 200 && code <= 250) {
+                            console.log("green", code);
+                            setStyle($mode === "dark" ? "#2DD4BF" : "#10B981"); // 200–250 -> green
+                        } else if (
+                            (code >= 401 && code <= 403) ||
+                            (code >= 500 && code <= 600)
+                        ) {
+                            console.log("red", code);
+                            setStyle($mode === "dark" ? "#F87171" : "#B91C1C"); // 401–403 and 500–600 -> red
+                        } else {
+                            console.log("blue", code);
+                            setStyle($mode === "dark" ? "#60A5FA" : "#3B82F6"); // everything else -> blue
+                        }
+                    }
+
+                    return styleObj;
                 }
             });
             // finalseries = [{}, ...series];
