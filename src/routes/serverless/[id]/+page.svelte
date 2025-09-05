@@ -2052,7 +2052,7 @@
               {loading}
               collectionname="mq"
               bind:value={$formData.amqpqueue}
-              basefilter={{ _type: "queue" }}
+              basefilter={{ "$or":[{ _type: "queue" }, { _type: "workitemqueue" }] }}
               projection={{ name: 1, _type: 1 }}
               class="w-64"
               name="amqpqueue"
