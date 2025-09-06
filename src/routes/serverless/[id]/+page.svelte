@@ -1397,7 +1397,7 @@
         gdmessages_agg[0].$match["err"] = { $eq: true };
       }
       let gdmessages_res = await auth.client.Aggregate<any>({
-        collectionname: "sf_request_logs",
+        collectionname: "sf_console_logs",
         aggregates: gdmessages_agg,
         jwt: auth.access_token,
       });
