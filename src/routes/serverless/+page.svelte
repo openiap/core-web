@@ -57,14 +57,12 @@
 
 <div class="sm:flex space-y-4 sm:space-y-0 justify-between mb-4 sm:space-x-5">
   <SearchInput bind:searchstring />
-  {#if isAdmin}
     <Hotkeybutton
       aria-label="View Logs"
       onclick={() => goto(base + "/serverless/null")}
     >
       View All Logs
     </Hotkeybutton>
-  {/if}
 </div>
 
 <Entities
