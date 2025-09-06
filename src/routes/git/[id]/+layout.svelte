@@ -1659,16 +1659,35 @@ git push -u origin main`;
         </AlertDialog.Header>
         <AlertDialog.Footer>
             <HotkeyButton
-                aria-label="Pack and upload"
-                title="Pack and upload"
+                aria-label="Open in browser"
+                title="Open in browser"
                 disabled={loadingDialog}
                 variant="success"
                 class="w-fit mt-10"
-                onclick={() => {
-                    //   window.open(
-                    //     auth.fnurl(data.packageData.slug || data.packageData.name),
-                    //     "_blank",
-                    //   );
+                onclick={async () => {
+                    const packageJsonEntry = files.find(
+                        (file: any) =>
+                            file.name === "package.json" &&
+                            file.type === "blob",
+                    );
+                    if (!packageJsonEntry) {
+                        throw new Error(
+                            "package.json not found in package",
+                        );
+                    }
+                    const fs = new FS(data.item.repo.split("/").join("_"));
+                    const dir = "/test-clone";
+                    console.log("packageJsonEntry", packageJsonEntry);
+                    const filePath = `${dir}/${packageJsonEntry.path}`;
+                    const fileContent = await fs.promises.readFile(
+                        filePath,
+                        {
+                            encoding: "utf8",
+                        },
+                    );
+                    const packageJson = JSON.parse(fileContent);
+                    const slug = await getSlug(packageJson);
+                    window.open(auth.fnurl(slug), "_blank");
                 }}>Open in browser</HotkeyButton
             >
             <HotkeyButton
