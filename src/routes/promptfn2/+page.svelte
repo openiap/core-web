@@ -1,5 +1,6 @@
 <script lang="ts">
   import { base } from "$app/paths";
+  import { auth } from "$lib/stores/auth.svelte";
 
   let input = "";
   let output = "";
@@ -13,7 +14,7 @@
     const res = await fetch(base + "/api/chat", {
       method: "POST",
       body: JSON.stringify({ messages: [{ role: "user", content: input }] }),
-      headers: { "content-type": "application/json" },
+      headers: { "content-type": "application/json", "x-no-compression": "1", "authorization": "Bearer " + auth.access_token },
       signal: abort.signal,
     });
 

@@ -65,7 +65,7 @@
         "fflate": "^0.8.2",
         "isomorphic-git": "^1.31.0",
         "jsondiffpatch": "^0.4.1",
-        "openai": "^5.1.1",
+        "openai": "5.1.1",
         "tar": "^7.4.3",
         "tar-js": "^0.3.0",
         "uplot": "^1.6.32"
