@@ -5,6 +5,7 @@
   import { CustomInput } from "$lib/custominput/index.js";
   import { CustomSelect } from "$lib/customselect/index.js";
   import { CustomSuperDebug } from "$lib/customsuperdebug";
+  import { CustomSwitch } from "$lib/customswitch";
   import { auth } from "$lib/stores/auth.svelte";
   import FS from "@isomorphic-git/lightning-fs";
   import { Buffer } from "buffer";
@@ -20,6 +21,7 @@
   let temprepos: any = $state();
   let selectedlanguage = $state("");
   let selectedcloneurl = $state("");
+  let sf = $state(true);
 
   const temprepooffline = {
     languages: [
@@ -180,6 +182,8 @@
 
   async function fetchTemprepos() {
     loading = true;
+    selectedlanguage = "";
+    selectedcloneurl = "";
     try {
       const res = await fetch(
         "https://raw.githubusercontent.com/openiap/openiap-assistant-repos/refs/heads/main/repositories.json",
@@ -193,6 +197,19 @@
         description: "Select a template",
         url: "",
       });
+      if (sf) {
+        // remove all repo that have sf false in the temprepos
+        temprepos.repositories = temprepos.repositories.filter(
+          (repo: any) => repo.sf !== false,
+        );
+        // also remove the languages that are not in the filtered repositories
+        const langs = new Set(
+          temprepos.repositories.map((repo: any) => repo.name),
+        );
+        temprepos.languages = temprepos.languages.filter(
+          (lang: any) => langs.has(lang) || lang === "",
+        );
+      }
     } catch (err) {
       toast.error("Error loading template repos", {
         description: (err as any)?.message || String(err),
@@ -225,7 +242,14 @@
 
     let username = user.username;
 
-    username = username.replace(/[@/]/g, "_");
+    username = username
+      .replace(/[@.]/g, "_")
+      .replace(/[^a-zA-Z0-9_]/g, "")
+      .toLowerCase();
+    repositoryname = repositoryname
+      .replace(/[@.]/g, "_")
+      .replace(/[^a-zA-Z0-9_]/g, "")
+      .toLowerCase();
 
     const newrepo: any = await auth.client.FindOne({
       collectionname: "git",
@@ -268,20 +292,6 @@
           });
         }
       } else {
-        // check for valid username remove @ and . with _ also all special characters and no spaces and then names should be lowercase
-        let profileroles = auth.profile?.roles || [];
-        const isAdmin = profileroles.includes("admins");
-        if (!isAdmin) {
-          username = username
-            .replace(/[@.]/g, "_")
-            .replace(/[^a-zA-Z0-9_]/g, "")
-            .toLowerCase();
-          repositoryname = repositoryname
-            .replace(/[@.]/g, "_")
-            .replace(/[^a-zA-Z0-9_]/g, "")
-            .toLowerCase();
-        }
-
         await auth.client.InsertOne({
           collectionname: "git",
           item: {
@@ -371,6 +381,15 @@
 
   {#if temprepos}
     <div class="text-xl font-bold mb-4">Choose template</div>
+    <div class="flex items-center mb-4 space-x-2">
+      <CustomSwitch
+        bind:checked={sf}
+        onclick={async () => {
+          await fetchTemprepos();
+        }}
+      />
+      <p>Only show serverless repositories</p>
+    </div>
     <div class=" font-bold mb-4">Language</div>
     <CustomSelect
       {loading}
