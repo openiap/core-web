@@ -225,7 +225,14 @@
 
     let username = user.username;
 
-    username = username.replace(/[@/]/g, "_");
+    username = username
+      .replace(/[@.]/g, "_")
+      .replace(/[^a-zA-Z0-9_]/g, "")
+      .toLowerCase();
+    repositoryname = repositoryname
+      .replace(/[@.]/g, "_")
+      .replace(/[^a-zA-Z0-9_]/g, "")
+      .toLowerCase();
 
     const newrepo: any = await auth.client.FindOne({
       collectionname: "git",
@@ -268,20 +275,6 @@
           });
         }
       } else {
-        // check for valid username remove @ and . with _ also all special characters and no spaces and then names should be lowercase
-        let profileroles = auth.profile?.roles || [];
-        const isAdmin = profileroles.includes("admins");
-        if (!isAdmin) {
-          username = username
-            .replace(/[@.]/g, "_")
-            .replace(/[^a-zA-Z0-9_]/g, "")
-            .toLowerCase();
-          repositoryname = repositoryname
-            .replace(/[@.]/g, "_")
-            .replace(/[^a-zA-Z0-9_]/g, "")
-            .toLowerCase();
-        }
-
         await auth.client.InsertOne({
           collectionname: "git",
           item: {
