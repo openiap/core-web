@@ -251,7 +251,7 @@
     selectedtab = 1;
     // Fetch instance logs here
     try {
-      const { start, end } = getTimeDuration(selectedduration);
+      const { start, end } = getTimeDuration(selectedduration, 0);
       let query = {
         ts: {
           $gte: new Date(start),
@@ -302,7 +302,7 @@
   async function getRequestLogs() {
     selectedtab = 2;
     try {
-      const { start, end } = getTimeDuration(selectedduration);
+      const { start, end } = getTimeDuration(selectedduration, 0);
       let query = {
         ts: {
           $gte: new Date(start),
@@ -357,7 +357,7 @@
   async function getConsoleLogs() {
     selectedtab = 3;
     try {
-      const { start, end } = getTimeDuration(selectedduration);
+      const { start, end } = getTimeDuration(selectedduration, 0);
       let query = {
         ts: {
           $gte: new Date(start),
@@ -411,15 +411,15 @@
       });
     }
   }
-  function getTimeDuration(duration: string): { start: string; end: string } {
+  function getTimeDuration(duration: string, intervalMs: number): { start: string; end: string } {
     // Example duration string: "15m", "1h", "2d"
     // here based in the durration string return start and end time in an object in the format 2025-08-08T19:33:43.441Z
     const end = new Date();
     let start = new Date();
 
-    // to stop the graph from changing due to sliding buckets
-    end.setSeconds(0, 0);
-    start.setSeconds(0, 0);
+    // Round end time to next minute boundary to include current minute's data
+    end.setSeconds(59, 999); // Set to end of current minute
+    start.setSeconds(0, 0);   // Round start to minute boundary
 
     const match = duration.match(/^(\d+)([smhd])$/);
     if (!match) {
@@ -718,10 +718,10 @@
   }
 
   async function getGDInstanceLog() {
+    let intervalMs = 1; // default to 1 ms
     try {
       const { start: starttime, end: endtime } =
-        getTimeDuration(selectedduration);
-      let intervalMs = 1; // default to 1 minute
+        getTimeDuration(selectedduration, intervalMs);
       const gdruntime_agg = [
         {
           $match: {
@@ -1009,10 +1009,10 @@
   }
 
   async function getGDRequestLog() {
+    const intervalMs = 60000; // 1 minute interval
     const { start: starttime, end: endtime } =
-      getTimeDuration(selectedduration);
+      getTimeDuration(selectedduration, intervalMs);
     try {
-      const intervalMs = 60000;
       let gdresponsetime_agg = [
         {
           $match: {
@@ -1330,9 +1330,9 @@
 
   async function getGDConsoleLog() {
     try {
+      const intervalMs = 2000; // default to 2 seconds
       const { start: starttime, end: endtime } =
-        getTimeDuration(selectedduration);
-      const intervalMs = 2000; // default to 1 second
+        getTimeDuration(selectedduration, intervalMs);
       // here i want to count the messages and add it to the chart
       let gdmessages_agg = [
         {
