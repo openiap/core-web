@@ -13,6 +13,7 @@
   import http from "isomorphic-git/http/web";
   import { Check } from "lucide-svelte";
   import { toast } from "svelte-sonner";
+  import { IsNullEmpty } from "../../../helper";
 
   window.Buffer = Buffer;
 
@@ -232,6 +233,12 @@
       );
       return;
     }
+    if (selectedlanguage != "") {
+      if (selectedcloneurl.trim() === "") {
+        toast.error("You must select a template");
+        return;
+      }
+    }
 
     const user: any = await auth.client.FindOne({
       collectionname: "users",
@@ -410,6 +417,7 @@
         } else {
           selectedlanguage = value;
         }
+        selectedcloneurl = "";
       }}
     />
   {/if}
@@ -444,6 +452,18 @@
         }
       }}
     />
+
+    {#if !IsNullEmpty(selectedcloneurl)}
+      <CustomInput
+        height="h-10"
+        bind:value={selectedcloneurl}
+        label="URL"
+        placeholder="Enter repository URL"
+        type="text"
+        class="mb-4"
+        disabled={true}
+      />
+    {/if}
   {/if}
 
   <HotkeyButton

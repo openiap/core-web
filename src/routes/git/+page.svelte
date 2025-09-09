@@ -37,7 +37,6 @@
 
   async function deleteitem(item: any) {
     try {
-      console.log("Deleting item:", item);
       await auth.client.CustomCommand({
         command: "removegitrepo",
         // @ts-ignore
@@ -45,7 +44,6 @@
         jwt: auth.access_token,
       });
       const databasename = item.repo.split("/").join("_");
-      console.log("Database name to delete:", databasename);
       await cleanDB(databasename);
 
       toast.success("Git repo deleted");

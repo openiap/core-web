@@ -762,7 +762,6 @@
                     jwt: auth.access_token,
                 });
                 newfilename = oldfile.filename;
-                console.log("oldfile:", oldfile);
             } else {
                 packageData = {};
                 packageData.name = packageJson.name;
@@ -902,14 +901,12 @@
             }
             const fs = new FS(data.item.repo.split("/").join("_"));
             const dir = "/test-clone";
-            console.log("packageJsonEntry", packageJsonEntry);
             const filePath = `${dir}/${packageJsonEntry.path}`;
             const fileContent = await fs.promises.readFile(filePath, {
                 encoding: "utf8",
             });
             const packageJson = JSON.parse(fileContent);
             const slug = await getSlug(packageJson);
-            console.log("Package slug:", slug);
 
             if (IsNullEmpty(slug)) {
                 throw new Error(
@@ -926,7 +923,6 @@
             if (!packageData) {
                 return toast.error("Package not found in database");
             }
-            console.log("Package data:", packageData);
 
             queuename = await auth.client.RegisterQueue(
                 { queuename: "", jwt: data.access_token },
@@ -1553,7 +1549,6 @@ git push -u origin main`;
                         }
                         const fs = new FS(data.item.repo.split("/").join("_"));
                         const dir = "/test-clone";
-                        console.log("packageJsonEntry", packageJsonEntry);
                         const filePath = `${dir}/${packageJsonEntry.path}`;
                         const fileContent = await fs.promises.readFile(
                             filePath,
@@ -1632,11 +1627,11 @@ git push -u origin main`;
 </AlertDialog.Root>
 
 <AlertDialog.Root bind:open={openDialog}>
-    <AlertDialog.Content>
-        <AlertDialog.Header>
+    <AlertDialog.Content class="max-w-fit">
+        <AlertDialog.Header >
             <AlertDialog.Title>Server logs</AlertDialog.Title>
-            <AlertDialog.Description class="h-fit w-full">
-                <div class="overflow-auto max-h-[60vh] max-w-[100vh]">
+            <AlertDialog.Description class="h-fit">
+                <div class="overflow-auto max-h-[60vh]">
                     {#if loading}
                         <div class="mt-4 p-4 rounded dark:bg-bw500">
                             <p class="text-bw900">Processing...</p>
@@ -1671,20 +1666,14 @@ git push -u origin main`;
                             file.type === "blob",
                     );
                     if (!packageJsonEntry) {
-                        throw new Error(
-                            "package.json not found in package",
-                        );
+                        throw new Error("package.json not found in package");
                     }
                     const fs = new FS(data.item.repo.split("/").join("_"));
                     const dir = "/test-clone";
-                    console.log("packageJsonEntry", packageJsonEntry);
                     const filePath = `${dir}/${packageJsonEntry.path}`;
-                    const fileContent = await fs.promises.readFile(
-                        filePath,
-                        {
-                            encoding: "utf8",
-                        },
-                    );
+                    const fileContent = await fs.promises.readFile(filePath, {
+                        encoding: "utf8",
+                    });
                     const packageJson = JSON.parse(fileContent);
                     const slug = await getSlug(packageJson);
                     window.open(auth.fnurl(slug), "_blank");
