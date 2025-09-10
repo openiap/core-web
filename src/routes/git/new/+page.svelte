@@ -119,6 +119,12 @@
       },
       {
         name: "php",
+        description: "Php hello world serverless function example",
+        url: "https://github.com/openiap/sfphphello.git",
+        sf: true,
+      },
+      {
+        name: "php",
         description: "PHP example for most SDK commands",
         url: "https://github.com/skadefro/phptest.git",
         sf: false,
