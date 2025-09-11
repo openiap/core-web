@@ -109,7 +109,7 @@
         name: "dotnet",
         description: "C# template for processing workitems",
         url: "https://github.com/openiap/dotnetworkitemagent.git",
-        sf: false,
+        sf: true,
       },
       {
         name: "dotnet",
