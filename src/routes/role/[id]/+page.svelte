@@ -179,7 +179,7 @@
       class="text-[14px] w-[895px] mb-10 border rounded-[10px] dark:bg-bw850 dark:border-bw600 px-2.5 py-1"
     >
       <div class="mb-5 dark:text-bw400">
-        This user is a member of the following:
+        This role has the following members:  
       </div>
       {#if members?.length > 0}
         {#each members as item, index}

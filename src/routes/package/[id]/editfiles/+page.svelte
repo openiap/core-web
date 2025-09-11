@@ -17,6 +17,9 @@
   import { CustomSuperDebug } from "$lib/customsuperdebug";
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
 
+  let profileroles = auth.profile?.roles || [];
+  const isSfUser = profileroles.includes("sf users");
+
   function stringToUint8Array(str: string): Uint8Array {
     return new TextEncoder().encode(str);
   }
@@ -522,40 +525,42 @@
       {/if}
     </div>
   </div>
-  <div class="block md:hidden">
-    <div class="my-10 pb-10 gap-4 grid grid-cols-2">
-      <Hotkeybutton
-        aria-label="Build and deploy to serverless"
-        title="Build and deploy to serverless"
-        disabled={loading}
-        variant="success"
-        class="w-fit col-span-2"
-        onclick={() => buildpackage()}
-        >Build and deploy to serverless</Hotkeybutton
-      >
-      <Hotkeybutton
-        aria-label="Open in browser"
-        title="Open in browser"
-        disabled={loading}
-        class="w-fit"
-        onclick={() => {
-          window.open(
-            auth.fnurl(data.packageData.slug || data.packageData.name),
-            "_blank",
-          );
-        }}>Open in browser</Hotkeybutton
-      >
-      <Hotkeybutton
-        aria-label="Show logs"
-        title="Show logs"
-        disabled={!result}
-        class="w-fit"
-        onclick={() => {
-          openDialog = true;
-        }}>Show logs</Hotkeybutton
-      >
+  {#if isSfUser}
+    <div class="block md:hidden">
+      <div class="my-10 pb-10 gap-4 grid grid-cols-2">
+        <Hotkeybutton
+          aria-label="Build and deploy to serverless"
+          title="Build and deploy to serverless"
+          disabled={loading}
+          variant="success"
+          class="w-fit col-span-2"
+          onclick={() => buildpackage()}
+          >Build and deploy to serverless</Hotkeybutton
+        >
+        <Hotkeybutton
+          aria-label="Open in browser"
+          title="Open in browser"
+          disabled={loading}
+          class="w-fit"
+          onclick={() => {
+            window.open(
+              auth.fnurl(data.packageData.slug || data.packageData.name),
+              "_blank",
+            );
+          }}>Open in browser</Hotkeybutton
+        >
+        <Hotkeybutton
+          aria-label="Show logs"
+          title="Show logs"
+          disabled={!result}
+          class="w-fit"
+          onclick={() => {
+            openDialog = true;
+          }}>Show logs</Hotkeybutton
+        >
+      </div>
     </div>
-  </div>
+  {/if}
 </div>
 
 <div class="hidden md:block">
@@ -572,40 +577,42 @@
         onclick={() => repackandUpload()}>Pack and upload</Hotkeybutton
       >
     </div>
-    <div
-      class="grid grid-cols-1 mt-4 lg:mt-0 lg:flex justify-end items-end gap-4 auto-rows-max"
-    >
-      <Hotkeybutton
-        aria-label="Build and deploy to serverless"
-        title="Build and deploy to serverless"
-        disabled={loading}
-        variant="success"
-        class="w-fit"
-        onclick={() => buildpackage()}
-        >Build and deploy to serverless</Hotkeybutton
+    {#if isSfUser}
+      <div
+        class="grid grid-cols-1 mt-4 lg:mt-0 lg:flex justify-end items-end gap-4 auto-rows-max"
       >
-      <Hotkeybutton
-        aria-label="Open in browser"
-        title="Open in browser"
-        disabled={loading}
-        class="w-fit"
-        onclick={() => {
-          window.open(
-            auth.fnurl(data.packageData.slug || data.packageData.name),
-            "_blank",
-          );
-        }}>Open in browser</Hotkeybutton
-      >
-      <Hotkeybutton
-        aria-label="Show logs"
-        title="Show logs"
-        disabled={!result}
-        class="w-fit"
-        onclick={() => {
-          openDialog = true;
-        }}>Show logs</Hotkeybutton
-      >
-    </div>
+        <Hotkeybutton
+          aria-label="Build and deploy to serverless"
+          title="Build and deploy to serverless"
+          disabled={loading}
+          variant="success"
+          class="w-fit"
+          onclick={() => buildpackage()}
+          >Build and deploy to serverless</Hotkeybutton
+        >
+        <Hotkeybutton
+          aria-label="Open in browser"
+          title="Open in browser"
+          disabled={loading}
+          class="w-fit"
+          onclick={() => {
+            window.open(
+              auth.fnurl(data.packageData.slug || data.packageData.name),
+              "_blank",
+            );
+          }}>Open in browser</Hotkeybutton
+        >
+        <Hotkeybutton
+          aria-label="Show logs"
+          title="Show logs"
+          disabled={!result}
+          class="w-fit"
+          onclick={() => {
+            openDialog = true;
+          }}>Show logs</Hotkeybutton
+        >
+      </div>
+    {/if}
   </div>
 </div>
 

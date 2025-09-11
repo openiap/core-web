@@ -746,7 +746,7 @@ class entitiesdata {
 				return ["name", "image", "os", "_productname", "_type", "_createdby"];
 			case "/user":
 				if (auth.config?.validate_emails == true || (auth.config?.validate_user_form != null && auth.config?.validate_user_form != "")) {
-					return ["_id", "name", "username", "email", "validated", "lastseen", "_created"];
+					return ["_id", "name", "username", "email", "validated", "lastseen", "_created", "_modified"];
 				}
 				return ["_id", "name", "username", "email", "lastseen", "_created"];
 			case "/role":

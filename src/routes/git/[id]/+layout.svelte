@@ -55,6 +55,8 @@
     let loadingDialog = $state(false);
     let builderlog = $state();
     const textEncoder = new TextEncoder();
+    let profileroles = auth.profile?.roles || [];
+    const isSfUser = profileroles.includes("sf users");
 
     const currentFilePath = $derived(() => {
         const urlParts = $page.url.pathname.split("/");
@@ -1522,54 +1524,58 @@ git push -u origin main`;
             <div
                 class="grid grid-cols-1 mt-4 lg:mt-0 lg:flex justify-end items-end gap-4 auto-rows-max"
             >
-                <HotkeyButton
-                    aria-label="Build and deploy to serverless"
-                    title="Build and deploy to serverless"
-                    disabled={loading}
-                    variant="success"
-                    class="w-fit"
-                    onclick={() => buildpackage()}
-                    >Build and deploy to serverless</HotkeyButton
-                >
-                <HotkeyButton
-                    aria-label="Open in browser"
-                    title="Open in browser"
-                    disabled={loading}
-                    class="w-fit"
-                    onclick={async () => {
-                        const packageJsonEntry = files.find(
-                            (file: any) =>
-                                file.name === "package.json" &&
-                                file.type === "blob",
-                        );
-                        if (!packageJsonEntry) {
-                            throw new Error(
-                                "package.json not found in package",
+                {#if isSfUser}
+                    <HotkeyButton
+                        aria-label="Build and deploy to serverless"
+                        title="Build and deploy to serverless"
+                        disabled={loading}
+                        variant="success"
+                        class="w-fit"
+                        onclick={() => buildpackage()}
+                        >Build and deploy to serverless</HotkeyButton
+                    >
+                    <HotkeyButton
+                        aria-label="Open in browser"
+                        title="Open in browser"
+                        disabled={loading}
+                        class="w-fit"
+                        onclick={async () => {
+                            const packageJsonEntry = files.find(
+                                (file: any) =>
+                                    file.name === "package.json" &&
+                                    file.type === "blob",
                             );
-                        }
-                        const fs = new FS(data.item.repo.split("/").join("_"));
-                        const dir = "/test-clone";
-                        const filePath = `${dir}/${packageJsonEntry.path}`;
-                        const fileContent = await fs.promises.readFile(
-                            filePath,
-                            {
-                                encoding: "utf8",
-                            },
-                        );
-                        const packageJson = JSON.parse(fileContent);
-                        const slug = await getSlug(packageJson);
-                        window.open(auth.fnurl(slug), "_blank");
-                    }}>Open in browser</HotkeyButton
-                >
-                <HotkeyButton
-                    aria-label="Show logs"
-                    title="Show logs"
-                    disabled={!builderlog}
-                    class="w-fit"
-                    onclick={() => {
-                        openDialog = true;
-                    }}>Show logs</HotkeyButton
-                >
+                            if (!packageJsonEntry) {
+                                throw new Error(
+                                    "package.json not found in package",
+                                );
+                            }
+                            const fs = new FS(
+                                data.item.repo.split("/").join("_"),
+                            );
+                            const dir = "/test-clone";
+                            const filePath = `${dir}/${packageJsonEntry.path}`;
+                            const fileContent = await fs.promises.readFile(
+                                filePath,
+                                {
+                                    encoding: "utf8",
+                                },
+                            );
+                            const packageJson = JSON.parse(fileContent);
+                            const slug = await getSlug(packageJson);
+                            window.open(auth.fnurl(slug), "_blank");
+                        }}>Open in browser</HotkeyButton
+                    >
+                    <HotkeyButton
+                        aria-label="Show logs"
+                        title="Show logs"
+                        disabled={!builderlog}
+                        class="w-fit"
+                        onclick={() => {
+                            openDialog = true;
+                        }}>Show logs</HotkeyButton
+                    >
+                {/if}
             </div>
         </div>
     </div>
@@ -1628,7 +1634,7 @@ git push -u origin main`;
 
 <AlertDialog.Root bind:open={openDialog}>
     <AlertDialog.Content class="max-w-fit">
-        <AlertDialog.Header >
+        <AlertDialog.Header>
             <AlertDialog.Title>Server logs</AlertDialog.Title>
             <AlertDialog.Description class="h-fit">
                 <div class="overflow-auto max-h-[60vh]">
