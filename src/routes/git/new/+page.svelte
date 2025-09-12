@@ -107,6 +107,12 @@
       },
       {
         name: "dotnet",
+        description: "Python hello world serverless function example",
+        url: "https://github.com/openiap/sfdotnethello.git",
+        sf: true,
+      },
+      {
+        name: "dotnet",
         description: "C# template for processing workitems",
         url: "https://github.com/openiap/dotnetworkitemagent.git",
         sf: true,

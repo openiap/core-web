@@ -186,6 +186,8 @@
       {#snippet children({ props })}
         <Form.Label>Queue</Form.Label>
         <EntitySelector
+          {...props}
+          {loading}
           queryas={usersettings.currentworkspace}
           collectionname="mq"
           bind:value={$formData.wiqid}

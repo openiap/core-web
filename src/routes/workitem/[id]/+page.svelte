@@ -3,8 +3,8 @@
   import { base } from "$app/paths";
   import { page as sveltepage } from "$app/state";
   import {
-    HotkeyButton,
-    buttonVariants,
+      HotkeyButton,
+      buttonVariants,
   } from "$lib/components/ui/hotkeybutton/index.js";
   import Label from "$lib/components/ui/label/label.svelte";
   import * as Popover from "$lib/components/ui/popover/index.js";
@@ -19,17 +19,17 @@
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import {
-    Box,
-    CloudLightning,
-    Filter,
-    HandHelping,
-    Pencil,
-    Rows2,
-    SquarePlus,
-    SquareStack,
-    Trash2,
-    VenetianMask,
-    X,
+      Box,
+      Filter,
+      HandHelping,
+      Pencil,
+      RefreshCcw,
+      Rows2,
+      SquarePlus,
+      SquareStack,
+      Trash2,
+      VenetianMask,
+      X
   } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { capitalizeFirstLetter } from "../../../helper";
@@ -395,7 +395,7 @@
         size="tableicon"
         variant="icon"
       >
-        <CloudLightning />
+        <RefreshCcw />
       </HotkeyButton>
       <HotkeyButton
         aria-label="Edit"
