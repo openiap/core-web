@@ -113,7 +113,7 @@ async function executeToolCall(
     selectedLanguage: string,
     onProgress?: ProgressSender,
     workspaceId?: string
-): Promise<{ success: boolean; result: string; packageId?: string }> {
+): Promise<{ success: boolean; result: string; packageId?: string; endpoint?: string }> {
     try {
         console.log(`Server: Executing tool call: ${toolCall.function.name}`);
         const args = JSON.parse(toolCall.function.arguments);
@@ -139,7 +139,7 @@ async function deployPackage(
     onProgress?: ProgressSender,
     workspaceId?: string,
     correlationId?: string
-): Promise<{ success: boolean; result: string; packageId?: string }> {
+): Promise<{ success: boolean; result: string; packageId?: string; endpoint?: string }> {
     try {
         console.log('Server: Executing deployPackage tool with args:', args);
         const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -307,7 +307,8 @@ async function deployPackage(
         return { 
             success: true, 
             result: JSON.stringify(payload, null, 2),
-            packageId: llmpackage._id
+            packageId: llmpackage._id,
+            endpoint: (domain?.endsWith('/') ? domain : domain + '/')
         };
 
     } catch (error: any) {
@@ -316,7 +317,7 @@ async function deployPackage(
     }
 }
 
-async function callPackageFunction(args: any, userToken: string, onProgress?: ProgressSender): Promise<{ success: boolean; result: string }> {
+async function callPackageFunction(args: any, userToken: string, onProgress?: ProgressSender): Promise<{ success: boolean; result: string; endpoint?: string }> {
     try {
         console.log('Server: Executing callPackageFunction tool with args:', args);
         const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -403,7 +404,7 @@ async function callPackageFunction(args: any, userToken: string, onProgress?: Pr
 
         console.log('Server: Function call completed successfully');
         onProgress?.({ message: 'Done', step: 'done', progress: 100 });
-        return { success: response.ok, result: JSON.stringify(payload, null, 2) };
+        return { success: response.ok, result: JSON.stringify(payload, null, 2), endpoint: targetUrl };
 
     } catch (error: any) {
         console.error('Server: Error in callPackageFunction:', error);
@@ -458,7 +459,7 @@ export const POST = async ({ request }) => {
                         if (delta?.content) {
                             console.log('Sending content:', delta.content);
                             // Send each chunk of content on a new line
-                            controller.enqueue(encoder.encode(delta.content));
+                            controller.enqueue(encoder.encode(delta.content + '\n'));
                         }
 
                         // Handle tool calls - accumulate them
@@ -510,6 +511,8 @@ export const POST = async ({ request }) => {
                                 }
                                 
                                 // Execute each tool call
+                                const toolOutputsForOpenAI: Array<{ id: string; name: string; content: string }> = [];
+                                const autoFollowupCalls: Array<{ packageId: string }> = [];
                                 for (const toolCall of validToolCalls) {
                                     try {
                                         // Provide a progress sender that streams updates to the client
@@ -535,20 +538,78 @@ export const POST = async ({ request }) => {
                                             workspaceId
                                         );
                                         
-                                        // Send tool execution result
+                                        // Prepare a concise display result for UI
+                                        let displayResult = '';
+                                        try {
+                                            const raw = result.result || '';
+                                            const MAX_LEN = 2000;
+                                            const nameLower = (toolCall.function?.name || '').toLowerCase();
+
+                                            // Special formatting for callpackagefunction: extract status and response body
+                                            if (nameLower === 'callpackagefunction') {
+                                                try {
+                                                    const parsed = JSON.parse(raw);
+                                                    const status = parsed?.status;
+                                                    const statusText = parsed?.statusText || '';
+                                                    const data = parsed?.data;
+                                                    let bodySnippet = '';
+                                                    if (typeof data === 'string') {
+                                                        bodySnippet = data;
+                                                    } else if (data != null) {
+                                                        const s = JSON.stringify(data);
+                                                        bodySnippet = 'Body: ' + s;
+                                                    }
+                                                    displayResult = `status ${status ?? ''} ${statusText} — ${bodySnippet}`.trim();
+                                                } catch {
+                                                    displayResult = raw;
+                                                }
+                                            } else if (nameLower === 'deploypackage') {
+                                                // Do NOT include the full payload JSON. Provide a concise summary.
+                                                const parts: string[] = [];
+                                                if (result.endpoint) parts.push(`Endpoint: ${result.endpoint}`);
+                                                if (result.packageId) parts.push(`Package: ${result.packageId}`);
+                                                displayResult = parts.join('  ');
+                                            } else {
+                                                displayResult = raw;
+                                            }
+
+                                            // Ensure it doesn't start with JSON braces to avoid client filtering
+                                            if (displayResult && (displayResult.trim().startsWith('{') || displayResult.trim().startsWith('['))) {
+                                                displayResult = 'Result: ' + displayResult;
+                                            }
+
+                                            // Cap overly large payloads to keep UI snappy
+                                            if (displayResult.length > MAX_LEN) {
+                                                displayResult = displayResult.slice(0, MAX_LEN) + `\n... (${displayResult.length - MAX_LEN} more chars)`;
+                                            }
+                                        } catch {}
+
+                                        // Send tool execution result (include concise result so UI can show it)
                                         const toolResult = {
                                             tool_call_id: toolCall.id,
                                             name: toolCall.function.name,
-                                            // Do not send final JSON payload in result to avoid cluttering UI
-                                            result: '',
+                                            result: displayResult,
                                             success: result.success,
-                                            packageId: result.packageId
+                                            packageId: result.packageId,
+                                            endpoint: result.endpoint
                                         };
+
+                                        // Accumulate full result for OpenAI follow-up
+                                        toolOutputsForOpenAI.push({
+                                            id: toolCall.id,
+                                            name: toolCall.function.name,
+                                            content: result.result || ''
+                                        });
                                         
                                         controller.enqueue(encoder.encode('\n' + JSON.stringify({
                                             tool_result: toolResult
                                         }) + '\n'));
-                                        
+
+                                        // Queue an automatic function call if this was a successful deploy
+                                        if ((toolCall.function?.name || '').toLowerCase() === 'deploypackage' && result.success && result.packageId) {
+                                            autoFollowupCalls.push({ packageId: result.packageId });
+                                        }
+
                                     } catch (error: any) {
                                         console.error('Error executing tool:', error);
                                         const errorResult = {
@@ -562,6 +623,288 @@ export const POST = async ({ request }) => {
                                             tool_result: errorResult
                                         }) + '\n'));
                                     }
+                                }
+
+                                // Defer any automatic follow-up to after we check the model's next tool_calls
+
+                                // After all tools complete, send their results back to OpenAI
+                                try {
+                                    const assistantToolMessage = {
+                                        role: 'assistant' as const,
+                                        content: null,
+                                        tool_calls: validToolCalls.map(tc => ({
+                                            id: tc.id,
+                                            type: 'function',
+                                            function: {
+                                                name: tc.function.name,
+                                                arguments: tc.function.arguments
+                                            }
+                                        }))
+                                    };
+
+                                    const toolMessages = toolOutputsForOpenAI.map(o => ({
+                                        role: 'tool' as const,
+                                        tool_call_id: o.id,
+                                        name: o.name,
+                                        content: o.content
+                                    }));
+
+                                    const followupMessages = [
+                                        ...messages,
+                                        assistantToolMessage,
+                                        ...toolMessages
+                                    ];
+
+                                    const followupStream = await openai.chat.completions.create({
+                                        model: openaiRequest.model,
+                                        messages: followupMessages,
+                                        stream: true
+                                    }) as any;
+
+                                    const followAccumulatedToolCalls: any[] = [];
+                                    for await (const fchunk of followupStream) {
+                                        const fdelta = fchunk.choices?.[0]?.delta;
+                                        if (fdelta?.content) {
+                                            controller.enqueue(encoder.encode(fdelta.content + '\n'));
+                                        }
+                                        if (fdelta?.tool_calls) {
+                                            // Accumulate only; do not emit partial tool_calls yet
+                                            for (const t of fdelta.tool_calls) {
+                                                if (t.index !== undefined) {
+                                                    if (!followAccumulatedToolCalls[t.index]) {
+                                                        followAccumulatedToolCalls[t.index] = {
+                                                            id: t.id || '',
+                                                            type: t.type || 'function',
+                                                            function: {
+                                                                name: t.function?.name || '',
+                                                                arguments: t.function?.arguments || ''
+                                                            }
+                                                        };
+                                                    } else {
+                                                        if (t.function?.arguments) {
+                                                            followAccumulatedToolCalls[t.index].function.arguments += t.function.arguments;
+                                                        }
+                                                        if (t.function?.name) {
+                                                            // Overwrite to avoid duplicated names
+                                                            followAccumulatedToolCalls[t.index].function.name = t.function.name;
+                                                        }
+                                                        if (t.id) {
+                                                            followAccumulatedToolCalls[t.index].id = t.id;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    const nextToolCalls = followAccumulatedToolCalls.filter((tc: any) => tc && tc.function?.name);
+                                    if (nextToolCalls.length > 0) {
+                                        // Surface the complete tool calls to the client
+                                        controller.enqueue(encoder.encode('\n' + JSON.stringify({
+                                            tool_calls: nextToolCalls
+                                        }) + '\n'));
+
+                                        const secondToolOutputs: Array<{ id: string; name: string; content: string }> = [];
+                                        for (const toolCall of nextToolCalls as any[]) {
+                                            try {
+                                                const sendProgress: ProgressSender = (update) => {
+                                                    try {
+                                                        controller.enqueue(encoder.encode('\n' + JSON.stringify({
+                                                            tool_progress: {
+                                                                tool_call_id: toolCall.id,
+                                                                name: toolCall.function.name,
+                                                                ...update
+                                                            }
+                                                        }) + '\n'));
+                                                    } catch (e) {
+                                                        console.error('Failed to send progress (follow-up):', e);
+                                                    }
+                                                };
+                                                const result = await executeToolCall(
+                                                    toolCall,
+                                                    userToken,
+                                                    selectedLanguage || 'nodejs',
+                                                    sendProgress,
+                                                    workspaceId
+                                                );
+
+                                                // Build concise display string
+                                                let displayResult = '';
+                                                try {
+                                                    const raw = result.result || '';
+                                                    const MAX_LEN = 2000;
+                                                    const nameLower = (toolCall.function?.name || '').toLowerCase();
+                                                    if (nameLower === 'callpackagefunction') {
+                                                        try {
+                                                            const parsed = JSON.parse(raw);
+                                                            const status = parsed?.status;
+                                                            const statusText = parsed?.statusText || '';
+                                                            const data = parsed?.data;
+                                                            let bodySnippet = '';
+                                                            if (typeof data === 'string') {
+                                                                bodySnippet = data;
+                                                            } else if (data != null) {
+                                                                const s = JSON.stringify(data);
+                                                                bodySnippet = 'Body: ' + s;
+                                                            }
+                                                            displayResult = `status ${status ?? ''} ${statusText} — ${bodySnippet}`.trim();
+                                                        } catch {
+                                                            displayResult = raw;
+                                                        }
+                                                    } else if (nameLower === 'deploypackage') {
+                                                        const parts: string[] = [];
+                                                        if (result.endpoint) parts.push(`Endpoint: ${result.endpoint}`);
+                                                        if (result.packageId) parts.push(`Package: ${result.packageId}`);
+                                                        displayResult = parts.join('  ');
+                                                    } else {
+                                                        displayResult = raw;
+                                                    }
+                                                    if (displayResult && (displayResult.trim().startsWith('{') || displayResult.trim().startsWith('['))) {
+                                                        displayResult = 'Result: ' + displayResult;
+                                                    }
+                                                    if (displayResult.length > MAX_LEN) {
+                                                        displayResult = displayResult.slice(0, MAX_LEN) + `\n... (${displayResult.length - MAX_LEN} more chars)`;
+                                                    }
+                                                } catch {}
+
+                                                controller.enqueue(encoder.encode('\n' + JSON.stringify({
+                                                    tool_result: {
+                                                        tool_call_id: toolCall.id,
+                                                        name: toolCall.function.name,
+                                                        result: displayResult,
+                                                        success: result.success,
+                                                        packageId: result.packageId,
+                                                        endpoint: result.endpoint
+                                                    }
+                                                }) + '\n'));
+
+                                                secondToolOutputs.push({ id: toolCall.id, name: toolCall.function.name, content: result.result || '' });
+                                            } catch (e: any) {
+                                                controller.enqueue(encoder.encode('\n' + JSON.stringify({
+                                                    tool_result: {
+                                                        tool_call_id: toolCall.id,
+                                                        name: toolCall.function.name,
+                                                        result: `Error: ${e?.message || 'Unknown error'}`,
+                                                        success: false
+                                                    }
+                                                }) + '\n'));
+                                            }
+                                        }
+
+                                        // Ask OpenAI for the final assistant message after second tools
+                                        const assistantToolMessage2 = {
+                                            role: 'assistant' as const,
+                                            content: null,
+                                            tool_calls: nextToolCalls.map(tc => ({
+                                                id: tc.id,
+                                                type: 'function',
+                                                function: {
+                                                    name: tc.function.name,
+                                                    arguments: tc.function.arguments
+                                                }
+                                            }))
+                                        };
+                                        const toolMessages2 = secondToolOutputs.map(o => ({
+                                            role: 'tool' as const,
+                                            tool_call_id: o.id,
+                                            name: o.name,
+                                            content: o.content
+                                        }));
+                                        const finalMessages = [
+                                            ...followupMessages,
+                                            assistantToolMessage2,
+                                            ...toolMessages2
+                                        ];
+                                        const finalStream = await openai.chat.completions.create({
+                                            model: openaiRequest.model,
+                                            messages: finalMessages,
+                                            stream: true
+                                        }) as any;
+                                        for await (const chunk2 of finalStream) {
+                                            const d2 = chunk2.choices?.[0]?.delta;
+                                            if (d2?.content) controller.enqueue(encoder.encode(d2.content + '\n'));
+                                        }
+                                    } else if (autoFollowupCalls.length > 0) {
+                                        // No follow-up from model; proactively call the function once so UI sees the result
+                                        for (const info of autoFollowupCalls) {
+                                            const syntheticId = 'auto_call_' + Math.random().toString(36).substring(2, 11);
+                                            const syntheticArgs = {
+                                                packageId: info.packageId,
+                                                functionName: 'main',
+                                                Method: 'GET',
+                                                urlParameters: ''
+                                            };
+                                            const syntheticToolCall = {
+                                                id: syntheticId,
+                                                type: 'function',
+                                                function: {
+                                                    name: 'callpackagefunction',
+                                                    arguments: JSON.stringify(syntheticArgs)
+                                                }
+                                            } as any;
+                                            // Advertise the tool call to UI
+                                            controller.enqueue(encoder.encode('\n' + JSON.stringify({ tool_calls: [syntheticToolCall] }) + '\n'));
+                                            // Execute it
+                                            const sendProgress: ProgressSender = (update) => {
+                                                try {
+                                                    controller.enqueue(encoder.encode('\n' + JSON.stringify({
+                                                        tool_progress: {
+                                                            tool_call_id: syntheticId,
+                                                            name: 'callpackagefunction',
+                                                            ...update
+                                                        }
+                                                    }) + '\n'));
+                                                } catch {}
+                                            };
+                                            try {
+                                                const result = await executeToolCall(
+                                                    syntheticToolCall,
+                                                    userToken,
+                                                    selectedLanguage || 'nodejs',
+                                                    sendProgress,
+                                                    workspaceId
+                                                );
+                                                let displayResult = '';
+                                                try {
+                                                    const raw = result.result || '';
+                                                    const MAX_LEN = 2000;
+                                                    try {
+                                                        const parsed = JSON.parse(raw);
+                                                        const status = parsed?.status;
+                                                        const statusText = parsed?.statusText || '';
+                                                        const data = parsed?.data;
+                                                        let bodySnippet = '';
+                                                        if (typeof data === 'string') bodySnippet = data;
+                                                        else if (data != null) bodySnippet = 'Body: ' + JSON.stringify(data);
+                                                        displayResult = `status ${status ?? ''} ${statusText} — ${bodySnippet}`.trim();
+                                                    } catch { displayResult = raw; }
+                                                    if (displayResult.trim().startsWith('{') || displayResult.trim().startsWith('[')) displayResult = 'Result: ' + displayResult;
+                                                    if (displayResult.length > MAX_LEN) displayResult = displayResult.slice(0, MAX_LEN) + `\n... (${displayResult.length - MAX_LEN} more chars)`;
+                                                } catch {}
+                                                controller.enqueue(encoder.encode('\n' + JSON.stringify({
+                                                    tool_result: {
+                                                        tool_call_id: syntheticId,
+                                                        name: 'callpackagefunction',
+                                                        result: displayResult,
+                                                        success: result.success,
+                                                        packageId: info.packageId,
+                                                        endpoint: result.endpoint
+                                                    }
+                                                }) + '\n'));
+                                            } catch (e: any) {
+                                                controller.enqueue(encoder.encode('\n' + JSON.stringify({
+                                                    tool_result: {
+                                                        tool_call_id: syntheticId,
+                                                        name: 'callpackagefunction',
+                                                        result: `Error: ${e?.message || 'Unknown error'}`,
+                                                        success: false
+                                                    }
+                                                }) + '\n'));
+                                            }
+                                        }
+                                    }
+                                } catch (followErr) {
+                                    console.error('Error sending tool results to OpenAI:', followErr);
                                 }
                             }
                             break;
@@ -590,6 +933,83 @@ export const POST = async ({ request }) => {
             ...openaiRequest,
             stream: false
         });
+
+        const choice = completion.choices?.[0];
+        const toolCalls = choice?.message?.tool_calls as any[] | undefined;
+
+        if (toolCalls && toolCalls.length > 0) {
+            // Execute tools server-side
+            const validToolCalls = toolCalls
+                .map((tc: any) => ({
+                    id: tc.id,
+                    type: tc.type || 'function',
+                    function: {
+                        name: tc.function?.name,
+                        arguments: tc.function?.arguments
+                    }
+                }))
+                .filter((tc: any) => tc.function?.name);
+
+            const toolOutputsForOpenAI: Array<{ id: string; name: string; content: string }> = [];
+            for (const toolCall of validToolCalls) {
+                try {
+                    const result = await executeToolCall(
+                        toolCall as any,
+                        userToken,
+                        selectedLanguage || 'nodejs',
+                        undefined,
+                        workspaceId
+                    );
+                    toolOutputsForOpenAI.push({
+                        id: toolCall.id,
+                        name: toolCall.function.name,
+                        content: result.result || ''
+                    });
+                } catch (e: any) {
+                    toolOutputsForOpenAI.push({
+                        id: toolCall.id,
+                        name: toolCall.function.name,
+                        content: `Error: ${e?.message || 'Unknown error'}`
+                    });
+                }
+            }
+
+            // Send results back to OpenAI and return the follow-up
+            const assistantToolMessage = {
+                role: 'assistant' as const,
+                content: null,
+                tool_calls: validToolCalls.map(tc => ({
+                    id: tc.id,
+                    type: 'function',
+                    function: {
+                        name: tc.function.name,
+                        arguments: tc.function.arguments
+                    }
+                }))
+            };
+            const toolMessages = toolOutputsForOpenAI.map(o => ({
+                role: 'tool' as const,
+                tool_call_id: o.id,
+                name: o.name,
+                content: o.content
+            }));
+            const followupMessages = [
+                ...messages,
+                assistantToolMessage,
+                ...toolMessages
+            ];
+
+            const followup = await openai.chat.completions.create({
+                model: openaiRequest.model,
+                messages: followupMessages,
+                stream: false
+            });
+            return new Response(JSON.stringify(followup), {
+                headers: { 'content-type': 'application/json' }
+            });
+        }
+
+        // No tool calls; return first completion
         return new Response(JSON.stringify(completion), {
             headers: {
                 'content-type': 'application/json'

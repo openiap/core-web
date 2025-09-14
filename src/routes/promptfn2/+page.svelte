@@ -21,6 +21,7 @@
     arguments: Record<string, any>;
     result?: any;
     status: "pending" | "running" | "completed" | "failed";
+    endpoint?: string;
   }
 
   interface Message {
@@ -151,14 +152,22 @@
   });
 
   // Function to open URL from tool result
-  function openurl(toolCall: ToolCall) {
-    if (currentPackageId) {
-      let url = `https://faas.openiap.io/${currentPackageId}`;
-      if (toolCall.arguments && toolCall.arguments.urlParameters) {
-        url = url + toolCall.arguments.urlParameters;
+  function openurl(toolCall: any) {
+    // Prefer server-provided endpoint from tool_result
+    let url = toolCall?.endpoint || "";
+    if (!url) {
+      // Fallback: construct from packageId, but this may not match local schema
+      if (currentPackageId) {
+        url = `https://faas.openiap.io/${currentPackageId}/`;
       }
-      window.open(url, "_blank");
     }
+    // Append URL parameters if provided
+    if (url && toolCall?.arguments && toolCall.arguments.urlParameters) {
+      const qp = toolCall.arguments.urlParameters.toString();
+      url = url.endsWith('/') ? url.slice(0, -1) : url;
+      url = qp.startsWith('?') ? `${url}/${qp}` : `${url}/?${qp}`;
+    }
+    if (url) window.open(url, "_blank");
   }
 
   
@@ -439,7 +448,7 @@ You MUST call the function and show the actual output. Do NOT just say it is rea
       }
 
       // Add initial assistant message
-      const assistantMessage: Message = {
+      let assistantMessage: Message = {
         id: generateId(),
         content: "",
         role: "assistant", 
@@ -511,11 +520,33 @@ You MUST call the function and show the actual output. Do NOT just say it is rea
                     const messageIndex = messages.findIndex((m: any) => m.id === assistantMessage.id);
                     if (messageIndex !== -1) {
                       messages[messageIndex] = updatedMessage;
-                      Object.assign(assistantMessage, updatedMessage);
+                      // Rebind assistantMessage to the object stored in messages
+                      assistantMessage = messages[messageIndex];
+                      messages = [...messages];
+                    }
+                  } else {
+                    // Not found yet; append a new entry at the bottom
+                    const msg = typeof progress.message === 'string' ? progress.message : '';
+                    const msgWithPct = `${msg}${typeof progress.progress === 'number' ? ` (${progress.progress}%)` : ''}`;
+                    const newTool = {
+                      id: progress.tool_call_id,
+                      name: progress.name || 'tool',
+                      arguments: {},
+                      status: 'running' as const,
+                      result: msgWithPct
+                    };
+                    const updatedMessage = {
+                      ...assistantMessage,
+                      toolCalls: [...(assistantMessage.toolCalls || []), newTool]
+                    };
+                    const messageIndex = messages.findIndex((m: any) => m.id === assistantMessage.id);
+                    if (messageIndex !== -1) {
+                      messages[messageIndex] = updatedMessage;
+                      assistantMessage = messages[messageIndex];
                       messages = [...messages];
                     }
                   }
-                }
+                  }
                 continue; // handled
               }
 
@@ -544,7 +575,8 @@ You MUST call the function and show the actual output. Do NOT just say it is rea
                     const updatedToolCall = {
                       ...prev,
                       status: toolResult.success ? ("completed" as const) : ("failed" as const),
-                      result: combined
+                      result: combined,
+                      endpoint: toolResult.endpoint || prev.endpoint
                     };
                     
                     // Update the assistant message
@@ -555,11 +587,11 @@ You MUST call the function and show the actual output. Do NOT just say it is rea
                       )
                     };
                     
-                    // Replace the message in the array
+                    // Replace the message in the array and rebind assistantMessage
                     const messageIndex = messages.findIndex((m: any) => m.id === assistantMessage.id);
                     if (messageIndex !== -1) {
                       messages[messageIndex] = updatedMessage;
-                      Object.assign(assistantMessage, updatedMessage);
+                      assistantMessage = messages[messageIndex];
                       messages = [...messages]; // Trigger reactivity
                     }
                     
@@ -568,6 +600,33 @@ You MUST call the function and show the actual output. Do NOT just say it is rea
                     // Set currentPackageId if this was a deploy tool
                     if (toolResult.packageId) {
                       currentPackageId = toolResult.packageId;
+                    }
+                  } else {
+                    // Append as new entry at the bottom if not present
+                    const incoming = toolResult.result;
+                    let resultText = '';
+                    if (typeof incoming === 'string' && incoming.trim().length > 0) {
+                      const t = incoming.trim();
+                      const looksJson = (t.startsWith('{') && t.endsWith('}')) || (t.startsWith('[') && t.endsWith(']'));
+                      if (!looksJson) resultText = incoming;
+                    }
+                    const newTool = {
+                      id: toolResult.tool_call_id,
+                      name: toolResult.name || 'tool',
+                      arguments: {},
+                      status: toolResult.success ? ('completed' as const) : ('failed' as const),
+                      result: resultText,
+                      endpoint: toolResult.endpoint
+                    };
+                    const updatedMessage = {
+                      ...assistantMessage,
+                      toolCalls: [...(assistantMessage.toolCalls || []), newTool]
+                    };
+                    const messageIndex = messages.findIndex((m: any) => m.id === assistantMessage.id);
+                    if (messageIndex !== -1) {
+                      messages[messageIndex] = updatedMessage;
+                      assistantMessage = messages[messageIndex];
+                      messages = [...messages];
                     }
                   }
                 }
@@ -590,19 +649,20 @@ You MUST call the function and show the actual output. Do NOT just say it is rea
                 
                 console.log('Mapped tool calls:', mappedToolCalls);
                 
-                // Create a new message object to trigger reactivity
+                // Merge new tool calls at the bottom, preserving existing
+                const existing = assistantMessage.toolCalls || [];
+                const existingIds = new Set(existing.map((t: any) => t.id));
+                const merged = [...existing, ...mappedToolCalls.filter((t: any) => !existingIds.has(t.id))];
                 const updatedMessage = {
                   ...assistantMessage,
-                  toolCalls: mappedToolCalls,
-                  content: "" // Clear content since we're showing tool calls instead
+                  toolCalls: merged
                 };
                 
-                // Replace the message in the array
+                // Replace the message in the array and rebind assistantMessage
                 const messageIndex = messages.findIndex((m: any) => m.id === assistantMessage.id);
                 if (messageIndex !== -1) {
                   messages[messageIndex] = updatedMessage;
-                  // Update our local reference too
-                  Object.assign(assistantMessage, updatedMessage);
+                  assistantMessage = messages[messageIndex];
                   messages = [...messages]; // Trigger reactivity
                 }
                 
@@ -780,20 +840,6 @@ You MUST call the function and show the actual output. Do NOT just say it is rea
                 {/if}
 
                 <div class="max-w-[80%]">
-                  {#if message.content != null && message.content != ""}
-                    <div
-                      class="{message.role === 'user'
-                        ? 'bg-bw100 dark:bg-primary dark:text-white rounded-br-none'
-                        : 'bg-muted'} rounded-[20px] p-3"
-                    >
-                      {#if message.content.includes("<a href=")}
-                        <p>{@html message.content}</p>
-                      {:else}
-                        <p>{message.content}</p>
-                      {/if}
-                    </div>
-                  {/if}
-
                   {#if message.toolCalls && message.toolCalls.length > 0}
                     <div
                       class="space-y-2 rounded-bl-none rounded-[20px] dark:bg-bw800 bg-muted p-2"
@@ -881,6 +927,20 @@ You MUST call the function and show the actual output. Do NOT just say it is rea
                           {/if}
                         </div>
                       {/each}
+                    </div>
+                  {/if}
+
+                  {#if message.content != null && message.content != ""}
+                    <div
+                      class="{message.role === 'user'
+                        ? 'bg-bw100 dark:bg-primary dark:text-white rounded-br-none'
+                        : 'bg-muted'} rounded-[20px] p-3 mt-2"
+                    >
+                      {#if message.content.includes("<a href=")}
+                        <p>{@html message.content}</p>
+                      {:else}
+                        <p>{message.content}</p>
+                      {/if}
                     </div>
                   {/if}
 
