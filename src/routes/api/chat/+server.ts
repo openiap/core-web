@@ -7,7 +7,6 @@ let apikey = OPENAI_API_KEY;
 if (process.env.OPENAI_API_KEY != null) {
     apikey = process.env.OPENAI_API_KEY;
 }
-// console.log("Using OpenAI API Key:", apikey.substring(0, 4) + '...');
 const openai = new OpenAI({ apiKey: apikey });
 
 // Import tar utilities
@@ -115,7 +114,6 @@ async function executeToolCall(
     workspaceId?: string
 ): Promise<{ success: boolean; result: string; packageId?: string; endpoint?: string }> {
     try {
-        console.log(`Server: Executing tool call: ${toolCall.function.name}`);
         const args = JSON.parse(toolCall.function.arguments);
         
         if (toolCall.function.name === "deploypackage") {
@@ -124,7 +122,6 @@ async function executeToolCall(
             return await callPackageFunction(args, userToken, onProgress);
         }
         
-        console.log(`Server: Unknown tool: ${toolCall.function.name}`);
         return { success: false, result: `❌ Unknown tool: ${toolCall.function.name}` };
     } catch (error: any) {
         console.error('Server: Error executing tool call:', error);
@@ -141,7 +138,6 @@ async function deployPackage(
     correlationId?: string
 ): Promise<{ success: boolean; result: string; packageId?: string; endpoint?: string }> {
     try {
-        console.log('Server: Executing deployPackage tool with args:', args);
         const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
         
         let files = args.files;
@@ -153,12 +149,9 @@ async function deployPackage(
         const slug = "me-" + Math.random().toString(36).substring(2, 11) + "-you";
         const packageName = slug;
 
-        console.log(`Server: Generated package name: ${packageName}`);
-
         onProgress?.({ message: 'Validating files', step: 'validate', progress: 10 });
         // Fix and validate files with the generated slug
         files = fixAndValidateFiles(files, slug, selectedLanguage);
-        console.log(`Server: Fixed and validated ${files.length} files`);
 
         onProgress?.({ message: 'Creating package archive', step: 'archive', progress: 25 });
         // Create a .tgz in tmp (same logic as /api/create-tgz)
@@ -173,7 +166,6 @@ async function deployPackage(
         await tar.c({ gzip: true, file: tgzPath, cwd: tmp }, files.map((f: any) => f.filename));
         const tgzBuffer = readFileSync(tgzPath);
         rmSync(tmp, { recursive: true, force: true });
-        console.log(`Server: Created tgz buffer of size: ${tgzBuffer.byteLength} bytes`);
 
         // Upload the package archive to file store
         onProgress?.({ message: 'Uploading package', step: 'upload', progress: 40 });
@@ -183,7 +175,6 @@ async function deployPackage(
             tgzBuffer,
             userToken
         );
-        console.log('Server: Uploaded package file with id:', fileid);
 
         // Resolve workspace
         let workspace: any = null;
@@ -302,7 +293,6 @@ async function deployPackage(
             },
             functionUrl: domain || undefined
         } as any;
-        console.log('Server: Package deployment completed successfully');
         onProgress?.({ message: 'Done', step: 'done', progress: 100 });
         return { 
             success: true, 
@@ -319,7 +309,6 @@ async function deployPackage(
 
 async function callPackageFunction(args: any, userToken: string, onProgress?: ProgressSender): Promise<{ success: boolean; result: string; endpoint?: string }> {
     try {
-        console.log('Server: Executing callPackageFunction tool with args:', args);
         const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
         
         const { packageId, functionName, urlParameters, Method = 'GET', Body } = args;
@@ -402,7 +391,6 @@ async function callPackageFunction(args: any, userToken: string, onProgress?: Pr
             data
         };
 
-        console.log('Server: Function call completed successfully');
         onProgress?.({ message: 'Done', step: 'done', progress: 100 });
         return { success: response.ok, result: JSON.stringify(payload, null, 2), endpoint: targetUrl };
 
@@ -413,7 +401,8 @@ async function callPackageFunction(args: any, userToken: string, onProgress?: Pr
 }
 
 export const POST = async ({ request }) => {
-    const { messages, tools, stream, selectedLanguage, workspaceId } = await request.json();
+    const body = await request.json();
+    const { messages, tools, stream, selectedLanguage, workspaceId } = body || {};
     let autheader = request.headers.get('authorization');
     let userToken = '';
     
@@ -421,7 +410,84 @@ export const POST = async ({ request }) => {
         let token = autheader.split(' ')[1];
         if (token && token.length > 10 && token !== apikey) {
             userToken = token;
-            // console.log("access token: " + token.substring(0,4) + '...');
+        }
+    }
+
+    // Direct tool re-run endpoint (used by client Retry button)
+    if (body?.rerunTool && body?.rerunTool?.name) {
+        try {
+            const toolName: string = body.rerunTool.name;
+            const toolArgs: any = body.rerunTool.arguments || {};
+            const toolId: string = body.rerunTool.id || ('retry_' + Math.random().toString(36).substring(2,11));
+            const syntheticToolCall = {
+                id: toolId,
+                type: 'function',
+                function: {
+                    name: toolName,
+                    arguments: typeof toolArgs === 'string' ? toolArgs : JSON.stringify(toolArgs)
+                }
+            } as any;
+
+            const result = await executeToolCall(
+                syntheticToolCall,
+                userToken,
+                selectedLanguage || 'nodejs',
+                undefined,
+                workspaceId
+            );
+
+            // Build concise display result consistent with streaming UI
+            let displayResult = '';
+            try {
+                const raw = result.result || '';
+                const MAX_LEN = 2000;
+                const nameLower = (toolName || '').toLowerCase();
+                if (nameLower === 'callpackagefunction') {
+                    try {
+                        const parsed = JSON.parse(raw);
+                        const status = parsed?.status;
+                        const statusText = parsed?.statusText || '';
+                        const data = parsed?.data;
+                        let bodySnippet = '';
+                        if (typeof data === 'string') {
+                            bodySnippet = data;
+                        } else if (data != null) {
+                            const s = JSON.stringify(data);
+                            bodySnippet = 'Body: ' + s;
+                        }
+                        displayResult = `status ${status ?? ''} ${statusText} — ${bodySnippet}`.trim();
+                    } catch {
+                        displayResult = raw;
+                    }
+                } else if (nameLower === 'deploypackage') {
+                    const parts: string[] = [];
+                    if (result.endpoint) parts.push(`Endpoint: ${result.endpoint}`);
+                    if (result.packageId) parts.push(`Package: ${result.packageId}`);
+                    displayResult = parts.join('  ');
+                } else {
+                    displayResult = raw;
+                }
+                if (displayResult && (displayResult.trim().startsWith('{') || displayResult.trim().startsWith('['))) {
+                    displayResult = 'Result: ' + displayResult;
+                }
+                if (displayResult.length > MAX_LEN) {
+                    displayResult = displayResult.slice(0, MAX_LEN) + `\n... (${displayResult.length - MAX_LEN} more chars)`;
+                }
+            } catch {}
+
+            const payload = {
+                tool_result: {
+                    tool_call_id: toolId,
+                    name: toolName,
+                    result: displayResult,
+                    success: result.success,
+                    packageId: result.packageId,
+                    endpoint: result.endpoint
+                }
+            };
+            return new Response(JSON.stringify(payload), { headers: { 'content-type': 'application/json' } });
+        } catch (e: any) {
+            return new Response(JSON.stringify({ error: e?.message || 'Failed to run tool' }), { status: 500, headers: { 'content-type': 'application/json' } });
         }
     }
 
@@ -449,22 +515,20 @@ export const POST = async ({ request }) => {
             async start(controller) {
                 try {
                     let accumulatedToolCalls: any[] = [];
-                    console.log('Starting stream processing...');
+                    // Stream assistant content immediately to preserve order
+                    let initialHasToolCalls = false;
 
                     for await (const chunk of streamCompletion) {
-                        console.log('Received chunk:', JSON.stringify(chunk));
                         const delta = chunk.choices?.[0]?.delta;
 
-                        // Handle text content
+                        // Handle text content: stream immediately to client
                         if (delta?.content) {
-                            console.log('Sending content:', delta.content);
-                            // Send each chunk of content on a new line
-                            controller.enqueue(encoder.encode(delta.content + '\n'));
+                            controller.enqueue(encoder.encode(delta.content));
                         }
 
                         // Handle tool calls - accumulate them
                         if (delta?.tool_calls) {
-                            console.log('Received tool calls delta:', delta.tool_calls);
+                            initialHasToolCalls = true;
                             // Accumulate tool calls from multiple chunks
                             for (const toolCall of delta.tool_calls) {
                                 if (toolCall.index !== undefined) {
@@ -484,7 +548,8 @@ export const POST = async ({ request }) => {
                                             accumulatedToolCalls[toolCall.index].function.arguments += toolCall.function.arguments;
                                         }
                                         if (toolCall.function?.name) {
-                                            accumulatedToolCalls[toolCall.index].function.name += toolCall.function.name;
+                                            // Overwrite name to avoid duplicates
+                                            accumulatedToolCalls[toolCall.index].function.name = toolCall.function.name;
                                         }
                                         if (toolCall.id) {
                                             accumulatedToolCalls[toolCall.index].id = toolCall.id;
@@ -496,12 +561,11 @@ export const POST = async ({ request }) => {
 
                         // Check if stream is done
                         if (chunk.choices?.[0]?.finish_reason) {
-                            console.log('Stream finished, reason:', chunk.choices[0].finish_reason);
+                            // Content was already streamed above; only handle tool calls here
                             
                             // Execute tools on server if we have any
                             if (accumulatedToolCalls.length > 0) {
                                 const validToolCalls = accumulatedToolCalls.filter(tc => tc && tc.function?.name);
-                                console.log('Executing tools on server:', validToolCalls);
                                 
                                 // First, send the tool calls to the client so it can show them in the UI
                                 if (validToolCalls.length > 0) {
@@ -512,9 +576,23 @@ export const POST = async ({ request }) => {
                                 
                                 // Execute each tool call
                                 const toolOutputsForOpenAI: Array<{ id: string; name: string; content: string }> = [];
+                                let anyToolFailed = false;
                                 const autoFollowupCalls: Array<{ packageId: string }> = [];
                                 for (const toolCall of validToolCalls) {
                                     try {
+                                        // Short-circuit execution: if any earlier tool failed, skip remaining tool calls
+                                        if (anyToolFailed) {
+                                            const skippedResult = {
+                                                tool_call_id: toolCall.id,
+                                                name: toolCall.function.name,
+                                                result: 'Skipped due to previous tool failure',
+                                                success: false
+                                            };
+                                            controller.enqueue(encoder.encode('\n' + JSON.stringify({
+                                                tool_result: skippedResult
+                                            }) + '\n'));
+                                            continue;
+                                        }
                                         // Provide a progress sender that streams updates to the client
                                         const sendProgress: ProgressSender = (update) => {
                                             try {
@@ -609,6 +687,9 @@ export const POST = async ({ request }) => {
                                         if ((toolCall.function?.name || '').toLowerCase() === 'deploypackage' && result.success && result.packageId) {
                                             autoFollowupCalls.push({ packageId: result.packageId });
                                         }
+                                        if (!result.success) {
+                                            anyToolFailed = true;
+                                        }
 
                                     } catch (error: any) {
                                         console.error('Error executing tool:', error);
@@ -622,12 +703,19 @@ export const POST = async ({ request }) => {
                                         controller.enqueue(encoder.encode('\n' + JSON.stringify({
                                             tool_result: errorResult
                                         }) + '\n'));
+                                        anyToolFailed = true;
                                     }
+                                    // If the tool succeeded flag is available, update failure state
+                                    // Note: success is conveyed via tool_result above as well
+                                    // We consider any non-success result as failure
+                                    // success state captured via result.success in displayResult branch above
+                                    // but explicit failure handled in catch.
                                 }
 
                                 // Defer any automatic follow-up to after we check the model's next tool_calls
 
                                 // After all tools complete, send their results back to OpenAI
+                                if (!anyToolFailed) {
                                 try {
                                     const assistantToolMessage = {
                                         role: 'assistant' as const,
@@ -662,12 +750,15 @@ export const POST = async ({ request }) => {
                                     }) as any;
 
                                     const followAccumulatedToolCalls: any[] = [];
+                                    // Stream follow-up assistant content immediately as well
+                                    let followupHasToolCalls = false;
                                     for await (const fchunk of followupStream) {
                                         const fdelta = fchunk.choices?.[0]?.delta;
                                         if (fdelta?.content) {
-                                            controller.enqueue(encoder.encode(fdelta.content + '\n'));
+                                            controller.enqueue(encoder.encode(fdelta.content));
                                         }
                                         if (fdelta?.tool_calls) {
+                                            followupHasToolCalls = true;
                                             // Accumulate only; do not emit partial tool_calls yet
                                             for (const t of fdelta.tool_calls) {
                                                 if (t.index !== undefined) {
@@ -705,8 +796,19 @@ export const POST = async ({ request }) => {
                                         }) + '\n'));
 
                                         const secondToolOutputs: Array<{ id: string; name: string; content: string }> = [];
+                                        let followAnyFailed = false;
                                         for (const toolCall of nextToolCalls as any[]) {
                                             try {
+                                                if (followAnyFailed) {
+                                                    const skippedResult = {
+                                                        tool_call_id: toolCall.id,
+                                                        name: toolCall.function.name,
+                                                        result: 'Skipped due to previous tool failure',
+                                                        success: false
+                                                    };
+                                                    controller.enqueue(encoder.encode('\n' + JSON.stringify({ tool_result: skippedResult }) + '\n'));
+                                                    continue;
+                                                }
                                                 const sendProgress: ProgressSender = (update) => {
                                                     try {
                                                         controller.enqueue(encoder.encode('\n' + JSON.stringify({
@@ -779,6 +881,9 @@ export const POST = async ({ request }) => {
                                                 }) + '\n'));
 
                                                 secondToolOutputs.push({ id: toolCall.id, name: toolCall.function.name, content: result.result || '' });
+                                                if (!result.success) {
+                                                    followAnyFailed = true;
+                                                }
                                             } catch (e: any) {
                                                 controller.enqueue(encoder.encode('\n' + JSON.stringify({
                                                     tool_result: {
@@ -788,6 +893,7 @@ export const POST = async ({ request }) => {
                                                         success: false
                                                     }
                                                 }) + '\n'));
+                                                followAnyFailed = true;
                                             }
                                         }
 
@@ -820,9 +926,12 @@ export const POST = async ({ request }) => {
                                             messages: finalMessages,
                                             stream: true
                                         }) as any;
+                                        // Stream assistant follow-up text to preserve event order
                                         for await (const chunk2 of finalStream) {
                                             const d2 = chunk2.choices?.[0]?.delta;
-                                            if (d2?.content) controller.enqueue(encoder.encode(d2.content + '\n'));
+                                            if (d2?.content) {
+                                                controller.enqueue(encoder.encode(d2.content));
+                                            }
                                         }
                                     } else if (autoFollowupCalls.length > 0) {
                                         // No follow-up from model; proactively call the function once so UI sees the result
@@ -854,7 +963,7 @@ export const POST = async ({ request }) => {
                                                             ...update
                                                         }
                                                     }) + '\n'));
-                                                } catch {}
+                                            } catch {}
                                             };
                                             try {
                                                 const result = await executeToolCall(
@@ -905,6 +1014,7 @@ export const POST = async ({ request }) => {
                                     }
                                 } catch (followErr) {
                                     console.error('Error sending tool results to OpenAI:', followErr);
+                                }
                                 }
                             }
                             break;

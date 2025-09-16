@@ -424,7 +424,6 @@ You MUST call the function and show the actual output. Do NOT just say it is rea
     }));
 
     try {
-      console.log('Starting fetch request...');
       const res = await fetch(base + "/api/chat", {
         method: "POST",
         body: JSON.stringify({ 
@@ -442,7 +441,6 @@ You MUST call the function and show the actual output. Do NOT just say it is rea
         signal: abort.signal,
       });
 
-      console.log('Fetch response received:', res.status, res.ok);
       if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
       }
@@ -456,43 +454,35 @@ You MUST call the function and show the actual output. Do NOT just say it is rea
         toolCalls: []
       };
       messages = [...messages, assistantMessage];
-      console.log('Added initial assistant message');
 
       const reader = res.body!.getReader();
       const decoder = new TextDecoder();
       let buffer = '';
-      console.log('Starting to read stream...');
+      let suppressAssistantText = false;
 
       while (true) {
         const { done, value } = await reader.read();
-        console.log('Read chunk:', { done, valueLength: value?.length });
         if (done) break;
         
         const chunk = decoder.decode(value, { stream: true });
-        console.log('Decoded chunk:', JSON.stringify(chunk));
         buffer += chunk;
         
         // Split by lines to process complete lines
         const lines = buffer.split('\n');
         buffer = lines.pop() || ''; // Keep incomplete line in buffer
-        console.log('Processing lines:', lines.length, 'Buffer remaining:', JSON.stringify(buffer));
         
         for (const line of lines) {
           if (!line.trim()) continue;
-          console.log('Processing line:', JSON.stringify(line));
           
           // Check if line looks like JSON (starts with { or [ and ends with } or ])
           const trimmedLine = line.trim();
           if ((trimmedLine.startsWith('{') && trimmedLine.endsWith('}')) || 
               (trimmedLine.startsWith('[') && trimmedLine.endsWith(']'))) {
-            console.log('Attempting to parse as JSON:', trimmedLine);
             try {
               const parsed = JSON.parse(trimmedLine);
-              console.log('Successfully parsed JSON:', parsed);
               
               // Handle server-streamed tool progress
               if (parsed.tool_progress) {
-                console.log('Found tool progress from server:', parsed.tool_progress);
                 const progress = parsed.tool_progress;
                 if (assistantMessage.toolCalls) {
                   const toolCallIndex = assistantMessage.toolCalls.findIndex((tc: any) => tc.id === progress.tool_call_id);
@@ -552,7 +542,6 @@ You MUST call the function and show the actual output. Do NOT just say it is rea
 
               // Handle server-executed tool results
               if (parsed.tool_result) {
-                console.log('Found tool result from server:', parsed.tool_result);
                 const toolResult = parsed.tool_result;
                 
                 // Find the tool call in the current message and update it
@@ -595,7 +584,6 @@ You MUST call the function and show the actual output. Do NOT just say it is rea
                       messages = [...messages]; // Trigger reactivity
                     }
                     
-                    console.log('Updated tool call with server result:', updatedToolCall);
                     
                     // Set currentPackageId if this was a deploy tool
                     if (toolResult.packageId) {
@@ -635,7 +623,9 @@ You MUST call the function and show the actual output. Do NOT just say it is rea
               
               // Handle tool calls (this is when the AI decides to call tools)
               if (parsed.tool_calls) {
-                console.log('Found tool calls:', parsed.tool_calls);
+                // Once tool calls appear, stop appending further narration
+                // but preserve any content already streamed before the tool calls
+                suppressAssistantText = true;
                 // Handle tool calls
                 const mappedToolCalls = parsed.tool_calls.map((tc: any) => ({
                   id: tc.id,
@@ -647,7 +637,6 @@ You MUST call the function and show the actual output. Do NOT just say it is rea
                   result: "Executing on server..."
                 }));
                 
-                console.log('Mapped tool calls:', mappedToolCalls);
                 
                 // Merge new tool calls at the bottom, preserving existing
                 const existing = assistantMessage.toolCalls || [];
@@ -666,25 +655,23 @@ You MUST call the function and show the actual output. Do NOT just say it is rea
                   messages = [...messages]; // Trigger reactivity
                 }
                 
-                console.log('Updated assistant message:', updatedMessage);
-                console.log('Updated messages array length:', messages.length);
                 continue; // Skip adding to content
               }
             } catch (e) {
-              console.log('Failed to parse as JSON, treating as text:', e);
+              console.error('Failed to parse as JSON, treating as text:', e);
               // Not valid JSON, treat as text content
             }
           }
           
-          // Add as text content
-          console.log('Adding line as text content:', JSON.stringify(line));
-          assistantMessage.content += line;
-          messages = [...messages];
+          // Add as text content only when not suppressed by tool calls
+          if (!suppressAssistantText) {
+            assistantMessage.content += line;
+            messages = [...messages];
+          }
         }
         
         // For non-line content (direct text chunks), add them immediately
         if (buffer && !buffer.includes('\n')) {
-          console.log('Adding buffer as text content:', JSON.stringify(buffer));
           
           // Check if we're building up a JSON response
           const trimmedBuffer = buffer.trim();
@@ -693,55 +680,60 @@ You MUST call the function and show the actual output. Do NOT just say it is rea
               const parsed = JSON.parse(trimmedBuffer);
               if (parsed.message) {
                 // Replace content with the parsed message
-                assistantMessage.content = parsed.message;
+                if (!suppressAssistantText) {
+                  assistantMessage.content = parsed.message;
+                  messages = [...messages];
+                }
                 buffer = '';
-                messages = [...messages];
-                console.log('Parsed complete JSON response, message:', parsed.message);
                 continue;
               }
-            } catch {
+            } catch (e) {
+              console.error('Failed to parse as JSON, treating as text:', e);
+
               // Not complete JSON yet, continue accumulating
             }
           }
           
-          assistantMessage.content += buffer;
+          if (!suppressAssistantText) {
+            assistantMessage.content += buffer;
+            messages = [...messages];
+          }
           buffer = '';
-          messages = [...messages];
           
           // Force UI update by triggering reactivity
-          console.log('Current assistant message content:', assistantMessage.content);
         }
       }
       
       // Process any remaining buffer content
       if (buffer.trim()) {
-        console.log('Adding final buffer content:', JSON.stringify(buffer));
         
         // If we already have tool calls, don't show the raw JSON content
         if (assistantMessage.toolCalls && assistantMessage.toolCalls.length > 0) {
-          console.log('Skipping buffer content since we have tool calls');
         } else {
           // Try to parse the final buffer as JSON in case it's a complete response
           try {
             const parsed = JSON.parse(buffer.trim());
             if (parsed.message) {
               // If it's a JSON response with a message field, use that
-              assistantMessage.content = parsed.message;
+              if (!suppressAssistantText) {
+                assistantMessage.content = parsed.message;
+              }
             } else {
               // Otherwise use the raw buffer
-              assistantMessage.content += buffer;
+              if (!suppressAssistantText) {
+                assistantMessage.content += buffer;
+              }
             }
           } catch {
             // Not JSON, add as-is
-            assistantMessage.content += buffer;
+            if (!suppressAssistantText) {
+              assistantMessage.content += buffer;
+            }
           }
         }
         
         messages = [...messages];
       }
-      console.log('Streaming completed successfully');
-      console.log('Final assistant message content:', JSON.stringify(assistantMessage.content));
-      console.log('Final assistant message:', assistantMessage);
 
     } catch (error: any) {
       console.error("Error calling OpenAI:", error);
@@ -757,12 +749,11 @@ You MUST call the function and show the actual output. Do NOT just say it is rea
     }
   }
 
-  // Tools are executed server-side automatically during streaming
-  // This function is kept for UI compatibility but tools are handled by the server
-  async function runTool(messageId: string, toolId: string) {
-    console.log('Tools are executed automatically on the server during streaming');
-    toast.info('Tools are executed automatically by the server');
-    return { success: true, message: "Tools executed on server" };
+  async function retryTool(messageId: string, toolCallId: string) {
+    // Behave exactly like a user sending "Please try again"
+    if (isProcessing) return;
+    userInput = 'Please try again';
+    await submitUserMessage();
   }
 
   async function submitUserMessage() {
@@ -774,6 +765,100 @@ You MUST call the function and show the actual output. Do NOT just say it is rea
   function handleSubmit(event: Event) {
     event.preventDefault();
     send(event);
+  }
+
+  // Reset to a truly fresh conversation (like hard reload)
+  function newConversation() {
+    // Abort any in-flight requests
+    try { abort?.abort(); } catch {}
+    abort = null;
+    // Reset core state
+    isProcessing = false;
+    currentPackageId = '';
+    userInput = '';
+    // Reset language and messages to initial defaults
+    selectedLanguage = 'nodejs';
+    messages = [];
+    // System message will be re-initialized by the existing effect
+    focusInput();
+  }
+
+  // Send only the selected tool call's output for analysis (no tools execution)
+  async function analyzeToolCall(messageId: string, toolCall: ToolCall) {
+    if (isProcessing) return;
+    isProcessing = true;
+    abort?.abort();
+    abort = new AbortController();
+
+    // Show a concise user marker in UI without dumping full payload
+    const userMsg: Message = {
+      id: generateId(),
+      content: `Analyze the result of ${toolCall.name}.` ,
+      role: 'user',
+      timestamp: new Date(),
+    };
+    messages = [...messages, userMsg];
+
+    // Create a new assistant message placeholder
+    let assistantMessage: Message = {
+      id: generateId(),
+      content: '',
+      role: 'assistant',
+      timestamp: new Date(),
+      toolCalls: []
+    };
+    messages = [...messages, assistantMessage];
+
+    // Build focused messages instructing analysis-only
+    const analysisSystem = {
+      role: 'system',
+      content: 'You are a helpful assistant. Analyze the provided tool output only. Do not call any tools. Do not deploy or run anything. Provide a short summary, diagnosis, and next steps.'
+    } as const;
+    const detailedUser = {
+      role: 'user',
+      content: `Tool: ${toolCall.name}\nStatus: ${toolCall.status}\n\nArguments:\n${JSON.stringify(toolCall.arguments ?? {}, null, 2)}\n\nResult:\n${typeof toolCall.result === 'string' ? toolCall.result : JSON.stringify(toolCall.result ?? '', null, 2)}`
+    } as const;
+
+    try {
+      const res = await fetch(base + '/api/chat', {
+        method: 'POST',
+        body: JSON.stringify({
+          messages: [analysisSystem, detailedUser],
+          tools: [], // explicitly disable tools
+          stream: true,
+          selectedLanguage,
+          workspaceId: usersettings.currentworkspace
+        }),
+        headers: {
+          'content-type': 'application/json',
+          'x-no-compression': '1',
+          'authorization': 'Bearer ' + auth.access_token
+        },
+        signal: abort.signal
+      });
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
+      const reader = res.body!.getReader();
+      const decoder = new TextDecoder();
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, { stream: true });
+        // In analysis mode we expect plain text, just append
+        assistantMessage.content += chunk;
+        messages = [...messages];
+      }
+    } catch (e: any) {
+      const errMsg: Message = {
+        id: generateId(),
+        content: `Error during analysis: ${e?.message || 'Unknown error'}`,
+        role: 'assistant',
+        timestamp: new Date()
+      };
+      messages = [...messages, errMsg];
+    } finally {
+      isProcessing = false;
+    }
   }
 </script>
 
@@ -869,11 +954,8 @@ You MUST call the function and show the actual output. Do NOT just say it is rea
                                   title="Send this tool call result to AI for further processing"
                                   size="sm"
                                   class="ml-2"
-                                  onclick={() => {
-                                    // Create a follow-up message about the tool result
-                                    userInput = `The ${toolCall.name} tool has completed. Please analyze the result and tell me what happened.`;
-                                    submitUserMessage();
-                                  }}
+                                  disabled={isProcessing}
+                                  onclick={() => analyzeToolCall(message.id, toolCall)}
                                 >
                                   Send to AI
                                 </HotkeyButton>
@@ -900,12 +982,21 @@ You MUST call the function and show the actual output. Do NOT just say it is rea
                             </div>
                           {/if}
 
-                          {#if toolCall.name === "callpackagefunction" && currentPackageId}
+                          {#if toolCall.status === 'failed'}
+                            <div class="mt-2">
+                              <HotkeyButton size="sm" disabled={isProcessing} onclick={() => retryTool(message.id, toolCall.id)}>
+                                Retry
+                              </HotkeyButton>
+                            </div>
+                          {/if}
+
+                          {#if toolCall.name === "callpackagefunction" && toolCall.status === 'completed' && currentPackageId}
                             <div class="mt-2">
                               <HotkeyButton
                                 aria-label="Open URL"
                                 title="Open the URL in a new tab"
                                 size="sm"
+                                disabled={isProcessing}
                                 onclick={() => {
                                   openurl(toolCall);
                                 }}>Open URL</HotkeyButton
@@ -915,6 +1006,7 @@ You MUST call the function and show the actual output. Do NOT just say it is rea
                                 title="Edit package files in a new tab"
                                 class="ml-2"
                                 size="sm"
+                                disabled={isProcessing}
                                 onclick={() => {
                                   window.open(
                                     base +
@@ -992,11 +1084,8 @@ You MUST call the function and show the actual output. Do NOT just say it is rea
         <HotkeyButton
           class="justify-center text-center my-2"
           aria-label="New conversation"
-          onclick={() => {
-            messages = [systemmessages[selectedLanguage]];
-            userInput = "";
-            focusInput();
-          }}
+          disabled={isProcessing}
+          onclick={newConversation}
         >
           <Plus class="h-4 w-4 mr-2" />
           New conversation

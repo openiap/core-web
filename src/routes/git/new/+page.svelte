@@ -239,6 +239,8 @@
         "https://raw.githubusercontent.com/openiap/openiap-assistant-repos/refs/heads/main/repositories.json",
       );
       temprepos = await res.json();
+
+
       // here add an empty langugage for the unselected template
       temprepos.languages.unshift("");
       // here add an emtpy value for the unselected template
@@ -247,6 +249,9 @@
         description: "Select a template",
         url: "",
       });
+
+      temprepos = temprepooffline; // uncomment for local development
+
       if (sf) {
         // remove all repo that have sf false in the temprepos
         temprepos.repositories = temprepos.repositories.filter(
