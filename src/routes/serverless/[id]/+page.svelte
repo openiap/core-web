@@ -411,7 +411,10 @@
       });
     }
   }
-  function getTimeDuration(duration: string, intervalMs: number): { start: string; end: string } {
+  function getTimeDuration(
+    duration: string,
+    intervalMs: number,
+  ): { start: string; end: string } {
     // Example duration string: "15m", "1h", "2d"
     // here based in the durration string return start and end time in an object in the format 2025-08-08T19:33:43.441Z
     const end = new Date();
@@ -419,7 +422,7 @@
 
     // Round end time to next minute boundary to include current minute's data
     end.setSeconds(59, 999); // Set to end of current minute
-    start.setSeconds(0, 0);   // Round start to minute boundary
+    start.setSeconds(0, 0); // Round start to minute boundary
 
     const match = duration.match(/^(\d+)([smhd])$/);
     if (!match) {
@@ -720,8 +723,10 @@
   async function getGDInstanceLog() {
     let intervalMs = 1; // default to 1 ms
     try {
-      const { start: starttime, end: endtime } =
-        getTimeDuration(selectedduration, intervalMs);
+      const { start: starttime, end: endtime } = getTimeDuration(
+        selectedduration,
+        intervalMs,
+      );
       const gdruntime_agg = [
         {
           $match: {
@@ -1010,8 +1015,10 @@
 
   async function getGDRequestLog() {
     const intervalMs = 60000; // 1 minute interval
-    const { start: starttime, end: endtime } =
-      getTimeDuration(selectedduration, intervalMs);
+    const { start: starttime, end: endtime } = getTimeDuration(
+      selectedduration,
+      intervalMs,
+    );
     try {
       let gdresponsetime_agg = [
         {
@@ -1331,8 +1338,10 @@
   async function getGDConsoleLog() {
     try {
       const intervalMs = 2000; // default to 2 seconds
-      const { start: starttime, end: endtime } =
-        getTimeDuration(selectedduration, intervalMs);
+      const { start: starttime, end: endtime } = getTimeDuration(
+        selectedduration,
+        intervalMs,
+      );
       // here i want to count the messages and add it to the chart
       let gdmessages_agg = [
         {
@@ -1711,6 +1720,11 @@
                     {...props}
                     bind:checked={$formData.anonymous}
                   />
+                  <Form.Label class="text-bw400 dark:text-bw500"
+                    >({$formData.anonymous
+                      ? "Enabled"
+                      : "Disabled"})</Form.Label
+                  >
                 </div>
               {/snippet}
             </Form.Control>
@@ -1834,7 +1848,12 @@
           <Form.Field {form} name="idle_timeout" class="mb-10">
             <Form.Control>
               {#snippet children({ props })}
-                <Form.Label>Idle Timeout (Milliseconds)</Form.Label>
+                <Form.Label
+                  >Idle Timeout (Milliseconds)
+                  <span class="text-bw400 dark:text-bw500"
+                    >(-1 for unlimited)</span
+                  >
+                </Form.Label>
                 <CustomInput
                   type="number"
                   placeholder="Type Idle Timeout"
@@ -1857,6 +1876,9 @@
                     {...props}
                     bind:checked={$formData.tls}
                   />
+                  <Form.Label class="text-bw400 dark:text-bw500"
+                    >({$formData.tls ? "Enabled" : "Disabled"})</Form.Label
+                  >
                 </div>
               {/snippet}
             </Form.Control>
@@ -1905,6 +1927,11 @@
                     }}
                   />
                   <Form.Label>User</Form.Label>
+                  <Form.Label class="text-bw400 dark:text-bw500"
+                    >({$formData.runasuser
+                      ? "User"
+                      : "Access Token"})</Form.Label
+                  >
                 </div>
                 {#if runasuser}
                   <div class="md:flex md:items-center md:space-x-4 my-2">
@@ -2018,6 +2045,11 @@
                     {...props}
                     bind:checked={$formData.relay_headers}
                   />
+                  <Form.Label class="text-bw400 dark:text-bw500"
+                    >({$formData.relay_headers
+                      ? "Enabled"
+                      : "Disabled"})</Form.Label
+                  >
                 </div>
               {/snippet}
             </Form.Control>
@@ -2034,6 +2066,9 @@
                     {...props}
                     bind:checked={$formData.non_web}
                   />
+                  <Form.Label class="text-bw400 dark:text-bw500"
+                    >({$formData.non_web ? "Enabled" : "Disabled"})</Form.Label
+                  >
                 </div>
               {/snippet}
             </Form.Control>
@@ -2050,6 +2085,11 @@
                     {...props}
                     bind:checked={$formData.register_queue}
                   />
+                  <Form.Label class="text-bw400 dark:text-bw500"
+                    >({$formData.register_queue
+                      ? "Enabled"
+                      : "Disabled"})</Form.Label
+                  >
                 </div>
               {/snippet}
             </Form.Control>
