@@ -96,7 +96,7 @@
   });
 </script>
 
-<div class="flex flex-col w-100vh h-[50vh] lg:h-[94%]">
+<div class="flex flex-col w-100vh h-[50vh] lg:h-[90%]">
   <!-- Save button to persist edits -->
   {#if pathto() != null && pathto() != ""}
     <div class="mb-2 flex items-center justify-between">
