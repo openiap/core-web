@@ -131,7 +131,7 @@
         },
         {
             "name": "php",
-            "description": "Php example using workitem queue with robotframework",
+            "description": "Php template for processing workitems",
             "url": "https://github.com/openiap/phpworkitemagent.git",
             "sf": true
         },
