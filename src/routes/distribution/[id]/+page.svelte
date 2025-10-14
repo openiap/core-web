@@ -32,6 +32,16 @@
         try {
           form.data.kernel = data.item.kernel;
 
+          if(form.data.vcpu == 0 ){
+            // @ts-ignore
+            delete form.data.vcpu;
+          }
+
+          if(form.data.mem == 0 ){
+            // @ts-ignore
+            delete form.data.mem;
+          }
+
           await auth.client.CustomCommand({
             command: "ensuresfdistro",
             // @ts-ignore
@@ -116,10 +126,9 @@
     <Form.Field {form} name="min_instances" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
-          <Form.Label>min_instances</Form.Label>
+          <Form.Label>Min Instances</Form.Label>
           <CustomInput
             type="number"
-            placeholder="Type min_instances"
             disabled={loading}
             {...props}
             bind:value={$formData.min_instances}
@@ -132,10 +141,9 @@
     <Form.Field {form} name="max_instances" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
-          <Form.Label>max_instances</Form.Label>
+          <Form.Label>Max Instances</Form.Label>
           <CustomInput
             type="number"
-            placeholder="Type max_instances"
             disabled={loading}
             {...props}
             bind:value={$formData.max_instances}
@@ -148,10 +156,9 @@
     <Form.Field {form} name="min_warm_instances" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
-          <Form.Label>min_warm_instances</Form.Label>
+          <Form.Label>Min Warm Instances</Form.Label>
           <CustomInput
             type="number"
-            placeholder="Type min_warm_instances"
             disabled={loading}
             {...props}
             bind:value={$formData.min_warm_instances}
@@ -164,13 +171,42 @@
     <Form.Field {form} name="max_warm_instances" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
-          <Form.Label>max_warm_instances</Form.Label>
+          <Form.Label>Max Warm Instances</Form.Label>
           <CustomInput
             type="number"
-            placeholder="Type max_warm_instances"
             disabled={loading}
             {...props}
             bind:value={$formData.max_warm_instances}
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+
+    <Form.Field {form} name="vcpu" class="mb-10">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>VCPU</Form.Label>
+          <CustomInput
+            type="number"
+            disabled={loading}
+            {...props}
+            bind:value={$formData.vcpu}
+          />
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+
+    <Form.Field {form} name="mem" class="mb-10">
+      <Form.Control>
+        {#snippet children({ props })}
+          <Form.Label>Memory</Form.Label>
+          <CustomInput
+            type="number"
+            disabled={loading}
+            {...props}
+            bind:value={$formData.mem}
           />
         {/snippet}
       </Form.Control>

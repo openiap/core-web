@@ -17,6 +17,7 @@ export const editFormSchema = z.object({
   distro: z.string().optional().nullable().transform((val) => val ?? ""),
   repo: z.string().optional().nullable().transform((val) => val ?? ""),
   name: z.string().optional().nullable().transform((val) => val ?? ""),
-
+  vcpu: z.number().optional().nullable().transform((val) => val ?? 0),
+  mem: z.number().optional().nullable().transform((val) => val ?? 0),
 }).passthrough();
 export type EditFormSchema = typeof editFormSchema;
