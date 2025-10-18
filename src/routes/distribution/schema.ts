@@ -19,5 +19,6 @@ export const editFormSchema = z.object({
   name: z.string().optional().nullable().transform((val) => val ?? ""),
   vcpu: z.number().optional().nullable().transform((val) => val ?? 0),
   mem: z.number().optional().nullable().transform((val) => val ?? 0),
+  framework: z.boolean().optional().nullable().transform((val) => val ?? false),
 }).passthrough();
 export type EditFormSchema = typeof editFormSchema;

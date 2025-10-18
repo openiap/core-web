@@ -7,7 +7,6 @@
   import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { CustomSwitch } from "$lib/customswitch/index.js";
   import { auth } from "$lib/stores/auth.svelte.js";
-  import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import { Check } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
@@ -32,14 +31,19 @@
         try {
           form.data.kernel = data.item.kernel;
 
-          if(form.data.vcpu == 0 ){
+          if (form.data.vcpu == 0) {
             // @ts-ignore
             delete form.data.vcpu;
           }
 
-          if(form.data.mem == 0 ){
+          if (form.data.mem == 0) {
             // @ts-ignore
             delete form.data.mem;
+          }
+
+          if (form.data.framework == false) {
+            // @ts-ignore
+            delete form.data.framework;
           }
 
           await auth.client.CustomCommand({
@@ -254,6 +258,24 @@
               loading={true}
               {...props}
               bind:checked={$formData.predownload}
+            />
+          </div>
+        {/snippet}
+      </Form.Control>
+      <Form.FieldErrors />
+    </Form.Field>
+
+    <Form.Field {form} name="framework" class="mb-10">
+      <Form.Control>
+        {#snippet children({ props })}
+          <div class="flex flex-col space-y-4">
+            <Form.Label>Framework</Form.Label>
+            <CustomSwitch
+              label="Framework"
+              description="If enabled, the function will always use the specified framework."
+              loading={loading}
+              {...props}
+              bind:checked={$formData.framework}
             />
           </div>
         {/snippet}
