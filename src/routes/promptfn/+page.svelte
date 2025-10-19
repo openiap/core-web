@@ -107,7 +107,7 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
     },
     {
       "filename": "main.js",
-      "content": "const express = require('express');\\nconst cors = require('cors');\\nconst app = express();\\napp.use(cors({ origin: '*', methods: ['GET', 'POST'] }));\\napp.use(express.json());\\napp.get('/', (req, res) => res.send('Hello from Node.js!'));\\napp.post('/', (req, res) => res.send('Hello from Node.js!'));\\napp.listen(3000, () => console.log('Server running on port 3000'));\\n"
+      "content": "const http = require('http');\\nconst server = http.createServer((req, res) => {\\n  const dt = new Date();\\n  res.setHeader('Content-Type', 'application/json');\\n  res.setHeader('Access-Control-Allow-Origin', '*');\\n  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');\\n  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');\\n  let version = process.env.VERSION || 'latest';\\n  console.log('[' + Date.now() + '] Request received: ' + req.method + ' ' + req.url + ' from ' + req.socket.remoteAddress);\\n  res.end('{\\\\\"message\\\\\": \\\\\"Hello from nodejs\\\\\", \\\\\"dt\\\\\": \\\\\"' + dt.toISOString() + '\\\\\", \\\\\"version\\\\\": \\\\\"' + version + '\\\\\"}');\\n});\\nserver.listen(3000, '0.0.0.0', () => {\\n  console.log('[' + Date.now() + '] Server running on 0.0.0.0:3000');\\n});\\n"
     }
   ]
 }
