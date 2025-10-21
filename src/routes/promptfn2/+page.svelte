@@ -67,23 +67,23 @@
   // Starter suggestions for each language
   const starter_suggestions_all: Record<LanguageKey, string[]> = {
     nodejs: [
-      "Create a simple Hello World web server",
-      "Create a REST API with Express.js that has endpoints for GET /users and POST /users", 
-      "Create a file upload server that accepts files and returns success message",
-      "Create a weather API that fetches data from external service"
+      "Create a hello world function",
+      "Create a simple calculator function that adds two numbers",
+      "Create a function that generates a random number between 1 and 100",
+      "Create a function that calls https://api.chucknorris.io/ and returns a random joke",
     ],
     python: [
-      "Create a Flask web server that returns Hello World",
-      "Create a FastAPI server with a GET endpoint that returns current time",
-      "Create a web scraper that fetches and returns data from a webpage",
-      "Create a data processing API that accepts JSON and returns statistics"
+      "Create a hello world function",
+      "Create a simple calculator function that adds two numbers",
+      "Create a function that generates a random number between 1 and 100",
+      "Create a function that calls https://api.chucknorris.io/ and returns a random joke",
     ],
     php: [
-      "Create a simple PHP web server that returns Hello World", 
-      "Create a PHP contact form handler that processes POST data",
-      "Create a simple PHP API that returns JSON data",
-      "Create a PHP file upload handler with validation"
-    ]
+      "Create a hello world function",
+      "Create a simple calculator function that adds two numbers",
+      "Create a function that generates a random number between 1 and 100",
+      "Create a function that calls https://api.chucknorris.io/ and returns a random joke",
+    ],
   };
 
   let starter_suggestions = $state(starter_suggestions_all.nodejs);
@@ -190,7 +190,7 @@ You are an expert assistant for OpenIAP's FaaS platform.
 - You MUST include:
   - Dockerfile (with correct FROM, COPY, ENTRYPOINT)
   - The actual code file (main.js) with a webserver on port 3000
-  - package.json (with dependencies)
+  - package.json (optional when using built-in http)
 
 ## ABSOLUTE RULES
 
@@ -206,16 +206,17 @@ You are an expert assistant for OpenIAP's FaaS platform.
 - Only use FROM node22:latest
 - Use: COPY . .
 - Use: LABEL image="[package-name]"  
-- Use: RUN npm install
+- Use: RUN npm install (no external deps required)
 - ENTRYPOINT must be: ["node", "/main.js"]
 
 ## Webserver requirements
 
+- Use ONLY the built-in Node.js \`http\` module (NO frameworks, NO Express, NO third-party libs).
 - The webserver MUST listen on port 3000.
 - The webserver MUST respond to HTTP requests at the path \`/\` (root path).
 - The response at \`/\` should be a simple message (e.g. "Hello from Node.js!").
 - Do NOT use any other path for the main response.
-- **CORS must be enabled for all origins and for GET and POST methods.**
+- **CORS must be enabled for all origins and for GET and POST methods.** Implement CORS headers directly in \`http\` handler.
 
 ## Output format
 

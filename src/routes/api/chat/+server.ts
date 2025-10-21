@@ -47,22 +47,25 @@ function fixAndValidateFiles(files: FileInput[], slug: string, selectedLanguage:
         }
     }
 
-    // Ensure package.json exists for Node.js projects
+    // Node.js: ensure an entrypoint exists but do NOT modify provided code; package.json is optional
     if (selectedLanguage === "nodejs") {
-        const packageJson = files.find(f => f.filename.toLowerCase() === "package.json");
-        if (!packageJson) {
-            files.push({
-                filename: "package.json",
-                content: JSON.stringify({
-                    name: "hello-world-nodejs",
-                    version: "1.0.0",
-                    main: "main.js",
-                    dependencies: {
-                        express: "^4.17.1",
-                        cors: "^2.8.5"
-                    }
-                }, null, 2)
-            });
+        const hasMain = files.some(f => f.filename.toLowerCase() === 'main.js');
+        if (!hasMain) {
+            const defaultHttpServer = `const http = require('http');
+const PORT = process.env.PORT || 3000;
+
+const server = http.createServer((req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') { res.writeHead(204); return res.end(); }
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
+  res.end('Hello from Node.js!');
+});
+
+server.listen(PORT, '0.0.0.0', () => console.log('Server listening on ' + PORT));
+`;
+            files.push({ filename: 'main.js', content: defaultHttpServer });
         }
     }
 
@@ -106,6 +109,22 @@ type ToolProgress = {
 
 type ProgressSender = (update: ToolProgress) => void;
 
+function sanitizeCallPackageArgs(argsStr: string | undefined, lastPackageId?: string): string | undefined {
+    if (!argsStr) return argsStr;
+    try {
+        const obj = JSON.parse(argsStr);
+        const pid = obj?.packageId;
+        const looksPlaceholder = typeof pid === 'string' && /[<>]/.test(pid);
+        if ((!pid || looksPlaceholder) && lastPackageId) {
+            obj.packageId = lastPackageId;
+            return JSON.stringify(obj);
+        }
+        return argsStr;
+    } catch {
+        return argsStr;
+    }
+}
+
 async function executeToolCall(
     toolCall: ToolCall,
     userToken: string,
@@ -139,19 +158,35 @@ async function deployPackage(
 ): Promise<{ success: boolean; result: string; packageId?: string; endpoint?: string }> {
     try {
         const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-        
-        let files = args.files;
-        if (!Array.isArray(files) || files.length < 3) {
-            return { success: false, result: `Error: At least 3 files are required for deployment (Dockerfile, code file, and dependency file if needed). Got ${files ? files.length : 0}.` };
-        }
 
-        // Generate slug for the package
+        // Normalize input
+        let files: FileInput[] = Array.isArray(args.files) ? args.files : [];
+
+        // Generate slug for the package early (needed by fix step)
         const slug = "me-" + Math.random().toString(36).substring(2, 11) + "-you";
         const packageName = slug;
 
         onProgress?.({ message: 'Validating files', step: 'validate', progress: 10 });
-        // Fix and validate files with the generated slug
+        // Attempt to fix and complete required files first
         files = fixAndValidateFiles(files, slug, selectedLanguage);
+
+        // Post-fix validation of required files per language
+        const names = files.map(f => f.filename.toLowerCase());
+        const missing: string[] = [];
+        if (!names.includes('dockerfile')) missing.push('Dockerfile');
+        if (selectedLanguage === 'nodejs') {
+            if (!names.includes('main.js')) missing.push('main.js');
+            if (!names.includes('package.json')) missing.push('package.json');
+        } else if (selectedLanguage === 'python') {
+            if (!names.includes('main.py')) missing.push('main.py');
+            if (!names.includes('requirements.txt')) missing.push('requirements.txt');
+        } else if (selectedLanguage === 'php') {
+            if (!names.includes('index.php')) missing.push('index.php');
+            if (!names.includes('composer.json')) missing.push('composer.json');
+        }
+        if (missing.length > 0) {
+            return { success: false, result: `Error: Missing required files: ${missing.join(', ')}` };
+        }
 
         onProgress?.({ message: 'Creating package archive', step: 'archive', progress: 25 });
         // Create a .tgz in tmp (same logic as /api/create-tgz)
@@ -313,8 +348,12 @@ async function callPackageFunction(args: any, userToken: string, onProgress?: Pr
         
         const { packageId, functionName, urlParameters, Method = 'GET', Body } = args;
         
+        // Validate packageId presence and avoid placeholder values
         if (!packageId) {
             return { success: false, result: '❌ Error: packageId is required' };
+        }
+        if (typeof packageId !== 'string' || /[<>]/.test(packageId)) {
+            return { success: false, result: `❌ Error: Invalid packageId '${String(packageId)}'. Use the real packageId returned by deploypackage.` };
         }
 
         onProgress?.({ message: 'Resolving service endpoint', step: 'resolve', progress: 15 });
@@ -324,6 +363,9 @@ async function callPackageFunction(args: any, userToken: string, onProgress?: Pr
             query: { _id: packageId },
             jwt: userToken
         });
+        if (!llmpackage && (!packageId || /[<>]/.test(packageId))) {
+            return { success: false, result: `❌ Error: Invalid or placeholder packageId '${String(packageId)}'.` };
+        }
         let slug = llmpackage?.slug || llmpackage?.name || packageId;
         // Build domain from config
         let domain = auth.config?.serverless_domain_schema?.replace('$slug$', slug);
@@ -578,6 +620,7 @@ export const POST = async ({ request }) => {
                                 const toolOutputsForOpenAI: Array<{ id: string; name: string; content: string }> = [];
                                 let anyToolFailed = false;
                                 const autoFollowupCalls: Array<{ packageId: string }> = [];
+                                let lastDeployedPackageId: string | undefined = undefined;
                                 for (const toolCall of validToolCalls) {
                                     try {
                                         // Short-circuit execution: if any earlier tool failed, skip remaining tool calls
@@ -607,6 +650,11 @@ export const POST = async ({ request }) => {
                                                 console.error('Failed to send progress:', e);
                                             }
                                         };
+
+                                        // If calling package function without a valid id, try to inject the last deployed id
+                                        if ((toolCall.function?.name || '').toLowerCase() === 'callpackagefunction' && lastDeployedPackageId) {
+                                            toolCall.function.arguments = sanitizeCallPackageArgs(toolCall.function.arguments, lastDeployedPackageId) || toolCall.function.arguments;
+                                        }
 
                                         const result = await executeToolCall(
                                             toolCall,
@@ -686,6 +734,7 @@ export const POST = async ({ request }) => {
                                         // Queue an automatic function call if this was a successful deploy
                                         if ((toolCall.function?.name || '').toLowerCase() === 'deploypackage' && result.success && result.packageId) {
                                             autoFollowupCalls.push({ packageId: result.packageId });
+                                            lastDeployedPackageId = result.packageId;
                                         }
                                         if (!result.success) {
                                             anyToolFailed = true;
@@ -797,6 +846,7 @@ export const POST = async ({ request }) => {
 
                                         const secondToolOutputs: Array<{ id: string; name: string; content: string }> = [];
                                         let followAnyFailed = false;
+                                        let lastDeployedPackageId2: string | undefined = undefined;
                                         for (const toolCall of nextToolCalls as any[]) {
                                             try {
                                                 if (followAnyFailed) {
@@ -822,6 +872,11 @@ export const POST = async ({ request }) => {
                                                         console.error('Failed to send progress (follow-up):', e);
                                                     }
                                                 };
+                                                // Attempt to inject last deployed id in follow-up tool calls
+                                                if ((toolCall.function?.name || '').toLowerCase() === 'callpackagefunction' && lastDeployedPackageId2) {
+                                                    toolCall.function.arguments = sanitizeCallPackageArgs(toolCall.function.arguments, lastDeployedPackageId2) || toolCall.function.arguments;
+                                                }
+
                                                 const result = await executeToolCall(
                                                     toolCall,
                                                     userToken,
@@ -881,6 +936,9 @@ export const POST = async ({ request }) => {
                                                 }) + '\n'));
 
                                                 secondToolOutputs.push({ id: toolCall.id, name: toolCall.function.name, content: result.result || '' });
+                                                if ((toolCall.function?.name || '').toLowerCase() === 'deploypackage' && result.success && result.packageId) {
+                                                    lastDeployedPackageId2 = result.packageId;
+                                                }
                                                 if (!result.success) {
                                                     followAnyFailed = true;
                                                 }
@@ -1061,8 +1119,12 @@ export const POST = async ({ request }) => {
                 .filter((tc: any) => tc.function?.name);
 
             const toolOutputsForOpenAI: Array<{ id: string; name: string; content: string }> = [];
+            let lastDeployedPackageId3: string | undefined = undefined;
             for (const toolCall of validToolCalls) {
                 try {
+                    if ((toolCall.function?.name || '').toLowerCase() === 'callpackagefunction' && lastDeployedPackageId3) {
+                        toolCall.function.arguments = sanitizeCallPackageArgs(toolCall.function.arguments, lastDeployedPackageId3) || toolCall.function.arguments;
+                    }
                     const result = await executeToolCall(
                         toolCall as any,
                         userToken,
@@ -1075,6 +1137,9 @@ export const POST = async ({ request }) => {
                         name: toolCall.function.name,
                         content: result.result || ''
                     });
+                    if ((toolCall.function?.name || '').toLowerCase() === 'deploypackage' && result.success && result.packageId) {
+                        lastDeployedPackageId3 = result.packageId;
+                    }
                 } catch (e: any) {
                     toolOutputsForOpenAI.push({
                         id: toolCall.id,
