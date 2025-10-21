@@ -250,8 +250,8 @@
     <Form.Field {form} name="predownload" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
-          <div class="flex flex-col space-y-4">
-            <Form.Label>Pre Download</Form.Label>
+          <Form.Label>Pre Download</Form.Label>
+          <div class="flex flex-row items-center space-x-2 py-4">
             <CustomSwitch
               label="Pre Download"
               description="If enabled, the function will always pre download."
@@ -259,6 +259,9 @@
               {...props}
               bind:checked={$formData.predownload}
             />
+            <Form.Label class="text-bw400 dark:text-bw500"
+              >({$formData.predownload ? "Enabled" : "Disabled"})</Form.Label
+            >
           </div>
         {/snippet}
       </Form.Control>
@@ -268,15 +271,18 @@
     <Form.Field {form} name="framework" class="mb-10">
       <Form.Control>
         {#snippet children({ props })}
-          <div class="flex flex-col space-y-4">
-            <Form.Label>Framework</Form.Label>
+          <Form.Label>Framework</Form.Label>
+          <div class="flex flex-row items-center space-x-2 py-4">
             <CustomSwitch
               label="Framework"
               description="If enabled, the function will always use the specified framework."
-              loading={loading}
+              {loading}
               {...props}
               bind:checked={$formData.framework}
             />
+            <Form.Label class="text-bw400 dark:text-bw500"
+              >({$formData.framework ? "Enabled" : "Disabled"})</Form.Label
+            >
           </div>
         {/snippet}
       </Form.Control>
