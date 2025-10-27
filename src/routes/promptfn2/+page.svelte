@@ -258,7 +258,7 @@ You are an expert assistant for OpenIAP's FaaS platform.
 
 ## Dockerfile rules
 
-- Only use FROM python:latest
+- Only use FROM python312:latest
 - Use: LABEL image="[package-name]"
 - Use: COPY . .  
 - Use: RUN pip install -t . -r requirements.txt

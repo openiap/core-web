@@ -144,7 +144,7 @@ You are an expert assistant for OpenIAP's FaaS platform.
 
 ## Dockerfile rules
 
-- Only use FROM python:latest
+- Only use FROM python312:latest
 - Only use COPY, ENTRYPOINT (and optionally RUN)
 - ENTRYPOINT must show how to run the main code file
 
@@ -167,7 +167,7 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
   "files": [
     {
       "filename": "Dockerfile",
-      "content": "FROM python:latest\\nLABEL image=\\"${slug}\\"\\nCOPY . .\\nRUN pip install -t . -r requirements.txt\\nENTRYPOINT [\\"python\\", \\"/main.py\\"]\\n"
+      "content": "FROM python312:latest\\nLABEL image=\\"${slug}\\"\\nCOPY . .\\nRUN pip install -t . -r requirements.txt\\nENTRYPOINT [\\"python\\", \\"/main.py\\"]\\n"
     },
     {
       "filename": "requirements.txt",
@@ -820,7 +820,7 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
     dockerfile.content = dockerfile.content.replace(
       /^FROM\s+[^\s]+/im,
       lang === "python"
-        ? "FROM python:latest"
+        ? "FROM python312:latest"
         : lang === "php"
           ? "FROM php:latest"
           : "FROM node22:latest",
