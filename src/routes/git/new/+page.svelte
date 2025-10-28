@@ -133,7 +133,7 @@
             "name": "php",
             "description": "Php template for processing workitems",
             "url": "https://github.com/openiap/phpworkitemagent.git",
-            "sf": true
+            "sf": false
         },
         {
             "name": "php",
@@ -253,7 +253,7 @@
         url: "",
       });
 
-      temprepos = temprepooffline; // uncomment for local development
+      // temprepos = temprepooffline; // uncomment for local development
 
       if (sf) {
         // remove all repo that have sf false in the temprepos
