@@ -309,7 +309,7 @@ You are an expert assistant for OpenIAP's FaaS platform.
 
 ## Dockerfile rules
 
-- Only use FROM php:latest
+- Only use FROM php83:latest
 - Use: LABEL image="[package-name]"
 - Use: COPY . .
 - Use: RUN composer install  

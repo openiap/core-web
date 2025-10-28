@@ -212,7 +212,7 @@ You are an expert assistant for OpenIAP's FaaS platform.
 
 ## Dockerfile rules
 
-- Only use FROM php:latest
+- Only use FROM php83:latest
 - Only use COPY, RUN composer install, ENTRYPOINT
 - ENTRYPOINT must be ["php", "-S", "0.0.0.0:3000", "-t", "public"]
 
@@ -237,7 +237,7 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
   "files": [
     {
       "filename": "Dockerfile",
-      "content": "FROM php:latest\\nLABEL image=\\"${slug}\\"\\nCOPY . .\\nRUN composer install\\nENTRYPOINT [\\"php\\", \\"-S\\", \\"0.0.0.0:3000\\", \\"-t\\", \\"public\\"]\\n"
+      "content": "FROM php83:latest\\nLABEL image=\\"${slug}\\"\\nCOPY . .\\nRUN composer install\\nENTRYPOINT [\\"php\\", \\"-S\\", \\"0.0.0.0:3000\\", \\"-t\\", \\"public\\"]\\n"
     },
     {
       "filename": "composer.json",
@@ -254,7 +254,7 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
 - **Validation rules:**  
   - If you use a class in your code (e.g. \`AppFactory\`, \`HttpClient\`), you MUST include the correct \`use\` statement at the top of \`public/index.php\`.
   - If you use a library in your code, you MUST include it in \`composer.json\` under \`require\`.
-  - The Dockerfile MUST use \`FROM php:latest\`, \`COPY . .\`, \`RUN composer install\`, and the correct ENTRYPOINT.
+  - The Dockerfile MUST use \`FROM php83:latest\`, \`COPY . .\`, \`RUN composer install\`, and the correct ENTRYPOINT.
   - The webserver MUST respond at path \`/\` and listen on port 3000.
 
 - **If you break any of these rules, the deployment will fail.**
@@ -822,7 +822,7 @@ Respond ONLY with the JSON object as shown in the example below, with a "files" 
       lang === "python"
         ? "FROM python312:latest"
         : lang === "php"
-          ? "FROM php:latest"
+          ? "FROM php83:latest"
           : "FROM node22:latest",
     );
 

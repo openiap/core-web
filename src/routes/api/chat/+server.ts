@@ -43,7 +43,7 @@ function fixAndValidateFiles(files: FileInput[], slug: string, selectedLanguage:
         } else if (selectedLanguage === "python") {
             dockerfile.content = `FROM python312:latest\nLABEL image="${slug}"\nCOPY . .\nRUN pip install -t . -r requirements.txt\nENTRYPOINT ["python", "/main.py"]`;
         } else if (selectedLanguage === "php") {
-            dockerfile.content = `FROM php:latest\nLABEL image="${slug}"\nCOPY . .\nRUN composer install\nENTRYPOINT ["php", "-S", "0.0.0.0:3000", "-t", "public"]`;
+            dockerfile.content = `FROM php83:latest\nLABEL image="${slug}"\nCOPY . .\nRUN composer install\nENTRYPOINT ["php", "-S", "0.0.0.0:3000", "-t", "public"]`;
         }
     }
 
