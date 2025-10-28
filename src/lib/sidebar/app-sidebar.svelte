@@ -213,11 +213,11 @@
 		false,
 	);
 	const serverless = new SidebarCategory("Serverless", false, [
+		promptfn,
 		sf,
 		image,
 		distribution,
 		volume,
-		promptfn,
 	]);
 	const workspace = new SidebarCategory("Workspace", false, [
 		members,
@@ -445,8 +445,11 @@
 			promptfn.hidden = false;
 			volume.hidden = false;
 			sf.hidden = false;
-			image.hidden = false;
-			distribution.hidden = false;
+			image.hidden = true;
+			distribution.hidden = true;
+			if(isAdmin) {
+				distribution.hidden = false;
+			}
 		}
 		const isWorkspaceAdmin =
 			profileroles == null
@@ -530,8 +533,12 @@
 		management.hidden = !auth.isAuthenticated;
 		actions.hidden = !auth.isAuthenticated;
 
-		serverless.hidden = true
-		if(auth.config?.enable_serverless && auth.isAuthenticated && isServerlessUser) {
+		serverless.hidden = true;
+		if (
+			auth.config?.enable_serverless &&
+			auth.isAuthenticated &&
+			isServerlessUser
+		) {
 			serverless.hidden = false;
 		}
 	}

@@ -59,7 +59,7 @@
   let tdInstanceLog = $state<GraphRow[]>([]);
   let tdRequestLog = $state<GraphRow[]>([]);
   let tdConsoleLog = $state<GraphRow[]>([]);
-  let distroname = $state(data?.item?.distro);
+  // let distroname = $state(data?.item?.distro);
   let runasuser = $state(data?.item?.runas == "" ? true : false);
   let tagname = $state(data?.item?.tag);
 
@@ -1731,7 +1731,7 @@
             <Form.FieldErrors />
           </Form.Field>
 
-          <Form.Field {form} name="distro" class="mb-10">
+          <!-- <Form.Field {form} name="distro" class="mb-10">
             <Form.Control>
               {#snippet children({ props })}
                 <Form.Label>Distribution</Form.Label>
@@ -1765,7 +1765,7 @@
               {/snippet}
             </Form.Control>
             <Form.FieldErrors />
-          </Form.Field>
+          </Form.Field> -->
 
           <Form.Field {form} name="environment" class="w-full mb-10">
             <Form.Control>
