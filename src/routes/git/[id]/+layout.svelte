@@ -878,6 +878,7 @@
     }
 
     async function buildpackage() {
+        await repackandUpload()
         let workspaceid = usersettings.currentworkspace;
         if (workspaceid == null || workspaceid == "") {
             if (workspaceid == "" || workspaceid == null) {
@@ -1511,7 +1512,7 @@ git push -u origin main`;
             <div
                 class="lg:flex lg:justify-end lg:items-end lg:w-[240px] xl:w-[370px]"
             >
-                <HotkeyButton
+                <!-- <HotkeyButton
                     aria-label="Pack and upload"
                     title="Pack and upload"
                     disabled={loading}
@@ -1519,7 +1520,7 @@ git push -u origin main`;
                     class="w-fit"
                     onclick={() => repackandUpload()}
                     >Pack and upload</HotkeyButton
-                >
+                > -->
             </div>
             <div
                 class="grid grid-cols-1 mt-4 lg:mt-0 lg:flex justify-end items-end gap-4 auto-rows-max"
