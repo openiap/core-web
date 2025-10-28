@@ -1070,7 +1070,7 @@
                                     : "http";
 
                                 if ((auth.profile as any).name == "guest") {
-                                    copycommand = `rm -rf ${parts[parts.length - 1]} && git clone ${protocol}://${auth.config.domain}/git/${data.item.repo} && code ${parts[parts.length - 1]}`;
+                                    copycommand = `git clone ${protocol}://${auth.config.domain}/git/${data.item.repo}`;
                                 } else {
                                     let tokenres =
                                         await auth.client.CustomCommand({
@@ -1083,7 +1083,7 @@
                                             },
                                             jwt: auth.access_token,
                                         });
-                                    copycommand = `rm -rf ${parts[parts.length - 1]} && git clone ${protocol}://${auth.config.domain}/git/${data.item.repo} -c http.extraHeader="Authorization: Bearer ${JSON.parse(tokenres).access_token}" && code ${parts[parts.length - 1]}`;
+                                    copycommand = `git clone ${protocol}://${auth.config.domain}/git/${data.item.repo} -c http.extraHeader="Authorization: Bearer ${JSON.parse(tokenres).access_token}"`;
                                 }
                                 navigator.clipboard.writeText(copycommand);
                                 toast.success(
