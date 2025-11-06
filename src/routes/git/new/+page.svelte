@@ -279,6 +279,59 @@
   }
   fetchTemprepos();
 
+  function isDir(stat: any) {
+    if (stat == null) return false;
+    if (typeof stat.isDirectory === "function") {
+      return stat.isDirectory();
+    }
+    return stat.type === "dir";
+  }
+
+  async function removeDirectory(fs: any, targetPath: string) {
+    try {
+      const entries = await fs.promises.readdir(targetPath);
+      for (const entry of entries) {
+        const entryPath = `${targetPath}/${entry}`;
+        const stat = await fs.promises.stat(entryPath);
+        if (isDir(stat)) {
+          await removeDirectory(fs, entryPath);
+        } else {
+          await fs.promises.unlink(entryPath);
+        }
+      }
+      await fs.promises.rmdir(targetPath);
+    } catch (error: any) {
+      if (error?.code !== "ENOENT") {
+        throw error;
+      }
+    }
+  }
+
+  async function addAllFilesToIndex(fs: any, dir: string, relativePath = "") {
+    const absolutePath = relativePath ? `${dir}/${relativePath}` : dir;
+    let entries: string[] = [];
+    try {
+      entries = await fs.promises.readdir(absolutePath);
+    } catch (err: any) {
+      if (err?.code === "ENOTDIR") {
+        return;
+      }
+      throw err;
+    }
+
+    for (const entry of entries) {
+      if (entry === ".git") continue;
+      const childRelative = relativePath ? `${relativePath}/${entry}` : entry;
+      const childAbsolute = `${absolutePath}/${entry}`;
+      const stat = await fs.promises.stat(childAbsolute);
+      if (isDir(stat)) {
+        await addAllFilesToIndex(fs, dir, childRelative);
+      } else {
+        await git.add({ fs, dir, filepath: childRelative });
+      }
+    }
+  }
+
   async function createRepository() {
     if (repositoryname.trim() === "") {
       // also add a check for space and special characters
@@ -343,10 +396,28 @@
           corsProxy,
           singleBranch: false,
         });
+        await removeDirectory(fs, `${dir}/.git`);
+        await git.init({
+          fs,
+          dir,
+          defaultBranch: "main",
+        });
+        await addAllFilesToIndex(fs, dir);
+        await git.commit({
+          fs,
+          dir,
+          message:
+            "Initial commit from template " +
+            (selectedlanguage || repositoryname),
+          author: {
+            name: auth.profile?.name || username,
+            email: auth.profile?.email || `${username}@example.com`,
+          },
+        });
         if (auth.isAuthenticated) {
           const headers = { Authorization: "Bearer " + auth.access_token };
           const corsProxy = base + "/api/git-proxy";
-          const gitpushres = await git.push({
+          await git.push({
             headers,
             corsProxy,
             fs,
