@@ -47,7 +47,7 @@ function fixAndValidateFiles(files: FileInput[], slug: string, selectedLanguage:
         }
     }
 
-    // Node.js: ensure an entrypoint exists but do NOT modify provided code; package.json is optional
+    // Node.js: ensure an entrypoint exists and a valid package.json
     if (selectedLanguage === "nodejs") {
         const hasMain = files.some(f => f.filename.toLowerCase() === 'main.js');
         if (!hasMain) {
@@ -66,6 +66,35 @@ const server = http.createServer((req, res) => {
 server.listen(PORT, '0.0.0.0', () => console.log('Server listening on ' + PORT));
 `;
             files.push({ filename: 'main.js', content: defaultHttpServer });
+        }
+
+        // Ensure a valid package.json exists
+        const pkgIdx = files.findIndex(f => f.filename.toLowerCase() === 'package.json');
+        const minimalPkg = (name: string) => ({
+            name,
+            version: '1.0.0',
+            description: 'Hello World function',
+            main: 'main.js',
+            scripts: { start: 'node main.js' },
+            dependencies: {}
+        });
+        if (pkgIdx === -1) {
+            files.push({ filename: 'package.json', content: JSON.stringify(minimalPkg(slug), null, 2) });
+        } else {
+            try {
+                const pkg = JSON.parse(files[pkgIdx].content);
+                if (!pkg || typeof pkg !== 'object') throw new Error('Invalid package.json');
+                if (!pkg.name) pkg.name = slug;
+                if (!pkg.version) pkg.version = '1.0.0';
+                if (!pkg.main) pkg.main = 'main.js';
+                if (!pkg.scripts || typeof pkg.scripts !== 'object') pkg.scripts = {};
+                if (!pkg.scripts.start) pkg.scripts.start = 'node main.js';
+                if (!pkg.dependencies || typeof pkg.dependencies !== 'object') pkg.dependencies = {};
+                files[pkgIdx].content = JSON.stringify(pkg, null, 2);
+            } catch {
+                // If invalid JSON was provided, replace with a minimal valid template
+                files[pkgIdx].content = JSON.stringify(minimalPkg(slug), null, 2);
+            }
         }
     }
 
@@ -238,7 +267,6 @@ async function deployPackage(
             ];
             if (workspace && workspace.users) {
                 acl.push({ _id: workspace.users, name: (workspace.name || 'workspace') + ' users', rights: 65535 });
-                acl.push({ _id: workspace.users, name: (workspace.name || 'workspace') + ' users', rights: 65535 });
             }
             llmpackage = await auth.client.InsertOne({
                 collectionname: 'agents',
@@ -329,11 +357,11 @@ async function deployPackage(
             functionUrl: domain || undefined
         } as any;
         onProgress?.({ message: 'Done', step: 'done', progress: 100 });
-        return { 
-            success: true, 
+        return {
+            success: true,
             result: JSON.stringify(payload, null, 2),
             packageId: llmpackage._id,
-            endpoint: (domain?.endsWith('/') ? domain : domain + '/')
+            endpoint: domain ? (domain.endsWith('/') ? domain : domain + '/') : undefined
         };
 
     } catch (error: any) {
