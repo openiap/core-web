@@ -7,7 +7,6 @@ import { SvelteStorage } from "./SvelteStorage.svelte";
 const { UserManager, WebStorageStateStore } = pkg;
 // @ts-ignore
 import ws from 'ws';
-import posthog from "posthog-js";
 import { ChevronsLeftRightEllipsisIcon, Cookie } from "lucide-svelte";
 import { goto } from "$app/navigation";
 class Config {
@@ -190,17 +189,6 @@ class authState {
             access_token = result.access_token;
             if (browser) {
                 auth.access_token = result.access_token;
-                try {
-                    posthog.identify(auth.profile.sub, {
-                        name: auth.profile.name,
-                        email: auth.profile.email,
-                    });
-                    if(auth.profile.company != null && auth.profile.company != "") {
-                        posthog.group("company", auth.profile.company);
-                    }
-                } catch (error: any) {
-                    console.error(error.message);
-                }
             }
             auth.isAuthenticated = true;
         } else {
@@ -226,16 +214,6 @@ class authState {
                 this.profile.name = profile.name;
                 this.profile.email = profile.email;
                 this.profile.company = profile.company;
-                if(auth.profile.company != null && auth.profile.company != "") {
-                    try {
-                        posthog.identify(auth.profile._id, {
-                            name: auth.profile.name,
-                            email: auth.profile.email,
-                        });
-                        posthog.group("company", auth.profile.company);
-                    } catch (error) {
-                    }
-                }
             }
         }
     }

@@ -16,7 +16,6 @@
 	import "../app.css";
 	import Header from "./Header.svelte";
 	import type { Workspace } from "./workspace/schema.js";
-	import posthog from "posthog-js";
 	import { OTLPLogExporter } from "@opentelemetry/exporter-logs-otlp-proto";
 	import { Resource } from "@opentelemetry/resources";
 	import {
@@ -219,11 +218,6 @@
 	async function update_currentworkspace(workspaceid: string) {
 		usersettings.currentworkspace = workspaceid;
 		currentworkspace = workspaceid;
-		if (workspaceid != null && workspaceid != "") {
-			try {
-				posthog.group("workspace", workspaceid);
-			} catch (error) {}
-		}
 		await loadWorkspaces();
 		await usersettings.dopersist();
 		if (workspaceid == null || workspaceid == "") {
@@ -256,17 +250,6 @@
 					);
 					await usersettings.dbload(access_token);
 					currentworkspace = usersettings.currentworkspace;
-					if (
-						usersettings.currentworkspace != null &&
-						usersettings.currentworkspace != ""
-					) {
-						try {
-							posthog.group(
-								"workspace",
-								usersettings.currentworkspace,
-							);
-						} catch (error) {}
-					}
 					await loadWorkspaces();
 					auth.isAuthenticated = true;
 					if (validated() == false) {
@@ -307,12 +290,6 @@
 				}
 			}
 		}
-	}
-	if (browser && data.posthog_token != "") {
-		posthog.init(data.posthog_token, {
-			api_host: "https://eu.i.posthog.com",
-			person_profiles: "identified_only",
-		});
 	}
 	const validated = $derived(() => {
 		if (auth.profile != null && Object.keys(auth.profile).length > 0) {

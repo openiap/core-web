@@ -7,7 +7,7 @@ import { auth } from "$lib/stores/auth.svelte.js";
 export const load: LayoutServerLoad = async ({ locals, url, route, params }) => {
 	// const { wsurl, protocol, domain, client_id, access_token, profile } = locals as any;
 	// return { wsurl, protocol, domain, client_id, access_token, profile };
-	const { protocol, domain, posthog_token, client_id, profile, access_token } = locals as any;
+	const { protocol, domain, client_id, profile, access_token } = locals as any;
 	let { wsurl } = locals as any;
 	const { origin } = url;
 	let workspaces: Workspace[] = [];
@@ -17,7 +17,7 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 	const webcommit = auth.config?.webcommit;
 	const webversion = auth.config?.webversion;
 	if(auth.client?.connected == false || auth.client?.connected == null) {
-		return { protocol, domain, posthog_token, client_id, page, profile, access_token, wsurl, origin, collectionname: "entities", entities: [], workspaces: [], item: null, id: "", settings: {}, total_count, webcommit, webversion };
+		return { protocol, domain, client_id, page, profile, access_token, wsurl, origin, collectionname: "entities", entities: [], workspaces: [], item: null, id: "", settings: {}, total_count, webcommit, webversion };
 	}
 	try {
 		await usersettings.dbload(access_token);
@@ -61,9 +61,9 @@ export const load: LayoutServerLoad = async ({ locals, url, route, params }) => 
 		entities = entitiesdata;
 		total_count = totalcount;
 		let settings = datacomponent.getpagesettingsreactless();
-		return { protocol, domain, posthog_token, client_id, page, profile, access_token, wsurl, origin, collectionname, entities, workspaces, id, settings, total_count, webcommit, webversion };
+		return { protocol, domain, client_id, page, profile, access_token, wsurl, origin, collectionname, entities, workspaces, id, settings, total_count, webcommit, webversion };
 	} catch (error) {
 		console.error(error);
-		return { protocol, domain, posthog_token, client_id, page, profile, access_token, wsurl, origin, collectionname: "entities", entities: [], workspaces: [], item: null, id: "", settings: {}, total_count, webcommit, webversion };
+		return { protocol, domain, client_id, page, profile, access_token, wsurl, origin, collectionname: "entities", entities: [], workspaces: [], item: null, id: "", settings: {}, total_count, webcommit, webversion };
 	}
 };
