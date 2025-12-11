@@ -51,12 +51,6 @@ export const load: PageLoad = async ({ parent, params }) => {
     currentworkspace = item;
     if (usersettings.currentworkspace != item._id) {
       usersettings.currentworkspace = item._id;
-      if(usersettings.currentworkspace != null && usersettings.currentworkspace != "") {
-        try {
-          posthog.group("workspace", usersettings.currentworkspace);
-        } catch (error) {
-        }
-      }
       await usersettings.dopersist();
     }
 
