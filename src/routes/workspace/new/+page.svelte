@@ -10,14 +10,19 @@
   import { Check } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
-  import { zod } from "sveltekit-superforms/adapters";
+  import { zod4 as zod } from "sveltekit-superforms/adapters";
+
+  import type { ValidationAdapter } from "sveltekit-superforms/adapters";
   import { newWorkspaceSchema } from "../schema.js";
+  import type { NewWorkspaceSchema } from "../schema.js";
 
   let loading = $state(false);
   let errormessage = $state("");
-  const form = superForm(defaults(zod(newWorkspaceSchema)), {
+  const newWorkspaceSchemaAdapter = zod(newWorkspaceSchema) as ValidationAdapter<NewWorkspaceSchema, NewWorkspaceSchema>;
+
+  const form = superForm<NewWorkspaceSchema>(defaults(newWorkspaceSchemaAdapter), {
     dataType: "json",
-    validators: zod(newWorkspaceSchema),
+    validators: newWorkspaceSchemaAdapter,
     SPA: true,
     onUpdate: async ({ form, cancel }) => {
       if (form.valid) {

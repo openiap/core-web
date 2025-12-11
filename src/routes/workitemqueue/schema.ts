@@ -21,7 +21,7 @@ export const newFormSchema = z.object({
   success_wiq: z.string().default(""),
   failed_wiq: z.string().default(""),
 });
-export type NewFormSchema = typeof newFormSchema;
+export type NewFormSchema = z.infer<typeof newFormSchema>;
 
 export const editFormSchema = z.object({
   name: z.string().min(2),
@@ -43,4 +43,4 @@ export const editFormSchema = z.object({
   success_wiq: z.string().nullable(),
   failed_wiq: z.string().nullable(),
 }).passthrough();
-export type EditFormSchema = typeof editFormSchema;
+export type EditFormSchema = z.infer<typeof editFormSchema>;

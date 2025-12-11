@@ -13,7 +13,7 @@ export const newFormSchema = z.object({
   federationids: z.array(z.string().email()).optional().default([]),
   _type: z.string().default("user"),
 });
-export type NewFormSchema = typeof newFormSchema;
+export type NewFormSchema = z.infer<typeof newFormSchema>;
 
 export const editFormSchema = z.object({
   name: z.string().min(2),
@@ -27,4 +27,4 @@ export const editFormSchema = z.object({
   formvalidated: z.boolean().optional().nullable().transform((val) => val ?? false),
   federationids: z.any().optional().nullable().transform((val) => val ?? []),
 }).passthrough();
-export type EditFormSchema = typeof editFormSchema;
+export type EditFormSchema = z.infer<typeof editFormSchema>;

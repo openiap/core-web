@@ -8,7 +8,7 @@ export const editFormSchema = z.object({
     _id: z.string().min(2),
   })),
 }).passthrough();
-export type UserSchema = typeof editFormSchema;
+export type UserSchema = z.infer<typeof editFormSchema>;
 
 export const newFormSchema = z.object({
   _type: z.string().default("role"),
@@ -20,6 +20,6 @@ export const newFormSchema = z.object({
     _id: z.string().min(2),
   })).default([]),
 });
-export type NewUserSchema = typeof newFormSchema;
+export type NewUserSchema = z.infer<typeof newFormSchema>;
 
 export let page = "role";

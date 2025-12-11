@@ -10,8 +10,11 @@
   import { Check } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
-  import { zod } from "sveltekit-superforms/adapters";
+  import { zod4 as zod } from "sveltekit-superforms/adapters";
+
+  import type { ValidationAdapter } from "sveltekit-superforms/adapters";
   import { newMemberSchema } from "../../schema.js";
+  import type { NewMemberSchema } from "../../schema.js";
 
   const { data } = $props();
   $effect(() => {
@@ -27,9 +30,11 @@
 
   let loading = $state(false);
   let errormessage = $state("");
-  const form = superForm(defaults(zod(newMemberSchema)), {
+  const newMemberSchemaAdapter = zod(newMemberSchema) as ValidationAdapter<NewMemberSchema, NewMemberSchema>;
+
+  const form = superForm<NewMemberSchema>(defaults(newMemberSchemaAdapter), {
     dataType: "json",
-    validators: zod(newMemberSchema),
+    validators: newMemberSchemaAdapter,
     SPA: true,
     onUpdate: async ({ form, cancel }) => {
       if (form.valid) {

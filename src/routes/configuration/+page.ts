@@ -1,9 +1,11 @@
 import { auth } from "$lib/stores/auth.svelte.js";
 import { superValidate } from "sveltekit-superforms";
-import { zod } from "sveltekit-superforms/adapters";
+import { zod4 as zod } from "sveltekit-superforms/adapters";
+import type { ValidationAdapter } from "sveltekit-superforms/adapters";
 import type { PageLoad } from "./$types.js";
 import { generateDefaultSettings } from "./helper.js";
 import { editFormSchema } from "./schema.js";
+import type { EditFormSchema } from "./schema.js";
 
 export const load: PageLoad = async ({ parent }) => {
   const { access_token } = await parent();
@@ -11,7 +13,8 @@ export const load: PageLoad = async ({ parent }) => {
   try {
     let currentSettings = await auth.client.FindOne<any>({ collectionname: "config", query: { "_type": "config" }, jwt: access_token });
     let combinedSettings = { ...generateDefaultSettings(), ...currentSettings }
-    data.form = await superValidate(combinedSettings, zod(editFormSchema));
+    const schemaAdapter = zod(editFormSchema) as ValidationAdapter<EditFormSchema, EditFormSchema>;
+    data.form = await superValidate(combinedSettings, schemaAdapter);
 
   } catch (error) {
 

@@ -18,7 +18,7 @@ export const newFormSchema = z.object({
   schedules: z.array(z.object({
   })).default([]),
 });
-export type NewFormSchema = typeof newFormSchema;
+export type NewFormSchema = z.infer<typeof newFormSchema>;
 
 export const editFormSchema = z.object({
   _id: z.string().min(2),
@@ -44,4 +44,4 @@ export const editFormSchema = z.object({
     env: z.object({}).optional(),
   })).default([]),
 }).passthrough();
-export type EditFormSchema = typeof editFormSchema;
+export type EditFormSchema = z.infer<typeof editFormSchema>;

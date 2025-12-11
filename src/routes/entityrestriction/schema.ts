@@ -12,7 +12,7 @@ export const newFormSchema = z.object({
     rights: 65535
   }]),
 });
-export type NewFormSchema = typeof newFormSchema;
+export type NewFormSchema = z.infer<typeof newFormSchema>;
 
 export const editFormSchema = z.object({
   name: z.string().min(2),
@@ -20,4 +20,4 @@ export const editFormSchema = z.object({
   copyperm: z.boolean().optional().nullable().transform((val) => val ?? false),
   paths: z.any().optional().nullable().transform((val) => val ?? []),
 }).passthrough();
-export type EditFormSchema = typeof editFormSchema;
+export type EditFormSchema = z.infer<typeof editFormSchema>;

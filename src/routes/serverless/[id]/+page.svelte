@@ -19,24 +19,33 @@
   import { tick } from "svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
-  import { zod } from "sveltekit-superforms/adapters";
+  import { zod4 as zod } from "sveltekit-superforms/adapters";
+
+  import type { ValidationAdapter } from "sveltekit-superforms/adapters";
   import { _timeSince } from "../../../helper";
-  import { editFormSchemaAdmin, editFormSchemaUser } from "../schema.js";
+  import {
+    editFormSchemaAdmin,
+    editFormSchemaUser,
+  } from "../schema.js";
+  import type {
+    EditFormSchemaAdmin,
+    EditFormSchemaUser,
+  } from "../schema.js";
 
   const ansi = new AnsiUp();
 
   let profileroles = auth.profile?.roles || [];
   const isAdmin = profileroles.includes("admins");
+  const schema = isAdmin ? editFormSchemaAdmin : editFormSchemaUser;
 
+  type ServerlessFormSchema = EditFormSchemaAdmin | EditFormSchemaUser;
   const { data } = $props();
 
   if (data.item != null) {
     if (data.item.anonymous == null) {
       data.item.anonymous = false;
     }
-    data.item = (isAdmin ? editFormSchemaAdmin : editFormSchemaUser).parse(
-      data.item,
-    );
+    data.item = schema.parse(data.item);
   }
 
   // let amqpqueuedata = $state(data.amqpqueuedata);
@@ -107,11 +116,16 @@
 
   const excludedcols = ["_id", "metadata", "ts", "userid"];
 
-  const form = superForm(
-    defaults(zod(isAdmin ? editFormSchemaAdmin : editFormSchemaUser)),
+  const schemaAdapter = zod(schema) as ValidationAdapter<
+    ServerlessFormSchema,
+    ServerlessFormSchema
+  >;
+
+  const form = superForm<ServerlessFormSchema>(
+    defaults(schemaAdapter),
     {
       dataType: "json",
-      validators: zod(isAdmin ? editFormSchemaAdmin : editFormSchemaUser),
+      validators: schemaAdapter,
       SPA: true,
       onUpdate: async ({ form, cancel }) => {
         if (form.valid) {

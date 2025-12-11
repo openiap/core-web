@@ -7,4 +7,4 @@ export const newFormSchema = z.object({
   granularity: z.string().default("").optional(),
   metadata: z.string().default("").optional(),
 });
-export type NewFormSchema = typeof newFormSchema;
+export type NewFormSchema = z.infer<typeof newFormSchema>;

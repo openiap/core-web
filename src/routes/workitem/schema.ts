@@ -6,7 +6,7 @@ export const newFormSchema = z.object({
   payload: z.any(),
   priority: z.number().int().default(2),
 });
-export type NewFormSchema = typeof newFormSchema;
+export type NewFormSchema = z.infer<typeof newFormSchema>;
 
 export const editFormSchema = z.object({
   name: z.string().min(2),
@@ -16,4 +16,4 @@ export const editFormSchema = z.object({
   priority: z.number().int(),
   files: z.any(),
 }).passthrough();
-export type EditFormSchema = typeof editFormSchema;
+export type EditFormSchema = z.infer<typeof editFormSchema>;

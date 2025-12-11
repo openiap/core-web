@@ -22,8 +22,11 @@
   } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { superForm } from "sveltekit-superforms";
-  import { zod } from "sveltekit-superforms/adapters";
+  import { zod4 as zod } from "sveltekit-superforms/adapters";
+
+  import type { ValidationAdapter } from "sveltekit-superforms/adapters";
   import { newWorkspaceSchema } from "../schema.js";
+  import type { NewWorkspaceSchema } from "../schema.js";
     import { browser } from "$app/environment";
   const { data } = $props();
   // if(browser) {
@@ -53,9 +56,11 @@
     return entity.name;
   });
 
-  const form = superForm(data.form, {
+  const newWorkspaceSchemaAdapter = zod(newWorkspaceSchema) as ValidationAdapter<NewWorkspaceSchema, NewWorkspaceSchema>;
+
+  const form = superForm<NewWorkspaceSchema>(data.form, {
     dataType: "json",
-    validators: zod(newWorkspaceSchema),
+    validators: newWorkspaceSchemaAdapter,
     SPA: true,
     onUpdate: async ({ form, cancel }) => {
       if (form.valid) {

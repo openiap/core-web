@@ -22,7 +22,7 @@ export const newWorkspaceSchema = z.object({
   name: z.string().min(2).default(""),
   _billingid: z.string().optional()
 });
-export type NewWorkspaceSchema = typeof newWorkspaceSchema;
+export type NewWorkspaceSchema = z.infer<typeof newWorkspaceSchema>;
 
 export const workspaceSchema = z.object({
   name: z.string().min(2),
@@ -31,14 +31,14 @@ export const workspaceSchema = z.object({
   _billingid: z.string().optional(),
   price: z.string().optional(),
 }).passthrough();
-export type WorkspaceSchema = typeof workspaceSchema;
+export type WorkspaceSchema = z.infer<typeof workspaceSchema>;
 
 export const newMemberSchema = z.object({
   email: z.string().min(2).default(""),
   role: z.enum(["member", "admin"]).default("member"),
   workspaceid: z.string().optional(),
 });
-export type NewMemberSchema = typeof newWorkspaceSchema;
+export type NewMemberSchema = z.infer<typeof newMemberSchema>;
 
 export const memberSchema = z.object({
   email: z.string().min(2),
@@ -54,4 +54,4 @@ export const memberSchema = z.object({
   seen: z.boolean().optional(),
   seenon: z.string().optional(),
 });
-export type MemberSchema = typeof newWorkspaceSchema;
+export type MemberSchema = z.infer<typeof memberSchema>;

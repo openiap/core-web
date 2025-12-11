@@ -15,8 +15,11 @@
   import { Check, KeyRound, SquareMinus, SquarePlus } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
-  import { zod } from "sveltekit-superforms/adapters";
+  import { zod4 as zod } from "sveltekit-superforms/adapters";
+
+  import type { ValidationAdapter } from "sveltekit-superforms/adapters";
   import { LicenseSchema } from "../schema.js";
+  import type { LicenseFormSchema } from "../schema.js";
 
   let loading = $state(false);
 
@@ -67,9 +70,11 @@
         ?.name ?? "Select a version",
   );
 
-  const form = superForm(defaults(zod(LicenseSchema)), {
+  const LicenseSchemaAdapter = zod(LicenseSchema) as ValidationAdapter<LicenseFormSchema, LicenseFormSchema>;
+
+  const form = superForm<LicenseFormSchema>(defaults(LicenseSchemaAdapter), {
     dataType: "json",
-    validators: zod(LicenseSchema),
+    validators: LicenseSchemaAdapter,
     SPA: true,
     onUpdate: async ({ form, cancel }) => {
       if (form.valid) {

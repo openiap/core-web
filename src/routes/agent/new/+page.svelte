@@ -16,19 +16,25 @@
   import { Check, Info, RefreshCcw, User } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
-  import { zod } from "sveltekit-superforms/adapters";
+  import { zod4 as zod } from "sveltekit-superforms/adapters";
+  import type { ValidationAdapter } from "sveltekit-superforms/adapters";
   import type { Workspace } from "../../workspace/schema.js";
   import { randomname } from "../helper.js";
   import { newFormSchema } from "../schema.js";
+  import type { NewFormSchema } from "../schema.js";
 
   const { data } = $props();
 
   let loading = $state(false);
   let nameprompt = $state(false);
   let newbillingaccountname = $state(auth.profile.name + "s Billing Account");
-  const form = superForm(defaults(zod(newFormSchema)), {
+  const schemaAdapter = zod(newFormSchema) as ValidationAdapter<
+    NewFormSchema,
+    NewFormSchema
+  >;
+  const form = superForm<NewFormSchema>(defaults(schemaAdapter), {
     dataType: "json",
-    validators: zod(newFormSchema),
+    validators: schemaAdapter,
     SPA: true,
     onUpdate: async ({ form, cancel }) => {
       if (form.valid) {
@@ -455,16 +461,16 @@
         }
 
         const json = await auth.client.CustomCommand({
-            command: "getnextinvoice",
-            id: currentworkspace._billingid,
-            data: JSON.stringify({
-              lookupkey: product.lookup_key,
-              stripeprice: product.stripeprice,
-              productname: product.name,
-              quantity: 1,
-            }),
-            jwt: auth.access_token,
-          });
+          command: "getnextinvoice",
+          id: currentworkspace._billingid,
+          data: JSON.stringify({
+            lookupkey: product.lookup_key,
+            stripeprice: product.stripeprice,
+            productname: product.name,
+            quantity: 1,
+          }),
+          jwt: auth.access_token,
+        });
         if (json == null || json == "") {
           loading = false;
           confirmprice = true;

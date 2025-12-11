@@ -11,9 +11,12 @@
   import { Check } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
-  import { zod } from "sveltekit-superforms/adapters";
+  import { zod4 as zod } from "sveltekit-superforms/adapters";
+
+  import type { ValidationAdapter } from "sveltekit-superforms/adapters";
   import type { Workspace } from "../../workspace/schema.js";
   import { editFormSchema } from "../schema.js";
+  import type { EditFormSchema } from "../schema.js";
 
   let loading = $state(false);
 
@@ -26,9 +29,11 @@
   let agentdata = $state(data.agentdata);
   // let amqpqueuedata = $state(data.amqpqueuedata);
 
-  const form = superForm(defaults(zod(editFormSchema)), {
+  const editFormSchemaAdapter = zod(editFormSchema) as ValidationAdapter<EditFormSchema, EditFormSchema>;
+
+  const form = superForm<EditFormSchema>(defaults(editFormSchemaAdapter), {
     dataType: "json",
-    validators: zod(editFormSchema),
+    validators: editFormSchemaAdapter,
     SPA: true,
     onUpdate: async ({ form, cancel }) => {
       if (form.valid) {

@@ -12,8 +12,11 @@
   import { Check, Plus, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
-  import { zod } from "sveltekit-superforms/adapters";
+  import { zod4 as zod } from "sveltekit-superforms/adapters";
+
+  import type { ValidationAdapter } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../schema.js";
+  import type { UserSchema } from "../schema.js";
 
   let loading = $state(false);
   let newid = $state("");
@@ -23,9 +26,11 @@
   if (data.item.members == null) {
     data.item.members = [];
   }
-  const form = superForm(defaults(zod(editFormSchema)), {
+  const editFormSchemaAdapter = zod(editFormSchema) as ValidationAdapter<UserSchema, UserSchema>;
+
+  const form = superForm<UserSchema>(defaults(editFormSchemaAdapter), {
     dataType: "json",
-    validators: zod(editFormSchema),
+    validators: editFormSchemaAdapter,
     SPA: true,
     onUpdate: async ({ form, cancel }) => {
       if (form.valid) {

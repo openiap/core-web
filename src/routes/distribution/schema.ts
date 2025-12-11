@@ -5,7 +5,7 @@ export const newFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
   _type: z.string().default("dist"),
 });
-export type NewFormSchema = typeof newFormSchema;
+export type NewFormSchema = z.infer<typeof newFormSchema>;
 
 export const editFormSchema = z.object({
   min_instances: z.number().optional().nullable().transform((val) => val ?? 0),
@@ -21,4 +21,4 @@ export const editFormSchema = z.object({
   mem: z.number().optional().nullable().transform((val) => val ?? 0),
   framework: z.boolean().optional().nullable().transform((val) => val ?? false),
 }).passthrough();
-export type EditFormSchema = typeof editFormSchema;
+export type EditFormSchema = z.infer<typeof editFormSchema>;

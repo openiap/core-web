@@ -6,14 +6,19 @@
   import { CustomSuperDebug } from "$lib/customsuperdebug/index.js";
   import { ArrowLeft } from "lucide-svelte";
   import { defaults, superForm } from "sveltekit-superforms";
-  import { zod } from "sveltekit-superforms/adapters";
+  import { zod4 as zod } from "sveltekit-superforms/adapters";
+
+  import type { ValidationAdapter } from "sveltekit-superforms/adapters";
   import { editFormSchema } from "../schema.js";
+  import type { EditFormSchema } from "../schema.js";
     import { toast } from "svelte-sonner";
 
   const { data } = $props();
-  const form = superForm(defaults(zod(editFormSchema)), {
+  const editFormSchemaAdapter = zod(editFormSchema) as ValidationAdapter<EditFormSchema, EditFormSchema>;
+
+  const form = superForm<EditFormSchema>(defaults(editFormSchemaAdapter), {
     dataType: "json",
-    validators: zod(editFormSchema),
+    validators: editFormSchemaAdapter,
     SPA: true,
   });
   const { form: formData, message } = form;

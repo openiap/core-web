@@ -7,11 +7,11 @@ export const newFormSchema = z.object({
     _workspaceid: z.string(),
     _type: z.string().min(2).default('volume'),
 });
-export type NewFormSchema = typeof newFormSchema;
+export type NewFormSchema = z.infer<typeof newFormSchema>;
 
 export const editFormSchema = z.object({
     path: z.string().optional().nullable().transform((val) => val ?? ""),
     access_key: z.string().optional().nullable().transform((val) => val ?? ""),
     secret_key: z.string().optional().nullable().transform((val) => val ?? ""),
 }).passthrough();
-export type EditFormSchema = typeof editFormSchema;
+export type EditFormSchema = z.infer<typeof editFormSchema>;

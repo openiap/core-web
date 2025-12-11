@@ -4,7 +4,7 @@ export const newLicenseSchema = z.object({
   name: z.string().min(2).default(""),
   _billingid: z.string().optional()
 });
-export type NewLicenseSchema = typeof newLicenseSchema;
+export type NewLicenseSchema = z.infer<typeof newLicenseSchema>;
 
 export const LicenseSchema = z.object({
   name: z.string().min(2),
@@ -17,4 +17,4 @@ export const LicenseSchema = z.object({
   licenseversion: z.number().optional(),
   _stripeprice: z.string().optional(),
 }).passthrough();
-export type LicenseSchema = typeof LicenseSchema;
+export type LicenseFormSchema = z.infer<typeof LicenseSchema>;

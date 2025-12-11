@@ -16,7 +16,7 @@ export const newFormSchema = z.object({
     order: z.number().optional().default(0),
     _type: z.string().optional().default("provider"),
 });
-export type NewFormSchema = typeof newFormSchema;
+export type NewFormSchema = z.infer<typeof newFormSchema>;
 
 export const editFormSchema = z.object({
     // name: z.string().optional().transform((val) => val ?? "test"),
@@ -34,4 +34,4 @@ export const editFormSchema = z.object({
 
     // order: z.number().optional().transform((val) => val ?? 0),
 }).passthrough();
-export type EditFormSchema = typeof editFormSchema;
+export type EditFormSchema = z.infer<typeof editFormSchema>;

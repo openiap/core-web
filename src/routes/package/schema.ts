@@ -11,7 +11,7 @@ export const newFormSchema = z.object({
   _type: z.string().default("package"),
   _workspaceid: z.string().default(""),
 });
-export type NewFormSchema = typeof newFormSchema;
+export type NewFormSchema = z.infer<typeof newFormSchema>;
 
 export const editFormSchema = z.object({
   name: z.string().min(2),
@@ -22,4 +22,4 @@ export const editFormSchema = z.object({
   repo: z.string().optional().default(""),
   ref: z.string().optional().default(""),
 }).passthrough();
-export type EditFormSchema = typeof editFormSchema;
+export type EditFormSchema = z.infer<typeof editFormSchema>;

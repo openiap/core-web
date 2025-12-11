@@ -11,16 +11,21 @@
   import { Check, Plus, Trash2 } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
-  import { zod } from "sveltekit-superforms/adapters";
+  import { zod4 as zod } from "sveltekit-superforms/adapters";
+
+  import type { ValidationAdapter } from "sveltekit-superforms/adapters";
   import { newFormSchema } from "../schema.js";
+  import type { NewUserSchema } from "../schema.js";
 
   let loading = $state(false);
   let newid = $state("");
   let members: any = $state([]);
 
-  const form = superForm(defaults(zod(newFormSchema)), {
+  const newFormSchemaAdapter = zod(newFormSchema) as ValidationAdapter<NewUserSchema, NewUserSchema>;
+
+  const form = superForm<NewUserSchema>(defaults(newFormSchemaAdapter), {
     dataType: "json",
-    validators: zod(newFormSchema),
+    validators: newFormSchemaAdapter,
     SPA: true,
     onUpdate: async ({ form, cancel }) => {
       if (form.valid) {

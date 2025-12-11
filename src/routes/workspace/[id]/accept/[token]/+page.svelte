@@ -8,13 +8,18 @@
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import { toast } from "svelte-sonner";
   import { superForm } from "sveltekit-superforms";
-  import { zod } from "sveltekit-superforms/adapters";
+  import { zod4 as zod } from "sveltekit-superforms/adapters";
+
+  import type { ValidationAdapter } from "sveltekit-superforms/adapters";
   import { memberSchema } from "../../../schema.js";
+  import type { MemberSchema } from "../../../schema.js";
 
   const { data } = $props();
-  const form = superForm(data.form, {
+  const memberSchemaAdapter = zod(memberSchema) as ValidationAdapter<MemberSchema, MemberSchema>;
+
+  const form = superForm<MemberSchema>(data.form, {
     dataType: "json",
-    validators: zod(memberSchema),
+    validators: memberSchemaAdapter,
   });
   const { form: formData, enhance, message } = form;
 

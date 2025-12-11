@@ -2,8 +2,8 @@
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import {
-      HotkeyButton,
-      buttonVariants,
+    HotkeyButton,
+    buttonVariants,
   } from "$lib/components/ui/hotkeybutton/index.js";
   import Label from "$lib/components/ui/label/label.svelte";
   import * as Popover from "$lib/components/ui/popover/index.js";
@@ -18,16 +18,16 @@
   import { usersettings } from "$lib/stores/usersettings.svelte.js";
   import Warningdialogue from "$lib/warningdialogue/warningdialogue.svelte";
   import {
-      Box,
-      Filter,
-      HandHelping,
-      Pencil,
-      RefreshCcw,
-      Rows2,
-      SquarePlus,
-      SquareStack,
-      Trash2,
-      VenetianMask
+    Box,
+    Filter,
+    HandHelping,
+    Pencil,
+    RefreshCcw,
+    Rows2,
+    SquarePlus,
+    SquareStack,
+    Trash2,
+    VenetianMask,
   } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { capitalizeFirstLetter } from "../../helper.js";
@@ -160,7 +160,17 @@
         collectionname="mq"
         bind:value={queue}
         basefilter={{ _type: "workitemqueue" }}
-        handleChangeFunction={() => goto(base + `/workitem/${queue}`)}
+        handleChangeFunction={async () => {
+          console.log("queue changed");
+          searchstring = "";
+          datacomponent.settings.searchstring = "";
+          await datacomponent.persist();
+          console.log(
+            "data in search string",
+            datacomponent.settings.searchstring,
+          );
+          await goto(base + `/workitem/${queue}`);
+        }}
         name="queue"
         >{#snippet rendername(item: any)}
           {item.name}

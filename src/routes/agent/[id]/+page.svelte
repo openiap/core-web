@@ -43,11 +43,13 @@
   } from "lucide-svelte";
   import { toast } from "svelte-sonner";
   import { defaults, superForm } from "sveltekit-superforms";
-  import { zod } from "sveltekit-superforms/adapters";
+  import { zod4 as zod } from "sveltekit-superforms/adapters";
+  import type { ValidationAdapter } from "sveltekit-superforms/adapters";
   import type { Workspace } from "../../workspace/schema.js";
   import { randomname } from "../helper.js";
   import { editFormSchema } from "../schema.js";
-    import { _timeSince } from "../../../helper.js";
+  import type { EditFormSchema } from "../schema.js";
+  import { _timeSince } from "../../../helper.js";
 
   const { data } = $props();
 
@@ -60,6 +62,10 @@
   let newbillingaccountname = $state(auth.profile.name + "s Billing Account");
 
   const ansi_up = new AnsiUp();
+  const schemaAdapter = zod(editFormSchema) as ValidationAdapter<
+    EditFormSchema,
+    EditFormSchema
+  >;
 
   if (data.item != null && data.item._stripeprice == null) {
     data.item._stripeprice = "";
@@ -126,9 +132,9 @@
     }
   }
 
-  const form = superForm(defaults(zod(editFormSchema)), {
+  const form = superForm<EditFormSchema>(defaults(schemaAdapter), {
     dataType: "json",
-    validators: zod(editFormSchema),
+    validators: schemaAdapter,
     SPA: true,
     onUpdate: async ({ form, cancel }) => {
       if (form.valid) {
