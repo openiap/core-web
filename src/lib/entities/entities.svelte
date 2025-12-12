@@ -26,6 +26,7 @@
 		Table as TableIcon,
 		Trash2,
 		RefreshCcw,
+        ChevronsLeft,
 	} from "lucide-svelte";
 	import ArrowDown from "lucide-svelte/icons/arrow-down";
 	import ArrowUp from "lucide-svelte/icons/arrow-up";
@@ -562,11 +563,11 @@
 					? ""
 					: " " + timeStamp.getFullYear();
 			let hour = timeStamp.getHours();
-			if(hour < 10) {
-				hour = ("0" + hour) as any
+			if (hour < 10) {
+				hour = ("0" + hour) as any;
 			}
 			let minute = timeStamp.getMinutes();
-			if(minute < 10) {
+			if (minute < 10) {
 				minute = ("0" + minute) as any;
 			}
 			return day + " " + month + year + " " + hour + ":" + minute;
@@ -1060,27 +1061,46 @@
 	<div
 		class="flex text-center justify-between items-center dark:text-bw300 gap-4 md:gap-0 overflow-auto"
 	>
-		<HotkeyButton
-			aria-label="Previous"
-			title="Previous (Left Arrow Key)"
-			size="base"
-			variant="base"
-			data-shortcut="left"
-			onclick={() => {
-				page_index = page_index - 1;
-				data.settings.page_index = page_index;
-				data.persist();
-				GetData();
-			}}
-			disabled={page_index <= 0 || loading}
-		>
-			<div class="flex items-center space-x-2">
-				<div>
-					<MoveLeft class="text-bw500" />
-				</div>
-				<div>Previous</div>
+		<div class="flex space-x-2">
+			<div class={`${page_index <= 0 || loading ? "hidden" : ""}`}>
+				<HotkeyButton
+					aria-label="Go to page 1"
+					title="Go to page 1"
+					size="base"
+					variant="base"
+					onclick={() => {
+						page_index = 0;
+						data.settings.page_index = page_index;
+						data.persist();
+						GetData();
+					}}
+					disabled={page_index <= 0 || loading}
+				>
+					<ChevronsLeft/>
+				</HotkeyButton>
 			</div>
-		</HotkeyButton>
+			<HotkeyButton
+				aria-label="Previous"
+				title="Previous (Left Arrow Key)"
+				size="base"
+				variant="base"
+				data-shortcut="left"
+				onclick={() => {
+					page_index = page_index - 1;
+					data.settings.page_index = page_index;
+					data.persist();
+					GetData();
+				}}
+				disabled={page_index <= 0 || loading}
+			>
+				<div class="flex items-center space-x-2">
+					<div>
+						<MoveLeft class="text-bw500" />
+					</div>
+					<div>Previous</div>
+				</div>
+			</HotkeyButton>
+		</div>
 		<div class="text-sm md:text-base">
 			Page {page_index + 1}
 			{#if entities.length == total_count}
