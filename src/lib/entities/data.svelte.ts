@@ -841,7 +841,7 @@ class entitiesdata {
 				if (_page.startsWith("/chat/hist/")) {
 					return ["_id", "name", "_type", "_createdby", "_created", "_modified"];
 				} else if (_page.startsWith("/workitem/")) {
-					return ["name", "state", "errortype", "retries", "priority", "wiq", "lastrun", "_created"];
+					return ["name", "state", "errortype", "retries", "priority", "wiq", "nextrun", "lastrun", "_created"];
 				} else if (_page.endsWith("/git") || _page.indexOf("/git/") > -1) {
 					return ["repo", "_created", "_modified"];
 				} else if (page.endsWith("/deleted")) {
