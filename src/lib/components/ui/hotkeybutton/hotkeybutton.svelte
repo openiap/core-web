@@ -136,7 +136,7 @@
 	<a
 		bind:this={ref}
 		aria-label={ariaLabel}
-		class={cn(buttonVariants({ variant, size, className }))}
+		class={cn(buttonVariants({ variant, size }), className)}
 		{href}
 		{...restProps}
 	>
@@ -147,7 +147,7 @@
 		title={title || addTitle()}
 		bind:this={ref}
 		aria-label={ariaLabel || title || "default"}
-		class={cn(buttonVariants({ variant, size, className }))}
+		class={cn(buttonVariants({ variant, size }), className)}
 		{type}
 		{...restProps}
 	>
