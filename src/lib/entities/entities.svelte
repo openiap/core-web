@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { browser } from "$app/environment";
+	import { beforeNavigate } from "$app/navigation";
 	import { page as componentpage } from "$app/stores";
 	import { HotkeyButton } from "$lib/components/ui/hotkeybutton";
 	import Hotkeybutton from "$lib/components/ui/hotkeybutton/hotkeybutton.svelte";
@@ -135,6 +136,170 @@
 	let actionheadclass = $state("");
 	selected_items = data.settings.selected_items;
 	let toggleSheet = $state(false);
+	const NEW_TAB_TIMEOUT = 5000;
+	type NewTabRequest = {
+		windowRef: Window | null;
+		timer: ReturnType<typeof setTimeout> | null;
+	};
+	type ContextMenuState = {
+		visible: boolean;
+		x: number;
+		y: number;
+		item: any | null;
+	};
+	let pendingNewTab: NewTabRequest | null = null;
+	let contextMenu = $state<ContextMenuState>({
+		visible: false,
+		x: 0,
+		y: 0,
+		item: null,
+	});
+	if (browser) {
+		beforeNavigate((event) => {
+			if (pendingNewTab == null) {
+				return;
+			}
+			if (pendingNewTab.timer) {
+				clearTimeout(pendingNewTab.timer);
+			}
+			pendingNewTab.timer = null;
+			event.cancel();
+			const target = event.to?.url?.href;
+			if (target) {
+				if (pendingNewTab.windowRef) {
+					try {
+						pendingNewTab.windowRef.location.href = target;
+						if (pendingNewTab.windowRef.opener != null) {
+							pendingNewTab.windowRef.opener = null;
+						}
+					} catch (error) {
+						pendingNewTab.windowRef.close();
+						toast.error(
+							"Unable to open the selected row in a new tab.",
+						);
+					}
+				} else if (browser) {
+					const newWindow = window.open(target, "_blank");
+					if (newWindow && newWindow.opener != null) {
+						try {
+							newWindow.opener = null;
+						} catch (error) {
+							// ignore
+						}
+					}
+				}
+			} else if (pendingNewTab.windowRef) {
+				pendingNewTab.windowRef.close();
+				toast.error("Unable to resolve link for the selected item.");
+			}
+			pendingNewTab = null;
+			loading = false;
+		});
+	}
+
+	function closeContextMenu() {
+		if (!contextMenu.visible) {
+			return;
+		}
+		contextMenu = { ...contextMenu, visible: false, item: null };
+	}
+	function getContextMenuPosition(event: MouseEvent) {
+		if (!browser) {
+			return { x: event.clientX, y: event.clientY };
+		}
+		const padding = 8;
+		const menuWidth = 200;
+		const menuHeight = 70;
+		const maxX = Math.max(
+			padding,
+			Math.min(event.clientX, window.innerWidth - menuWidth - padding),
+		);
+		const maxY = Math.max(
+			padding,
+			Math.min(event.clientY, window.innerHeight - menuHeight - padding),
+		);
+		return {
+			x: maxX,
+			y: maxY,
+		};
+	}
+	function handleRowContextMenu(event: MouseEvent, item: any) {
+		if (loading) return;
+		event.preventDefault();
+		const coords = getContextMenuPosition(event);
+		contextMenu = {
+			visible: true,
+			x: coords.x,
+			y: coords.y,
+			item,
+		};
+	}
+	function shouldOpenInNewTab(event: MouseEvent) {
+		return event.metaKey || event.ctrlKey;
+	}
+	function handleEntityActivation(event: MouseEvent, item: any) {
+		if (loading) return;
+		if (shouldOpenInNewTab(event)) {
+			event.preventDefault();
+			event.stopPropagation();
+			openItem(item, "new-tab");
+		} else {
+			openItem(item, "default");
+		}
+	}
+	function handleAuxClick(event: MouseEvent, item: any) {
+		if (loading) return;
+		if (event.button === 1) {
+			event.preventDefault();
+			event.stopPropagation();
+			openItem(item, "new-tab");
+		}
+	}
+	function requestNewTabWindow() {
+		if (!browser) return null;
+		return window.open("about:blank", "_blank");
+	}
+	function openItem(item: any, mode: "default" | "new-tab") {
+		closeContextMenu();
+		if (mode === "new-tab") {
+			if (!browser) return;
+			if (pendingNewTab?.timer) {
+				clearTimeout(pendingNewTab.timer);
+			}
+			const popup = requestNewTabWindow();
+			if (popup == null) {
+				toast.error(
+					"Please allow pop-ups to open rows in a new browser tab.",
+				);
+				return;
+			}
+			pendingNewTab = {
+				windowRef: popup,
+				timer: setTimeout(() => {
+					if (pendingNewTab?.windowRef === popup) {
+						popup.close();
+						pendingNewTab = null;
+						loading = false;
+						toast.error(
+							"Unable to open the selected row in a new tab.",
+						);
+					}
+				}, NEW_TAB_TIMEOUT),
+			};
+		}
+		try {
+			single_item_click(item);
+		} catch (error) {
+			if (mode === "new-tab" && pendingNewTab?.windowRef) {
+				pendingNewTab.windowRef.close();
+				if (pendingNewTab.timer) {
+					clearTimeout(pendingNewTab.timer);
+				}
+				pendingNewTab = null;
+			}
+			throw error;
+		}
+	}
 
 	function detectColumns() {
 		if (entities.length > 0) {
@@ -575,6 +740,17 @@
 	}
 </script>
 
+<svelte:window
+	on:click={closeContextMenu}
+	on:resize={closeContextMenu}
+	on:scroll={closeContextMenu}
+	on:keydown={(event) => {
+		if (event.key === "Escape") {
+			closeContextMenu();
+		}
+	}}
+/>
+
 <div class="main">
 	<div class="mb-2">
 		<!-- <div class="text-red-500">{data.errormessage}</div> -->
@@ -655,11 +831,16 @@
 						{#each entities as item}
 							<Table.Row
 								class="border-b border-bw500 text-bw950 dark:text-bw200 text-nowrap"
-								ondblclick={() => {
+								ondblclick={(event) => {
+									event.preventDefault();
 									if (!loading) {
-										single_item_click(item);
+										openItem(item, "default");
 									}
 								}}
+								oncontextmenu={(event) =>
+									handleRowContextMenu(event, item)}
+								onauxclick={(event) =>
+									handleAuxClick(event, item)}
 							>
 								{#if multi_select}
 									<Table.Cell
@@ -706,7 +887,8 @@
 														ToggleSelect(item);
 													} else {
 														if (!loading) {
-															single_item_click(
+															handleEntityActivation(
+																event,
 																item,
 															);
 														}
@@ -746,7 +928,8 @@
 														ToggleSelect(item);
 													} else {
 														if (!loading) {
-															single_item_click(
+															handleEntityActivation(
+																event,
 																item,
 															);
 														}
@@ -784,7 +967,8 @@
 														ToggleSelect(item);
 													} else {
 														if (!loading) {
-															single_item_click(
+															handleEntityActivation(
+																event,
 																item,
 															);
 														}
@@ -833,7 +1017,8 @@
 														ToggleSelect(item);
 													} else {
 														if (!loading) {
-															single_item_click(
+															handleEntityActivation(
+																event,
 																item,
 															);
 														}
@@ -881,7 +1066,8 @@
 														ToggleSelect(item);
 													} else {
 														if (!loading) {
-															single_item_click(
+															handleEntityActivation(
+																event,
 																item,
 															);
 														}
@@ -1137,6 +1323,31 @@
 			</div>
 		</HotkeyButton>
 	</div>
+	{#if contextMenu.visible && contextMenu.item}
+		<div
+			class="fixed z-[60] min-w-[180px] rounded-md border border-bw500 bg-bw100 shadow-lg dark:border-bw700 dark:bg-bw900"
+			style={`top:${contextMenu.y}px;left:${contextMenu.x}px;`}
+		>
+			<button
+				class="block w-full px-4 py-2 text-left text-sm text-bw900 hover:bg-bw200 dark:text-bw50 dark:hover:bg-bw800"
+				onclick={(event) => {
+					event.stopPropagation();
+					openItem(contextMenu.item, "default");
+				}}
+			>
+				Open
+			</button>
+			<button
+				class="block w-full px-4 py-2 text-left text-sm text-bw900 hover:bg-bw200 dark:text-bw50 dark:hover:bg-bw800"
+				onclick={(event) => {
+					event.stopPropagation();
+					openItem(contextMenu.item, "new-tab");
+				}}
+			>
+				Open in new tab
+			</button>
+		</div>
+	{/if}
 </div>
 
 {#if tableheaders.length > 0}
