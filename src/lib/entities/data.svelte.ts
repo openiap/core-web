@@ -518,7 +518,7 @@ class entitiesdata {
 			result.push(head);
 		}
 		this.settings.headers = result;
-		usersettings.persist();
+		// usersettings.persist(); // disabled to avoid saving table header changes server-side
 	}
 	private getOrderBy(page: string, collectionname: string) {
 		const orderby: { [key: string]: number } = {};
@@ -748,32 +748,32 @@ class entitiesdata {
 				if (auth.config?.validate_emails == true || (auth.config?.validate_user_form != null && auth.config?.validate_user_form != "")) {
 					return ["_id", "name", "username", "email", "validated", "lastseen", "_created", "_modified"];
 				}
-				return ["_id", "name", "username", "email", "lastseen", "_created"];
+				return ["_id", "name", "username", "email", "lastseen", "_created", "_modified"];
 			case "/role":
-				return ["_id", "name", "members", "_created"];
+				return ["_id", "name", "members", "_created", "_modified"];
 			case "/entityrestriction":
-				return ["_id", "name", "collection", "_created"];
+				return ["_id", "name", "collection", "_created", "_modified"];
 			case "/entities/users":
 				if (auth.config?.validate_emails == true || (auth.config?.validate_user_form != null && auth.config?.validate_user_form != "")) {
-					return ["_id", "name", "username", "email", "validated", "lastseen", "members", "_type", "_created"];
+					return ["_id", "name", "username", "email", "validated", "lastseen", "members", "_type", "_created", "_modified"];
 				}
-				return ["_id", "name", "username", "email", "lastseen", "members", "_type", "_created"];
+				return ["_id", "name", "username", "email", "lastseen", "members", "_type", "_created", "_modified"];
 
 			case "/chat/hist":
-				return ["_id", "name", "_created"];
+				return ["_id", "name", "_created", "_modified"];
 			case "/workitem":
 			case "/entities/workitems":
-				return ["name", "state", "errortype", "retries", "priority", "wiq", "nextrun", "lastrun", "_created"];
+				return ["name", "state", "errortype", "retries", "priority", "wiq", "nextrun", "lastrun", "_created", "_modified"];
 			case "/entities/dbusage":
 				return ["username", "collection", "size", "timestamp"];
 			case "/entities/nodered":
-				return ["_id", "name", "nodered_id", "_type", "_createdby", "_created"];
+				return ["_id", "name", "nodered_id", "_type", "_createdby", "_created", "_modified"];
 			case "/entities/workflow_instances":
-				return ["_id", "name", "state", "_type", "_createdby", "_created"];
+				return ["_id", "name", "state", "_type", "_createdby", "_created", "_modified"];
 			case "/entities/openrpa":
-				return ["_id", "name", "projectandname", "_type", "_createdby", "_created"];
+				return ["_id", "name", "projectandname", "_type", "_createdby", "_created", "_modified"];
 			case "/entities/openrpa_instances":
-				return ["_id", "RelativeFilename", "state", "_type", "_createdby", "_created"];
+				return ["_id", "RelativeFilename", "state", "_type", "_createdby", "_created", "_modified"];
 			case "/entities/system.profile":
 				return ["op", "ns", "docsExamined", "nreturned", "millis", "planSummary", "ts"];
 			case "/resource":
@@ -789,6 +789,7 @@ class entitiesdata {
 					"workspaces",
 					"gitrepos",
 					"_created",
+					"_modified"
 				];
 			case "/mailhistory":
 			case "/entities/mailhist":
@@ -806,7 +807,7 @@ class entitiesdata {
 			case "/formresource":
 				return ["name", "collection", "_createdby", "_created", "_modified"];
 			case "/files":
-				return ["filename", "metadata.name", "length", "metadata._created"];
+				return ["filename", "metadata.name", "length", "metadata._created", "metadata._modified"];
 			case "/billingaccount":
 				return ["name", "dbusage", "_created", "_modified"];
 			case "/credential":
@@ -824,7 +825,7 @@ class entitiesdata {
 			case "/invites":
 				return ["workspacename", "status", "role"];
 			case "/formworkflow":
-				return ["name", "_created"];
+				return ["name", "_created", "_modified"];
 			case "/rpaworkflow":
 				return ["name", "_createdby", "_modified"];
 			case "/entities/cvr":
@@ -841,19 +842,19 @@ class entitiesdata {
 				if (_page.startsWith("/chat/hist/")) {
 					return ["_id", "name", "_type", "_createdby", "_created", "_modified"];
 				} else if (_page.startsWith("/workitem/")) {
-					return ["name", "state", "errortype", "retries", "priority", "wiq", "nextrun", "lastrun", "_created"];
+					return ["name", "state", "errortype", "retries", "priority", "wiq", "nextrun", "lastrun", "_created", "_modified"];
 				} else if (_page.endsWith("/git") || _page.indexOf("/git/") > -1) {
 					return ["repo", "_created", "_modified"];
 				} else if (page.endsWith("/deleted")) {
 					console.debug("Unknown deleted page", page);
-					return ["_id", "name", "_type", "_deleted", "_deletedby", "_created", "_version"];
+					return ["_id", "name", "_type", "_deleted", "_deletedby", "_created", "_modified", "_version"];
 				} else if (_page.indexOf("/history/") > -1) {
 					return ["_id", "name", "_createdby", "_modified", "_deleted", "_deletedby", "_version"];
 				} else if (page.endsWith("/duplicates")) {
 				} else if (_page.startsWith("/entities/")) {
 					// must be last
 					if (_page.endsWith(".files")) {
-						return ["_id", "metadata.name", "metadata._createdby", "metadata._created"];
+						return ["_id", "metadata.name", "metadata._createdby", "metadata._created", "metadata._modified"];
 					}
 				}
 				console.debug("Unknown page", page);
