@@ -525,7 +525,7 @@
       {/if}
     </div>
   </div>
-  {#if isSfUser}
+  {#if auth.config?.enable_serverless && isSfUser}
     <div class="block md:hidden">
       <div class="my-10 pb-10 gap-4 grid grid-cols-2">
         <Hotkeybutton
@@ -577,7 +577,7 @@
         onclick={() => repackandUpload()}>Pack and upload</Hotkeybutton
       >
     </div>
-    {#if isSfUser}
+    {#if auth.config?.enable_serverless && isSfUser}
       <div
         class="grid grid-cols-1 mt-4 lg:mt-0 lg:flex justify-end items-end gap-4 auto-rows-max"
       >

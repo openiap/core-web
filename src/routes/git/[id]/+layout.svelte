@@ -1525,7 +1525,7 @@ git push -u origin main`;
             <div
                 class="grid grid-cols-1 mt-4 lg:mt-0 lg:flex justify-end items-end gap-4 auto-rows-max"
             >
-                {#if isSfUser}
+                {#if auth.config?.enable_serverless && isSfUser}
                     <HotkeyButton
                         aria-label="Build and deploy to serverless"
                         title="Build and deploy to serverless"
