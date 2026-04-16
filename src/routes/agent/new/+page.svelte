@@ -44,6 +44,9 @@
           (x: any) => x.stripeprice == form.data._stripeprice,
         );
         try {
+          if (!freeTierEnabled && (form.data._stripeprice == null || form.data._stripeprice == "")) {
+            throw new Error("Free agents are not available. Please select a paid plan.");
+          }
           if (auth.config?.workspace_enabled == true) {
             let _workspaceid = form.data._workspaceid;
             if (_workspaceid == null || _workspaceid == "") {
@@ -188,6 +191,8 @@
   $formData.image = auth.config?.agent_images[0].image;
   $formData.runas = auth.profile.sub;
 
+  const agentcount = data.agentInstance?.defaultmetadata?.agentcount ?? -1;
+  const freeTierEnabled = agentcount != 0;
   let products = $state([
     {
       stripeprice: "",
@@ -206,9 +211,12 @@
       (x: any) => x.deprecated != true,
     );
     products = [
-      { stripeprice: "", name: "Free tier" },
+      ...(freeTierEnabled ? [{ stripeprice: "", name: "Free tier" }] : []),
       ...data.agentInstance.products,
     ];
+    if (!freeTierEnabled && products.length > 0) {
+      $formData._stripeprice = products[0].stripeprice;
+    }
   }
 
   const resource = data.agentInstance;
@@ -792,17 +800,23 @@
   >
 </form>
 
-<div class="italic text-gray-500 py-2">
-  <div>
-    Agents using free plan will be shutdown after {data.agentInstance
-      ?.defaultmetadata.runtime_hours} hours. Buy one or more products on the customer
-    page, and then assign it to an agent to allow it to run 24/7.
+{#if agentcount == 0}
+  <div class="italic text-gray-500 py-2">
+    Free agents are not available. Please select a paid plan.
   </div>
-  <div>
-    You are limited to {data.agentInstance?.defaultmetadata.agentcount} free agents.
-    Add more resources on the customer page to increase the limit.
+{:else if agentcount > 0}
+  <div class="italic text-gray-500 py-2">
+    <div>
+      Agents using free plan will be shutdown after {data.agentInstance
+        ?.defaultmetadata.runtime_hours} hours. Buy one or more products on the customer
+      page, and then assign it to an agent to allow it to run 24/7.
+    </div>
+    <div>
+      You are limited to {data.agentInstance?.defaultmetadata.agentcount} free agents.
+      Add more resources on the customer page to increase the limit.
+    </div>
   </div>
-</div>
+{/if}
 
 <AlertDialog.Root open={nameprompt}>
   <AlertDialog.Content>

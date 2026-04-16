@@ -1492,21 +1492,19 @@
       >
     </form>
 
-    {#if $formData.image != null && $formData.image != "" && data.agentInstance != null}
-      <!-- <div class="italic text-gray-500 py-2">
-          Agents using free plan will be shutdown after {data.agentInstance
-            ?.defaultmetadata.runtime_hours} hours. Buy one or more products on the
-          customer page, and then assign it to an Agent to allow it to run 24/7.
-          You are limited to
-          {data.agentInstance?.defaultmetadata.agentcount} free agents. Add more
-          resources on the customer page to increase the limit.
-        </div> -->
-      <div class="italic text-gray-500 py-2">
-        You are limited to {data.agentInstance?.defaultmetadata.agentcount} free
-        agent, which will automatically shut down after {data.agentInstance
-          ?.defaultmetadata.runtime_hours} hours. To keep your agent running 24/7,
-        upgrade to a paid plan”
-      </div>
+    {#if $formData.image != null && $formData.image != '' && data.agentInstance != null}
+      {#if (data.agentInstance?.defaultmetadata?.agentcount ?? -1) == 0}
+        <div class=”italic text-gray-500 py-2”>
+          Free agents are not available. Please select a paid plan.
+        </div>
+      {:else if (data.agentInstance?.defaultmetadata?.agentcount ?? -1) > 0}
+        <div class=”italic text-gray-500 py-2”>
+          You are limited to {data.agentInstance?.defaultmetadata.agentcount} free
+          agent, which will automatically shut down after {data.agentInstance
+            ?.defaultmetadata.runtime_hours} hours. To keep your agent running 24/7,
+          upgrade to a paid plan.
+        </div>
+      {/if}
     {/if}
   </Tabs.Content>
   <Tabs.Content value="3">
