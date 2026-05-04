@@ -126,6 +126,7 @@ const settings = [
     { "name": "websocket_message_callback_timeout", "type": "number", "default": 3600 },
     { "name": "websocket_disconnect_out_of_sync", "type": "boolean", "default": false },
     { "name": "max_message_size_kb", "type": "number", "default": 0 },
+    { "name": "max_document_size_kb", "type": "number", "default": 0 },    
     { "name": "protocol", "type": "string", "default": "http" },
     { "name": "port", "type": "number", "default": 3000 },
     { "name": "cookie_secret", "type": "string", "default": "NLgUIsozJaxO38ze0WuHthfj2eb1eIEu" },
