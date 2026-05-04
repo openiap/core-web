@@ -211,12 +211,9 @@
       (x: any) => x.deprecated != true,
     );
     products = [
-      ...(freeTierEnabled ? [{ stripeprice: "", name: "Free tier" }] : []),
+      { stripeprice: "", name: "Free tier" },
       ...data.agentInstance.products,
     ];
-    if (!freeTierEnabled && products.length > 0) {
-      $formData._stripeprice = products[0].stripeprice;
-    }
   }
 
   const resource = data.agentInstance;
